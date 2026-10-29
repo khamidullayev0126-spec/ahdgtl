@@ -16,13 +16,19 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
 const DATA_DIR = path.join(__dirname, "data");
 const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 
-// Xizmatlar ro'yxati public/services.js faylida turadi
-const PUBLIC_DIR = path.join(__dirname, "public");
+// Sayt fayllari "public" papkasida turadi.
+// Agar GitHub'ga papkasiz (hamma fayl bir joyda) yuklangan bo'lsa — asosiy papkadan olamiz.
+const PUBLIC_DIR = fs.existsSync(path.join(__dirname, "public", "index.html"))
+  ? path.join(__dirname, "public")
+  : __dirname;
+const FLAT = PUBLIC_DIR === __dirname;
+
+// Xizmatlar ro'yxati services.js faylida turadi
 let SERVICES = [];
 try {
-  SERVICES = require("./public/services.js");
+  SERVICES = require(path.join(PUBLIC_DIR, "services.js"));
 } catch {
-  console.error("❌ public/services.js topilmadi! GitHub'ga public papkasi yuklanganini tekshiring.");
+  console.error("❌ services.js topilmadi! GitHub'ga barcha fayllar yuklanganini tekshiring.");
 }
 
 const STATUSES = ["yangi", "jarayonda", "bajarildi", "bekor"];
@@ -87,13 +93,17 @@ function requireAdmin(req, res, next) {
 // Render kabi xostinglarda mijozning haqiqiy IP manzilini bilish uchun
 app.set("trust proxy", 1);
 app.use(express.json({ limit: "20kb" }));
+// Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
+if (FLAT) {
+  const HIDDEN = /^\/(data|node_modules)(\/|$)|^\/(server\.js|package(-lock)?\.json|render\.yaml|README\.md)$/i;
+  app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
+}
 app.use(express.static(PUBLIC_DIR));
 
-// public papkasi yo'q bo'lsa — tushunarli xabar ko'rsatamiz
 if (!fs.existsSync(path.join(PUBLIC_DIR, "index.html"))) {
-  console.error("❌ public/index.html topilmadi! GitHub'ga public papkasini yuklang.");
+  console.error("❌ index.html topilmadi! GitHub'ga sayt fayllarini yuklang.");
   app.get("/", (req, res) => res.status(500).send(
-    "<h1>public papkasi topilmadi</h1><p>GitHub repongizga <b>public</b> papkasini yuklang (sichqoncha bilan sudrab tashlang).</p>"
+    "<h1>index.html topilmadi</h1><p>GitHub repongizga sayt fayllarini yuklang.</p>"
   ));
 }
 
