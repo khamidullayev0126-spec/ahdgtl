@@ -144,15 +144,21 @@ ${priceList}`;
   async function handleBusiness(msg) {
     const conn = await getConnection(msg.business_connection_id);
     // Faqat sizning akkauntingiz uchun ishlaymiz (boshqalar botni o'z akkauntiga ulab, Claude kreditingizni ishlata olmasin)
-    if (!conn || !conn.is_enabled || !ownerChatId || String(conn.user_chat_id) !== String(ownerChatId)) return;
+    if (!conn) return console.log("Business: ulanish ma'lumotini olib bo'lmadi");
+    if (!conn.is_enabled) return console.log("Business: ulanish o'chirilgan");
+    if (!ownerChatId || String(conn.user_chat_id) !== String(ownerChatId)) {
+      return console.log(`Business: begona akkaunt (${conn.user_chat_id}). TELEGRAM_CHAT_ID = ${ownerChatId || "yo'q"} — ular bir xil bo'lishi kerak`);
+    }
     const chatId = msg.chat.id;
+    console.log(`Business: xabar keldi (chat ${chatId})`);
 
     // Siz o'zingiz chatga yozdingiz — bot shu chatda jim turadi
     if (msg.from && msg.from.id === conn.user.id) {
       paused.set(chatId, Date.now() + BUSINESS_PAUSE_MS);
-      return;
+      return console.log("Business: siz o'zingiz yozdingiz — bot bu chatda 6 soat jim turadi");
     }
-    if ((paused.get(chatId) || 0) > Date.now() || !msg.text) return;
+    if ((paused.get(chatId) || 0) > Date.now()) return console.log("Business: bu chatda bot jim turibdi (siz yaqinda yozgansiz)");
+    if (!msg.text) return;
 
     const opts = { business_connection_id: msg.business_connection_id };
     const first = !greeted.has(chatId);
@@ -175,6 +181,7 @@ ${priceList}`;
     if (update.business_connection) {
       const c = update.business_connection;
       connections.set(c.id, c);
+      console.log(`Business ulanish: ${c.is_enabled ? "yoqildi" : "o'chirildi"}, akkaunt ${c.user_chat_id}, javob yozish ruxsati: ${c.can_reply ?? (c.rights && c.rights.can_reply)}`);
       if (ownerChatId && String(c.user_chat_id) === String(ownerChatId)) {
         await send(ownerChatId, c.is_enabled
           ? "✅ Bot Telegram Business'ga ulandi. Endi shaxsiy chatlaringizda mijozlarga javob beradi.\nSiz chatga o'zingiz yozsangiz, bot o'sha chatda 6 soat jim turadi."

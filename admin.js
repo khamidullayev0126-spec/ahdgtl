@@ -1,6 +1,6 @@
 // Admin panel JavaScript: kirish, buyurtmalarni ko'rish, holatini o'zgartirish, o'chirish
 
-const STATUSES = ["yangi", "jarayonda", "bajarildi", "bekor"];
+const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 let password = sessionStorage.getItem("adminPassword") || "";
 
 const loginBox = document.getElementById("login-box");

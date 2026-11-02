@@ -120,7 +120,7 @@ form.addEventListener("submit", async (e) => {
   submitBtn.textContent = "Yuborilmoqda...";
 
   try {
-    let message;
+    let message, tgLink = "";
     if (location.protocol === "file:") {
       message = await sendViaTelegram(data);
     } else {
@@ -140,11 +140,24 @@ form.addEventListener("submit", async (e) => {
         const result = await res.json();
         if (!res.ok) throw new Error(result.error || "Xatolik yuz berdi.");
         form.reset();
-        message = "Rahmat! Buyurtmangiz qabul qilindi. Tez orada bog'lanaman.";
+        tgLink = result.telegramLink || "";
+        message = tgLink
+          ? "Rahmat! Buyurtmangiz qabul qilindi. Telegram'da tasdiqlang — bot 1 daqiqada yozadi:"
+          : "Rahmat! Buyurtmangiz qabul qilindi. Tez orada bog'lanaman.";
       }
     }
     statusEl.classList.add("ok");
     statusEl.textContent = message;
+    // Bot havolasi: mijoz botni ochsa, bot unga tasdiq uchun yoza oladi
+    if (tgLink) {
+      const a = document.createElement("a");
+      a.href = tgLink;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.className = "btn btn-primary tg-confirm";
+      a.textContent = "Telegram'da tasdiqlash →";
+      statusEl.appendChild(a);
+    }
   } catch (err) {
     statusEl.classList.add("error");
     statusEl.textContent = err.message;

@@ -6,6 +6,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { createBot } = require("./bot");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,7 +32,7 @@ try {
   console.error("❌ services.js topilmadi! GitHub'ga barcha fayllar yuklanganini tekshiring.");
 }
 
-const STATUSES = ["yangi", "jarayonda", "bajarildi", "bekor"];
+const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 
 // ---------- Buyurtmalarni faylda saqlash ----------
 function readOrders() {
@@ -47,25 +48,16 @@ function writeOrders(orders) {
   fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2));
 }
 
-// ---------- Telegramga xabar yuborish (ixtiyoriy) ----------
-async function notifyTelegram(order, service) {
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
-  const text =
-    `🆕 Yangi buyurtma!\n\n` +
-    `👤 Ism: ${order.name}\n` +
-    `📞 Aloqa: ${order.contact}\n` +
-    `📦 Xizmat: ${service.name} (${service.price.toLocaleString("ru-RU")} so'm)\n` +
-    `💬 Izoh: ${order.message || "—"}`;
-  try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text })
-    });
-  } catch (err) {
-    console.error("Telegramga yuborib bo'lmadi:", err.message);
-  }
-}
+// ---------- Telegram bot (ixtiyoriy) ----------
+// Render manzilni RENDER_EXTERNAL_URL orqali o'zi beradi; kompyuterda bot "polling" rejimida ishlaydi
+const bot = createBot({
+  token: TELEGRAM_BOT_TOKEN,
+  ownerChatId: TELEGRAM_CHAT_ID,
+  publicUrl: process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || "",
+  services: SERVICES,
+  readOrders,
+  writeOrders
+});
 
 // ---------- Oddiy himoya: bitta IP dan juda ko'p so'rov kelmasin ----------
 const recentRequests = new Map();
@@ -95,7 +87,7 @@ app.set("trust proxy", 1);
 app.use(express.json({ limit: "20kb" }));
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
-  const HIDDEN = /^\/(data|node_modules)(\/|$)|^\/(server\.js|package(-lock)?\.json|render\.yaml|README\.md)$/i;
+  const HIDDEN = /^\/(data|node_modules)(\/|$)|^\/(server\.js|bot\.js|package(-lock)?\.json|render\.yaml|README\.md)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 app.use(express.static(PUBLIC_DIR));
@@ -140,6 +132,7 @@ app.post("/api/orders", rateLimit, async (req, res) => {
 
   const order = {
     id: crypto.randomUUID(),
+    code: crypto.randomBytes(4).toString("hex"),   // qisqa kod: bot havolasi uchun
     name,
     contact,
     serviceId,
@@ -153,9 +146,9 @@ app.post("/api/orders", rateLimit, async (req, res) => {
   const orders = readOrders();
   orders.unshift(order);
   writeOrders(orders);
-  notifyTelegram(order, service);
+  if (bot) bot.onNewOrder(order).catch(err => console.error("Bot xatosi:", err.message));
 
-  res.status(201).json({ ok: true, id: order.id });
+  res.status(201).json({ ok: true, id: order.id, telegramLink: bot ? bot.deepLink(order) : "" });
 });
 
 // Admin: barcha buyurtmalar
@@ -186,10 +179,12 @@ app.delete("/api/orders/:id", requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`✅ Sayt ishga tushdi: http://localhost:${PORT}`);
   console.log(`🔐 Admin panel:      http://localhost:${PORT}/admin.html`);
   if (ADMIN_PASSWORD === "admin123") {
     console.log("⚠️  Diqqat: .env faylida ADMIN_PASSWORD ni o'zgartiring!");
   }
+  if (bot) await bot.start(app).catch(err => console.error("Botni ishga tushirib bo'lmadi:", err.message));
+  else console.log("ℹ️  TELEGRAM_BOT_TOKEN yo'q — bot o'chiq.");
 });
