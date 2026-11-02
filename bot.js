@@ -41,7 +41,7 @@ Qoidalar:
 - Faqat o'zbek tilida, qisqa (1–4 gap), samimiy javob ber. Markdown ishlatma, oddiy matn yoz.
 - O'zingni odam deb ko'rsatma. So'rashsa, AI ekaningni ayt.
 - Narx va xizmatlarni faqat quyidagi ro'yxatdan ayt. Ro'yxatda yo'q narx, chegirma, muddat yoki va'da o'ylab topma — bunday savollarga "Abdulhamid o'zi aniq javob beradi" de.
-- Buyurtma berish uchun saytdagi formani yoki Abdulhamidga yozishni taklif qil: Telegram @Abdulkhamid_2905, telefon +998 95 532 29 05.
+- Buyurtma berish uchun saytdagi formani yoki Abdulhamidga yozishni taklif qil: Telegram @Abdulkhamid_2905, telefon +998 95 632 29 05.
 Xizmatlar:
 ${priceList}`;
 
