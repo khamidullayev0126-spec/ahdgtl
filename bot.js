@@ -7,6 +7,8 @@
 
 const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
+const path = require("path");
+const { createAgent } = require("./agent");
 
 const CONFIRM_DELAY_MS = Number(process.env.BOT_CONFIRM_DELAY_MS) || 60_000;   // buyurtmadan keyin 1 daqiqa
 const MAX_TURNS = 20;
@@ -88,6 +90,13 @@ ${priceList}`;
     return order;
   }
   const contactKind = contact => /^@|t\.me\//i.test(contact) ? "telegram" : (contact.replace(/\D/g, "").length >= 9 ? "phone" : "other");
+  // Shaxsiy AI agent — faqat egasi (siz) uchun
+  const agent = ownerChatId ? createAgent({
+    api, send, ownerChatId, services, readOrders, writeOrders,
+    dataDir: path.join(__dirname, "data"),
+    channel: process.env.TELEGRAM_CHANNEL || ""
+  }) : null;
+
   const intro = claude
     ? "Salom! 👋 Men Claude — AHdigital'ning AI yordamchisiman (sun'iy intellekt, odam emasman)."
     : "Salom! 👋 Men AHdigital'ning avtomatik yordamchi botiman (odam emasman).";
@@ -193,7 +202,9 @@ ${priceList}`;
 
     // Tugma bosildi
     if (update.callback_query) {
-      const q = update.callback_query, [action, code] = (q.data || "").split(":");
+      const q = update.callback_query;
+      if (agent && String(q.from.id) === String(ownerChatId) && await agent.onCallback(q)) return;
+      const [action, code] = (q.data || "").split(":");
       const order = findOrder(code);
       if (!order || String(order.tgChatId) !== String(q.message.chat.id)) {
         return api("answerCallbackQuery", { callback_query_id: q.id, text: "Buyurtma topilmadi." });
@@ -225,8 +236,10 @@ ${priceList}`;
       if (target) {
         await send(target, `Abdulhamid: ${text}`);
         await send(chatId, "✔ Javobingiz mijozga yuborildi.");
+      } else if (agent) {
+        agent.onOwnerMessage(text);          // siz yozgan har bir xabar — shaxsiy AI agentga
       } else if (text === "/start") {
-        await send(chatId, "Bot ishlayapti ✅ Yangi buyurtmalar shu yerga keladi. Mijoz xabariga reply qilsangiz, javobingiz unga yetadi.");
+        await send(chatId, "Bot ishlayapti ✅ Yangi buyurtmalar shu yerga keladi. Mijoz xabariga reply qilsangiz, javobingiz unga yetadi.\n(AI agent uchun Render'da ANTHROPIC_API_KEY kerak.)");
       }
       return;
     }
@@ -298,6 +311,13 @@ ${priceList}`;
     // Server qayta ishga tushsa — kutilayotgan tasdiqlarni tiklaymiz
     readOrders().filter(o => o.tgChatId && o.status === "yangi").forEach(scheduleConfirm);
     if (!claude) console.log("ℹ️  ANTHROPIC_API_KEY yo'q — bot savollarga Claude bilan javob bermaydi.");
+    if (agent) {
+      console.log("🧠 Shaxsiy AI agent yoqildi (egasi uchun)");
+      await api("setMyCommands", { commands: [
+        { command: "yordam", description: "Agent nimalar qila oladi" },
+        { command: "yangi", description: "Suhbatni yangidan boshlash" }
+      ], scope: { type: "chat", chat_id: Number(ownerChatId) } });
+    }
   }
 
   return { start, onNewOrder, deepLink, handleUpdate };
