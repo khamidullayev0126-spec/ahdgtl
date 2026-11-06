@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="extras.css">
 </head>
 <body>
 <div class="wrap">
@@ -17,6 +18,7 @@
     <a href="#top" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
     <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav-links">Menyu</button>
     <div class="nav-links" id="nav-links">
+      <a href="#sinov">Sinab ko'ring</a>
       <a href="#xizmatlar">Xizmatlar</a>
       <a href="#jarayon">Jarayon</a>
       <a href="#men-haqimda">Men haqimda</a>
@@ -48,6 +50,42 @@
       <div class="portrait-img washed"><img src="images/hero.jpg" alt="Abdulhamid"></div>
     </div>
   </header>
+
+  <section id="sinov" class="try">
+    <div class="try-copy">
+      <span class="tag tag-sage">Sinab ko'ring · 10 soniya</span>
+      <h2 class="section-title">Vizitka saytingiz qanday ko'rinadi?</h2>
+      <p class="section-lead">Biznesingiz nomini yozing va rangni tanlang — o'ngda saytingizning namunasi darhol paydo bo'ladi.</p>
+      <div class="try-form">
+        <div class="field">
+          <label for="try-name">Biznes nomi</label>
+          <input class="input" id="try-name" type="text" maxlength="32" value="Lazzat kafe">
+        </div>
+        <div class="field">
+          <label for="try-kind">Faoliyat</label>
+          <select class="input" id="try-kind">
+            <option value="kafe">Kafe yoki restoran</option>
+            <option value="salon">Go'zallik saloni</option>
+            <option value="dokon">Do'kon</option>
+            <option value="usta">Ustaxona / xizmat</option>
+            <option value="talim">O'quv markazi</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="try-phone">Telefon</label>
+          <input class="input" id="try-phone" type="tel" maxlength="20" value="+998 90 123 45 67">
+        </div>
+        <div class="field">
+          <span class="label">Rang</span>
+          <div class="swatches" id="try-colors" role="radiogroup" aria-label="Sayt rangi"></div>
+        </div>
+        <button class="btn btn-primary" type="button" id="try-order">Shu saytni buyurtma qilaman — 25 000 so'm</button>
+      </div>
+    </div>
+    <div class="phone" aria-label="Vizitka sayt namunasi">
+      <div class="phone-screen" id="try-preview"></div>
+    </div>
+  </section>
 
   <section id="xizmatlar">
     <h2 class="section-title">Xizmatlar va narxlar</h2>
@@ -204,5 +242,6 @@
 </div>
 <script src="services.js"></script>
 <script src="script.js"></script>
+<script src="extras.js"></script>
 </body>
 </html>

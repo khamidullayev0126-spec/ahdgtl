@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { createBot } = require("./bot");
+const { createSiteChat } = require("./chat");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -87,7 +88,7 @@ app.set("trust proxy", 1);
 app.use(express.json({ limit: "20kb" }));
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
-  const HIDDEN = /^\/(data|node_modules)(\/|$)|^\/(server\.js|bot\.js|package(-lock)?\.json|render\.yaml|README\.md)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 app.use(express.static(PUBLIC_DIR));
@@ -110,6 +111,11 @@ app.get("/api/services", (req, res) => {
 });
 
 // Yangi buyurtma qabul qilish
+// Saytdagi AI suhbat oynasi (ANTHROPIC_API_KEY bo'lsa)
+const siteChat = createSiteChat({ services: SERVICES });
+app.get("/api/chat", (req, res) => res.json({ enabled: !!siteChat }));
+if (siteChat) app.post("/api/chat", siteChat);
+
 app.post("/api/orders", rateLimit, async (req, res) => {
   const name = String(req.body.name || "").trim();
   const contact = String(req.body.contact || "").trim();
