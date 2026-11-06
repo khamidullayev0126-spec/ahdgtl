@@ -9,9 +9,9 @@ const SOZLAMA = {
   darsKunlari: [1, 3, 5],    // dushanba, chorshanba, juma (0 — yakshanba)
   ochilishSoati: 9,          // dars soat nechada ochiladi (Toshkent vaqti)
   guruhlar: {
-    A: { nom: "A guruh · 0–12 yosh", boshlanish: "2026-12-01" },
-    B: { nom: "B guruh · 13–25 yosh", boshlanish: "2026-12-01" },
-    C: { nom: "C guruh · 26–70 yosh", boshlanish: "2026-12-01" }
+    A: { nom: "A guruh · 0–12 yosh", boshlanish: "2027-01-15" },
+    B: { nom: "B guruh · 13–25 yosh", boshlanish: "2027-02-15" },
+    C: { nom: "C guruh · 26–70 yosh", boshlanish: "2026-03-15" }
   }
 };
 
