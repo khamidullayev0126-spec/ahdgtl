@@ -7,7 +7,8 @@ const path = require("path");
 const satori = require("satori").default || require("satori");
 const { Resvg } = require("@resvg/resvg-js");
 
-const F = name => fs.readFileSync(path.join(__dirname, "fonts", name));
+// Shriftlar fonts/ papkasida yoki (GitHub'ga papkasiz yuklangan bo'lsa) shu fayl yonida bo'lishi mumkin
+const F = name => { const p = path.join(__dirname, "fonts", name); return fs.readFileSync(fs.existsSync(p) ? p : path.join(__dirname, name)); };
 const FONTS = [
   { name: "Caprasimo", data: F("Caprasimo.ttf"), weight: 400, style: "normal" },
   { name: "Figtree", data: F("Figtree-600.ttf"), weight: 600, style: "normal" },

@@ -92,6 +92,9 @@ if (FLAT) {
   const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat|legends|legends-darslar)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
+// Eski portfolio manzillari → yangi portfolio.html
+app.get(["/portfolio", "/portfolio/", "/portfolio/index.html"], (req, res) => res.redirect(301, "/portfolio.html"));
+
 // AI LEGENDS kurs platformasi (/legends)
 createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, dataDir: DATA_DIR, adminPassword: ADMIN_PASSWORD });
 

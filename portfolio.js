@@ -29,7 +29,7 @@ const PROJECTS = [
     status: "ishlayapti",
     desc: "Xizmatlarim sayti: narxlar, buyurtma formasi, admin panel va Node.js backend.",
     tags: ["HTML", "CSS", "JavaScript", "Node.js"],
-    link: "../index.html",
+    link: "index.html",
     linkText: "Saytni ochish"
   },
   {
@@ -37,7 +37,7 @@ const PROJECTS = [
     status: "xizmat",
     desc: "Claude yordamida mijozlar uchun video, taqdimot slaydlari va ijtimoiy tarmoq postlari.",
     tags: ["Claude", "AI", "Figma"],
-    link: "../index.html#xizmatlar",
+    link: "index.html#xizmatlar",
     linkText: "Narxlarni ko'rish"
   },
   {
@@ -184,7 +184,7 @@ function renderCalc() {
   updateTotal();
 }
 
-// Narxlar ../services.js faylidan keladi (window.SERVICES)
+// Narxlar services.js faylidan keladi (window.SERVICES)
 if (window.SERVICES) {
   services = window.SERVICES;
   renderCalc();
