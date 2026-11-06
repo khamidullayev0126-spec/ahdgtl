@@ -9,6 +9,7 @@ const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
 const path = require("path");
 const { createAgent } = require("./agent");
+const { createCaller } = require("./call");
 
 const CONFIRM_DELAY_MS = Number(process.env.BOT_CONFIRM_DELAY_MS) || 60_000;   // buyurtmadan keyin 1 daqiqa
 const MAX_TURNS = 20;
@@ -28,6 +29,18 @@ function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeO
     return data;
   };
   const send = (chatId, text, extra = {}) => api("sendMessage", { chat_id: chatId, text, ...extra });
+  // Rasm yuborish (multipart): png — Buffer
+  const sendPhoto = async (chatId, png, caption = "", reply_markup) => {
+    const form = new FormData();
+    form.append("chat_id", String(chatId));
+    form.append("photo", new Blob([png], { type: "image/png" }), "ahdigital.png");
+    if (caption) form.append("caption", caption);
+    if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: "POST", body: form });
+    const data = await res.json();
+    if (!data.ok) console.error("Telegram sendPhoto xatosi:", data.description);
+    return data;
+  };
 
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET || crypto.createHash("sha256").update(token).digest("hex").slice(0, 32);
   let username = "";
@@ -91,10 +104,12 @@ ${priceList}`;
   }
   const contactKind = contact => /^@|t\.me\//i.test(contact) ? "telegram" : (contact.replace(/\D/g, "").length >= 9 ? "phone" : "other");
   // Shaxsiy AI agent — faqat egasi (siz) uchun
+  const caller = createCaller({ publicUrl });   // telefon qo'ng'irog'i (Twilio sozlangan bo'lsa)
   const agent = ownerChatId ? createAgent({
     api, send, ownerChatId, services, readOrders, writeOrders,
     dataDir: path.join(__dirname, "data"),
-    channel: process.env.TELEGRAM_CHANNEL || ""
+    channel: process.env.TELEGRAM_CHANNEL || "",
+    caller, sendPhoto
   }) : null;
 
   const intro = claude
@@ -115,6 +130,11 @@ ${priceList}`;
     await send(ownerChatId,
       `🆕 Yangi buyurtma #${order.code}\n\n` +
       `👤 ${order.name}\n📞 ${order.contact}\n📦 ${order.serviceName} — ${fmt(order.price)} so'm\n💬 ${order.message || "—"}\n\n${note}`);
+    // Yangi buyurtmada telefon qo'ng'irog'i (Render'da CALL_ON_NEW_ORDER=1 bo'lsa)
+    if (caller && process.env.CALL_ON_NEW_ORDER === "1") {
+      const c = await caller.call(`Yangi buyurtma! ${order.name}, ${order.serviceName}, ${fmt(order.price)} so'm. Telegramni tekshiring.`);
+      if (!c.ok) await send(ownerChatId, `📵 ${c.text}`);
+    }
   }
 
   // Buyurtmadan 1 daqiqa o'tgach mijozdan tasdiq so'raymiz
@@ -277,6 +297,7 @@ ${priceList}`;
     const me = await api("getMe");
     if (!me.ok) return console.error("❌ TELEGRAM_BOT_TOKEN noto'g'ri — bot ishlamaydi.");
     username = me.result.username;
+    if (caller) { caller.mount(app); console.log(`📞 Qo'ng'iroq yoqildi: ${caller.kind}`); }
 
     // Telegram shu manzilga xabarlarni yuboradi (Render'da)
     app.post("/telegram/webhook", (req, res) => {

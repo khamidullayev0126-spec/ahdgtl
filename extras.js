@@ -148,3 +148,129 @@
     busy = false; input.focus();
   });
 })();
+
+// ================= 3. Statistika (Google Analytics 4 — analytics.js da ID bo'lsa) =================
+const track = (name, params = {}) => { try { if (window.gtag) window.gtag("event", name, params); } catch {} };
+(function () {
+  const id = window.AHD_ANALYTICS && window.AHD_ANALYTICS.ga4;
+  if (!id || !/^G-[A-Z0-9]+$/.test(id)) return;
+  const s = document.createElement("script");
+  s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag("js", new Date()); window.gtag("config", id);
+})();
+document.getElementById("try-order")?.addEventListener("click", () => track("vizitka_sinov_buyurtma"));
+document.addEventListener("click", e => { if (e.target.closest(".chat-fab")) track("ai_chat_ochildi"); });
+document.getElementById("order-form")?.addEventListener("submit", () => track("buyurtma_formasi_yuborildi"));
+
+// ================= 4. Reels: ko'ringanda o'zi aylanadi, bosilsa to'xtaydi =================
+(function () {
+  const vids = [...document.querySelectorAll(".reel video")];
+  if (!vids.length) return;
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const paused = new WeakSet();               // foydalanuvchi o'zi to'xtatganlari
+  vids.forEach(v => v.addEventListener("click", () => {
+    if (v.paused) { paused.delete(v); v.play().catch(() => {}); } else { paused.add(v); v.pause(); }
+    track("reels_bosildi");
+  }));
+  if (still || !("IntersectionObserver" in window)) return;   // harakatni kamaytirish yoqilgan — avtomatik ijro yo'q
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if (e.isIntersecting && !paused.has(v)) v.play().catch(() => {}); else v.pause();
+  }), { threshold: 0.4 });
+  vids.forEach(v => io.observe(v));
+})();
+
+// ================= 5. Oldin / hozir slayderi =================
+(function () {
+  const ba = document.getElementById("ba"), range = document.getElementById("ba-range");
+  if (!ba || !range) return;
+  const set = v => ba.style.setProperty("--pos", v + "%");
+  range.addEventListener("input", () => set(range.value));
+  set(range.value);
+})();
+
+// ================= 6. Narx kalkulyatori =================
+(function () {
+  const box = document.getElementById("calc"), rows = document.getElementById("calc-rows");
+  const services = window.SERVICES;
+  if (!box || !rows || !Array.isArray(services) || !services.length) return;
+  const fmt = n => n.toLocaleString("ru-RU");
+  const count = {};
+  services.forEach(s => {
+    count[s.id] = 0;
+    const row = document.createElement("div"); row.className = "calc-row";
+    const name = document.createElement("div"); name.className = "calc-name";
+    const b = document.createElement("b"); b.textContent = s.name;
+    const small = document.createElement("small"); small.textContent = `${fmt(s.price)} so'm / ${s.period}`;
+    name.append(b, small);
+    const step = document.createElement("div"); step.className = "stepper";
+    const minus = document.createElement("button"); minus.type = "button"; minus.textContent = "−"; minus.setAttribute("aria-label", s.name + " — kamaytirish");
+    const val = document.createElement("output"); val.textContent = "0"; val.setAttribute("aria-live", "polite");
+    const plus = document.createElement("button"); plus.type = "button"; plus.textContent = "+"; plus.setAttribute("aria-label", s.name + " — ko'paytirish");
+    const change = d => { count[s.id] = Math.max(0, Math.min(20, count[s.id] + d)); val.textContent = count[s.id]; row.classList.toggle("on", count[s.id] > 0); update(); };
+    minus.addEventListener("click", () => change(-1)); plus.addEventListener("click", () => change(1));
+    step.append(minus, val, plus);
+    row.append(name, step);
+    rows.appendChild(row);
+  });
+  const sumEl = document.getElementById("calc-sum"), hint = document.getElementById("calc-hint");
+  function picked() { return services.filter(s => count[s.id] > 0); }
+  function update() {
+    const total = picked().reduce((a, s) => a + s.price * count[s.id], 0);
+    sumEl.textContent = fmt(total) + " so'm";
+    // Pro tarifga kiradigan bir martalik xizmatlar (FAQ'dagi ta'rif bo'yicha)
+    const pro = services.find(s => s.id === "pro");
+    const inPro = ["video", "slayd", "vizitka", "katta-sayt"];
+    const onceSum = picked().filter(s => inPro.includes(s.id)).reduce((a, s) => a + s.price * count[s.id], 0);
+    const media = (count.video || 0) + (count.slayd || 0);
+    hint.textContent = pro && !count.pro && onceSum > pro.price && media <= 15
+      ? `💡 Bu xizmatlar Pro tarifga kiradi — 1 oy ${fmt(pro.price)} so'm. Abdulhamid bilan aniqlashtiring.` : "";
+  }
+  document.getElementById("calc-order").addEventListener("click", () => {
+    const list = picked();
+    if (!list.length) { hint.textContent = "Avval kamida bitta xizmatni tanlang."; return; }
+    const select = document.getElementById("serviceId"), msg = document.getElementById("message");
+    if (select) select.value = list[0].id;
+    if (msg) msg.value = "Kalkulyator: " + list.map(s => `${s.name} × ${count[s.id]}`).join(", ") + ` — jami ${sumEl.textContent}.`;
+    track("kalkulyator_buyurtma", { value: list.reduce((a, s) => a + s.price * count[s.id], 0), currency: "UZS" });
+    document.getElementById("buyurtma")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => document.getElementById("name")?.focus({ preventScroll: true }), 600);
+  });
+  box.hidden = false;
+  update();
+})();
+
+// ================= 7. Aylantirganda yumshoq chiqib kelish =================
+// Kontent doim ko'rinib turadi; faqat ekranga kirganda ozgina siljib joyiga keladi.
+(function () {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+  const sel = ".section-title, .section-lead, .card, .step, .perk, .reel, .ba, .calc, .faq details, .about-img";
+  const els = [...document.querySelectorAll(sel)].filter(el => el.getBoundingClientRect().top > innerHeight);   // faqat pastdagilar
+  els.forEach(el => el.classList.add("rise"));
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+  els.forEach(el => io.observe(el));
+  // xizmat kartalari keyinroq chiziladi — ularni ham kuzatamiz
+  new MutationObserver(() => document.querySelectorAll(".card:not(.rise)").forEach(el => {
+    if (el.getBoundingClientRect().top > innerHeight) { el.classList.add("rise"); io.observe(el); }
+  })).observe(document.getElementById("service-groups") || document.body, { childList: true, subtree: true });
+})();
+
+// ================= 8. Telefonda pastki "Buyurtma berish" tugmasi =================
+(function () {
+  const order = document.getElementById("buyurtma");
+  if (!order) return;
+  const bar = document.createElement("a");
+  bar.href = "#buyurtma"; bar.className = "m-cta"; bar.textContent = "Buyurtma berish";
+  document.body.appendChild(bar);
+  document.body.classList.add("has-m-cta");
+  const hero = document.getElementById("top");
+  let pastHero = false, atOrder = false;
+  const sync = () => bar.classList.toggle("show", pastHero && !atOrder);
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => { atOrder = e.isIntersecting; sync(); }, { threshold: 0.1 }).observe(order);
+    if (hero) new IntersectionObserver(([e]) => { pastHero = !e.isIntersecting; sync(); }).observe(hero);
+  }
+})();

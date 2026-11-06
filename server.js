@@ -8,6 +8,7 @@ const path = require("path");
 const crypto = require("crypto");
 const { createBot } = require("./bot");
 const { createSiteChat } = require("./chat");
+const { createLegends } = require("./legends");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -88,9 +89,12 @@ app.set("trust proxy", 1);
 app.use(express.json({ limit: "20kb" }));
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
-  const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat|legends|legends-darslar)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
+// AI LEGENDS kurs platformasi (/legends)
+createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, dataDir: DATA_DIR, adminPassword: ADMIN_PASSWORD });
+
 app.use(express.static(PUBLIC_DIR));
 
 if (!fs.existsSync(path.join(PUBLIC_DIR, "index.html"))) {

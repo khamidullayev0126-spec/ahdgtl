@@ -7,6 +7,8 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
+let imager = null;                                   // rasm yaratish (satori + resvg o'rnatilgan bo'lsa)
+try { imager = require("./image"); } catch (e) { console.log("ℹ️  Rasm yaratish o'chiq:", e.message); }
 
 const MODEL = "claude-opus-5-5";
 const MAX_STEPS = 10;            // bitta xabarga agent nechta qadam qila oladi
@@ -14,7 +16,7 @@ const MAX_HISTORY = 60;          // shundan oshsa — suhbat yangidan boshlanadi
 const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 const TZ = "Asia/Tashkent";
 
-function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, dataDir, channel, client }) {
+function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, dataDir, channel, client, caller, sendPhoto }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   const claude = client || new Anthropic();   // client — faqat sinov uchun
 
@@ -41,6 +43,7 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
     const ms = Math.max(0, new Date(r.vaqt).getTime() - Date.now());
     timers.set(r.id, setTimeout(async () => {
       await send(ownerChatId, `⏰ Eslatma: ${r.matn}`);
+      if (r.qongiroq && caller) { const c = await caller.call(`Eslatma: ${r.matn}`); if (!c.ok) await send(ownerChatId, `📵 ${c.text}`); }
       reminders = reminders.filter(x => x.id !== r.id); save("agent-eslatmalar.json", reminders);
       timers.delete(r.id);
     }, Math.min(ms, 2 ** 31 - 1)));
@@ -69,7 +72,11 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
         matn: { type: "string", description: "Post matni (1–4000 belgi), oddiy matn" } }, required: ["matn"] } },
     { name: "eslatma_qoyish", description: "Belgilangan vaqtda egasiga Telegramda eslatma yuboradi. Vaqtni Toshkent vaqti bo'yicha ISO formatda bering, masalan 2026-11-06T09:00:00+05:00.",
       input_schema: { type: "object", additionalProperties: false, properties: {
-        vaqt: { type: "string" }, matn: { type: "string" } }, required: ["vaqt", "matn"] } },
+        vaqt: { type: "string" }, matn: { type: "string" },
+        qongiroq: { type: "boolean", description: "true bo'lsa, eslatma vaqtida egasiga telefon qo'ng'irog'i ham qilinadi" } }, required: ["vaqt", "matn"] } },
+    { name: "menga_qongiroq", description: "Egasining (Abdulhamidning) telefoniga HOZIR haqiqiy qo'ng'iroq qiladi va matnni o'zbekcha ovozda o'qib beradi. Faqat egasi so'raganda yoki juda muhim/shoshilinch holatda ishlat. Boshqa raqamlarga qo'ng'iroq qilib bo'lmaydi.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        matn: { type: "string", description: "Telefonda aytiladigan qisqa gap (1–3 jumla), o'zbek tilida" } }, required: ["matn"] } },
     { name: "eslatmalar", description: "Kutilayotgan eslatmalar ro'yxati.",
       input_schema: { type: "object", additionalProperties: false, properties: {}, required: [] } },
     { name: "eslatma_ochirish", description: "Eslatmani id bo'yicha o'chiradi.",
@@ -80,6 +87,18 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
       input_schema: { type: "object", additionalProperties: false, properties: {}, required: [] } },
     { name: "xotiradan_ochirish", description: "Xotiradagi yozuvni id bo'yicha o'chiradi.",
       input_schema: { type: "object", additionalProperties: false, properties: { id: { type: "string" } }, required: ["id"] } },
+    ...(imager ? [{ name: "rasm_yaratish", description: "AHdigital uslubida post rasmi (PNG) yaratadi va egasiga yuboradi. kanal_matni berilsa, rasm ostida '✅ Kanalga joylash' tugmasi chiqadi — egasi bossagina kanalga chiqadi. Rasmda emoji ishlatma (ko'rinmaydi); emoji'ni kanal_matni ga qo'y.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        mavzu: { type: "string", enum: imager.THEMES, description: "Rang: sayt (krem — foydali saytlar), css (yashil — HTML/CSS darslari), ai (qora — AI va kod), men (to'q sariq — shaxsiy loyihalar, e'lonlar)" },
+        format: { type: "string", enum: imager.FORMATS, description: "kvadrat — Telegram (standart), post — Instagram 4:5, story — 9:16" },
+        yorliq: { type: "string", description: "Yuqoridagi kichik yorliq, masalan 'Siz bilmagan web saytlar'. Bo'sh qolsa — mavzuning standart yorlig'i" },
+        qism: { type: "string", description: "Ixtiyoriy kichik yozuv sarlavha ustida, masalan '13-qism'" },
+        sarlavha: { type: "string", description: "Qisqa sarlavha (6–60 belgi). Urg'u beriladigan so'zlarni *yulduzcha* ichiga oling: 'Dizaynerlar uchun *3 ta bepul* sayt'" },
+        turi: { type: "string", enum: ["raqamli", "royxat", "kod"], description: "raqamli — 1,2,3 ro'yxat; royxat — ✓ belgili ro'yxat; kod — kod bloki" },
+        elementlar: { type: "array", maxItems: 6, items: { type: "object", additionalProperties: false, properties: { nom: { type: "string" }, izoh: { type: "string", description: "Ixtiyoriy: sayt manzili yoki qisqa izoh" } }, required: ["nom"] } },
+        kod: { type: "string", description: "turi=kod bo'lsa: 3–12 qator kod, qisqa qatorlar (≤34 belgi)" },
+        pastki: { type: "string", description: "Ixtiyoriy pastki qisqa chaqiruv, masalan 'Saqlab qo'ying!'" },
+        kanal_matni: { type: "string", description: "Ixtiyoriy: kanalga rasm bilan chiqadigan matn (≤1000 belgi, emoji mumkin)" } }, required: ["mavzu", "sarlavha", "turi"] } }] : []),
     { type: "web_search_20260209", name: "web_search", max_uses: 5 }
   ];
 
@@ -93,6 +112,8 @@ Ishlash tartibi:
 - Buyurtmalar, statistika, eslatma va xotira uchun asboblardan foydalan. Taxmin qilma — kerak bo'lsa asbobni chaqir.
 - Mijozga yoki kanalga yozish faqat tayyorlanadi; Abdulhamid ✅ bosmaguncha hech narsa ketmaydi. Buni "yubordim" deb aytma — "tasdiqlash uchun tayyorladim" de.
 - Narx, chegirma yoki muddat haqida mijozga va'da berma — faqat quyidagi narxlardan foydalan.
+- Sen rasm yarata olasan: rasm_yaratish asbobi AHdigital uslubidagi post rasmini yasaydi (sarlavha + ro'yxat yoki kod). "Rasm qil", "post rasmi", "kanal uchun rasm" deyilsa — uni ishlat; kanal uchun bo'lsa kanal_matni ham yoz. Rasmni o'zing ko'ra olmaysan, shuning uchun matnni qisqa va aniq yoz.
+- Sen Abdulhamidga Telegram orqali ovozli qo'ng'iroq qila olasan: menga_qongiroq asbobi (hozir) yoki eslatma_qoyish qongiroq=true (belgilangan vaqtda). U qo'ng'iroq so'rasa, "qila olmayman" dema — asbobni chaqir va natijasini aynan ayt.
 - Abdulhamid muhim narsa aytsa (reja, mijoz haqida ma'lumot, odat), uni xotiraga yozib qo'y.
 - Har bir xabar boshida [Hozir: ...] qatori turadi — bu hozirgi Toshkent vaqti, eslatma vaqtini shunga qarab hisobla.
 
@@ -135,13 +156,31 @@ ${priceList}`;
         await approval(k, `📢 Kanal uchun post (${channel}):\n\n${input.matn}`);
         return "Post tayyorlandi va egasiga tasdiqlash uchun ko'rsatildi. U ✅ bossa kanalga chiqadi.";
       }
+      case "rasm_yaratish": {
+        if (!imager) return "Xato: rasm yaratish o'rnatilmagan (satori va @resvg/resvg-js kerak).";
+        const png = await imager.render(input);
+        const caption = input.kanal_matni ? String(input.kanal_matni).slice(0, 1024) : "";
+        if (caption && channel) {
+          const k = id(); pending.set(k, { turi: "rasm", chatId: channel, png, matn: caption, kim: channel });
+          await sendPhoto(ownerChatId, png, `${caption}\n\n— Kanalga (${channel}) joylaymi?`, { inline_keyboard: [[
+            { text: "✅ Kanalga joylash", callback_data: `ag_ok:${k}` }, { text: "❌ Kerak emas", callback_data: `ag_no:${k}` }]] });
+          return "Rasm yaratildi va egasiga ko'rsatildi. U ✅ bossa, matn bilan kanalga chiqadi. Rasmni ko'ra olmaysan — o'zgartirish kerak bo'lsa, egasi aytadi.";
+        }
+        await sendPhoto(ownerChatId, png, caption.slice(0, 1000));
+        return `Rasm yaratildi va egasiga yuborildi.${caption && !channel ? " Kanal sozlanmagan (TELEGRAM_CHANNEL)." : ""}`;
+      }
       case "eslatma_qoyish": {
         const t = new Date(input.vaqt);
         if (isNaN(t)) return "Xato: vaqt formati noto'g'ri. Masalan: 2026-11-06T09:00:00+05:00";
         if (t < Date.now()) return "Xato: bu vaqt allaqachon o'tib ketgan.";
-        const r = { id: id(), vaqt: t.toISOString(), matn: input.matn };
+        const r = { id: id(), vaqt: t.toISOString(), matn: input.matn, qongiroq: !!input.qongiroq };
         reminders.push(r); save("agent-eslatmalar.json", reminders); arm(r);
-        return `Eslatma qo'yildi (id ${r.id}): ${t.toLocaleString("uz-UZ", { timeZone: TZ })} — ${r.matn}`;
+        return `Eslatma qo'yildi (id ${r.id}): ${t.toLocaleString("uz-UZ", { timeZone: TZ })} — ${r.matn}${r.qongiroq ? (caller ? " · telefon qo'ng'irog'i bilan" : " · (qo'ng'iroq sozlanmagan, faqat Telegram xabari)") : ""}`;
+      }
+      case "menga_qongiroq": {
+        if (!caller) return "Xato: telefon qo'ng'irog'i sozlanmagan. Render'da CALLMEBOT_USER (Telegram username, masalan @Abdulkhamid_2905) kerak.";
+        const c = await caller.call(input.matn);
+        return c.ok ? c.text : `Xato: ${c.text}`;
       }
       case "eslatmalar":
         return reminders.length ? reminders.map(r => `${r.id}: ${new Date(r.vaqt).toLocaleString("uz-UZ", { timeZone: TZ })} — ${r.matn}`).join("\n") : "Eslatmalar yo'q.";
@@ -182,10 +221,11 @@ ${priceList}`;
     pending.delete(k);
     let result;
     if (action === "ag_ok") {
-      const r = await send(p.chatId, p.matn);
+      const r = p.turi === "rasm" ? await sendPhoto(p.chatId, p.png, p.matn) : await send(p.chatId, p.matn);
       result = r.ok ? `✅ Yuborildi: ${p.kim}` : `⚠️ Yuborib bo'lmadi (${r.description}). ${p.turi === "kanal" ? "Bot kanalda admin ekanini tekshiring." : ""}`;
     } else result = "❌ Bekor qilindi.";
     await api("answerCallbackQuery", { callback_query_id: q.id, text: action === "ag_ok" ? "Bajarildi" : "Bekor qilindi" });
+    if (p.turi === "rasm") pending.delete(k);
     await api("editMessageReplyMarkup", { chat_id: q.message.chat.id, message_id: q.message.message_id, reply_markup: { inline_keyboard: [] } });
     await send(ownerChatId, result);
     return true;
@@ -250,7 +290,7 @@ ${priceList}`;
         return send(ownerChatId,
           "🤖 Men sizning shaxsiy AI agentingizman. Menga xuddi Claude'ga yozgandek yozing. Masalan:\n\n" +
           "• Bugun qanday buyurtmalar keldi?\n• #A1B2C3 ni bajarildi qil\n• Shu mijozga ish tayyor deb yoz\n" +
-          "• Kanalga flexbox haqida post tayyorla\n• Ertaga 9:00 da darsni eslat\n• JavaScript'da massiv nima?\n" +
+          "• Kanalga flexbox haqida post tayyorla\n• Menga qo'ng'iroq qilib eslat\n• Ertaga 9:00 da darsni eslat\n• JavaScript'da massiv nima?\n" +
           "• Internetdan qidir: Bootstrap 5 dagi yangiliklar\n\n/yangi — suhbatni yangidan boshlash\n\n" +
           "Mijozga yoki kanalga yozadigan narsani doim avval sizga ko'rsataman — ✅ bosmaguningizcha hech narsa ketmaydi.");
       }

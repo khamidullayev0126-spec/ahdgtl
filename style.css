@@ -269,3 +269,11 @@ footer a { color: var(--muted); }
 
 /* ---------- logo ---------- */
 .brand-logo { width: 40px; height: 40px; flex: none; }
+
+/* Admin: AI LEGENDS o'quvchilari */
+.legends-admin { display: flex; flex-direction: column; gap: var(--s4); margin-top: var(--s8); padding-top: var(--s8); border-top: 1px solid var(--divider); }
+.lg-admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--s3); align-items: end; }
+.lg-result { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4); border-radius: 20px; background: var(--sage-soft); color: var(--sage-ink); }
+.lg-result p { margin: 0; }
+.lg-link-row { display: flex; gap: var(--s2); flex-wrap: wrap; }
+.lg-link-row .input { flex: 1; min-width: 0; font-size: 13px; }

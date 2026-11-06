@@ -65,3 +65,75 @@
 .chat-send { border: 0; width: 42px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-size: 16px; cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) { .phone-screen.pop { animation: none; } .chat-fab, .swatch { transition: none; } }
+
+/* ---------- Ishlarim: Reels ---------- */
+#ishlar { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s3); }
+.reels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s4); width: 100%; margin-top: var(--s4); }
+.reel { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.reel video { width: 100%; max-width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 22px; background: var(--surface); cursor: pointer;
+  box-shadow: var(--shadow); transition: transform .25s ease; display: block; }
+.reel video:hover { transform: translateY(-4px) rotate(-.6deg); }
+.reel figcaption { font-weight: 600; font-size: 14px; color: var(--muted); }
+@media (max-width: 820px) { .reels { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Oldin / hozir ---------- */
+.ba-wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: var(--s8); align-items: center; width: 100%; margin-top: var(--s8); }
+.ba-copy { display: flex; flex-direction: column; gap: var(--s3); min-width: 0; }
+.ba-copy p { color: var(--muted); line-height: 1.6; margin: 0; }
+.ba { position: relative; aspect-ratio: 3 / 4; max-width: 100%; max-height: 640px; border-radius: 24px; overflow: hidden; box-shadow: var(--shadow); background: var(--surface); justify-self: center; width: min(100%, 480px); }
+.ba img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; max-width: none; }
+.ba-before { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+.ba-handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 4px; translate: -2px 0; background: var(--accent); pointer-events: none; }
+.ba-handle::after { content: "⟷"; position: absolute; top: 50%; left: 50%; translate: -50% -50%; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--on-accent); font-weight: 700; box-shadow: var(--shadow); }
+.ba-label { position: absolute; top: 14px; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; background: rgba(32,30,29,.75); color: #fff; pointer-events: none; }
+.ba-l { left: 14px; } .ba-r { right: 14px; }
+.ba-range { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+.ba-range:focus-visible + * , .ba:has(.ba-range:focus-visible) { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 820px) { .ba-wrap { grid-template-columns: 1fr; } }
+
+/* ---------- Narx kalkulyatori ---------- */
+.calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, .9fr); gap: var(--s6); align-items: start;
+  margin-top: var(--s8); padding: var(--s6); border-radius: var(--r-lg); background: var(--surface); }
+.calc[hidden] { display: none; }
+.calc-title { font-family: var(--font-heading); font-weight: 400; font-size: 30px; margin: 0; text-wrap: balance; }
+.calc-copy p { color: var(--muted); margin: 8px 0 0; line-height: 1.55; }
+.calc-rows { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.calc-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; background: var(--bg); border: 2px solid transparent; transition: border-color .15s; }
+.calc-row.on { border-color: var(--accent); }
+.calc-name { display: flex; flex-direction: column; min-width: 0; }
+.calc-name small { color: var(--muted); font-variant-numeric: tabular-nums; }
+.stepper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.stepper button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--divider); background: var(--surface); color: var(--text); font-size: 18px; cursor: pointer; }
+.stepper button:hover { background: var(--accent-soft); }
+.stepper button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stepper output { min-width: 22px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.calc-total { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 90px; }
+.calc-total span { color: var(--muted); font-weight: 600; }
+.calc-total strong { font-family: var(--font-heading); font-weight: 400; font-size: 38px; line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.calc-total small { color: var(--accent-ink); line-height: 1.45; min-height: 1em; }
+@media (max-width: 980px) { .calc { grid-template-columns: 1fr; } .calc-total { position: static; } }
+
+/* ---------- Aylantirganda chiqib kelish (kontent doim ko'rinadi) ---------- */
+.rise { transform: translateY(22px); transition: transform .7s cubic-bezier(.2,.7,.2,1); }
+.rise.in { transform: none; }
+.card { transition: transform .2s ease, box-shadow .2s ease; }
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.card.rise.in:hover { transform: translateY(-4px); }
+
+/* ---------- Telefonda pastki tugma ---------- */
+.m-cta { display: none; }
+@media (max-width: 700px) {
+  .m-cta { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; text-align: center; text-decoration: none;
+    padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 16px; box-shadow: 0 -8px 24px rgba(0,0,0,.15);
+    transform: translateY(110%); transition: transform .25s ease; }
+  .m-cta.show { transform: none; }
+  body.has-m-cta .chat { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { transform: none !important; transition: none; }
+  .reel video, .card, .m-cta { transition: none; }
+  .reel video:hover, .card:hover { transform: none; }
+}
