@@ -16,18 +16,16 @@ const MAX_HISTORY = 60;          // shundan oshsa — suhbat yangidan boshlanadi
 const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 const TZ = "Asia/Tashkent";
 
-function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, dataDir, channel, client, caller, sendPhoto }) {
+function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   const claude = client || new Anthropic();   // client — faqat sinov uchun
 
   // ---------- Doimiy saqlanadigan ma'lumotlar (data/ papkasida) ----------
-  fs.mkdirSync(dataDir, { recursive: true });
-  const file = name => path.join(dataDir, name);
-  const load = (name, def) => { try { return JSON.parse(fs.readFileSync(file(name), "utf8")); } catch { return def; } };
-  const save = (name, val) => fs.writeFileSync(file(name), JSON.stringify(val, null, 2));
-
-  let notes = load("agent-xotira.json", []);        // [{id, matn, sana}]
-  let reminders = load("agent-eslatmalar.json", []); // [{id, vaqt, matn}]
+  // Doimiy ombor (store.js): Render qayta ishga tushsa ham xotira va eslatmalar saqlanadi
+  const KEY = { "agent-xotira.json": "agent-xotira", "agent-eslatmalar.json": "agent-eslatmalar" };
+  const save = (name, val) => store.set(KEY[name], val);
+  let notes = [];        // [{id, matn, sana}]   — start() da yuklanadi
+  let reminders = [];    // [{id, vaqt, matn}]
   const pending = new Map();                          // tasdiq kutayotgan amallar: id -> {turi, ...}
   let history = [];
   let queue = Promise.resolve();                      // xabarlar navbat bilan ishlansin
@@ -48,7 +46,6 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
       timers.delete(r.id);
     }, Math.min(ms, 2 ** 31 - 1)));
   }
-  reminders.forEach(arm);   // server qayta ishga tushsa — eslatmalar tiklanadi
 
   // ---------- Asboblar (tools) ----------
   const priceList = services.map(s => `- ${s.id}: ${s.name} — ${fmt(s.price)} so'm / ${s.period}`).join("\n");
@@ -300,7 +297,14 @@ ${priceList}`;
     }).catch(e => console.error("Agent navbat xatosi:", e.message));
   }
 
-  return { onOwnerMessage, onCallback };
+  // Server ishga tushganda (ombor yuklangach) chaqiriladi
+  function start() {
+    notes = store.get("agent-xotira", []);
+    reminders = store.get("agent-eslatmalar", []);
+    reminders.forEach(arm);   // server qayta ishga tushsa — eslatmalar tiklanadi
+  }
+
+  return { onOwnerMessage, onCallback, start };
 }
 
 module.exports = { createAgent };

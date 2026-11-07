@@ -15,7 +15,7 @@ const CONFIRM_DELAY_MS = Number(process.env.BOT_CONFIRM_DELAY_MS) || 60_000;   /
 const MAX_TURNS = 20;
 const ALLOWED = ["message", "callback_query", "business_connection", "business_message"];                     // shundan keyin Claude bilan suhbat yangidan boshlanadi
 
-function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeOrders }) {
+function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeOrders, store }) {
   if (!token) return null;
 
   const api = async (method, body = {}) => {
@@ -106,8 +106,7 @@ ${priceList}`;
   // Shaxsiy AI agent — faqat egasi (siz) uchun
   const caller = createCaller({ publicUrl });   // telefon qo'ng'irog'i (Twilio sozlangan bo'lsa)
   const agent = ownerChatId ? createAgent({
-    api, send, ownerChatId, services, readOrders, writeOrders,
-    dataDir: path.join(__dirname, "data"),
+    api, send, ownerChatId, services, readOrders, writeOrders, store,
     channel: process.env.TELEGRAM_CHANNEL || "",
     caller, sendPhoto
   }) : null;
@@ -333,6 +332,7 @@ ${priceList}`;
     readOrders().filter(o => o.tgChatId && o.status === "yangi").forEach(scheduleConfirm);
     if (!claude) console.log("ℹ️  ANTHROPIC_API_KEY yo'q — bot savollarga Claude bilan javob bermaydi.");
     if (agent) {
+      agent.start();                       // xotira va eslatmalarni ombordan yuklaydi
       console.log("🧠 Shaxsiy AI agent yoqildi (egasi uchun)");
       await api("setMyCommands", { commands: [
         { command: "yordam", description: "Agent nimalar qila oladi" },

@@ -12,12 +12,11 @@ const { SOZLAMA, DARSLAR } = require("./legends-darslar");
 const COOKIE = "ahd_legends";
 const TZ_OFFSET = "+05:00";     // Toshkent
 
-function createLegends({ app, requireAdmin, publicDir, dataDir, adminPassword }) {
+function createLegends({ app, requireAdmin, publicDir, store, adminPassword }) {
   const SECRET = process.env.LEGENDS_SECRET || crypto.createHash("sha256").update("legends:" + adminPassword).digest("hex");
   const revoked = new Set(String(process.env.LEGENDS_BEKOR || "").split(",").map(s => s.trim()).filter(Boolean));
-  const LOG = path.join(dataDir, "legends-oquvchilar.json");
-  const readLog = () => { try { return JSON.parse(fs.readFileSync(LOG, "utf8")); } catch { return []; } };
-  const writeLog = list => { fs.mkdirSync(dataDir, { recursive: true }); fs.writeFileSync(LOG, JSON.stringify(list, null, 2)); };
+  const readLog = () => store.get("legends-oquvchilar", []);
+  const writeLog = list => store.set("legends-oquvchilar", list);
 
   // ---------- Imzolangan token ----------
   const b64 = s => Buffer.from(s).toString("base64url");

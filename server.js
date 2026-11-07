@@ -9,6 +9,7 @@ const crypto = require("crypto");
 const { createBot } = require("./bot");
 const { createSiteChat } = require("./chat");
 const { createLegends } = require("./legends");
+const { createStore } = require("./store");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,19 +37,10 @@ try {
 
 const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 
-// ---------- Buyurtmalarni faylda saqlash ----------
-function readOrders() {
-  try {
-    return JSON.parse(fs.readFileSync(ORDERS_FILE, "utf8"));
-  } catch {
-    return [];
-  }
-}
-
-function writeOrders(orders) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-  fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2));
-}
+// ---------- Buyurtmalar: doimiy omborda (store.js — Upstash Redis yoki data/ papkasi) ----------
+const store = createStore({ dataDir: DATA_DIR });
+const readOrders = () => store.get("orders", []);
+const writeOrders = orders => store.set("orders", orders);
 
 // ---------- Telegram bot (ixtiyoriy) ----------
 // Render manzilni RENDER_EXTERNAL_URL orqali o'zi beradi; kompyuterda bot "polling" rejimida ishlaydi
@@ -58,7 +50,8 @@ const bot = createBot({
   publicUrl: process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || "",
   services: SERVICES,
   readOrders,
-  writeOrders
+  writeOrders,
+  store
 });
 
 // ---------- Oddiy himoya: bitta IP dan juda ko'p so'rov kelmasin ----------
@@ -89,14 +82,14 @@ app.set("trust proxy", 1);
 app.use(express.json({ limit: "20kb" }));
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
-  const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat|legends|legends-darslar)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat|store|legends|legends-darslar)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html
 app.get(["/portfolio", "/portfolio/", "/portfolio/index.html"], (req, res) => res.redirect(301, "/portfolio.html"));
 
 // AI LEGENDS kurs platformasi (/legends)
-createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, dataDir: DATA_DIR, adminPassword: ADMIN_PASSWORD });
+createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, store, adminPassword: ADMIN_PASSWORD });
 
 app.use(express.static(PUBLIC_DIR));
 
@@ -192,7 +185,8 @@ app.delete("/api/orders/:id", requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(PORT, async () => {
+// Avval ombordagi ma'lumotlar yuklanadi, keyin sayt ishga tushadi
+store.init().catch(err => { console.error("❌", err.message); process.exit(1); }).then(() => app.listen(PORT, async () => {
   console.log(`✅ Sayt ishga tushdi: http://localhost:${PORT}`);
   console.log(`🔐 Admin panel:      http://localhost:${PORT}/admin.html`);
   if (ADMIN_PASSWORD === "admin123") {
@@ -200,4 +194,4 @@ app.listen(PORT, async () => {
   }
   if (bot) await bot.start(app).catch(err => console.error("Botni ishga tushirib bo'lmadi:", err.message));
   else console.log("ℹ️  TELEGRAM_BOT_TOKEN yo'q — bot o'chiq.");
-});
+}));
