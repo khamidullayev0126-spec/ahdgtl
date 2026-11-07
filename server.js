@@ -10,6 +10,7 @@ const { createBot } = require("./bot");
 const { createSiteChat } = require("./chat");
 const { createLegends } = require("./legends");
 const { createStore } = require("./store");
+const { createAuth } = require("./auth");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -82,7 +83,7 @@ app.set("trust proxy", 1);
 app.use(express.json({ limit: "20kb" }));
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
-  const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat|store|legends|legends-darslar)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat|store|auth|legends|legends-darslar)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html
@@ -90,6 +91,13 @@ app.get(["/portfolio", "/portfolio/", "/portfolio/index.html"], (req, res) => re
 
 // AI LEGENDS kurs platformasi (/legends)
 createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, store, adminPassword: ADMIN_PASSWORD });
+
+// ---------- Telegram orqali kirish (auth.js) ----------
+// Saytdan foydalanish uchun avval Telegram orqali kirish kerak.
+// O'chirish uchun: Render → Environment → LOGIN_REQUIRED = 0
+const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
+if (auth) { auth.install(app); app.use(auth.gate); }
+else app.get("/api/auth/config", (req, res) => res.json({ bot: "" }));
 
 app.use(express.static(PUBLIC_DIR));
 
@@ -146,6 +154,7 @@ app.post("/api/orders", rateLimit, async (req, res) => {
     price: service.price,
     message,
     status: "yangi",
+    tgUserId: req.user ? req.user.id : undefined,   // kirgan foydalanuvchi — kabinetda ko'rinadi
     createdAt: new Date().toISOString()
   };
 

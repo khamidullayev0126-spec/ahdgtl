@@ -10,7 +10,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const KEYS = ["orders", "legends-oquvchilar", "agent-xotira", "agent-eslatmalar"];
+const KEYS = ["orders", "legends-oquvchilar", "agent-xotira", "agent-eslatmalar", "foydalanuvchilar"];
 const PREFIX = "ahd:";
 
 function createStore({ dataDir }) {
@@ -34,7 +34,7 @@ function createStore({ dataDir }) {
 
   async function init() {
     // Eski fayl nomlari (orders.json va h.k.) ham o'qiladi
-    const legacy = { orders: "orders", "legends-oquvchilar": "legends-oquvchilar", "agent-xotira": "agent-xotira", "agent-eslatmalar": "agent-eslatmalar" };
+    const legacy = { orders: "orders", "legends-oquvchilar": "legends-oquvchilar", "agent-xotira": "agent-xotira", "agent-eslatmalar": "agent-eslatmalar", foydalanuvchilar: "foydalanuvchilar" };
     for (const key of KEYS) {
       let val;
       if (remote) {

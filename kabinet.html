@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Kabinet — AHdigital</title>
+  <link rel="icon" type="image/svg+xml" href="images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cab { max-width: 640px; display: flex; flex-direction: column; gap: var(--s4); }
+    .cab h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.05; }
+    .card { background: var(--surface); border-radius: 24px; padding: var(--s4) var(--s6); display: flex; flex-direction: column; gap: var(--s3); }
+    .login-box { align-items: flex-start; }
+    .tg-slot { min-height: 48px; }
+    .who { display: flex; align-items: center; gap: var(--s3); }
+    .who img, .who .ava { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex: none; }
+    .who .ava { background: var(--accent); color: #fff8f2; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 28px; }
+    .who b { font-size: 20px; display: block; }
+    .who span { color: var(--muted); }
+    .orders { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+    .orders li { background: var(--bg); border-radius: 16px; padding: 12px 16px; display: flex; justify-content: space-between; gap: var(--s3); align-items: center; }
+    .orders small { color: var(--muted); display: block; }
+    .st { flex: none; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); }
+    .st.bajarildi { background: #dcefc8; color: #2f3d1e; }
+    .st.bekor { background: #eee; color: #645c50; }
+    .err { color: #9b2c1f; font-weight: 600; }
+    .muted { color: var(--muted); margin: 0; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a href="index.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
+    <div class="nav-links" style="display:flex">
+      <a href="index.html#xizmatlar">Xizmatlar</a>
+      <a href="index.html#buyurtma" class="btn btn-primary">Buyurtma berish</a>
+    </div>
+  </nav>
+
+  <main class="cab">
+    <h1 id="title">Shaxsiy kabinet</h1>
+
+    <section class="card login-box" id="login" hidden>
+      <p class="muted">Saytdan foydalanish uchun Telegram akkauntingiz bilan kiring — parol kerak emas, bir marta bosish kifoya. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.</p>
+      <div class="tg-slot" id="tg-slot"></div>
+      <p class="err" id="login-err" role="alert" hidden></p>
+    </section>
+
+    <section id="profile" hidden>
+      <div class="card">
+        <div class="who" id="who"></div>
+        <button class="btn btn-secondary" id="logout" type="button" style="align-self:flex-start">Chiqish</button>
+      </div>
+      <div class="card" style="margin-top: var(--s4)">
+        <h2 style="font-size:24px; margin:0">Buyurtmalarim</h2>
+        <ul class="orders" id="orders"></ul>
+        <p class="muted" id="no-orders" hidden>Hozircha buyurtma yo'q. Buyurtma berganda Telegram username'ingizni yozing yoki bot tugmasini bosing — shunda bu yerda ko'rinadi.</p>
+        <a href="index.html#buyurtma" class="btn btn-primary" style="align-self:flex-start">Yangi buyurtma</a>
+      </div>
+    </section>
+
+    <p class="muted" id="loading">Yuklanmoqda…</p>
+  </main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const STATUS = { yangi: "Yangi", tasdiqlandi: "Tasdiqlandi", jarayonda: "Jarayonda", bajarildi: "Bajarildi", bekor: "Bekor qilindi" };
+const fmt = n => Number(n).toLocaleString("ru-RU").replace(/,/g, " ");
+
+function el(tag, props = {}, ...kids) {
+  const e = Object.assign(document.createElement(tag), props);
+  kids.forEach(k => e.append(k));
+  return e;
+}
+
+function showProfile({ user, orders }) {
+  $("loading").hidden = true; $("login").hidden = true; $("profile").hidden = false;
+  $("title").textContent = "Shaxsiy kabinet";
+  const who = $("who"); who.replaceChildren();
+  who.append(user.photo ? el("img", { src: user.photo, alt: "" }) : el("span", { className: "ava", textContent: (user.name || "?")[0] }));
+  who.append(el("div", {}, el("b", { textContent: user.name }), el("span", { textContent: user.username ? "@" + user.username : "Telegram orqali kirgansiz" })));
+  const list = $("orders"); list.replaceChildren();
+  $("no-orders").hidden = orders.length > 0;
+  orders.forEach(o => list.append(el("li", {},
+    el("div", {}, el("b", { textContent: o.serviceName }), el("small", { textContent: `#${o.code} · ${fmt(o.price)} so'm · ${new Date(o.createdAt).toLocaleDateString("uz-UZ")}` })),
+    el("span", { className: "st " + o.status, textContent: STATUS[o.status] || o.status })
+  )));
+}
+
+async function showLogin() {
+  $("loading").hidden = true; $("profile").hidden = true; $("login").hidden = false;
+  $("title").textContent = "AHdigital'ga kirish";
+  const { bot } = await fetch("/api/auth/config").then(r => r.json()).catch(() => ({}));
+  if (!bot) { $("login-err").textContent = "Telegram bilan kirish hozircha sozlanmagan."; $("login-err").hidden = false; return; }
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = "https://telegram.org/js/telegram-widget.js?22";
+  s.dataset.telegramLogin = bot;
+  s.dataset.size = "large";
+  s.dataset.radius = "20";
+  s.dataset.onauth = "onTelegramAuth(user)";
+  s.dataset.requestAccess = "write";
+  $("tg-slot").replaceChildren(s);
+}
+
+window.onTelegramAuth = async user => {
+  $("login-err").hidden = true;
+  const r = await fetch("/api/auth/telegram", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(user) });
+  if (r.ok) return load();
+  const { error } = await r.json().catch(() => ({}));
+  $("login-err").textContent = error || "Kirib bo'lmadi. Qayta urinib ko'ring.";
+  $("login-err").hidden = false;
+};
+
+// Kirgandan keyin — kelgan sahifasiga qaytaramiz (faqat o'z saytimiz ichida)
+const next = new URLSearchParams(location.search).get("next");
+const safeNext = next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/kabinet") ? next : "";
+
+async function load() {
+  const r = await fetch("/api/me");
+  if (r.ok && safeNext) return location.replace(safeNext);
+  if (r.ok) showProfile(await r.json()); else showLogin();
+}
+
+$("logout").addEventListener("click", async () => {
+  await fetch("/api/auth/logout", { method: "POST" });
+  showLogin();
+});
+
+load();
+</script>
+</body>
+</html>

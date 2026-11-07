@@ -341,7 +341,7 @@ ${priceList}`;
     }
   }
 
-  return { start, onNewOrder, deepLink, handleUpdate };
+  return { start, onNewOrder, deepLink, handleUpdate, username: () => username };
 }
 
 module.exports = { createBot };
