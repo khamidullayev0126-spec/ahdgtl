@@ -7,6 +7,7 @@
 // 4) To'g'ri bo'lsa, brauzerga 30 kunlik himoyalangan cookie qo'yiladi.
 //
 // Sozlash: BotFather → /setdomain → botingizni tanlang → ahdigital-1pcz.onrender.com
+// Google: Render → Environment → GOOGLE_CLIENT_ID (console.cloud.google.com → Credentials → OAuth client ID)
 // Ixtiyoriy: Render → Environment → SESSION_SECRET (uzun tasodifiy matn). Bo'lmasa bot tokenidan hosil qilinadi.
 
 const crypto = require("crypto");
@@ -16,9 +17,11 @@ const SESSION_DAYS = 30;
 const MAX_AUTH_AGE = 24 * 60 * 60;   // Telegram javobi 24 soatdan eski bo'lmasin
 
 function createAuth({ botToken, store, readOrders, botUsername }) {
-  if (!botToken) return null;
-  const sessionKey = process.env.SESSION_SECRET || crypto.createHash("sha256").update("sess:" + botToken).digest("hex");
-  const tgKey = crypto.createHash("sha256").update(botToken).digest();
+  const GOOGLE_ID = process.env.GOOGLE_CLIENT_ID || "";
+  if (!botToken && !GOOGLE_ID) return null;
+  const seed = process.env.SESSION_SECRET || botToken || GOOGLE_ID;
+  const sessionKey = crypto.createHash("sha256").update("sess:" + seed).digest("hex");
+  const tgKey = crypto.createHash("sha256").update(botToken || crypto.randomBytes(32)).digest();
 
   const b64 = s => Buffer.from(s).toString("base64url");
   const sign = s => crypto.createHmac("sha256", sessionKey).update(s).digest("base64url");
@@ -26,7 +29,7 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
 
   // Telegram imzosini tekshirish (rasmiy qoida: core.telegram.org/widgets/login#checking-authorization)
   function checkTelegram(data) {
-    if (!data || typeof data !== "object" || typeof data.hash !== "string") return false;
+    if (!botToken || !data || typeof data !== "object" || typeof data.hash !== "string") return false;
     const checkString = Object.keys(data).filter(k => k !== "hash" && data[k] != null).sort().map(k => `${k}=${data[k]}`).join("\n");
     const hash = crypto.createHmac("sha256", tgKey).update(checkString).digest("hex");
     if (!same(hash, data.hash)) return false;
@@ -60,13 +63,49 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
   // Mijozning buyurtmalari: bot orqali bog'langanlari (tgChatId) yoki @username bilan yozilganlari
   function ordersOf(user) {
     const uname = user.username ? "@" + user.username.toLowerCase() : null;
+    const email = user.email ? user.email.toLowerCase() : null;
     return readOrders()
-      .filter(o => String(o.tgUserId) === String(user.id) || String(o.tgChatId) === String(user.id) || (uname && String(o.contact || "").trim().toLowerCase() === uname))
+      .filter(o => {
+        const c = String(o.contact || "").trim().toLowerCase();
+        return String(o.tgUserId) === String(user.id) || String(o.tgChatId) === String(user.id) || (uname && c === uname) || (email && c === email);
+      })
       .map(o => ({ code: o.code, serviceName: o.serviceName, price: o.price, status: o.status, createdAt: o.createdAt }));
   }
 
   function install(app) {
-    app.get("/api/auth/config", (req, res) => res.json({ bot: botUsername() || "" }));
+    app.get("/api/auth/config", (req, res) => res.json({ bot: botToken ? botUsername() || "" : "", google: GOOGLE_ID }));
+
+    // Google: brauzer Google'dan "ID token" oladi, biz uni Google'ning o'zida tekshiramiz
+    app.post("/api/auth/google", async (req, res) => {
+      const token = String((req.body || {}).credential || "");
+      if (!GOOGLE_ID || !token || token.length > 4096) return res.status(400).json({ error: "Google bilan kirish sozlanmagan." });
+      let info;
+      try {
+        const r = await fetch("https://oauth2.googleapis.com/tokeninfo?id_token=" + encodeURIComponent(token));
+        info = r.ok ? await r.json() : null;
+      } catch (e) { console.error("Google tekshiruvi:", e.message); }
+      const ok = info && info.aud === GOOGLE_ID
+        && ["accounts.google.com", "https://accounts.google.com"].includes(info.iss)
+        && Number(info.exp) * 1000 > Date.now()
+        && String(info.email_verified) === "true";
+      if (!ok) return res.status(401).json({ error: "Google tasdig'i noto'g'ri yoki eskirgan. Qayta urinib ko'ring." });
+
+      const id = "g:" + info.sub;
+      const all = users();
+      const old = all[id] || {};
+      all[id] = {
+        id, provider: "google",
+        name: info.name || info.email,
+        email: info.email,
+        username: "",
+        photo: info.picture || "",
+        createdAt: old.createdAt || new Date().toISOString(),
+        lastLogin: new Date().toISOString()
+      };
+      store.set("foydalanuvchilar", all);
+      setCookie(res, makeSession(id), SESSION_DAYS * 86400);
+      res.json({ ok: true });
+    });
 
     app.post("/api/auth/telegram", (req, res) => {
       const d = req.body || {};
@@ -77,7 +116,7 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
       const all = users();
       const old = all[data.id] || {};
       all[data.id] = {
-        id: data.id,
+        id: data.id, provider: "telegram",
         name: [data.first_name, data.last_name].filter(Boolean).join(" "),
         username: data.username || "",
         photo: data.photo_url || "",
@@ -114,7 +153,7 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
     const s = readSession(req);
     const user = s && users()[s.id];
     if (user) { req.user = user; return next(); }
-    if (userApi) return res.status(401).json({ error: "Avval Telegram orqali kiring." });
+    if (userApi) return res.status(401).json({ error: "Avval saytga kiring (Telegram yoki Google)." });
     res.redirect("/kabinet.html?next=" + encodeURIComponent(req.originalUrl));
   }
 

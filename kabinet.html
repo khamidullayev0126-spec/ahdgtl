@@ -15,7 +15,9 @@
     .cab h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.05; }
     .card { background: var(--surface); border-radius: 24px; padding: var(--s4) var(--s6); display: flex; flex-direction: column; gap: var(--s3); }
     .login-box { align-items: flex-start; }
-    .tg-slot { min-height: 48px; }
+    .tg-slot { min-height: 0; }
+    .tg-slot:empty { display: none; }
+    .or { color: var(--muted); font-weight: 700; font-size: 14px; }
     .who { display: flex; align-items: center; gap: var(--s3); }
     .who img, .who .ava { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex: none; }
     .who .ava { background: var(--accent); color: #fff8f2; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 28px; }
@@ -46,8 +48,10 @@
     <h1 id="title">Shaxsiy kabinet</h1>
 
     <section class="card login-box" id="login" hidden>
-      <p class="muted">Saytdan foydalanish uchun Telegram akkauntingiz bilan kiring — parol kerak emas, bir marta bosish kifoya. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.</p>
+      <p class="muted">Saytdan foydalanish uchun Telegram yoki Google akkauntingiz bilan kiring — parol kerak emas, bir marta bosish kifoya. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.</p>
       <div class="tg-slot" id="tg-slot"></div>
+      <div class="or" id="or" hidden>yoki</div>
+      <div class="tg-slot" id="g-slot"></div>
       <p class="err" id="login-err" role="alert" hidden></p>
     </section>
 
@@ -84,7 +88,7 @@ function showProfile({ user, orders }) {
   $("title").textContent = "Shaxsiy kabinet";
   const who = $("who"); who.replaceChildren();
   who.append(user.photo ? el("img", { src: user.photo, alt: "" }) : el("span", { className: "ava", textContent: (user.name || "?")[0] }));
-  who.append(el("div", {}, el("b", { textContent: user.name }), el("span", { textContent: user.username ? "@" + user.username : "Telegram orqali kirgansiz" })));
+  who.append(el("div", {}, el("b", { textContent: user.name }), el("span", { textContent: user.username ? "@" + user.username : user.email || "Telegram orqali kirgansiz" })));
   const list = $("orders"); list.replaceChildren();
   $("no-orders").hidden = orders.length > 0;
   orders.forEach(o => list.append(el("li", {},
@@ -96,8 +100,11 @@ function showProfile({ user, orders }) {
 async function showLogin() {
   $("loading").hidden = true; $("profile").hidden = true; $("login").hidden = false;
   $("title").textContent = "AHdigital'ga kirish";
-  const { bot } = await fetch("/api/auth/config").then(r => r.json()).catch(() => ({}));
-  if (!bot) { $("login-err").textContent = "Telegram bilan kirish hozircha sozlanmagan."; $("login-err").hidden = false; return; }
+  const { bot, google } = await fetch("/api/auth/config").then(r => r.json()).catch(() => ({}));
+  if (!bot && !google) { $("login-err").textContent = "Kirish hozircha sozlanmagan."; $("login-err").hidden = false; return; }
+  $("or").hidden = !(bot && google);
+  if (google) showGoogle(google);
+  if (!bot) return;
   const s = document.createElement("script");
   s.async = true;
   s.src = "https://telegram.org/js/telegram-widget.js?22";
@@ -109,9 +116,24 @@ async function showLogin() {
   $("tg-slot").replaceChildren(s);
 }
 
-window.onTelegramAuth = async user => {
+function showGoogle(clientId) {
+  const start = () => {
+    google.accounts.id.initialize({ client_id: clientId, callback: res => signIn("/api/auth/google", { credential: res.credential }) });
+    google.accounts.id.renderButton($("g-slot"), { theme: "outline", size: "large", shape: "pill", text: "signin_with", locale: "uz" });
+  };
+  if (window.google && google.accounts) return start();
+  const s = document.createElement("script");
+  s.src = "https://accounts.google.com/gsi/client";
+  s.async = true;
+  s.onload = start;
+  document.head.append(s);
+}
+
+window.onTelegramAuth = user => signIn("/api/auth/telegram", user);
+
+async function signIn(url, body) {
   $("login-err").hidden = true;
-  const r = await fetch("/api/auth/telegram", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(user) });
+  const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (r.ok) return load();
   const { error } = await r.json().catch(() => ({}));
   $("login-err").textContent = error || "Kirib bo'lmadi. Qayta urinib ko'ring.";
