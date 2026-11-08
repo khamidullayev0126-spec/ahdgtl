@@ -18,6 +18,12 @@
     .tg-slot { min-height: 0; }
     .tg-slot:empty { display: none; }
     .or { color: var(--muted); font-weight: 700; font-size: 14px; }
+    .email-form { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    .email-form label { font-weight: 700; font-size: 14px; }
+    .email-form .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .email-form input { flex: 1 1 200px; min-width: 0; height: 48px; box-sizing: border-box; padding: 0 16px; border-radius: 16px; border: 1px solid var(--divider, #d6c4a6); background: #fffaf3; font: 16px Figtree, system-ui, sans-serif; color: var(--text); }
+    #code { letter-spacing: 6px; font-weight: 700; }
+    .linkbtn { border: 0; background: none; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer; }
     .who { display: flex; align-items: center; gap: var(--s3); }
     .who img, .who .ava { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex: none; }
     .who .ava { background: var(--accent); color: #fff8f2; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 28px; }
@@ -37,7 +43,7 @@
 <body>
 <div class="wrap">
   <nav class="nav">
-    <a href="index.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
+    <a href="welcome.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
     <div class="nav-links" style="display:flex">
       <a href="index.html#xizmatlar">Xizmatlar</a>
       <a href="index.html#buyurtma" class="btn btn-primary">Buyurtma berish</a>
@@ -48,11 +54,24 @@
     <h1 id="title">Shaxsiy kabinet</h1>
 
     <section class="card login-box" id="login" hidden>
-      <p class="muted">Saytdan foydalanish uchun Telegram yoki Google akkauntingiz bilan kiring — parol kerak emas, bir marta bosish kifoya. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.</p>
+      <p class="muted">Saytdan foydalanish uchun Telegram, Google yoki email orqali kiring — parol kerak emas. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.</p>
       <div class="tg-slot" id="tg-slot"></div>
       <div class="or" id="or" hidden>yoki</div>
       <div class="tg-slot" id="g-slot"></div>
+      <div class="or" id="or2" hidden>yoki email orqali</div>
+      <form class="email-form" id="email-form" hidden novalidate>
+        <label for="em">Email manzil</label>
+        <div class="row"><input id="em" type="email" autocomplete="email" inputmode="email" placeholder="ism@gmail.com" required>
+          <button class="btn btn-primary" id="em-send" type="submit">Kod yuborish</button></div>
+      </form>
+      <form class="email-form" id="code-form" hidden novalidate>
+        <label for="code">Emailga kelgan 6 xonali kod</label>
+        <div class="row"><input id="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" required>
+          <button class="btn btn-primary" id="code-ok" type="submit">Kirish</button></div>
+        <p class="muted" style="font-size:14px">Xat kelmasa, «Spam» papkasini tekshiring. <button type="button" class="linkbtn" id="em-back">Boshqa email</button></p>
+      </form>
       <p class="err" id="login-err" role="alert" hidden></p>
+      <p class="muted" id="switch" hidden style="font-size:14px"></p>
     </section>
 
     <section id="profile" hidden>
@@ -99,9 +118,11 @@ function showProfile({ user, orders }) {
 
 async function showLogin() {
   $("loading").hidden = true; $("profile").hidden = true; $("login").hidden = false;
-  $("title").textContent = "AHdigital'ga kirish";
-  const { bot, google } = await fetch("/api/auth/config").then(r => r.json()).catch(() => ({}));
-  if (!bot && !google) { $("login-err").textContent = "Kirish hozircha sozlanmagan."; $("login-err").hidden = false; return; }
+  $("title").textContent = MODE === "signup" ? "Ro'yxatdan o'tish" : "Kirish";
+  $("switch").hidden = false;
+  const { bot, google, email } = await fetch("/api/auth/config").then(r => r.json()).catch(() => ({}));
+  if (email) { $("email-form").hidden = false; $("code-form").hidden = true; $("or2").hidden = !(bot || google); }
+  if (!bot && !google && !email) { $("login-err").textContent = "Kirish hozircha sozlanmagan."; $("login-err").hidden = false; return; }
   $("or").hidden = !(bot && google);
   if (google) showGoogle(google);
   if (!bot) return;
@@ -129,6 +150,27 @@ function showGoogle(clientId) {
   document.head.append(s);
 }
 
+function showErr(msg) { $("login-err").textContent = msg; $("login-err").hidden = false; }
+let emailAddr = "";
+$("email-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("login-err").hidden = true;
+  emailAddr = $("em").value.trim();
+  if (!/^\S+@\S+\.\S+$/.test(emailAddr)) return showErr("Email manzilni to'g'ri yozing.");
+  $("em-send").disabled = true;
+  const r = await fetch("/api/auth/email/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: emailAddr }) }).catch(() => null);
+  $("em-send").disabled = false;
+  if (!r || !r.ok) return showErr(((r && await r.json().catch(() => ({}))) || {}).error || "Kod yuborib bo'lmadi.");
+  $("email-form").hidden = true; $("code-form").hidden = false; $("code").value = ""; $("code").focus();
+});
+$("code-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const code = $("code").value.replace(/\D/g, "");
+  if (code.length !== 6) return showErr("6 xonali kodni kiriting.");
+  signIn("/api/auth/email/verify", { email: emailAddr, code });
+});
+$("em-back").addEventListener("click", () => { $("code-form").hidden = true; $("email-form").hidden = false; $("login-err").hidden = true; $("em").focus(); });
+
 window.onTelegramAuth = user => signIn("/api/auth/telegram", user);
 
 async function signIn(url, body) {
@@ -141,7 +183,16 @@ async function signIn(url, body) {
 };
 
 // Kirgandan keyin — kelgan sahifasiga qaytaramiz (faqat o'z saytimiz ichida)
-const next = new URLSearchParams(location.search).get("next");
+const params = new URLSearchParams(location.search);
+const MODE = params.get("mode") === "signup" ? "signup" : "signin";
+const next = params.get("next");
+{
+  const other = new URLSearchParams(params); other.set("mode", MODE === "signup" ? "signin" : "signup");
+  const sw = document.getElementById("switch");
+  sw.append(MODE === "signup" ? "Hisobingiz bormi? " : "Birinchi marta kelyapsizmi? ");
+  const a = document.createElement("a"); a.href = "kabinet.html?" + other; a.textContent = MODE === "signup" ? "Kirish" : "Ro'yxatdan o'tish";
+  sw.append(a, " · Ikkalasi bir xil ishlaydi: birinchi kirishda hisob avtomatik ochiladi.");
+}
 const safeNext = next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/kabinet") ? next : "";
 
 async function load() {

@@ -8,6 +8,7 @@
 //
 // Sozlash: BotFather → /setdomain → botingizni tanlang → ahdigital-1pcz.onrender.com
 // Google: Render → Environment → GOOGLE_CLIENT_ID (console.cloud.google.com → Credentials → OAuth client ID)
+// Email (6 xonali kod): Render → Environment → BREVO_API_KEY va EMAIL_FROM (Brevo'da tasdiqlangan email manzil)
 // Ixtiyoriy: Render → Environment → SESSION_SECRET (uzun tasodifiy matn). Bo'lmasa bot tokenidan hosil qilinadi.
 
 const crypto = require("crypto");
@@ -18,8 +19,11 @@ const MAX_AUTH_AGE = 24 * 60 * 60;   // Telegram javobi 24 soatdan eski bo'lmasi
 
 function createAuth({ botToken, store, readOrders, botUsername }) {
   const GOOGLE_ID = process.env.GOOGLE_CLIENT_ID || "";
-  if (!botToken && !GOOGLE_ID) return null;
-  const seed = process.env.SESSION_SECRET || botToken || GOOGLE_ID;
+  const BREVO_KEY = process.env.BREVO_API_KEY || "";
+  const EMAIL_FROM = process.env.EMAIL_FROM || "";
+  const EMAIL_ON = !!(BREVO_KEY && EMAIL_FROM);
+  if (!botToken && !GOOGLE_ID && !EMAIL_ON) return null;
+  const seed = process.env.SESSION_SECRET || botToken || GOOGLE_ID || BREVO_KEY;
   const sessionKey = crypto.createHash("sha256").update("sess:" + seed).digest("hex");
   const tgKey = crypto.createHash("sha256").update(botToken || crypto.randomBytes(32)).digest();
 
@@ -60,6 +64,45 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
 
   const users = () => store.get("foydalanuvchilar", {});
 
+  function login(res, id, profile) {
+    const all = users();
+    const old = all[id] || {};
+    all[id] = { ...profile, id, createdAt: old.createdAt || new Date().toISOString(), lastLogin: new Date().toISOString() };
+    store.set("foydalanuvchilar", all);
+    setCookie(res, makeSession(id), SESSION_DAYS * 86400);
+  }
+
+  // ---------- Email kodlari (xotirada, 10 daqiqa amal qiladi) ----------
+  const CODE_TTL = 10 * 60_000;
+  const codes = new Map();       // email -> { hash, exp, tries, sentAt }
+  const sends = new Map();       // email yoki IP -> [vaqtlar]
+  const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[a-z]{2,}$/i;
+  const codeHash = (email, code) => crypto.createHmac("sha256", sessionKey).update(email + ":" + code).digest("hex");
+
+  function tooMany(key, perHour, minGap = 0) {
+    const now = Date.now();
+    const list = (sends.get(key) || []).filter(t => now - t < 3600_000);
+    sends.set(key, list);
+    if (minGap && list.length && now - list[list.length - 1] < minGap) return "Kod yaqinda yuborildi. 1 daqiqadan keyin qayta so'rang.";
+    if (list.length >= perHour) return "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring.";
+    list.push(now);
+    return "";
+  }
+
+  async function sendCode(email, code) {
+    const text = `AHdigital'ga kirish kodingiz: ${code}\n\nKod 10 daqiqa amal qiladi. Agar siz so'ramagan bo'lsangiz, bu xatga e'tibor bermang.`;
+    const html = `<div style="font-family:Arial,sans-serif;font-size:16px;color:#201e1d">
+      <p>AHdigital'ga kirish kodingiz:</p>
+      <p style="font-size:32px;font-weight:bold;letter-spacing:6px;margin:16px 0">${code}</p>
+      <p style="color:#645c50">Kod 10 daqiqa amal qiladi. Agar siz so'ramagan bo'lsangiz, bu xatga e'tibor bermang.</p></div>`;
+    const r = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: { "api-key": BREVO_KEY, "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ sender: { name: "AHdigital", email: EMAIL_FROM }, to: [{ email }], subject: `Kirish kodi: ${code}`, textContent: text, htmlContent: html })
+    });
+    if (!r.ok) throw new Error(`Brevo ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  }
+
   // Mijozning buyurtmalari: bot orqali bog'langanlari (tgChatId) yoki @username bilan yozilganlari
   function ordersOf(user) {
     const uname = user.username ? "@" + user.username.toLowerCase() : null;
@@ -73,7 +116,36 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
   }
 
   function install(app) {
-    app.get("/api/auth/config", (req, res) => res.json({ bot: botToken ? botUsername() || "" : "", google: GOOGLE_ID }));
+    app.get("/api/auth/config", (req, res) => res.json({ bot: botToken ? botUsername() || "" : "", google: GOOGLE_ID, email: EMAIL_ON }));
+
+    // Email: 1) kod so'rash
+    app.post("/api/auth/email/start", async (req, res) => {
+      if (!EMAIL_ON) return res.status(400).json({ error: "Email bilan kirish sozlanmagan." });
+      const email = String((req.body || {}).email || "").trim().toLowerCase();
+      if (!EMAIL_RE.test(email)) return res.status(400).json({ error: "Email manzilni to'g'ri yozing." });
+      const limit = tooMany("e:" + email, 5, 60_000) || tooMany("ip:" + req.ip, 20);
+      if (limit) return res.status(429).json({ error: limit });
+      const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
+      codes.set(email, { hash: codeHash(email, code), exp: Date.now() + CODE_TTL, tries: 0 });
+      try { await sendCode(email, code); }
+      catch (e) { console.error("Email yuborilmadi:", e.message); codes.delete(email); return res.status(502).json({ error: "Xat yuborib bo'lmadi. Birozdan keyin qayta urinib ko'ring." }); }
+      res.json({ ok: true });
+    });
+
+    // Email: 2) kodni tekshirish
+    app.post("/api/auth/email/verify", (req, res) => {
+      const email = String((req.body || {}).email || "").trim().toLowerCase();
+      const code = String((req.body || {}).code || "").replace(/\D/g, "");
+      const rec = codes.get(email);
+      if (!rec || rec.exp < Date.now()) { codes.delete(email); return res.status(400).json({ error: "Kod eskirgan. Yangi kod so'rang." }); }
+      if (++rec.tries > 5) { codes.delete(email); return res.status(429).json({ error: "Juda ko'p noto'g'ri urinish. Yangi kod so'rang." }); }
+      if (code.length !== 6 || !same(codeHash(email, code), rec.hash)) return res.status(401).json({ error: "Kod noto'g'ri. Qayta tekshiring." });
+      codes.delete(email);
+      const id = "e:" + email;
+      const old = users()[id] || {};
+      login(res, id, { provider: "email", name: old.name || email.split("@")[0], email, username: "", photo: "" });
+      res.json({ ok: true });
+    });
 
     // Google: brauzer Google'dan "ID token" oladi, biz uni Google'ning o'zida tekshiramiz
     app.post("/api/auth/google", async (req, res) => {
@@ -143,7 +215,7 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
 
   // Kirmagan odamni ochiq sahifalardan boshqa joyga qo'ymaymiz
   // Ochiq: kirish sahifasi, shartlar, admin (o'z paroli bor), AI LEGENDS (o'z havolasi bor), API va bot webhook
-  const OPEN = /^\/(kabinet\.html|shartlar\.html|admin\.html|legends(\/.*|\.html)?|healthz|api\/.*|telegram\/.*)$/i;
+  const OPEN = /^\/(welcome\.html|kabinet\.html|shartlar\.html|admin\.html|legends(\/.*|\.html)?|healthz|api\/.*|telegram\/.*)$/i;
   function gate(req, res, next) {
     if (process.env.LOGIN_REQUIRED === "0") return next();
     const p = req.path;
@@ -153,8 +225,8 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
     const s = readSession(req);
     const user = s && users()[s.id];
     if (user) { req.user = user; return next(); }
-    if (userApi) return res.status(401).json({ error: "Avval saytga kiring (Telegram yoki Google)." });
-    res.redirect("/kabinet.html?next=" + encodeURIComponent(req.originalUrl));
+    if (userApi) return res.status(401).json({ error: "Avval saytga kiring (Telegram, Google yoki email)." });
+    res.redirect(p === "/" || p === "/index.html" ? "/welcome.html" : "/welcome.html?next=" + encodeURIComponent(req.originalUrl));
   }
 
   return { install, gate, readSession, checkTelegram };
