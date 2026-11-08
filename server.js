@@ -93,11 +93,11 @@ app.get(["/portfolio", "/portfolio/", "/portfolio/index.html"], (req, res) => re
 createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, store, adminPassword: ADMIN_PASSWORD });
 
 // ---------- Telegram orqali kirish (auth.js) ----------
-// Saytdan foydalanish uchun avval Telegram yoki Google orqali kirish kerak.
+// Saytdan foydalanish uchun avval Telegram, Google yoki email orqali kirish kerak.
 // O'chirish uchun: Render → Environment → LOGIN_REQUIRED = 0
 const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
 if (auth) { auth.install(app); app.use(auth.gate); }
-else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "" }));
+else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
 
 app.use(express.static(PUBLIC_DIR));
 
@@ -112,6 +112,15 @@ if (!fs.existsSync(path.join(PUBLIC_DIR, "index.html"))) {
 
 // Render server ishlayotganini shu manzil orqali tekshiradi
 app.get("/healthz", (req, res) => res.send("ok"));
+
+// Google Play ilovasi (TWA) sayt egasi bir ekanini tekshiradi.
+// Render → Environment: ANDROID_PACKAGE (masalan uz.ahdgital.app) va ANDROID_SHA256 (PWABuilder bergan barmoq izi)
+app.get("/.well-known/assetlinks.json", (req, res) => {
+  const pkg = process.env.ANDROID_PACKAGE, sha = process.env.ANDROID_SHA256;
+  if (!pkg || !sha) return res.status(404).json([]);
+  res.json([{ relation: ["delegate_permission/common.handle_all_urls"],
+    target: { namespace: "android_app", package_name: pkg, sha256_cert_fingerprints: sha.split(",").map(x => x.trim()) } }]);
+});
 
 // Barcha xizmatlar
 app.get("/api/services", (req, res) => {

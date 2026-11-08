@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f5ead8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="AHdigital">
+  <title>AHdigital</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700;800&display=swap">
+  <style>
+    :root {
+      --bg: #f5ead8; --surface: #ebddc5; --card: #fffaf3; --ink: #201e1d; --body: #474238; --muted: #645c50;
+      --line: #e3d3b8; --field: #d6c4a6; --accent: #c67139; --accent-hover: #b2622d; --accent-ink: #643312; --kicker: #8a4a1c;
+      --accent-soft: #ffe3cf; --sage: #3d472b; --sage-soft: #f0fae1; --dark: #201e1d; --dark-text: #f5ead8; --dark-accent: #f6a06b;
+      --head: 60px; --nav: 64px;
+      --safe-t: env(safe-area-inset-top, 0px); --safe-b: env(safe-area-inset-bottom, 0px);
+      --h: Caprasimo, Georgia, serif; --b: Figtree, system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--b); overscroll-behavior-y: none; }
+    a { color: var(--accent); }
+    button { font: inherit; color: inherit; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Karkas ---------- */
+    .top { position: fixed; top: 0; left: 0; right: 0; z-index: 5; padding-top: var(--safe-t); background: var(--bg); border-bottom: 1px solid var(--line); }
+    .top-in { height: var(--head); display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 8px 0 16px; max-width: 640px; margin: 0 auto; }
+    .top h1 { margin: 0; font: 400 22px var(--h); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .back { width: 44px; height: 44px; margin-left: -12px; border: 0; background: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .pill { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 20px; background: var(--ink); color: var(--bg); font-weight: 700; font-size: 14px; text-decoration: none; border: 0; cursor: pointer; }
+    main { padding: calc(var(--head) + var(--safe-t) + 20px) 16px calc(var(--nav) + var(--safe-b) + 32px); max-width: 640px; margin: 0 auto; }
+    .screen { display: flex; flex-direction: column; gap: 18px; animation: in .25s ease; }
+    @keyframes in { from { opacity: 0; transform: translateY(6px); } }
+    @media (prefers-reduced-motion: reduce) { .screen { animation: none; } }
+
+    .nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: var(--card); border-top: 1px solid var(--line); padding: 6px 8px calc(6px + var(--safe-b)); }
+    .nav-in { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 640px; margin: 0 auto; height: var(--nav); }
+    .nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 14px; color: var(--muted); font-size: 11px; font-weight: 700; text-decoration: none; }
+    .nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent-ink); }
+
+    /* ---------- Umumiy bloklar ---------- */
+    h2 { margin: 0; font: 400 24px/1.15 var(--h); }
+    .h1 { margin: 0; font: 400 30px/1.08 var(--h); }
+    .lead { margin: 0; font-size: 15px; line-height: 1.55; color: var(--body); }
+    .small { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 0; }
+    .kicker { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--kicker); }
+    .card { background: var(--surface); border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+    .card.dark { background: var(--dark); color: var(--dark-text); }
+    .card.dark .kicker, .card.dark .price { color: var(--dark-accent); }
+    .card.dark .lead { color: #d6ccbb; }
+    .card.hot { background: #fff8f0; border: 2px solid var(--accent); }
+    .row { display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 12px; }
+    .price { font: 400 24px var(--h); color: var(--accent-ink); }
+    .per { font-size: 13px; color: var(--muted); }
+    .card.dark .per { color: #c9bfae; }
+    .btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 22px; border-radius: 26px; border: 2px solid transparent; background: var(--accent); color: #fff8f2; font-weight: 800; font-size: 15px; text-decoration: none; cursor: pointer; }
+    .btn:active { transform: scale(.98); }
+    .btn.sm { height: 44px; font-size: 14px; padding: 0 18px; }
+    .btn.ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+    .btn.dark { background: var(--ink); color: var(--bg); }
+    .btn.tg { background: #229ed9; color: #fff; }
+    .card.dark .btn { background: var(--dark-accent); color: var(--dark); }
+    .card.dark .btn.ghost { background: transparent; color: var(--dark-text); border-color: var(--dark-text); }
+    .badge { flex: none; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: var(--accent); color: #fff8f2; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { height: 40px; padding: 0 16px; border-radius: 20px; border: 2px solid var(--field); background: transparent; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .ico { flex: none; width: 36px; height: 36px; border-radius: 18px; display: flex; align-items: center; justify-content: center; background: var(--accent); color: #fff8f2; }
+    .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--surface); min-height: 56px; color: var(--ink); text-decoration: none; }
+    .li.white { background: var(--card); border: 1px solid var(--line); }
+    .li b { font-size: 14px; display: block; }
+    .li span.s { font-size: 13px; color: var(--muted); }
+    .num { flex: none; width: 32px; height: 32px; border-radius: 16px; background: var(--card); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--accent-ink); }
+
+    /* Bosh */
+    .hello { display: flex; gap: 14px; align-items: center; }
+    .ava { flex: none; width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: var(--accent); color: #fff8f2; display: flex; align-items: center; justify-content: center; font: 400 24px var(--h); }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .stat { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+    .stat b { display: block; font: 400 20px var(--h); color: var(--accent-ink); }
+    .stat span { font-size: 12px; color: var(--muted); }
+
+    /* Ishlar */
+    .reel { position: relative; display: block; width: 100%; aspect-ratio: 9/16; border-radius: 18px; overflow: hidden; background: var(--surface); border: 0; padding: 0; cursor: pointer; }
+    .reel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .play { position: absolute; right: 8px; bottom: 8px; width: 36px; height: 36px; border-radius: 18px; background: rgba(32,30,29,.78); display: flex; align-items: center; justify-content: center; }
+    .reel-t { font-size: 13px; font-weight: 700; margin-top: 8px; display: block; }
+    .ba { position: relative; height: 300px; border-radius: 20px; overflow: hidden; background: var(--surface); }
+    .ba img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+    .ba .line { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+    .tag { position: absolute; top: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(32,30,29,.8); color: #fff; font-size: 12px; font-weight: 700; }
+    input[type=range] { width: 100%; height: 32px; margin: 0; accent-color: var(--accent); }
+    .viewer { position: fixed; inset: 0; z-index: 20; background: #000; display: flex; align-items: center; justify-content: center; }
+    .viewer video { width: 100%; height: 100%; object-fit: contain; }
+    .viewer button { position: absolute; top: calc(12px + var(--safe-t)); right: 12px; width: 44px; height: 44px; border-radius: 22px; border: 0; background: rgba(255,255,255,.18); color: #fff; font-size: 22px; cursor: pointer; }
+
+    /* Formalar */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-weight: 700; font-size: 14px; }
+    .field input, .field select, .field textarea { min-height: 52px; padding: 0 16px; border-radius: 16px; border: 1px solid var(--field); background: var(--card); font: 16px var(--b); color: var(--ink); width: 100%; }
+    .field select { padding: 0 12px; }
+    .field textarea { padding: 14px 16px; resize: none; }
+    .err { color: #9b2c1f; font-weight: 600; font-size: 14px; margin: 0; }
+    .ok { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; padding: 32px 16px; border-radius: 24px; background: var(--sage-soft); color: var(--sage); }
+    .ok .big { width: 64px; height: 64px; border-radius: 32px; background: var(--sage); display: flex; align-items: center; justify-content: center; }
+
+    /* Chat */
+    .msgs { display: flex; flex-direction: column; gap: 10px; }
+    .msg { max-width: 85%; padding: 12px 14px; border-radius: 18px; font-size: 15px; line-height: 1.45; white-space: pre-wrap; word-wrap: break-word; }
+    .msg.bot { background: var(--surface); align-self: flex-start; border-bottom-left-radius: 6px; }
+    .msg.me { background: var(--accent); color: #fff8f2; align-self: flex-end; border-bottom-right-radius: 6px; }
+    .composer { position: fixed; left: 0; right: 0; bottom: calc(var(--nav) + var(--safe-b) + 12px); z-index: 4; padding: 10px 16px; background: var(--bg); border-top: 1px solid var(--line); }
+    .composer form { display: flex; gap: 8px; max-width: 608px; margin: 0 auto; }
+    .composer input { flex: 1; min-width: 0; height: 48px; padding: 0 16px; border-radius: 24px; border: 1px solid var(--field); background: var(--card); font: 16px var(--b); }
+
+    /* FAQ */
+    details { background: var(--surface); border-radius: 16px; }
+    summary { min-height: 52px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 700; font-size: 14px; cursor: pointer; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-size: 20px; color: var(--accent-ink); }
+    details[open] summary::after { content: "−"; }
+    details p { margin: 0; padding: 0 16px 14px; font-size: 14px; line-height: 1.5; color: var(--body); }
+
+    .st { flex: none; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); }
+    .st.bajarildi { background: #dcefc8; color: #2f3d1e; }
+    .st.bekor { background: #eee; color: var(--muted); }
+    .install { border: 2px dashed var(--accent); background: transparent; }
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div style="display:flex;align-items:center;gap:4px;min-width:0">
+      <button class="back" id="back" type="button" aria-label="Orqaga" hidden><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1 id="title">AHdigital</h1>
+    </div>
+    <a class="pill" href="#buyurtma" id="order-pill">Buyurtma</a>
+  </div>
+</header>
+
+<main id="view" aria-live="polite"></main>
+
+<nav class="nav" aria-label="Asosiy menyu">
+  <div class="nav-in">
+    <a href="#bosh" data-tab="bosh"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Bosh</a>
+    <a href="#xizmatlar" data-tab="xizmatlar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l9 5-9 5-9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 17l9 5 9-5"/></svg>Xizmatlar</a>
+    <a href="#ishlar" data-tab="ishlar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M10 8l6 4-6 4z"/></svg>Ishlar</a>
+    <a href="#kurs" data-tab="kurs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>Kurs</a>
+    <a href="#men" data-tab="men"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Men</a>
+  </div>
+</nav>
+
+<script>
+// ================= Ma'lumotlar =================
+const fmt = n => Number(n).toLocaleString("ru-RU").replace(/[\s,]/g, " ");
+const STATUS = { yangi: "Yangi", tasdiqlandi: "Tasdiqlandi", jarayonda: "Jarayonda", bajarildi: "Bajarildi", bekor: "Bekor qilindi" };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ICON = {
+  play: '<svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
+  card: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg>',
+  link: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+  clock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  chat: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+  phone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',
+  tg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4L3 11l6 2 2 6 3-4 5 4z"/><path d="M9 13l12-9"/></svg>',
+  ig: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>',
+  mail: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+  dl: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>'
+};
+const REELS = [
+  { id: "01", t: "Siz bilmagan web saytlar" }, { id: "02", t: "60 soniyada CSS" },
+  { id: "06", t: "AI va kod" }, { id: "12", t: "Men va loyihalarim" }
+];
+const COURSE = {
+  A: { age: "0–12 yosh", note: "Kichkintoylar AI bilan faqat ota-ona yoki o'qituvchi yonida ishlaydi.", lessons: ["AI nima? Aqlli yordamchi bilan tanishuv", "Kompyuter qanday «o'ylaydi»?", "Yaxshi savol — yaxshi javob", "AI bilan ertak to'qiymiz"] },
+  B: { age: "13–25 yosh", note: "O'quvchi va talabalar uchun: o'qish, dizayn, kod va kontent.", lessons: ["AI va katta til modellari qanday ishlaydi", "Prompt asoslari: rol, vazifa, format", "O'qish uchun AI: halol foydalanish", "Claude bilan yozish va tahrirlash"] },
+  C: { age: "26–70 yosh", note: "Kattalar uchun: ish, kundalik hayot va xavfsizlik — telefondan boshlab.", lessons: ["AI nima va undan qo'rqish kerakmi?", "Telefonda AI bilan ishlashni boshlash", "Yaxshi so'rov yozish san'ati", "Xat, ariza va rasmiy matnlar"] }
+};
+const FAQ = [
+  ["Buyurtma necha kunda tayyor bo'ladi?", "Kichik ishlar — vizitka, video, slayd — odatda 1–3 ish kunida. Katta sayt 7–14 ish kunida."],
+  ["To'lov qanday qilinadi?", "Buyurtma Telegram'da tasdiqlangach, to'lov tafsilotlari yuboriladi. Batafsil — xizmat shartlarida."],
+  ["Natija yoqmasa-chi?", "Har bir ishga 2 marta bepul tuzatish kiritiladi."]
+];
+
+const state = { services: [], me: null, orders: [], filter: "all", pick: null, sent: null, group: "B", ba: 50, chat: [], chatSession: "", busy: false };
+
+// ================= Ekranlar =================
+const screens = {
+  bosh: { title: "AHdigital", render() {
+    const u = state.me;
+    const first = u ? esc((u.name || "").split(" ")[0]) : "";
+    const pop = state.services.filter(s => ["vizitka", "video", "pro"].includes(s.id));
+    return `
+      <div class="hello">
+        ${u && u.photo ? `<img class="ava" src="${esc(u.photo)}" alt="">` : `<span class="ava" aria-hidden="true">${first ? first[0] : "A"}</span>`}
+        <div><p class="small">Xush kelibsiz${first ? "," : ""}</p><p class="h1" style="font-size:26px">${first || "AHdigital"}</p></div>
+      </div>
+      <p class="lead">Saytlar, Reels videolar, slayd va postlar — Claude yordamida tez, chiroyli va arzon.</p>
+      <div class="stats"><div class="stat"><b>7</b><span>xil xizmat</span></div><div class="stat"><b>20 000</b><span>so'mdan</span></div><div class="stat"><b>1 kun</b><span>kichik ishlar</span></div></div>
+      <div style="display:flex;gap:10px"><a class="btn" style="flex:1" href="#buyurtma">Buyurtma berish</a><a class="btn ghost" style="flex:1" href="#chat">AI'dan so'rash</a></div>
+      <h2>Mashhur xizmatlar</h2>
+      ${pop.map(serviceCard).join("")}
+      <a class="btn ghost" href="#xizmatlar">Barcha xizmatlar</a>
+      ${state.orders.length ? `<h2>Oxirgi buyurtmangiz</h2>${orderList(state.orders.slice(0, 1))}` : ""}`;
+  } },
+
+  xizmatlar: { title: "Xizmatlar", render() {
+    const chips = [["all", "Barchasi"], ["once", "Bir martalik"], ["plan", "Obuna"], ["course", "Kurs"]];
+    const list = state.services.filter(s => state.filter === "all" || s.group === state.filter);
+    return `
+      <p class="lead">Bir martalik buyurtma, obuna yoki o'quv kursi — o'zingizga qulayini tanlang.</p>
+      <div class="chips" role="group" aria-label="Turi bo'yicha saralash">${chips.map(([id, l]) => `<button class="chip" type="button" data-filter="${id}" aria-pressed="${state.filter === id}">${l}</button>`).join("")}</div>
+      ${list.map(serviceCard).join("") || '<p class="small">Yuklanmoqda…</p>'}
+      <a class="li white" href="/shartlar.html"><span style="flex:1"><b>Xizmat shartlari</b></span><span aria-hidden="true">›</span></a>`;
+  } },
+
+  buyurtma: { title: "Buyurtma", back: true, render() {
+    if (state.sent) return `
+      <div class="ok" role="status">
+        <span class="big"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#f0fae1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></span>
+        <b style="font:400 26px var(--h)">Buyurtma qabul qilindi!</b>
+        <span style="font-size:15px;line-height:1.5">Rahmat! Tez orada bog'lanaman. Holatini «Men» bo'limida kuzatasiz.</span>
+        ${state.sent.telegramLink ? `<a class="btn tg" style="width:100%" href="${esc(state.sent.telegramLink)}" target="_blank" rel="noopener">Telegramda tasdiqlash</a>` : ""}
+        <button class="btn ghost sm" type="button" data-act="again">Yana buyurtma berish</button>
+      </div>`;
+    const s = state.services.find(x => x.id === state.pick) || state.services[1] || state.services[0];
+    const u = state.me || {};
+    const contact = u.username ? "@" + u.username : (u.email || "");
+    return `
+      ${s ? `<div class="card row"><div><span class="kicker">Tanlangan xizmat</span><br><b style="font-size:17px">${esc(s.name)}</b></div><b class="price" style="font-size:20px;white-space:nowrap">${fmt(s.price)} so'm</b></div>` : ""}
+      <form id="order" class="screen" style="gap:16px" novalidate>
+        <div class="field"><label for="o-name">Ismingiz</label><input id="o-name" name="name" autocomplete="name" value="${esc(u.name || "")}" required></div>
+        <div class="field"><label for="o-contact">Telefon yoki Telegram</label><input id="o-contact" name="contact" inputmode="tel" placeholder="+998 90 123 45 67 yoki @username" value="${esc(contact)}" required><span class="small">Shu raqam yoki username orqali bog'lanaman.</span></div>
+        <div class="field"><label for="o-service">Xizmat</label><select id="o-service" name="serviceId">${state.services.map(x => `<option value="${x.id}" ${s && x.id === s.id ? "selected" : ""}>${esc(x.name)} — ${fmt(x.price)} so'm / ${esc(x.period)}</option>`).join("")}</select></div>
+        <div class="field"><label for="o-msg">Izoh <span style="font-weight:400;color:var(--muted)">(ixtiyoriy)</span></label><textarea id="o-msg" name="message" rows="4" maxlength="1000" placeholder="Nima kerakligini qisqacha yozing"></textarea></div>
+        <p class="err" id="o-err" role="alert" hidden></p>
+        <button class="btn" type="submit" id="o-send">Buyurtmani yuborish</button>
+        <p class="small" style="text-align:center">Yuborish bilan <a href="/shartlar.html">xizmat shartlariga</a> rozilik bildirasiz.</p>
+      </form>`;
+  } },
+
+  ishlar: { title: "Ishlarim", render() {
+    const p = state.ba;
+    return `
+      <div><p class="h1">Claude bilan yasaganlarim</p><p class="lead" style="margin-top:6px">Instagram Reels — ssenariy, ovoz va montaj AI yordamida. Bossangiz, ovoz bilan ochiladi.</p></div>
+      <div class="grid2">${REELS.map(r => `<div><button class="reel" type="button" data-reel="${r.id}" aria-label="Videoni ko'rish: ${esc(r.t)}"><img src="/reel-${r.id}.jpg" alt="" loading="lazy"><span class="play">${ICON.play}</span></button><span class="reel-t">${esc(r.t)}</span></div>`).join("")}</div>
+      <h2>Birinchi saytim va hozirgisi</h2>
+      <div class="ba">
+        <img src="/hozir.jpg" alt="Hozirgi AHdigital sayti">
+        <img src="/oldin.jpg" alt="Birinchi versiya" id="ba-old" style="clip-path:inset(0 ${100 - p}% 0 0)">
+        <div class="line" id="ba-line" style="left:calc(${p}% - 1px)"></div>
+        <span class="tag" style="left:10px">Oldin</span><span class="tag" style="right:10px">Hozir</span>
+      </div>
+      <label for="ba" class="small">Solishtirish uchun suring</label>
+      <input id="ba" type="range" min="0" max="100" value="${p}">
+      <a class="btn ghost" href="/portfolio.html">To'liq portfolio</a>`;
+  } },
+
+  kurs: { title: "AI LEGENDS", render() {
+    const g = COURSE[state.group];
+    const legends = state.services.find(s => s.id === "legends");
+    return `
+      <section class="card dark">
+        <span class="kicker">O'quv kursi · 12 dars</span>
+        <p class="h1">AI bilan ishlashni noldan o'rganing</p>
+        <p class="lead">Har bir dars 40 daqiqalik video va slayd. Uy ishi slayd oxirida. Savollar — guruhning Telegram chatida.</p>
+        <div><b class="price" style="font-size:28px">${fmt(legends ? legends.price : 400000)}</b> <span class="per">so'm / oy</span></div>
+        <a class="btn" href="#buyurtma" data-pick="legends">Kursga yozilish</a>
+        <a class="btn ghost" href="/legends">Menda shaxsiy havola bor</a>
+      </section>
+      <h2>Guruhingizni tanlang</h2>
+      <div class="chips" role="group" aria-label="Yosh guruhi" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr))">
+        ${Object.keys(COURSE).map(id => `<button class="chip" style="height:64px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center" type="button" data-group="${id}" aria-pressed="${state.group === id}"><b style="font-size:16px">${id} guruh</b><span style="font-size:12px;font-weight:600">${COURSE[id].age}</span></button>`).join("")}
+      </div>
+      <p class="small">${esc(g.note)}</p>
+      <h2>Darslar</h2>
+      <ol class="list">${g.lessons.map((t, i) => `<li class="li"><span class="num">${i + 1}</span><span style="font-size:14px;font-weight:600">${esc(t)}</span></li>`).join("")}</ol>
+      <span style="font-size:13px;font-weight:700;color:var(--accent-ink)">va yana 8 ta dars…</span>
+      <h2>Qanday ishlaydi</h2>
+      <div class="li white"><span class="ico">${ICON.card}</span><span style="font-size:14px;line-height:1.5"><b>To'lov qilasiz</b> Telegram orqali.</span></div>
+      <div class="li white"><span class="ico">${ICON.link}</span><span style="font-size:14px;line-height:1.5"><b>Shaxsiy havola olasiz</b> — faqat sizga.</span></div>
+      <div class="li white"><span class="ico">${ICON.clock}</span><span style="font-size:14px;line-height:1.5"><b>Har dars 48 soat ochiq</b> — dushanba, chorshanba, juma 9:00 da.</span></div>`;
+  } },
+
+  men: { title: "Men", render() {
+    const u = state.me;
+    return `
+      ${u ? `<div class="card"><div class="hello">${u.photo ? `<img class="ava" src="${esc(u.photo)}" alt="">` : `<span class="ava" aria-hidden="true">${esc((u.name || "?")[0])}</span>`}<div style="min-width:0"><b style="font-size:18px">${esc(u.name)}</b><p class="small">${esc(u.username ? "@" + u.username : u.email || "")}</p></div></div></div>` : ""}
+      <h2>Buyurtmalarim</h2>
+      ${state.orders.length ? orderList(state.orders) : '<p class="small">Hozircha buyurtma yo\'q.</p>'}
+      <div class="install card" id="install" hidden></div>
+      <h2>Bog'lanish</h2>
+      <a class="li white" href="tel:+998956322905"><span class="ico" style="background:var(--sage)">${ICON.phone}</span><span><b>Telefon</b><span class="s">+998 95 632 29 05</span></span></a>
+      <a class="li white" href="https://t.me/Abdulkhamid_2905" target="_blank" rel="noopener"><span class="ico" style="background:#229ed9">${ICON.tg}</span><span><b>Telegram</b><span class="s">@Abdulkhamid_2905</span></span></a>
+      <a class="li white" href="https://t.me/ahdigital_01" target="_blank" rel="noopener"><span class="ico" style="background:#229ed9">${ICON.tg}</span><span><b>Telegram kanal</b><span class="s">@ahdigital_01</span></span></a>
+      <a class="li white" href="https://instagram.com/ah.digital_01" target="_blank" rel="noopener"><span class="ico" style="background:#c13584">${ICON.ig}</span><span><b>Instagram</b><span class="s">@ah.digital_01</span></span></a>
+      <a class="li white" href="mailto:khamidullayev0126@gmail.com"><span class="ico">${ICON.mail}</span><span style="min-width:0"><b>Gmail</b><span class="s">khamidullayev0126@gmail.com</span></span></a>
+      <h2>Ko'p so'raladi</h2>
+      ${FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}
+      <a class="li white" href="/shartlar.html"><span style="flex:1"><b>Xizmat shartlari</b></span><span aria-hidden="true">›</span></a>
+      ${u ? '<button class="btn ghost" type="button" data-act="logout">Chiqish</button>' : ""}`;
+  } },
+
+  chat: { title: "AI yordamchi", back: true, render() {
+    const msgs = state.chat.length ? state.chat : [{ who: "bot", text: "Salom! Men AHdigital'ning AI yordamchisiman. Xizmatlar, narxlar yoki kurs haqida so'rang." }];
+    return `<div class="msgs" id="msgs">${msgs.map(m => `<div class="msg ${m.who}">${esc(m.text)}</div>`).join("")}${state.busy ? '<div class="msg bot">…</div>' : ""}</div><div style="height:72px"></div>
+      <div class="composer"><form id="chat-form"><input id="chat-in" placeholder="Savolingizni yozing" autocomplete="off" maxlength="1000" aria-label="Xabar"><button class="btn sm" type="submit" ${state.busy ? "disabled" : ""}>Yuborish</button></form></div>`;
+  } }
+};
+
+function serviceCard(s) {
+  const cls = s.legend ? "dark" : s.featured ? "hot" : "";
+  return `<article class="card ${cls}">
+    <div class="row" style="align-items:flex-start"><div><span class="kicker">${esc(s.kicker)}</span><h2 style="margin-top:4px">${esc(s.name)}</h2></div>${s.featured ? '<span class="badge">Ommabop</span>' : ""}</div>
+    <p class="lead" style="font-size:14px">${esc(s.desc)}</p>
+    <div class="row"><div><b class="price">${fmt(s.price)}</b> <span class="per">so'm / ${esc(s.period)}</span></div><a class="btn sm" href="#buyurtma" data-pick="${s.id}">Tanlash</a></div>
+  </article>`;
+}
+
+function orderList(list) {
+  return `<ul class="list">${list.map(o => `<li class="li white"><span style="flex:1;min-width:0"><b>${esc(o.serviceName)}</b><span class="s">#${esc(o.code)} · ${fmt(o.price)} so'm · ${new Date(o.createdAt).toLocaleDateString("uz-UZ")}</span></span><span class="st ${esc(o.status)}">${STATUS[o.status] || esc(o.status)}</span></li>`).join("")}</ul>`;
+}
+
+// ================= Navigatsiya =================
+const view = document.getElementById("view");
+function current() { const h = location.hash.slice(1); return screens[h] ? h : "bosh"; }
+function render() {
+  const name = current(), sc = screens[name];
+  document.getElementById("title").textContent = sc.title;
+  document.title = sc.title === "AHdigital" ? "AHdigital" : sc.title + " — AHdigital";
+  document.getElementById("back").hidden = !sc.back;
+  document.getElementById("order-pill").hidden = name === "buyurtma" || name === "chat";
+  const tab = name === "buyurtma" || name === "chat" ? "" : name;
+  document.querySelectorAll(".nav a").forEach(a => { if (a.dataset.tab === tab) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  view.innerHTML = `<div class="screen">${sc.render()}</div>`;
+  if (name === "men") showInstall();
+  if (name === "chat") { scrollTo(0, document.body.scrollHeight); }
+}
+let lastTab = "bosh";
+addEventListener("hashchange", () => { if (screens[current()] && !screens[current()].back) lastTab = current(); render(); scrollTo(0, 0); if (current() === "chat") scrollTo(0, document.body.scrollHeight); });
+document.getElementById("back").addEventListener("click", () => { if (history.length > 1) history.back(); else location.hash = lastTab; });
+
+// ================= Harakatlar =================
+document.addEventListener("click", async e => {
+  const t = e.target.closest("[data-filter],[data-pick],[data-group],[data-reel],[data-act]");
+  if (!t) return;
+  if (t.dataset.filter) { state.filter = t.dataset.filter; render(); }
+  if (t.dataset.pick) { state.pick = t.dataset.pick; state.sent = null; }
+  if (t.dataset.group) { state.group = t.dataset.group; render(); }
+  if (t.dataset.reel) openReel(t.dataset.reel);
+  if (t.dataset.act === "again") { state.sent = null; render(); }
+  if (t.dataset.act === "logout") { await fetch("/api/auth/logout", { method: "POST" }); location.href = "/welcome.html"; }
+  if (t.dataset.act === "install" && deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; showInstall(); }
+});
+
+document.addEventListener("input", e => {
+  if (e.target.id !== "ba") return;
+  state.ba = Number(e.target.value);
+  document.getElementById("ba-old").style.clipPath = `inset(0 ${100 - state.ba}% 0 0)`;
+  document.getElementById("ba-line").style.left = `calc(${state.ba}% - 1px)`;
+});
+
+document.addEventListener("submit", async e => {
+  e.preventDefault();
+  if (e.target.id === "order") return sendOrder(e.target);
+  if (e.target.id === "chat-form") return sendChat();
+});
+
+async function sendOrder(form) {
+  const err = document.getElementById("o-err"), btn = document.getElementById("o-send");
+  const body = Object.fromEntries(new FormData(form));
+  err.hidden = true;
+  if ((body.name || "").trim().length < 2) { err.textContent = "Ismingizni kiriting."; err.hidden = false; return; }
+  if ((body.contact || "").trim().length < 5) { err.textContent = "Telefon raqam yoki Telegram username kiriting."; err.hidden = false; return; }
+  btn.disabled = true; btn.textContent = "Yuborilmoqda…";
+  try {
+    const r = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await r.json().catch(() => ({}));
+    if (r.status === 401) { location.href = "/welcome.html?next=" + encodeURIComponent("/app.html#buyurtma"); return; }
+    if (!r.ok) throw new Error(data.error || "Buyurtma yuborilmadi.");
+    state.sent = data; loadMe(); render(); scrollTo(0, 0);
+  } catch (x) {
+    err.textContent = x.message === "Failed to fetch" ? "Internet bilan bog'lanib bo'lmadi." : x.message; err.hidden = false;
+    btn.disabled = false; btn.textContent = "Buyurtmani yuborish";
+  }
+}
+
+async function sendChat() {
+  const input = document.getElementById("chat-in");
+  const text = input.value.trim();
+  if (!text || state.busy) return;
+  state.chat.push({ who: "me", text }); state.busy = true; render();
+  try {
+    const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text, session: state.chatSession }) });
+    const d = await r.json();
+    if (d.session) state.chatSession = d.session;
+    state.chat.push({ who: "bot", text: d.reply || d.error || "Xatolik yuz berdi." });
+  } catch { state.chat.push({ who: "bot", text: "Internet bilan bog'lanib bo'lmadi. Keyinroq urinib ko'ring." }); }
+  state.busy = false; render();
+  const i = document.getElementById("chat-in"); if (i) i.focus();
+}
+
+function openReel(id) {
+  const v = document.createElement("div");
+  v.className = "viewer"; v.setAttribute("role", "dialog"); v.setAttribute("aria-label", "Video");
+  v.innerHTML = `<video src="/reel-${id}.mp4" poster="/reel-${id}.jpg" controls autoplay playsinline></video><button type="button" aria-label="Yopish">×</button>`;
+  const close = () => { v.remove(); removeEventListener("keydown", onKey); };
+  const onKey = e => { if (e.key === "Escape") close(); };
+  v.querySelector("button").onclick = close;
+  addEventListener("keydown", onKey);
+  document.body.append(v);
+  v.querySelector("button").focus();
+}
+
+// ================= O'rnatish (PWA) =================
+let deferredPrompt = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; if (current() === "men") showInstall(); });
+addEventListener("appinstalled", () => { deferredPrompt = null; showInstall(); });
+function showInstall() {
+  const box = document.getElementById("install");
+  if (!box) return;
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (standalone) { box.hidden = true; return; }
+  if (deferredPrompt) {
+    box.innerHTML = `<b>Ilovani telefoningizga o'rnating</b><p class="small">Bosh ekranda belgi paydo bo'ladi va ilova to'liq ekranda ochiladi.</p><button class="btn" type="button" data-act="install">${ICON.dl} O'rnatish</button>`;
+    box.hidden = false;
+  } else if (ios) {
+    box.innerHTML = `<b>iPhone'ga o'rnatish</b><p class="small">Safari'da pastdagi <b>Ulashish</b> tugmasini (kvadrat va strelka) bosing → <b>«Bosh ekranga qo'shish»</b> (Add to Home Screen).</p>`;
+    box.hidden = false;
+  } else box.hidden = true;
+}
+
+// ================= Yuklash =================
+async function loadMe() {
+  try {
+    const r = await fetch("/api/me");
+    if (r.status === 401) { location.href = "/welcome.html?next=" + encodeURIComponent("/app.html" + location.hash); return; }
+    if (r.ok) { const d = await r.json(); state.me = d.user; state.orders = d.orders || []; }
+  } catch {}
+  render();
+}
+(async () => {
+  render();
+  try { state.services = await (await fetch("/api/services")).json(); } catch {}
+  render();
+  loadMe();
+})();
+if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+</script>
+</body>
+</html>

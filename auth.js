@@ -215,7 +215,7 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
 
   // Kirmagan odamni ochiq sahifalardan boshqa joyga qo'ymaymiz
   // Ochiq: kirish sahifasi, shartlar, admin (o'z paroli bor), AI LEGENDS (o'z havolasi bor), API va bot webhook
-  const OPEN = /^\/(welcome\.html|kabinet\.html|shartlar\.html|admin\.html|legends(\/.*|\.html)?|healthz|api\/.*|telegram\/.*)$/i;
+  const OPEN = /^\/(welcome\.html|offline\.html|kabinet\.html|shartlar\.html|admin\.html|legends(\/.*|\.html)?|healthz|api\/.*|telegram\/.*)$/i;
   function gate(req, res, next) {
     if (process.env.LOGIN_REQUIRED === "0") return next();
     const p = req.path;
