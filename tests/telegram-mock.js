@@ -7,7 +7,7 @@ global.fetch = async (url, options = {}) => {
   const u = String(url);
   if (u.includes("api.telegram.org")) {
     const method = u.split("/").pop();
-    const body = options.body ? JSON.parse(options.body) : {};
+    const body = typeof options.body === "string" ? JSON.parse(options.body) : options.body instanceof FormData ? Object.fromEntries([...options.body].map(([k, v]) => [k, typeof v === "string" ? v : `[fayl ${v.size} bayt]`])) : {};
     fs.appendFileSync(process.env.TG_LOG, JSON.stringify({ method, body }) + "\n");
     const result = method === "getMe" ? { username: "test_bot" } : { message_id: 1 };
     return new Response(JSON.stringify({ ok: true, result }), { headers: { "content-type": "application/json" } });

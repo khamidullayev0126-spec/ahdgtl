@@ -42,6 +42,27 @@ function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeO
     return data;
   };
 
+  // Fayl yuborish (zaxira nusxa uchun): buf — Buffer yoki matn
+  const sendDocument = async (chatId, filename, buf, caption = "") => {
+    const form = new FormData();
+    form.append("chat_id", String(chatId));
+    form.append("document", new Blob([buf], { type: "application/json" }), filename);
+    if (caption) form.append("caption", caption);
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, { method: "POST", body: form });
+    const data = await res.json().catch(() => ({ ok: false, description: "javob o'qilmadi" }));
+    if (!data.ok) console.error("Telegram sendDocument xatosi:", data.description);
+    return data;
+  };
+  // Egasiga zaxira faylini yuborish
+  async function sendBackup(reason = "") {
+    if (!ownerChatId) return { ok: false };
+    const snap = store.snapshot();
+    const day = snap.olingan.slice(0, 10);
+    const n = k => { const v = snap.data[k]; return Array.isArray(v) ? v.length : v ? Object.keys(v).length : 0; };
+    return sendDocument(ownerChatId, `ahdigital-zaxira-${day}.json`, Buffer.from(JSON.stringify(snap, null, 1)),
+      `🗄 Zaxira nusxa${reason ? " · " + reason : ""}\nBuyurtmalar: ${n("orders")}, foydalanuvchilar: ${n("foydalanuvchilar")}, o'quvchilar: ${n("legends-oquvchilar")}\nFaylni saqlab qo'ying — ichida mijozlar ma'lumoti bor, hech kimga bermang.`);
+  }
+
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET || crypto.createHash("sha256").update(token).digest("hex").slice(0, 32);
   let username = "";
   const timers = new Map();      // buyurtma kodi -> setTimeout
@@ -334,6 +355,9 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
       if (target) {
         await send(target, `Abdulhamid: ${text}`);
         await send(chatId, "✔ Javobingiz mijozga yuborildi.");
+      } else if (text === "/zaxira") {
+        const r = await sendBackup("so'rov bo'yicha");
+        if (!r.ok) await send(chatId, "⚠️ Zaxira faylini yuborib bo'lmadi: " + (r.description || "xato"));
       } else if (agent) {
         agent.onOwnerMessage(text);          // siz yozgan har bir xabar — shaxsiy AI agentga
       } else if (text === "/start") {
@@ -415,12 +439,13 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
       console.log("🧠 Shaxsiy AI agent yoqildi (egasi uchun)");
       await api("setMyCommands", { commands: [
         { command: "yordam", description: "Agent nimalar qila oladi" },
-        { command: "yangi", description: "Suhbatni yangidan boshlash" }
+        { command: "yangi", description: "Suhbatni yangidan boshlash" },
+        { command: "zaxira", description: "Barcha ma'lumotlarning zaxira faylini olish" }
       ], scope: { type: "chat", chat_id: Number(ownerChatId) } });
     }
   }
 
-  return { start, onNewOrder, deepLink, handleUpdate, notifyStatus, username: () => username };
+  return { start, onNewOrder, deepLink, handleUpdate, notifyStatus, sendBackup, sendOwner: text => (ownerChatId ? send(ownerChatId, text) : null), username: () => username };
 }
 
 module.exports = { createBot };

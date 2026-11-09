@@ -125,6 +125,19 @@ test("holat o'zgarsa, mijozga uning tilida Telegram xabari boradi", async () => 
   assert.match(msg.body.text, /готов/);
 });
 
+test("egasi botga /zaxira yozsa — zaxira fayli keladi", async () => {
+  const crypto = require("crypto");
+  const secret = crypto.createHash("sha256").update("123456:TEST-TOKEN").digest("hex").slice(0, 32);
+  const r = await fetch(base + "/telegram/webhook", { method: "POST", headers: { ...JSON_H, "X-Telegram-Bot-Api-Secret-Token": secret },
+    body: JSON.stringify({ update_id: 1, message: { message_id: 1, chat: { id: Number(OWNER_ID), type: "private" }, from: { id: Number(OWNER_ID) }, text: "/zaxira" } }) });
+  assert.equal(r.status, 200);
+  let doc;
+  for (let i = 0; i < 30 && !doc; i++) { await new Promise(r => setTimeout(r, 100)); doc = srv.telegram().find(x => x.method === "sendDocument"); }
+  assert.ok(doc, "zaxira fayli yuborilmadi");
+  assert.equal(doc.body.chat_id, OWNER_ID);
+  assert.match(doc.body.caption, /Zaxira/);
+});
+
 // Bu test oxirida turadi: IP'ni 15 daqiqaga bloklaydi
 // (oldingi testdagi "admin123" urinishi ham hisoblanadi — shuning uchun "ko'pi bilan 5 ta" deb tekshiramiz)
 test("admin: 5 marta noto'g'ri paroldan keyin bloklanadi (to'g'ri parol bilan ham)", async () => {

@@ -39,7 +39,17 @@ try {
 const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 
 // ---------- Buyurtmalar: doimiy omborda (store.js — Upstash Redis yoki data/ papkasi) ----------
-const store = createStore({ dataDir: DATA_DIR });
+// Bazaga yozib bo'lmasa — egasiga Telegram orqali darhol xabar (bot pastda yaratiladi)
+let lastStoreAlert = 0;
+const store = createStore({ dataDir: DATA_DIR, onError: msg => {
+  console.error("❌", msg);
+  try {
+    if (Date.now() - lastStoreAlert > 10 * 60_000 && bot) {
+      lastStoreAlert = Date.now();
+      bot.sendOwner(`⚠️ Diqqat: ${msg}\nMa'lumot hozircha server xotirasida turibdi. Upstash ishlayotganini tekshiring.`);
+    }
+  } catch {}
+} });
 const readOrders = () => store.get("orders", []);
 const writeOrders = orders => store.set("orders", orders);
 
@@ -243,7 +253,32 @@ app.delete("/api/orders/:id", requireAdmin, (req, res) => {
 });
 
 // Avval ombordagi ma'lumotlar yuklanadi, keyin sayt ishga tushadi
-store.init().catch(err => { console.error("❌", err.message); process.exit(1); }).then(() => app.listen(PORT, async () => {
+// ---------- Zaxira nusxalar ----------
+// Har kuni: bazaning o'zida (14 kun saqlanadi). Har 7 kunda: egasining Telegram'iga fayl.
+async function runBackups() {
+  try { if (await store.backup()) console.log("🗄  Kunlik zaxira saqlandi"); }
+  catch (e) { console.error("Zaxira xatosi:", e.message); }
+  try {
+    const last = store.get("zaxira-holat", {}).telegram || 0;
+    if (bot && Date.now() - last > 7 * 86400_000) {
+      const r = await bot.sendBackup("haftalik");
+      if (r && r.ok) store.set("zaxira-holat", { telegram: Date.now() });
+    }
+  } catch (e) { console.error("Telegram zaxira xatosi:", e.message); }
+}
+
+// ---------- To'xtashdan oldin ma'lumotni yozib ulgurish (Render deployda SIGTERM yuboradi) ----------
+let server = null;
+async function shutdown(sig) {
+  console.log(`⏹  ${sig}: ma'lumotlar bazaga yozilmoqda...`);
+  if (server) server.close();
+  await Promise.race([store.flush(), new Promise(r => setTimeout(r, 8000))]);
+  process.exit(0);
+}
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+
+store.init().catch(err => { console.error("❌", err.message); process.exit(1); }).then(() => server = app.listen(PORT, async () => {
   console.log(`✅ Sayt ishga tushdi: http://localhost:${PORT}`);
   console.log(`🔐 Admin panel:      http://localhost:${PORT}/admin.html`);
   if (!PASSWORD_ON) {
@@ -251,4 +286,5 @@ store.init().catch(err => { console.error("❌", err.message); process.exit(1); 
   }
   if (bot) await bot.start(app).catch(err => console.error("Botni ishga tushirib bo'lmadi:", err.message));
   else console.log("ℹ️  TELEGRAM_BOT_TOKEN yo'q — bot o'chiq.");
+  if (!process.env.AHD_TEST) { setTimeout(runBackups, 60_000); setInterval(runBackups, 24 * 3600_000).unref(); }
 }));
