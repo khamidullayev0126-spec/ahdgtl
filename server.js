@@ -163,7 +163,8 @@ app.post("/api/orders", rateLimit, async (req, res) => {
     price: service.price,
     message,
     status: "yangi",
-    tgUserId: req.user ? req.user.id : undefined,   // kirgan foydalanuvchi — kabinetda ko'rinadi
+    tgUserId: req.user ? req.user.id : undefined,
+    lang: ["uz", "ru", "en"].includes(req.body.lang) ? req.body.lang : "uz",   // mijozga xabar shu tilda boradi   // kirgan foydalanuvchi — kabinetda ko'rinadi
     createdAt: new Date().toISOString()
   };
 
@@ -181,7 +182,7 @@ app.get("/api/orders", requireAdmin, (req, res) => {
 });
 
 // Admin: buyurtma holatini o'zgartirish
-app.patch("/api/orders/:id", requireAdmin, (req, res) => {
+app.patch("/api/orders/:id", requireAdmin, async (req, res) => {
   const status = String(req.body.status || "");
   if (!STATUSES.includes(status)) {
     return res.status(400).json({ error: "Noto'g'ri holat." });
@@ -189,9 +190,13 @@ app.patch("/api/orders/:id", requireAdmin, (req, res) => {
   const orders = readOrders();
   const order = orders.find(o => o.id === req.params.id);
   if (!order) return res.status(404).json({ error: "Buyurtma topilmadi." });
+  const changed = order.status !== status;
   order.status = status;
   writeOrders(orders);
-  res.json(order);
+  // Holat o'zgarsa — bot mijozga avtomatik xabar yozadi (tasdiqlandi / jarayonda / bajarildi / bekor)
+  let notified = null;
+  if (changed && bot) notified = await bot.notifyStatus(order).catch(e => ({ ok: false, reason: e.message }));
+  res.json({ ...order, notified });
 });
 
 // Admin: buyurtmani o'chirish

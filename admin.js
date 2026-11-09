@@ -72,7 +72,8 @@ function renderOrders(orders) {
       select.appendChild(opt);
     });
     select.addEventListener("change", async () => {
-      await api(`api/orders/${o.id}`, { method: "PATCH", body: JSON.stringify({ status: select.value }) });
+      const r = await api(`api/orders/${o.id}`, { method: "PATCH", body: JSON.stringify({ status: select.value }) });
+      if (r && r.notified) toast(r.notified.ok ? "✉️ Mijozga Telegram orqali xabar yuborildi" : `ℹ️ Mijozga xabar ketmadi: ${r.notified.reason}`);
       loadOrders();
     });
     tdStatus.appendChild(select);
@@ -139,4 +140,14 @@ setInterval(() => { if (password && !ordersBox.hidden) loadOrders(); }, 30000);
 if (location.protocol === "file:") {
   loginStatus.className = "form-status error";
   loginStatus.textContent = "Admin panel faqat internetdagi saytda yoki npm start bilan ishlaydi.";
+}
+
+// Kichik bildirishnoma (pastda 4 soniya turadi)
+function toast(text) {
+  const t = document.createElement("div");
+  t.textContent = text;
+  t.setAttribute("role", "status");
+  t.style.cssText = "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#201e1d;color:#f5ead8;padding:12px 18px;border-radius:14px;font:600 14px Figtree,system-ui,sans-serif;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:90vw";
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
 }

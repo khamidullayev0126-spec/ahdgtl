@@ -146,8 +146,29 @@ ${priceList}`;
     setSettings: patch => store.set("biznes-sozlama", { ...settings(), ...patch })
   };
 
+  // ---------- Buyurtma holati o'zgarsa — mijozga avtomatik xabar ----------
+  // Kimga: botni ochgan mijoz (tgChatId) yoki saytga Telegram bilan kirgan mijoz (Telegram ID — kirishda "xabar yozish" ruxsatini bergan)
+  const STATUS_MSG = {
+    tasdiqlandi: { uz: "✅ Buyurtmangiz tasdiqlandi! Tez orada ishni boshlayman.", ru: "✅ Ваш заказ подтверждён! Скоро начну работу.", en: "✅ Your order is confirmed! I'll start working on it soon." },
+    jarayonda: { uz: "🛠 Buyurtmangiz ustida ishlayapman.", ru: "🛠 Работаю над вашим заказом.", en: "🛠 I'm working on your order." },
+    bajarildi: { uz: "🎉 Buyurtmangiz tayyor! Natijani shu yerda yuboraman — ko'rib chiqing. Tuzatish kerak bo'lsa, yozing.", ru: "🎉 Ваш заказ готов! Отправлю результат здесь — посмотрите. Если нужны правки, напишите.", en: "🎉 Your order is ready! I'll send the result here — take a look. If you need any changes, just write." },
+    bekor: { uz: "❌ Buyurtmangiz bekor qilindi. Savol bo'lsa, shu yerga yozing.", ru: "❌ Ваш заказ отменён. Если есть вопросы, напишите сюда.", en: "❌ Your order was cancelled. If you have questions, write here." }
+  };
+  const ORDER_WORD = { uz: "Buyurtma", ru: "Заказ", en: "Order" };
+  const CABINET = { uz: "Holatini kabinetda kuzating", ru: "Статус — в личном кабинете", en: "Track it in your account" };
+  async function notifyStatus(order) {
+    const msg = STATUS_MSG[order.status];
+    if (!msg) return null;                       // "yangi" holatida mijozga yozilmaydi
+    const chatId = order.tgChatId || (/^\d+$/.test(String(order.tgUserId || "")) ? order.tgUserId : null);
+    if (!chatId) return { ok: false, reason: "mijoz Telegram orqali bog'lanmagan" };
+    const lang = ["uz", "ru", "en"].includes(order.lang) ? order.lang : "uz";
+    const site = publicUrl ? `\n${CABINET[lang]}: ${publicUrl.replace(/\/$/, "")}/kabinet.html?lang=${lang}` : "";
+    const r = await send(chatId, `${ORDER_WORD[lang]} #${order.code} · ${order.serviceName}\n\n${msg[lang]}${site}`);
+    return r.ok ? { ok: true } : { ok: false, reason: r.description || "Telegram xatosi" };
+  }
+
   const agent = ownerChatId ? createAgent({
-    api, send, ownerChatId, services, readOrders, writeOrders, store, business,
+    api, send, ownerChatId, services, readOrders, writeOrders, store, business, notifyStatus,
     channel: process.env.TELEGRAM_CHANNEL || "",
     caller, sendPhoto
   }) : null;
@@ -399,7 +420,7 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
     }
   }
 
-  return { start, onNewOrder, deepLink, handleUpdate, username: () => username };
+  return { start, onNewOrder, deepLink, handleUpdate, notifyStatus, username: () => username };
 }
 
 module.exports = { createBot };

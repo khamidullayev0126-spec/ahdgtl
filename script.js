@@ -110,6 +110,7 @@ form.addEventListener("submit", async (e) => {
   statusEl.textContent = "";
 
   const data = Object.fromEntries(new FormData(form));
+  data.lang = document.documentElement.lang || "uz";
   if (data.name.trim().length < 2 || data.contact.trim().length < 5 || !data.serviceId) {
     statusEl.classList.add("error");
     statusEl.textContent = "Ismingiz, telefon yoki Telegram va xizmatni to'ldiring.";

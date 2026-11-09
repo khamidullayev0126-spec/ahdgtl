@@ -9,6 +9,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="AHdigital">
   <title>AHdigital</title>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AHdigital">
+  <meta property="og:title" content="AHdigital ilovasi">
+  <meta property="og:description" content="Buyurtma bering, holatini kuzating va AI yordamchidan so'rang — telefoningizda.">
+  <meta property="og:image" content="https://ahdigital-1pcz.onrender.com/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="uz_UZ">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -385,6 +394,7 @@ document.addEventListener("submit", async e => {
 async function sendOrder(form) {
   const err = document.getElementById("o-err"), btn = document.getElementById("o-send");
   const body = Object.fromEntries(new FormData(form));
+  body.lang = document.documentElement.lang || "uz";
   err.hidden = true;
   if ((body.name || "").trim().length < 2) { err.textContent = "Ismingizni kiriting."; err.hidden = false; return; }
   if ((body.contact || "").trim().length < 5) { err.textContent = "Telefon raqam yoki Telegram username kiriting."; err.hidden = false; return; }

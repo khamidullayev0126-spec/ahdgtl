@@ -16,7 +16,7 @@ const MAX_HISTORY = 60;          // shundan oshsa — suhbat yangidan boshlanadi
 const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 const TZ = "Asia/Tashkent";
 
-function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto, business }) {
+function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto, business, notifyStatus }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   const claude = client || new Anthropic();   // client — faqat sinov uchun
 
@@ -57,7 +57,7 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
         soni: { type: "integer", description: "Nechta qaytarilsin (standart 15)" } }, required: [] } },
     { name: "statistika", description: "Buyurtmalar soni holat bo'yicha, bajarilgan ishlardan tushgan daromad va eng ko'p so'ralgan xizmatlar.",
       input_schema: { type: "object", additionalProperties: false, properties: {}, required: [] } },
-    { name: "buyurtma_holati", description: "Buyurtma holatini o'zgartiradi (admin paneldagi kabi). Mijozga hech narsa yuborilmaydi.",
+    { name: "buyurtma_holati", description: "Buyurtma holatini o'zgartiradi (admin paneldagi kabi). Holat tasdiqlandi/jarayonda/bajarildi/bekor bo'lsa, mijozga Telegram orqali avtomatik qisqa xabar boradi (agar mijoz Telegram orqali bog'langan bo'lsa).",
       input_schema: { type: "object", additionalProperties: false, properties: {
         kod: { type: "string", description: "Buyurtma kodi, masalan A1B2C3" },
         holat: { type: "string", enum: STATUSES } }, required: ["kod", "holat"] } },
@@ -147,8 +147,11 @@ ${priceList}`;
       case "buyurtma_holati": {
         const o = orders.find(x => x.code === String(input.kod).replace("#", "").trim().toLowerCase());
         if (!o) return "Xato: bunday kodli buyurtma topilmadi.";
+        const changed = o.status !== input.holat;
         o.status = input.holat; writeOrders(orders);
-        return `#${o.code} holati endi: ${o.status}.`;
+        let note = "";
+        if (changed && notifyStatus) { const n = await notifyStatus(o); if (n) note = n.ok ? " Mijozga Telegram orqali xabar yuborildi." : ` Mijozga xabar ketmadi (${n.reason}).`; }
+        return `#${o.code} holati endi: ${o.status}.${note}`;
       }
       case "mijozga_yozish": {
         const o = orders.find(x => x.code === String(input.kod).replace("#", "").trim().toLowerCase());
