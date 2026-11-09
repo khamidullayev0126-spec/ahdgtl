@@ -55,3 +55,4 @@ Render'da `ADMIN_PASSWORD` ni o'z parolingizga almashtirishni unutmang (Environm
 
 `public/services.js` faylini oching va kerakli `price` ni o'zgartiring.
 U asosiy saytda, portfolio kalkulyatorida va serverda birdan o'zgaradi.
+Endi GitHub Desktop bilan ishlayman 🚀
