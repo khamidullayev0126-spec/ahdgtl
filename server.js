@@ -1,7 +1,7 @@
 // AHdigital — backend server (Node.js + Express)
 // Ishga tushirish: npm install, keyin npm start
 
-require("dotenv").config();
+if (!process.env.AHD_TEST) require("dotenv").config();   // testlarda haqiqiy .env kalitlari ishlatilmaydi
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
@@ -18,7 +18,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
 
-const DATA_DIR = path.join(__dirname, "data");
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");   // testlar vaqtinchalik papka beradi
 const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 
 // Sayt fayllari "public" papkasida turadi.
