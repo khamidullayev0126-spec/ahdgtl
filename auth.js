@@ -17,7 +17,7 @@ const COOKIE = "ahd_sess";
 const SESSION_DAYS = 30;
 const MAX_AUTH_AGE = 24 * 60 * 60;   // Telegram javobi 24 soatdan eski bo'lmasin
 
-function createAuth({ botToken, store, readOrders, botUsername, publicDir }) {
+function createAuth({ botToken, store, readOrders, botUsername, publicDir, orderExtra = () => ({}) }) {
   const GOOGLE_ID = process.env.GOOGLE_CLIENT_ID || "";
   const BREVO_KEY = process.env.BREVO_API_KEY || "";
   const EMAIL_FROM = process.env.EMAIL_FROM || "";
@@ -112,7 +112,7 @@ function createAuth({ botToken, store, readOrders, botUsername, publicDir }) {
         const c = String(o.contact || "").trim().toLowerCase();
         return String(o.tgUserId) === String(user.id) || String(o.tgChatId) === String(user.id) || (uname && c === uname) || (email && c === email);
       })
-      .map(o => ({ code: o.code, serviceName: o.serviceName, price: o.price, status: o.status, createdAt: o.createdAt }));
+      .map(o => ({ code: o.code, serviceName: o.serviceName, price: o.price, status: o.status, createdAt: o.createdAt, ...orderExtra(o) }));
   }
 
   function install(app) {

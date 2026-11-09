@@ -38,7 +38,7 @@ test("ilova kirishni so'raydi", async () => {
 
 test("server fayllari va maxfiy fayllar internetdan ko'rinmaydi", async () => {
   for (const p of ["/server.js", "/auth.js", "/bot.js", "/agent.js", "/store.js", "/legends.js", "/package.json", "/.env", "/data/orders.json",
-    "/github-toliq/server.js", "/testlar/server.js", "/xavfsizlik/server.js", "/biror/papka/bot.js", "/tests/helpers.js", "/.github/workflows/test.yml", "/README.md"]) {
+    "/payments.js", "/github-toliq/server.js", "/testlar/server.js", "/xavfsizlik/server.js", "/biror/papka/bot.js", "/tests/helpers.js", "/.github/workflows/test.yml", "/README.md"]) {
     const r = await fetch(base + p);
     assert.equal(r.status, 404, `${p} ochiq qolgan!`);
   }
@@ -132,6 +132,18 @@ test("holat o'zgarsa, mijozga uning tilida Telegram xabari boradi", async () => 
   const msg = srv.telegram().find(x => x.method === "sendMessage" && String(x.body.chat_id) === "555");
   assert.ok(msg, "mijozga xabar yuborilmadi");
   assert.match(msg.body.text, /готов/);
+});
+
+test("to'lov kalitlari bo'lmasa — onlayn to'lov o'chiq, sayt avvalgidek ishlaydi", async () => {
+  // (yangi buyurtma bermaymiz — bitta IP'dan daqiqasiga 5 tadan ortiq buyurtma bloklanadi; avvalgi testdagi buyurtmadan foydalanamiz)
+  const cookie = await login(base, 888);
+  const me = await (await fetch(base + "/api/me", { headers: { cookie } })).json();
+  const code = me.orders[0].code;
+  assert.equal(me.orders[0].due, null, "kalitsiz to'lov qismi ko'rsatilmasligi kerak");
+  const info = await (await fetch(base + "/api/pay/" + code)).json();
+  assert.deepEqual(info.methods, { payme: false, click: false });
+  assert.equal((await fetch(`${base}/api/pay/${code}/1/payme`, { redirect: "manual" })).status, 400);
+  assert.equal((await fetch(base + "/tolov.html")).status, 200);
 });
 
 test("egasi botga /zaxira yozsa — zaxira fayli keladi", async () => {

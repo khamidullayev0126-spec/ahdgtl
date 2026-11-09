@@ -121,7 +121,7 @@ form.addEventListener("submit", async (e) => {
   submitBtn.textContent = "Yuborilmoqda...";
 
   try {
-    let message, tgLink = "";
+    let message, tgLink = "", payUrl = "";
     if (location.protocol === "file:") {
       message = await sendViaTelegram(data);
     } else {
@@ -148,6 +148,7 @@ form.addEventListener("submit", async (e) => {
         if (!res.ok) throw new Error(result.error || "Xatolik yuz berdi.");
         form.reset();
         tgLink = result.telegramLink || "";
+        payUrl = result.payUrl || "";
         message = tgLink
           ? "Rahmat! Buyurtmangiz qabul qilindi. Telegram'da tasdiqlang — bot 1 daqiqada yozadi:"
           : "Rahmat! Buyurtmangiz qabul qilindi. Tez orada bog'lanaman.";
@@ -164,6 +165,13 @@ form.addEventListener("submit", async (e) => {
       a.className = "btn btn-primary tg-confirm";
       a.textContent = "Telegram'da tasdiqlash →";
       statusEl.appendChild(a);
+    }
+    if (payUrl) {
+      const p = document.createElement("a");
+      p.href = payUrl;
+      p.className = "btn btn-primary tg-confirm";
+      p.textContent = "💳 To'lash →";
+      statusEl.appendChild(p);
     }
   } catch (err) {
     statusEl.classList.add("error");

@@ -177,15 +177,25 @@ ${priceList}`;
   };
   const ORDER_WORD = { uz: "Buyurtma", ru: "Заказ", en: "Order" };
   const CABINET = { uz: "Holatini kabinetda kuzating", ru: "Статус — в личном кабинете", en: "Track it in your account" };
+  let payInfo = null;                            // payments.js ulanadi: holat xabariga to'lov havolasini qo'shadi
+  const customerChat = order => order.tgChatId || (/^\d+$/.test(String(order.tgUserId || "")) ? order.tgUserId : null);
+  const langOf = order => (["uz", "ru", "en"].includes(order.lang) ? order.lang : "uz");
   async function notifyStatus(order) {
     const msg = STATUS_MSG[order.status];
     if (!msg) return null;                       // "yangi" holatida mijozga yozilmaydi
-    const chatId = order.tgChatId || (/^\d+$/.test(String(order.tgUserId || "")) ? order.tgUserId : null);
+    const chatId = customerChat(order);
     if (!chatId) return { ok: false, reason: "mijoz Telegram orqali bog'lanmagan" };
-    const lang = ["uz", "ru", "en"].includes(order.lang) ? order.lang : "uz";
+    const lang = langOf(order);
+    const pay = payInfo ? payInfo(order, lang) : "";
     const site = publicUrl ? `\n${CABINET[lang]}: ${publicUrl.replace(/\/$/, "")}/kabinet.html?lang=${lang}` : "";
-    const r = await send(chatId, `${ORDER_WORD[lang]} #${order.code} · ${order.serviceName}\n\n${msg[lang]}${site}`);
+    const r = await send(chatId, `${ORDER_WORD[lang]} #${order.code} · ${order.serviceName}\n\n${msg[lang]}${pay}${site}`);
     return r.ok ? { ok: true } : { ok: false, reason: r.description || "Telegram xatosi" };
+  }
+  // Mijozga uning tilida xabar: texts = { uz, ru, en }
+  async function notifyCustomer(order, texts) {
+    const chatId = customerChat(order);
+    if (!chatId) return { ok: false };
+    return send(chatId, `${ORDER_WORD[langOf(order)]} #${order.code} · ${order.serviceName}\n\n${texts[langOf(order)] || texts.uz}`);
   }
 
   const agent = ownerChatId ? createAgent({
@@ -445,7 +455,7 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
     }
   }
 
-  return { start, onNewOrder, deepLink, handleUpdate, notifyStatus, sendBackup, sendOwner: text => (ownerChatId ? send(ownerChatId, text) : null), username: () => username };
+  return { start, onNewOrder, deepLink, handleUpdate, notifyStatus, notifyCustomer, setPayInfo: fn => (payInfo = fn), sendBackup, sendOwner: text => (ownerChatId ? send(ownerChatId, text) : null), username: () => username };
 }
 
 module.exports = { createBot };

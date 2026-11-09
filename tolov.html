@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>To'lov — AHdigital</title>
+  <link rel="icon" type="image/svg+xml" href="images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .pay { max-width: 560px; display: flex; flex-direction: column; gap: var(--s4); }
+    .pay h1 { font-size: clamp(32px, 6vw, 48px); line-height: 1.05; margin: 0; }
+    .card { background: var(--surface); border-radius: 24px; padding: var(--s4) var(--s6); display: flex; flex-direction: column; gap: var(--s3); }
+    .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .muted { color: var(--muted); margin: 0; }
+    .big { font-family: var(--font-heading); font-size: clamp(24px, 7vw, 34px); color: var(--accent-ink); white-space: nowrap; }
+    .row > :first-child { min-width: 0; }
+    .parts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .parts li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--bg); }
+    .badge { flex: none; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); }
+    .badge.ok { background: #dcefc8; color: #2f3d1e; }
+    .badge.lock { background: #eee; color: var(--muted); }
+    .methods { display: flex; flex-direction: column; gap: 10px; }
+    .m-btn { display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; border-radius: 28px; font-weight: 800; font-size: 16px; text-decoration: none; color: #fff; }
+    .m-payme { background: #00c1c1; }
+    .m-click { background: #0068ff; }
+    .m-btn:hover { filter: brightness(1.05); }
+    .note { font-size: 14px; color: var(--muted); line-height: 1.5; margin: 0; }
+    .done { background: var(--sage-soft); color: var(--sage-ink); }
+  </style>
+  <script>
+    // To'lov sahifasi tarjimalari
+    window.I18N_EXTRA = Object.assign(window.I18N_EXTRA || {}, {
+      "To'lov — AHdigital": ["Оплата — AHdigital", "Payment — AHdigital"],
+      "Buyurtmani to'lash": ["Оплата заказа", "Pay for your order"],
+      "Buyurtma": ["Заказ", "Order"],
+      "Umumiy narx": ["Общая стоимость", "Total price"],
+      "To'lov bosqichlari": ["Этапы оплаты", "Payment stages"],
+      "50% oldindan": ["50% предоплата", "50% upfront"],
+      "Qolgan 50%": ["Оставшиеся 50%", "Remaining 50%"],
+      "To'liq to'lov": ["Полная оплата", "Full payment"],
+      "To'langan": ["Оплачено", "Paid"],
+      "Hozir to'lanadi": ["К оплате сейчас", "Due now"],
+      "Ish tayyor bo'lgach": ["После готовности", "When the work is ready"],
+      "Hozir to'lash": ["К оплате сейчас", "Pay now"],
+      "Qanday to'laysiz?": ["Как оплатить?", "How would you like to pay?"],
+      "Payme orqali to'lash": ["Оплатить через Payme", "Pay with Payme"],
+      "Click orqali to'lash": ["Оплатить через Click", "Pay with Click"],
+      "Uzcard va Humo kartalari ikkala usulda ham qabul qilinadi. To'lov xavfsiz: karta ma'lumotlari Payme yoki Click sahifasida kiritiladi, bizning saytga tushmaydi.": ["Карты Uzcard и Humo принимаются в обоих способах. Оплата безопасна: данные карты вводятся на странице Payme или Click и не попадают на наш сайт.", "Uzcard and Humo cards work with both. Payment is secure: card details are entered on the Payme or Click page and never reach our site."],
+      "Buyurtma to'liq to'langan ✅": ["Заказ полностью оплачен ✅", "Your order is fully paid ✅"],
+      "Rahmat! Holatini kabinetda kuzatishingiz mumkin.": ["Спасибо! Статус можно отслеживать в кабинете.", "Thank you! You can track its status in your account."],
+      "Keyingi to'lov ish tayyor bo'lgach ochiladi. Tayyor bo'lganda Telegram'da xabar keladi.": ["Следующий платёж откроется, когда работа будет готова. Мы сообщим в Telegram.", "The next payment opens when the work is ready. You'll get a Telegram message."],
+      "Onlayn to'lov hozircha yoqilmagan. To'lov tafsilotlarini Telegram'da so'rang.": ["Онлайн-оплата пока не подключена. Уточните реквизиты в Telegram.", "Online payment isn't enabled yet. Ask for payment details on Telegram."],
+      "Telegram'da yozish": ["Написать в Telegram", "Message on Telegram"],
+      "Buyurtma bekor qilingan.": ["Заказ отменён.", "This order was cancelled."],
+      "Buyurtma topilmadi. Havolani tekshiring.": ["Заказ не найден. Проверьте ссылку.", "Order not found. Please check the link."],
+      "To'lagandan keyin bu sahifa o'zi yangilanadi.": ["После оплаты эта страница обновится сама.", "This page updates itself after you pay."],
+      "Kabinetga o'tish": ["Перейти в кабинет", "Go to my account"],
+      "Xizmat shartlari": ["Условия услуг", "Terms of service"],
+      "To'lov qilish bilan": ["Оплачивая, вы соглашаетесь с", "By paying, you agree to the"],
+      "ga rozilik bildirasiz.": [".", "."],
+      "Salom,": ["Здравствуйте,", "Hello,"]
+    });
+  </script>
+  <script src="i18n.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a href="index.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
+    <div class="nav-links" style="display:flex;flex-direction:row;align-items:center;gap:10px"><div data-lang-slot></div></div>
+  </nav>
+
+  <main class="pay">
+    <h1>Buyurtmani to'lash</h1>
+    <p class="muted" id="loading">Yuklanmoqda…</p>
+    <p class="muted" id="err" hidden></p>
+
+    <section id="box" hidden>
+      <div class="card">
+        <p class="muted" id="hello"></p>
+        <div class="row"><span class="muted">Buyurtma</span><b id="code"></b></div>
+        <div class="row"><b id="service" style="font-size:20px"></b></div>
+        <div class="row"><span class="muted">Umumiy narx</span><span class="big" id="price"></span></div>
+      </div>
+
+      <div class="card" style="margin-top:var(--s4)">
+        <b>To'lov bosqichlari</b>
+        <ul class="parts" id="parts"></ul>
+      </div>
+
+      <div class="card" id="pay" style="margin-top:var(--s4)" hidden>
+        <div class="row"><b>Hozir to'lash</b><span class="big" id="due"></span></div>
+        <b>Qanday to'laysiz?</b>
+        <div class="methods">
+          <a class="m-btn m-payme" id="m-payme" hidden>Payme orqali to'lash</a>
+          <a class="m-btn m-click" id="m-click" hidden>Click orqali to'lash</a>
+        </div>
+        <p class="note">Uzcard va Humo kartalari ikkala usulda ham qabul qilinadi. To'lov xavfsiz: karta ma'lumotlari Payme yoki Click sahifasida kiritiladi, bizning saytga tushmaydi.</p>
+        <p class="note">To'lov qilish bilan <a href="shartlar.html">Xizmat shartlari</a> ga rozilik bildirasiz.</p>
+        <p class="note">To'lagandan keyin bu sahifa o'zi yangilanadi.</p>
+      </div>
+
+      <div class="card" id="off" style="margin-top:var(--s4)" hidden>
+        <p class="note">Onlayn to'lov hozircha yoqilmagan. To'lov tafsilotlarini Telegram'da so'rang.</p>
+        <a class="btn btn-primary" href="https://t.me/Abdulkhamid_2905" target="_blank" rel="noopener">Telegram'da yozish</a>
+      </div>
+
+      <div class="card" id="wait" style="margin-top:var(--s4)" hidden>
+        <p class="note">Keyingi to'lov ish tayyor bo'lgach ochiladi. Tayyor bo'lganda Telegram'da xabar keladi.</p>
+      </div>
+
+      <div class="card done" id="done" style="margin-top:var(--s4)" hidden>
+        <b>Buyurtma to'liq to'langan ✅</b>
+        <p class="note" style="color:inherit">Rahmat! Holatini kabinetda kuzatishingiz mumkin.</p>
+        <a class="btn btn-secondary" href="kabinet.html">Kabinetga o'tish</a>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const lang = document.documentElement.lang || "uz";
+  const T = window.T || (s => s);
+  const cur = lang === "ru" ? "сум" : lang === "en" ? "UZS" : "so'm";
+  const fmt = n => (lang === "en" ? Number(n).toLocaleString("en-US") : Number(n).toLocaleString("ru-RU").replace(/,/g, " ")) + " " + cur;
+  const code = (new URLSearchParams(location.search).get("o") || "").toLowerCase().replace(/[^a-f0-9]/g, "");
+  let lastDue = null;
+
+  async function load() {
+    const r = await fetch("/api/pay/" + code).catch(() => null);
+    $("loading").hidden = true;
+    if (!r || !r.ok) { $("err").textContent = T("Buyurtma topilmadi. Havolani tekshiring."); $("err").hidden = false; return; }
+    const d = await r.json();
+    $("box").hidden = false;
+    $("hello").textContent = d.name ? T("Salom,") + " " + d.name + "!" : "";
+    $("code").textContent = "#" + d.code;
+    $("service").textContent = T(d.serviceName);
+    $("price").textContent = fmt(d.price);
+    const label = p => d.parts.length === 1 ? T("To'liq to'lov") : p.n === 1 ? T("50% oldindan") : T("Qolgan 50%");
+    $("parts").replaceChildren(...d.parts.map(p => {
+      const li = document.createElement("li");
+      const left = document.createElement("span"); left.innerHTML = "<b></b><br><small class='muted'></small>";
+      left.querySelector("b").textContent = label(p); left.querySelector("small").textContent = fmt(p.amount);
+      const badge = document.createElement("span");
+      const isDue = d.due && d.due.n === p.n;
+      badge.className = "badge" + (p.paid ? " ok" : isDue && !d.due.locked ? "" : " lock");
+      badge.textContent = p.paid ? "✓ " + T("To'langan") : isDue && !d.due.locked ? T("Hozir to'lanadi") : "🔒 " + T("Ish tayyor bo'lgach");
+      li.append(left, badge);
+      return li;
+    }));
+    const anyMethod = d.methods.payme || d.methods.click;
+    const canPay = d.status !== "bekor" && d.due && !d.due.locked;
+    $("pay").hidden = !(canPay && anyMethod);
+    $("off").hidden = !(canPay && !anyMethod);
+    $("wait").hidden = !(d.due && d.due.locked);
+    $("done").hidden = !!d.due || d.status === "bekor";
+    if (d.status === "bekor") { $("err").textContent = T("Buyurtma bekor qilingan."); $("err").hidden = false; }
+    if (canPay) {
+      $("due").textContent = fmt(d.due.amount);
+      for (const m of ["payme", "click"]) {
+        $("m-" + m).hidden = !d.methods[m];
+        $("m-" + m).href = `/api/pay/${d.code}/${d.due.n}/${m}?lang=${lang}`;
+      }
+    }
+    lastDue = d.due ? d.due.n + ":" + d.due.locked : "none";
+  }
+  // To'lovdan qaytganda Payme/Click xabari biroz kechikishi mumkin — 2 daqiqa davomida tekshirib turamiz
+  let checks = 0;
+  const timer = setInterval(async () => {
+    if (++checks > 24 || !code) return clearInterval(timer);
+    const before = lastDue;
+    const r = await fetch("/api/pay/" + code).then(x => x.ok ? x.json() : null).catch(() => null);
+    const now = r ? (r.due ? r.due.n + ":" + r.due.locked : "none") : before;
+    if (now !== before) load();
+  }, 5000);
+  load();
+</script>
+</body>
+</html>

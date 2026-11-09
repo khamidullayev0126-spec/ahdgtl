@@ -10,6 +10,7 @@ const { createBot } = require("./bot");
 const { createSiteChat } = require("./chat");
 const { createLegends } = require("./legends");
 const { createStore } = require("./store");
+const { createPayments } = require("./payments");
 const { createAuth } = require("./auth");
 
 const app = express();
@@ -63,6 +64,31 @@ const bot = createBot({
   readOrders,
   writeOrders,
   store
+});
+
+// ---------- Onlayn to'lov: Click va Payme (payments.js) ----------
+const fmtSum = n => Number(n).toLocaleString("ru-RU").replace(/[\s,]/g, " ");   // 12 500 (oddiy bo'sh joy bilan)
+const payments = createPayments({
+  store, readOrders, writeOrders, services: SERVICES,
+  publicUrl: process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || "",
+  onPaid(order, part, method) {
+    if (!bot) return;
+    const total = payments.partsOf(order).length;
+    bot.sendOwner(`💳 To'lov keldi: #${order.code} · ${order.serviceName}\n${part.n}/${total}-qism · ${fmtSum(part.amount)} so'm · ${method}\n👤 ${order.name} (${order.contact})`);
+    const left = payments.dueOf(order);
+    bot.notifyCustomer(order, {
+      uz: `💳 To'lov qabul qilindi: ${fmtSum(part.amount)} so'm (${method}). Rahmat!${left ? `\nQolgan ${fmtSum(left.amount)} so'm ish tayyor bo'lgach to'lanadi.` : "\nBuyurtma to'liq to'landi ✅"}`,
+      ru: `💳 Оплата получена: ${fmtSum(part.amount)} сум (${method}). Спасибо!${left ? `\nОставшиеся ${fmtSum(left.amount)} сум — после готовности работы.` : "\nЗаказ полностью оплачен ✅"}`,
+      en: `💳 Payment received: ${fmtSum(part.amount)} UZS (${method}). Thank you!${left ? `\nThe remaining ${fmtSum(left.amount)} UZS is due when the work is ready.` : "\nThe order is fully paid ✅"}`
+    });
+  }
+});
+const PAY_ON = () => payments.methods().payme || payments.methods().click;
+if (bot) bot.setPayInfo((order, lang) => {
+  const due = payments.dueOf(order);
+  if (!PAY_ON() || !due || due.locked) return "";
+  const t = { uz: `\n\n💳 To'lash kerak: ${fmtSum(due.amount)} so'm`, ru: `\n\n💳 К оплате: ${fmtSum(due.amount)} сум`, en: `\n\n💳 Amount due: ${fmtSum(due.amount)} UZS` };
+  return `${t[lang]}\n${payments.payLink(order)}&lang=${lang}`;
 });
 
 // ---------- Oddiy himoya: bitta IP dan juda ko'p so'rov kelmasin ----------
@@ -124,7 +150,7 @@ app.use((req, res, next) => {
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
   // Server kodi, sozlamalar va ichki papkalar internetdan yashiriladi — QAYSI papkada bo'lishidan qat'i nazar
-  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|legends|legends-darslar)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html
@@ -136,7 +162,8 @@ createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, store, adminPassword: 
 // ---------- Telegram orqali kirish (auth.js) ----------
 // Sayt ochiq; buyurtma, AI chat va ilova uchun kirish kerak (Telegram, Google yoki email).
 // LOGIN_REQUIRED = 1 — butun saytni yopish, 0 — kirishni umuman o'chirish
-const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, publicDir: PUBLIC_DIR, botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
+const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, publicDir: PUBLIC_DIR,
+  orderExtra: o => ({ due: PAY_ON() ? payments.dueOf(o) : null, paid: (o.paid && Object.keys(o.paid).length) || 0, parts: payments.partsOf(o).length }), botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
 if (auth) { auth.install(app); app.use(auth.gate); }
 else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
 
@@ -174,6 +201,9 @@ app.get("/.well-known/assetlinks.json", (req, res) => {
 });
 
 // Barcha xizmatlar
+// To'lov: /api/pay/..., /api/payme, /api/click/prepare, /api/click/complete
+payments.install(app);
+
 app.get("/api/services", (req, res) => {
   res.json(SERVICES);
 });
@@ -224,7 +254,7 @@ app.post("/api/orders", rateLimit, async (req, res) => {
   writeOrders(orders);
   if (bot) bot.onNewOrder(order).catch(err => console.error("Bot xatosi:", err.message));
 
-  res.status(201).json({ ok: true, id: order.id, telegramLink: bot ? bot.deepLink(order) : "" });
+  res.status(201).json({ ok: true, id: order.id, telegramLink: bot ? bot.deepLink(order) : "", payUrl: PAY_ON() ? "/tolov.html?o=" + order.code : "" });
 });
 
 // Admin: barcha buyurtmalar

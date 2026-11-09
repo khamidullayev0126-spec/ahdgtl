@@ -22,7 +22,8 @@ const COLLECTIONS = {
   orders: { type: "list", id: "id", sort: (a, b) => String(b.createdAt).localeCompare(String(a.createdAt)) },
   "legends-oquvchilar": { type: "list", id: "id", sort: (a, b) => String(a.yaratildi).localeCompare(String(b.yaratildi)) },
   foydalanuvchilar: { type: "map" },
-  "biznes-chatlar": { type: "map" }
+  "biznes-chatlar": { type: "map" },
+  tolovlar: { type: "map" }          // Click / Payme tranzaksiyalari
 };
 const BLOBS = ["agent-xotira", "agent-eslatmalar", "biznes-sozlama", "zaxira-holat"];
 const KEYS = [...Object.keys(COLLECTIONS), ...BLOBS];

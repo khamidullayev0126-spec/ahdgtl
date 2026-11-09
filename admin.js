@@ -54,7 +54,8 @@ function renderOrders(orders) {
 
   orders.forEach(o => {
     const tr = document.createElement("tr");
-    const cells = [formatDate(o.createdAt), o.name, o.contact, o.serviceName, o.message || "—"];
+    const paidN = o.paid ? Object.keys(o.paid).length : 0;
+    const cells = [formatDate(o.createdAt), o.name, o.contact, o.serviceName + (paidN ? ` · 💳 ${paidN} qism to'langan` : ""), o.message || "—"];
     cells.forEach(text => {
       const td = document.createElement("td");
       td.textContent = text;
