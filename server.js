@@ -113,7 +113,8 @@ app.use((req, res, next) => {
 });
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
-  const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat|store|auth|legends|legends-darslar)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
+  // Server kodi, sozlamalar va ichki papkalar internetdan yashiriladi — QAYSI papkada bo'lishidan qat'i nazar
+  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|legends|legends-darslar)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html

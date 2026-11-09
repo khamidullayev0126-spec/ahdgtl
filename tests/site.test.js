@@ -19,6 +19,12 @@ test("ochiq sahifalar kirmasdan ochiladi", async () => {
   }
 });
 
+test("saytga kerakli fayllar ochiq (yashirinib qolmagan)", async () => {
+  for (const p of ["/images/logo.svg", "/script.js", "/i18n.js", "/legends-app.js", "/services.js", "/style.css", "/manifest.json", "/sw.js"]) {
+    assert.equal((await fetch(base + p)).status, 200, `${p} ochilmayapti`);
+  }
+});
+
 test("kirmagan mehmon bosh sahifada taqdimot sahifasini ko'radi", async () => {
   const html = await (await fetch(base + "/")).text();
   assert.match(html, /w-hero/);
@@ -31,7 +37,8 @@ test("ilova kirishni so'raydi", async () => {
 });
 
 test("server fayllari va maxfiy fayllar internetdan ko'rinmaydi", async () => {
-  for (const p of ["/server.js", "/auth.js", "/bot.js", "/agent.js", "/store.js", "/legends.js", "/package.json", "/.env", "/data/orders.json"]) {
+  for (const p of ["/server.js", "/auth.js", "/bot.js", "/agent.js", "/store.js", "/legends.js", "/package.json", "/.env", "/data/orders.json",
+    "/github-toliq/server.js", "/testlar/server.js", "/xavfsizlik/server.js", "/biror/papka/bot.js", "/tests/helpers.js", "/.github/workflows/test.yml", "/README.md"]) {
     const r = await fetch(base + p);
     assert.equal(r.status, 404, `${p} ochiq qolgan!`);
   }
