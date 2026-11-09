@@ -140,7 +140,14 @@ const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, publi
 if (auth) { auth.install(app); app.use(auth.gate); }
 else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
 
-app.use(express.static(PUBLIC_DIR));
+// Kesh: rasm, video va shriftlar brauzerda 7 kun saqlanadi (qayta kirganda darhol ochiladi).
+// HTML, JS, CSS esa har safar tekshiriladi — yangilanish darhol ko'rinsin.
+const LONG_CACHE = /\.(jpe?g|png|webp|svg|gif|ico|mp4|webm|woff2?|ttf)$/i;
+app.use(express.static(PUBLIC_DIR, {
+  setHeaders(res, filePath) {
+    res.setHeader("Cache-Control", LONG_CACHE.test(filePath) ? "public, max-age=604800, stale-while-revalidate=86400" : "no-cache");
+  }
+}));
 
 if (!fs.existsSync(path.join(PUBLIC_DIR, "index.html"))) {
   console.error("❌ index.html topilmadi! GitHub'ga sayt fayllarini yuklang.");

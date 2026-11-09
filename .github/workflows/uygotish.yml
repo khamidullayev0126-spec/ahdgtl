@@ -1,0 +1,16 @@
+# Render bepul tarifida sayt 15 daqiqa kirilmasa "uxlab" qoladi va keyingi mehmon 30–60 soniya kutadi.
+# Bu ish saytni har 10 daqiqada bir marta "uyg'otib" turadi.
+# Eslatma: repoda 60 kun hech qanday o'zgarish bo'lmasa, GitHub bu jadvalni o'zi to'xtatadi.
+name: Saytni uyg'otish
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: curl -fsS --max-time 90 --retry 2 https://ahdigital-1pcz.onrender.com/healthz

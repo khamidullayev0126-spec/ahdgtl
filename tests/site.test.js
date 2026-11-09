@@ -50,6 +50,15 @@ test("xavfsizlik sarlavhalari bor", async () => {
   assert.equal(r.headers.get("x-frame-options"), "SAMEORIGIN");
 });
 
+test("tezlik: rasmlar keshlanadi, sahifalar har safar yangilanadi, WebP bor", async () => {
+  assert.match((await fetch(base + "/hero.jpg")).headers.get("cache-control"), /max-age=604800/);
+  assert.equal((await fetch(base + "/hero.webp")).status, 200);
+  assert.equal((await fetch(base + "/index.html")).headers.get("cache-control"), "no-cache");
+  assert.equal((await fetch(base + "/script.js")).headers.get("cache-control"), "no-cache");
+  const html = await (await fetch(base + "/index.html")).text();
+  assert.match(html, /<source srcset="hero\.webp" type="image\/webp">/);
+});
+
 test("chiroyli havola (Open Graph) belgilari va rasmi bor", async () => {
   const html = await (await fetch(base + "/")).text();
   assert.match(html, /property="og:image"/);
