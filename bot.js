@@ -105,8 +105,49 @@ ${priceList}`;
   const contactKind = contact => /^@|t\.me\//i.test(contact) ? "telegram" : (contact.replace(/\D/g, "").length >= 9 ? "phone" : "other");
   // Shaxsiy AI agent — faqat egasi (siz) uchun
   const caller = createCaller({ publicUrl });   // telefon qo'ng'irog'i (Twilio sozlangan bo'lsa)
+  // ---------- Shaxsiy chatlar (Telegram Business) ----------
+  // Bot sizning shaxsiy chatlaringizdagi xabarlarni eslab qoladi, agent ularni o'qiydi va siz ✅ bossangiz sizning nomingizdan yozadi.
+  const MAX_CHATS = 100, MAX_MSGS = 40;
+  const chatsDb = () => store.get("biznes-chatlar", {});
+  const settings = () => ({ avto: true, bildirish: true, ...store.get("biznes-sozlama", {}) });
+  function remember(msg, who, connId) {
+    const all = chatsDb();
+    const c = msg.chat;
+    const rec = all[c.id] || { id: c.id, msgs: [] };
+    rec.name = [c.first_name, c.last_name].filter(Boolean).join(" ") || rec.name || String(c.id);
+    rec.username = c.username || rec.username || "";
+    rec.conn = connId || rec.conn;
+    const text = msg.text || msg.caption || (msg.photo ? "[rasm]" : msg.voice ? "[ovozli xabar]" : msg.video ? "[video]" : msg.document ? "[fayl]" : msg.sticker ? "[stiker]" : "[xabar]");
+    rec.msgs.push({ who, text: String(text).slice(0, 2000), t: Date.now() });
+    rec.msgs = rec.msgs.slice(-MAX_MSGS);
+    if (who === "u") rec.lastIn = Date.now();
+    rec.last = Date.now();
+    all[c.id] = rec;
+    const ids = Object.keys(all).sort((a, z) => all[z].last - all[a].last);
+    ids.slice(MAX_CHATS).forEach(k => delete all[k]);
+    store.set("biznes-chatlar", all);
+  }
+  const business = {
+    list: (n = 15) => Object.values(chatsDb()).sort((a, z) => z.last - a.last).slice(0, n),
+    find(q) {
+      const s = String(q || "").trim().toLowerCase().replace(/^@/, "");
+      const list = Object.values(chatsDb());
+      return list.find(c => String(c.id) === s) || list.find(c => c.username && c.username.toLowerCase() === s)
+        || list.find(c => c.name.toLowerCase() === s) || list.find(c => c.name.toLowerCase().includes(s) || (c.username || "").toLowerCase().includes(s));
+    },
+    async send(chatId, text) {
+      const c = chatsDb()[chatId];
+      if (!c || !c.conn) return { ok: false, description: "bu chat uchun Business ulanishi topilmadi" };
+      const r = await send(chatId, text, { business_connection_id: c.conn });
+      if (r.ok) remember({ chat: { id: chatId, first_name: c.name, username: c.username }, text }, "men", c.conn);
+      return r;
+    },
+    settings,
+    setSettings: patch => store.set("biznes-sozlama", { ...settings(), ...patch })
+  };
+
   const agent = ownerChatId ? createAgent({
-    api, send, ownerChatId, services, readOrders, writeOrders, store,
+    api, send, ownerChatId, services, readOrders, writeOrders, store, business,
     channel: process.env.TELEGRAM_CHANNEL || "",
     caller, sendPhoto
   }) : null;
@@ -179,9 +220,24 @@ ${priceList}`;
     }
     const chatId = msg.chat.id;
     console.log(`Business: xabar keldi (chat ${chatId})`);
+    const mine = msg.from && msg.from.id === conn.user.id;
+    remember(msg, mine ? "men" : "u", msg.business_connection_id);
+
+    // Avtomatik javob o'chiq: faqat sizga bildiramiz, javobni siz aytganda agent yozadi
+    const cfg = settings();
+    if (!mine && !cfg.avto) {
+      if (cfg.bildirish) {
+        const who = [msg.chat.first_name, msg.chat.last_name].filter(Boolean).join(" ") + (msg.chat.username ? ` (@${msg.chat.username})` : "");
+        await send(ownerChatId, `💬 ${who} sizga yozdi:
+${(msg.text || msg.caption || "[media]").slice(0, 1500)}
+
+Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."`);
+      }
+      return;
+    }
 
     // Siz o'zingiz chatga yozdingiz — bot shu chatda jim turadi
-    if (msg.from && msg.from.id === conn.user.id) {
+    if (mine) {
       paused.set(chatId, Date.now() + BUSINESS_PAUSE_MS);
       return console.log("Business: siz o'zingiz yozdingiz — bot bu chatda 6 soat jim turadi");
     }
@@ -193,7 +249,9 @@ ${priceList}`;
     if (claude) {
       await api("sendChatAction", { chat_id: chatId, action: "typing", ...opts });
       const answer = await askClaude(`b${chatId}`, msg.text);
-      await send(chatId, first ? `${intro} Abdulhamid o'rniga javob beryapman, u ham bu chatni ko'radi.\n\n${answer}` : answer, opts);
+      const out = first ? `${intro} Abdulhamid o'rniga javob beryapman, u ham bu chatni ko'radi.\n\n${answer}` : answer;
+      const sent = await send(chatId, out, opts);
+      if (sent.ok) remember({ chat: msg.chat, text: out }, "bot", msg.business_connection_id);
       greeted.set(chatId, Date.now());
     } else if (first || Date.now() - greeted.get(chatId) > AWAY_REPEAT_MS) {
       await send(chatId,
@@ -212,7 +270,7 @@ ${priceList}`;
       console.log(`Business ulanish: ${c.is_enabled ? "yoqildi" : "o'chirildi"}, akkaunt ${c.user_chat_id}, javob yozish ruxsati: ${c.can_reply ?? (c.rights && c.rights.can_reply)}`);
       if (ownerChatId && String(c.user_chat_id) === String(ownerChatId)) {
         await send(ownerChatId, c.is_enabled
-          ? "✅ Bot Telegram Business'ga ulandi. Endi shaxsiy chatlaringizda mijozlarga javob beradi.\nSiz chatga o'zingiz yozsangiz, bot o'sha chatda 6 soat jim turadi."
+          ? "✅ Bot Telegram Business'ga ulandi.\n\nEndi menga ayting, masalan:\n• Kimlar yozdi?\n• Dilnozaning chatini o'qib ber\n• Dilnozaga yoz: buyurtmangiz ertaga tayyor\n• Avto javobni o'chir (faqat sizga bildiraman)\n\nHar bir xabarni avval sizga ko'rsataman — ✅ bossangizgina sizning nomingizdan ketadi."
           : "⏸ Bot Telegram Business'dan uzildi.");
       }
       return;

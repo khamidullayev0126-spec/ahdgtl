@@ -16,7 +16,7 @@ const MAX_HISTORY = 60;          // shundan oshsa — suhbat yangidan boshlanadi
 const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 const TZ = "Asia/Tashkent";
 
-function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto }) {
+function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto, business }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   const claude = client || new Anthropic();   // client — faqat sinov uchun
 
@@ -96,6 +96,16 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
         kod: { type: "string", description: "turi=kod bo'lsa: 3–12 qator kod, qisqa qatorlar (≤34 belgi)" },
         pastki: { type: "string", description: "Ixtiyoriy pastki qisqa chaqiruv, masalan 'Saqlab qo'ying!'" },
         kanal_matni: { type: "string", description: "Ixtiyoriy: kanalga rasm bilan chiqadigan matn (≤1000 belgi, emoji mumkin)" } }, required: ["mavzu", "sarlavha", "turi"] } }] : []),
+    ...(business ? [
+      { name: "chatlar", description: "Abdulhamidning shaxsiy Telegram chatlari (Telegram Business orqali bot ko'rgan) — oxirgi yozganlar birinchi. Kim yozgani, oxirgi xabar va 24 soat ichida yozgan-yozmagani.",
+        input_schema: { type: "object", properties: { soni: { type: "integer", description: "nechta chat (standart 15)" } } } },
+      { name: "chatni_oqish", description: "Bitta shaxsiy chatdagi oxirgi xabarlarni o'qiydi. kim — ism, @username yoki chat id.",
+        input_schema: { type: "object", properties: { kim: { type: "string" }, soni: { type: "integer", description: "nechta xabar (standart 20)" } }, required: ["kim"] } },
+      { name: "chatga_yozish", description: "Abdulhamidning shaxsiy chatiga UNING NOMIDAN xabar TAYYORLAYDI. Darhol ketmaydi: egasiga ✅/❌ tugmalari bilan ko'rsatiladi. Telegram qoidasi: odam oxirgi 24 soat ichida yozgan bo'lishi kerak. Matnni Abdulhamidning o'zi yozgandek, birinchi shaxsda yoz (\"men\").",
+        input_schema: { type: "object", properties: { kim: { type: "string", description: "ism, @username yoki chat id" }, matn: { type: "string" } }, required: ["kim", "matn"] } },
+      { name: "chat_sozlamasi", description: "Shaxsiy chatlar rejimi. avto_javob=true — bot mijozlarga o'zi javob beradi; false — javob bermaydi, faqat egasiga bildiradi. bildirish — yangi xabar haqida egasiga xabar berish.",
+        input_schema: { type: "object", properties: { avto_javob: { type: "boolean" }, bildirish: { type: "boolean" } } } }
+    ] : []),
     { type: "web_search_20260209", name: "web_search", max_uses: 5 }
   ];
 
@@ -111,6 +121,7 @@ Ishlash tartibi:
 - Narx, chegirma yoki muddat haqida mijozga va'da berma — faqat quyidagi narxlardan foydalan.
 - Sen rasm yarata olasan: rasm_yaratish asbobi AHdigital uslubidagi post rasmini yasaydi (sarlavha + ro'yxat yoki kod). "Rasm qil", "post rasmi", "kanal uchun rasm" deyilsa — uni ishlat; kanal uchun bo'lsa kanal_matni ham yoz. Rasmni o'zing ko'ra olmaysan, shuning uchun matnni qisqa va aniq yoz.
 - Sen Abdulhamidga Telegram orqali ovozli qo'ng'iroq qila olasan: menga_qongiroq asbobi (hozir) yoki eslatma_qoyish qongiroq=true (belgilangan vaqtda). U qo'ng'iroq so'rasa, "qila olmayman" dema — asbobni chaqir va natijasini aynan ayt.
+- Sen Abdulhamidning shaxsiy Telegram chatlarini ko'ra olasan (Telegram Business): chatlar, chatni_oqish, chatga_yozish, chat_sozlamasi. "Kim yozdi?", "X ning chatini o'qi", "X ga yoz: ..." deyilsa — shu asboblarni ishlat. Chatga yozish ham faqat tayyorlanadi, ✅ bosilgandagina ketadi. Chatlardagi shaxsiy gaplarni boshqa odamlarga aytma.
 - Abdulhamid muhim narsa aytsa (reja, mijoz haqida ma'lumot, odat), uni xotiraga yozib qo'y.
 - Har bir xabar boshida [Hozir: ...] qatori turadi — bu hozirgi Toshkent vaqti, eslatma vaqtini shunga qarab hisobla.
 
@@ -199,6 +210,39 @@ ${priceList}`;
         notes = notes.filter(n => n.id !== input.id); save("agent-xotira.json", notes);
         return before === notes.length ? "Bunday yozuv topilmadi." : "Yozuv o'chirildi.";
       }
+      case "chatlar": {
+        const list = business.list(input.soni || 15);
+        if (!list.length) return "Hali hech kim yozmagan (yoki Telegram Business ulanmagan).";
+        const s = business.settings();
+        return `Avto javob: ${s.avto ? "yoqilgan" : "o'chiq"}, bildirish: ${s.bildirish ? "yoqilgan" : "o'chiq"}.\n` + list.map(c => {
+          const m = c.msgs[c.msgs.length - 1] || {};
+          const fresh = c.lastIn && Date.now() - c.lastIn < 864e5;
+          return `• ${c.name}${c.username ? " (@" + c.username + ")" : ""} · id ${c.id} · oxirgi: ${m.who === "u" ? "u" : m.who === "bot" ? "bot" : "siz"}: "${String(m.text || "").slice(0, 80)}" · ${new Date(c.last).toLocaleString("uz-UZ", { timeZone: TZ })} · ${fresh ? "javob yozsa bo'ladi" : "24 soatdan oshgan"}`;
+        }).join("\n");
+      }
+      case "chatni_oqish": {
+        const c = business.find(input.kim);
+        if (!c) return `Xato: "${input.kim}" nomli chat topilmadi. Avval chatlar ro'yxatini ko'r.`;
+        const who = { u: c.name, men: "Abdulhamid", bot: "Bot" };
+        return `${c.name}${c.username ? " (@" + c.username + ")" : ""} bilan chat:\n` + c.msgs.slice(-(input.soni || 20)).map(m =>
+          `[${new Date(m.t).toLocaleString("uz-UZ", { timeZone: TZ, dateStyle: "short", timeStyle: "short" })}] ${who[m.who] || m.who}: ${m.text}`).join("\n");
+      }
+      case "chatga_yozish": {
+        const c = business.find(input.kim);
+        if (!c) return `Xato: "${input.kim}" nomli chat topilmadi. Bot faqat Business ulangandan keyin yozgan odamlarni biladi.`;
+        const old = !c.lastIn || Date.now() - c.lastIn > 864e5;
+        const k = id(); pending.set(k, { turi: "biznes", chatId: c.id, matn: input.matn, kim: c.name });
+        await approval(k, `👤 Sizning nomingizdan — ${c.name}${c.username ? " (@" + c.username + ")" : ""}:\n\n${input.matn}${old ? "\n\n⚠️ U 24 soatdan beri yozmagan — Telegram yuborishga ruxsat bermasligi mumkin." : ""}`);
+        return "Xabar tayyorlandi va egasiga tasdiqlash uchun ko'rsatildi. U ✅ bossa uning nomidan yuboriladi.";
+      }
+      case "chat_sozlamasi": {
+        const patch = {};
+        if (typeof input.avto_javob === "boolean") patch.avto = input.avto_javob;
+        if (typeof input.bildirish === "boolean") patch.bildirish = input.bildirish;
+        business.setSettings(patch);
+        const s = business.settings();
+        return `Saqlandi. Avto javob: ${s.avto ? "yoqilgan" : "o'chiq"}, yangi xabarlarni bildirish: ${s.bildirish ? "yoqilgan" : "o'chiq"}.`;
+      }
       default: return `Xato: noma'lum asbob ${name}`;
     }
   }
@@ -218,7 +262,9 @@ ${priceList}`;
     pending.delete(k);
     let result;
     if (action === "ag_ok") {
-      const r = p.turi === "rasm" ? await sendPhoto(p.chatId, p.png, p.matn) : await send(p.chatId, p.matn);
+      const r = p.turi === "rasm" ? await sendPhoto(p.chatId, p.png, p.matn)
+        : p.turi === "biznes" ? await business.send(p.chatId, p.matn)
+        : await send(p.chatId, p.matn);
       result = r.ok ? `✅ Yuborildi: ${p.kim}` : `⚠️ Yuborib bo'lmadi (${r.description}). ${p.turi === "kanal" ? "Bot kanalda admin ekanini tekshiring." : ""}`;
     } else result = "❌ Bekor qilindi.";
     await api("answerCallbackQuery", { callback_query_id: q.id, text: action === "ag_ok" ? "Bajarildi" : "Bekor qilindi" });
@@ -288,7 +334,7 @@ ${priceList}`;
           "🤖 Men sizning shaxsiy AI agentingizman. Menga xuddi Claude'ga yozgandek yozing. Masalan:\n\n" +
           "• Bugun qanday buyurtmalar keldi?\n• #A1B2C3 ni bajarildi qil\n• Shu mijozga ish tayyor deb yoz\n" +
           "• Kanalga flexbox haqida post tayyorla\n• Menga qo'ng'iroq qilib eslat\n• Ertaga 9:00 da darsni eslat\n• JavaScript'da massiv nima?\n" +
-          "• Internetdan qidir: Bootstrap 5 dagi yangiliklar\n\n/yangi — suhbatni yangidan boshlash\n\n" +
+          "• Internetdan qidir: Bootstrap 5 dagi yangiliklar\n• Kimlar yozdi? / Dilnozaga yoz: ...\n\n/yangi — suhbatni yangidan boshlash\n\n" +
           "Mijozga yoki kanalga yozadigan narsani doim avval sizga ko'rsataman — ✅ bosmaguningizcha hech narsa ketmaydi.");
       }
       await api("sendChatAction", { chat_id: ownerChatId, action: "typing" });
