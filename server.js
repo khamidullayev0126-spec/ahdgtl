@@ -69,18 +69,48 @@ function rateLimit(req, res, next) {
 }
 
 // ---------- Admin tekshiruvi ----------
+// 1) Telegram bilan kirgan EGASI (Telegram ID = TELEGRAM_CHAT_ID) — parolsiz kiradi.
+// 2) Parol — faqat Render'da ADMIN_PASSWORD o'rnatilgan va u "admin123" bo'lmasa ishlaydi.
+//    Noto'g'ri parol: bitta IP'dan 15 daqiqada 5 martadan ko'p urinish bloklanadi.
+const OWNER_ID = String(TELEGRAM_CHAT_ID || "").trim();
+const PASSWORD_ON = !!process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD !== "admin123";
+const failedLogins = new Map();          // ip -> [noto'g'ri urinish vaqtlari]
+function isOwner(req) {
+  if (!OWNER_ID || !auth) return false;      // auth pastda yaratiladi; so'rovlar undan keyin keladi
+  const s = auth.readSession(req);
+  return !!s && String(s.id) === OWNER_ID;
+}
 function requireAdmin(req, res, next) {
-  const given = Buffer.from(req.get("x-admin-password") || "");
-  const real = Buffer.from(ADMIN_PASSWORD);
+  if (isOwner(req)) return next();
+  const givenRaw = req.get("x-admin-password") || "";
+  if (!givenRaw) return res.status(401).json({ error: "Admin panelga kiring." });
+  if (!PASSWORD_ON) return res.status(401).json({ error: "Parol bilan kirish o'chirilgan. Telegram bilan kiring." });
+  const now = Date.now();
+  const tries = (failedLogins.get(req.ip) || []).filter(t => now - t < 15 * 60_000);
+  if (tries.length >= 5) return res.status(429).json({ error: "Juda ko'p noto'g'ri urinish. 15 daqiqadan keyin qayta urinib ko'ring." });
+  const given = Buffer.from(givenRaw), real = Buffer.from(process.env.ADMIN_PASSWORD);
   if (given.length !== real.length || !crypto.timingSafeEqual(given, real)) {
+    tries.push(now); failedLogins.set(req.ip, tries);
+    console.log(`⚠️  Admin: noto'g'ri parol (${req.ip}), ${tries.length}/5`);
     return res.status(401).json({ error: "Parol noto'g'ri." });
   }
+  failedLogins.delete(req.ip);
   next();
 }
 
 // Render kabi xostinglarda mijozning haqiqiy IP manzilini bilish uchun
 app.set("trust proxy", 1);
 app.use(express.json({ limit: "20kb" }));
+
+// ---------- Xavfsizlik sarlavhalari (brauzer uchun) ----------
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  if (process.env.RENDER) res.setHeader("Strict-Transport-Security", "max-age=15552000");
+  next();
+});
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
   const HIDDEN = /^\/(data|node_modules|fonts)(\/|$)|^\/(server|bot|agent|call|image|chat|store|auth|legends|legends-darslar)\.js$|^\/(package(-lock)?\.json|render\.yaml|README\.md|\.env.*)$/i;
@@ -112,6 +142,9 @@ if (!fs.existsSync(path.join(PUBLIC_DIR, "index.html"))) {
 
 // Render server ishlayotganini shu manzil orqali tekshiradi
 app.get("/healthz", (req, res) => res.send("ok"));
+
+// Admin panel qaysi kirish usullari yoqilganini so'raydi
+app.get("/api/admin/me", (req, res) => res.json({ owner: isOwner(req), telegram: !!OWNER_ID && !!auth, password: PASSWORD_ON }));
 
 // Google Play ilovasi (TWA) sayt egasi bir ekanini tekshiradi.
 // Render → Environment: ANDROID_PACKAGE (masalan uz.ahdgital.app) va ANDROID_SHA256 (PWABuilder bergan barmoq izi)
@@ -212,8 +245,8 @@ app.delete("/api/orders/:id", requireAdmin, (req, res) => {
 store.init().catch(err => { console.error("❌", err.message); process.exit(1); }).then(() => app.listen(PORT, async () => {
   console.log(`✅ Sayt ishga tushdi: http://localhost:${PORT}`);
   console.log(`🔐 Admin panel:      http://localhost:${PORT}/admin.html`);
-  if (ADMIN_PASSWORD === "admin123") {
-    console.log("⚠️  Diqqat: .env faylida ADMIN_PASSWORD ni o'zgartiring!");
+  if (!PASSWORD_ON) {
+    console.log("🔐 Admin panelga parol bilan kirish o'chiq — faqat Telegram (TELEGRAM_CHAT_ID) orqali.");
   }
   if (bot) await bot.start(app).catch(err => console.error("Botni ishga tushirib bo'lmadi:", err.message));
   else console.log("ℹ️  TELEGRAM_BOT_TOKEN yo'q — bot o'chiq.");

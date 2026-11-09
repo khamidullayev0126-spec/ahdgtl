@@ -2,6 +2,7 @@
 
 const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 let password = sessionStorage.getItem("adminPassword") || "";
+let owner = false;          // Telegram bilan kirgan egasi — parol kerak emas
 
 const loginBox = document.getElementById("login-box");
 const ordersBox = document.getElementById("orders-box");
@@ -15,7 +16,7 @@ const statsEl = document.getElementById("stats");
 async function api(url, options = {}) {
   const res = await fetch(url, {
     ...options,
-    headers: { "Content-Type": "application/json", "x-admin-password": password }
+    headers: password ? { "Content-Type": "application/json", "x-admin-password": password } : { "Content-Type": "application/json" }
   });
   const data = await res.json();
   if (!res.ok) throw Object.assign(new Error(data.error || "Xatolik"), { status: res.status });
@@ -113,7 +114,8 @@ async function loadOrders() {
   }
 }
 
-function logout(message = "") {
+async function logout(message = "") {
+  if (owner && !message) { await fetch("/api/auth/logout", { method: "POST" }).catch(() => {}); owner = false; }
   password = "";
   sessionStorage.removeItem("adminPassword");
   loginBox.hidden = false;
@@ -132,9 +134,24 @@ loginForm.addEventListener("submit", (e) => {
 
 logoutBtn.addEventListener("click", () => logout());
 
-if (password) loadOrders();
+// Qaysi kirish usullari yoqilgan: Telegram (egasi) va/yoki parol
+(async function init() {
+  let me = { owner: false, telegram: false, password: true };
+  try { me = await (await fetch("/api/admin/me")).json(); } catch {}
+  owner = !!me.owner;
+  document.getElementById("tg-admin").hidden = !me.telegram;
+  document.getElementById("pw-field").hidden = !me.password;
+  document.getElementById("pw-btn").hidden = !me.password;
+  document.getElementById("password").required = !!me.password;
+  if (!me.password && me.telegram) {
+    const note = document.getElementById("tg-note");
+    note.hidden = false;
+    note.textContent = "Xavfsizlik uchun admin panelga faqat egasining Telegram akkaunti bilan kiriladi.";
+  }
+  if (owner || password) loadOrders();
+})();
 // Har 30 soniyada yangi buyurtmalarni tekshiramiz
-setInterval(() => { if (password && !ordersBox.hidden) loadOrders(); }, 30000);
+setInterval(() => { if ((owner || password) && !ordersBox.hidden) loadOrders(); }, 30000);
 
 // Admin panel faqat serverda ishlaydi (buyurtmalar serverda saqlanadi)
 if (location.protocol === "file:") {
