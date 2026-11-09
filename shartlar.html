@@ -35,12 +35,15 @@
     .part { font-size: clamp(26px, 4vw, 34px); margin-top: var(--s4); scroll-margin-top: 24px; }
     .part small { display: block; font-family: var(--font-body, Figtree, sans-serif); font-size: 15px; font-weight: 600; color: var(--muted); margin-top: 6px; }
   </style>
+  <script src="i18n-shartlar.js"></script>
+  <script src="i18n.js"></script>
 </head>
 <body>
 <div class="wrap">
   <nav class="nav">
     <a href="index.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
-    <div class="nav-links" style="display:flex">
+    <div class="nav-links" style="display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px">
+      <div data-lang-slot></div>
       <a href="index.html#xizmatlar">Xizmatlar</a>
       <a href="index.html#buyurtma" class="btn btn-primary">Buyurtma berish</a>
     </div>
@@ -124,7 +127,7 @@
     <section class="term"><h2><span class="n">11</span>Nimalar kiradi</h2>
       <ul><li><b>Claude Video:</b> bitta video (60 soniyagacha) — reklama, Reels yoki tushuntirish.</li>
         <li><b>Vizitka va Menyu sayt:</b> bir sahifali sayt, telefon va kompyuterga moslashgan, aloqa havolalari bilan.</li>
-        <li><b>Slayd va Postlar:</b> bitta taqdimot yoki bir to'plam post (15 tagacha slayd/post).</li>
+        <li><b>Slayd va Postlar:</b> bitta taqdimot yoki bir to'plam post (10 tagacha slayd/post).</li>
         <li><b>Katta sayt:</b> bir nechta sahifa, buyurtma formasi, admin panel va backend.</li></ul></section>
 
     <section class="term warn"><h2><span class="n">12</span>To'lov va qaytarish</h2>
@@ -217,6 +220,8 @@
       <a href="https://t.me/Abdulkhamid_2905" class="btn btn-secondary" target="_blank" rel="noopener">Savol berish</a>
     </div>
     <p class="terms-updated">Oxirgi yangilanish: 2026-yil 7-noyabr</p>
+    <p class="terms-updated" id="tr-note" hidden>Bu sahifaning asosiy matni o'zbek tilida. Tarjima qulaylik uchun berilgan; farq bo'lsa, o'zbekcha matn amal qiladi.</p>
+    <script>if (window.I18N_LANG && window.I18N_LANG !== "uz") document.getElementById("tr-note").hidden = false;</script>
   </main>
 
   <footer style="margin-top:48px">

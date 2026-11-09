@@ -137,6 +137,8 @@
     .st.bekor { background: #eee; color: var(--muted); }
     .install { border: 2px dashed var(--accent); background: transparent; }
   </style>
+  <script src="/i18n-app.js"></script>
+  <script src="/i18n.js"></script>
 </head>
 <body>
 
@@ -301,6 +303,7 @@ const screens = {
       <h2>Buyurtmalarim</h2>
       ${state.orders.length ? orderList(state.orders) : '<p class="small">Hozircha buyurtma yo\'q.</p>'}
       <div class="install card" id="install" hidden></div>
+      <div class="li white"><span style="flex:1" data-no-i18n><b>Til · Язык · Language</b></span><div data-lang-slot></div></div>
       <h2>Bog'lanish</h2>
       <a class="li white" href="tel:+998956322905"><span class="ico" style="background:var(--sage)">${ICON.phone}</span><span><b>Telefon</b><span class="s">+998 95 632 29 05</span></span></a>
       <a class="li white" href="https://t.me/Abdulkhamid_2905" target="_blank" rel="noopener"><span class="ico" style="background:#229ed9">${ICON.tg}</span><span><b>Telegram</b><span class="s">@Abdulkhamid_2905</span></span></a>
@@ -346,6 +349,7 @@ function render() {
   document.querySelectorAll(".nav a").forEach(a => { if (a.dataset.tab === tab) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   view.innerHTML = `<div class="screen">${sc.render()}</div>`;
   if (name === "men") showInstall();
+  if (window.I18N_MOUNT) window.I18N_MOUNT();
   if (name === "chat") { scrollTo(0, document.body.scrollHeight); }
 }
 let lastTab = "bosh";

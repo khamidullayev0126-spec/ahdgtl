@@ -377,6 +377,8 @@
     "Kamaytirish": ["Уменьшить", "Decrease"],
     "Ko'paytirish": ["Увеличить", "Increase"]
   };
+  // Qo'shimcha lug'atlar (i18n-app.js, i18n-shartlar.js) — i18n.js dan OLDIN ulanadi
+  if (window.I18N_EXTRA) Object.assign(D, window.I18N_EXTRA);
   const PERIOD = { video: ["видео", "video"], sayt: ["сайт", "site"], buyurtma: ["заказ", "order"], oy: ["мес", "month"], yil: ["год", "year"] };
   const META = {
     "Claude yordamida video, slayd, postlar va saytlar. Vizitka, menyu va katta saytlar. AI LEGENDS kursi.": ["Видео, слайды, посты и сайты с помощью Claude. Сайты-визитки, меню и большие сайты. Курс AI LEGENDS.", "Videos, slides, posts and websites made with Claude. Business card, menu and full websites. AI LEGENDS course."]
@@ -405,8 +407,8 @@
       return lang === "ru" ? `1 месяц — ${m[1]} сум. Уточните у Абдулхамида.` : `1 month is ${num(m[1])} UZS. Check with Abdulhamid.`;
     // Boshidagi belgi yoki emoji: "📍 Manzil ..."
     if ((m = s.match(/^([^\p{L}\d"'/<]+)(\p{L}.*)$/u))) { const t = tr(m[2]); if (t !== m[2]) return m[1] + t; }
-    // Qismlarga bo'lib tarjima: "A — B", "A · B"
-    for (const sep of [" — ", " · "]) {
+    // Qismlarga bo'lib tarjima: "A — B", "A · B", "A: B"
+    for (const sep of [" — ", " · ", ": "]) {
       if (s.includes(sep)) {
         const parts = s.split(sep), out = parts.map(p => tr(p));
         if (out.some((p, i) => p !== parts[i])) return out.join(sep);
@@ -415,6 +417,7 @@
     return raw;
   }
   window.T = tr;
+  window.I18N_LANG = lang;
 
   // ---------------- Sahifaga qo'llash ----------------
   const SKIP = "script,style,textarea,code.no-i18n,.chat-log,[data-no-i18n]";
@@ -473,6 +476,7 @@
     new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(walk))).observe(document.documentElement, { childList: true, subtree: true });
     if (document.body) walk(document.body);
   }
+  window.I18N_MOUNT = mountSwitcher;
   const ready = () => { mountSwitcher(); if (lang !== "uz") { walk(document.body); fixHead(); } };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ready); else ready();
 })();
