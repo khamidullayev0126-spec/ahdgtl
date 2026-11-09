@@ -137,7 +137,13 @@ form.addEventListener("submit", async (e) => {
       if (!res || res.status === 404) {
         message = await sendViaTelegram(data);
       } else {
-        const result = await res.json();
+        const result = await res.json().catch(() => ({}));
+        if (res.status === 401 && result.login) {
+          // Kirmagan — yozganlarini saqlab, kirish sahifasiga yuboramiz; qaytganda forma qayta to'ladi
+          try { sessionStorage.setItem("ahd-order-draft", JSON.stringify(data)); } catch {}
+          location.href = "kabinet.html?mode=signin&next=" + encodeURIComponent("/index.html#buyurtma");
+          return;
+        }
         if (!res.ok) throw new Error(result.error || "Xatolik yuz berdi.");
         form.reset();
         tgLink = result.telegramLink || "";
@@ -184,3 +190,17 @@ navLinks.querySelectorAll("a").forEach(a =>
 );
 
 renderServices();
+
+// Kirishdan qaytgan bo'lsa — buyurtma formasini qayta to'ldiramiz
+(function restoreDraft() {
+  let d = null;
+  try { d = JSON.parse(sessionStorage.getItem("ahd-order-draft") || "null"); sessionStorage.removeItem("ahd-order-draft"); } catch {}
+  if (!d) return;
+  const fill = () => {
+    for (const [k, v] of Object.entries(d)) { const el = form.elements[k]; if (el) el.value = v; }
+    statusEl.className = "form-status ok";
+    statusEl.textContent = "Ma'lumotlaringiz saqlandi — endi «Buyurtmani yuborish»ni bosing.";
+    form.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+  setTimeout(fill, 300);
+})();

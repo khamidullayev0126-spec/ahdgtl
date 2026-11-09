@@ -115,7 +115,7 @@
   }
   function toggle(open) {
     panel.hidden = !open; fab.setAttribute("aria-expanded", open);
-    if (open) { if (!log.children.length) add("bot", "Salom! 👋 Men AHdigital'ning AI yordamchisiman. Narxlar, muddat yoki saytlar haqida so'rang."); input.focus(); }
+    if (open) { if (!log.children.length) add("bot", (window.T || (x => x))("Salom! 👋 Men AHdigital'ning AI yordamchisiman. Narxlar, muddat yoki saytlar haqida so'rang.")); input.focus(); }
   }
   fab.addEventListener("click", () => toggle(panel.hidden));
   root.querySelector(".chat-close").addEventListener("click", () => toggle(false));
@@ -123,7 +123,7 @@
 
   ["Vizitka sayt qancha turadi?", "Pro tarifga nima kiradi?", "Qancha vaqtda tayyor bo'ladi?"].forEach(q => {
     const b = document.createElement("button"); b.type = "button"; b.textContent = q;
-    b.addEventListener("click", () => { input.value = q; form.requestSubmit(); });
+    b.addEventListener("click", () => { input.value = b.textContent; form.requestSubmit(); });
     quick.appendChild(b);
   });
 
@@ -134,16 +134,17 @@
     if (!text || busy) return;
     busy = true; input.value = ""; quick.hidden = true;
     add("me", text);
-    const wait = add("bot typing", "Yozmoqda…");
+    const T = window.T || (x => x);
+    const wait = add("bot typing", T("Yozmoqda…"));
     try {
       const r = await fetch("api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text, session }) });
       const data = await r.json();
       wait.remove();
       if (data.session) { session = data.session; try { sessionStorage.setItem(KEY, session); } catch {} }
-      add("bot", data.reply || data.error || "Xatolik yuz berdi.");
+      add("bot", data.reply || T(data.error || "Xatolik yuz berdi."));
     } catch {
       wait.remove();
-      add("bot", "Internet bilan bog'lanib bo'lmadi. Keyinroq qayta urinib ko'ring.");
+      add("bot", T("Internet bilan bog'lanib bo'lmadi. Keyinroq qayta urinib ko'ring."));
     }
     busy = false; input.focus();
   });

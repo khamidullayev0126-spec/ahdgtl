@@ -93,9 +93,9 @@ app.get(["/portfolio", "/portfolio/", "/portfolio/index.html"], (req, res) => re
 createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, store, adminPassword: ADMIN_PASSWORD });
 
 // ---------- Telegram orqali kirish (auth.js) ----------
-// Saytdan foydalanish uchun avval Telegram, Google yoki email orqali kirish kerak.
-// O'chirish uchun: Render → Environment → LOGIN_REQUIRED = 0
-const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
+// Sayt ochiq; buyurtma, AI chat va ilova uchun kirish kerak (Telegram, Google yoki email).
+// LOGIN_REQUIRED = 1 — butun saytni yopish, 0 — kirishni umuman o'chirish
+const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, publicDir: PUBLIC_DIR, botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
 if (auth) { auth.install(app); app.use(auth.gate); }
 else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
 

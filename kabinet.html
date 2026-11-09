@@ -39,12 +39,14 @@
     .muted { color: var(--muted); margin: 0; }
     [hidden] { display: none !important; }
   </style>
+  <script src="i18n.js"></script>
 </head>
 <body>
 <div class="wrap">
   <nav class="nav">
-    <a href="welcome.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
-    <div class="nav-links" style="display:flex">
+    <a href="index.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
+    <div class="nav-links" style="display:flex;align-items:center">
+      <div data-lang-slot></div>
       <a href="index.html#xizmatlar">Xizmatlar</a>
       <a href="index.html#buyurtma" class="btn btn-primary">Buyurtma berish</a>
     </div>
@@ -54,7 +56,7 @@
     <h1 id="title">Shaxsiy kabinet</h1>
 
     <section class="card login-box" id="login" hidden>
-      <p class="muted">Saytdan foydalanish uchun Telegram, Google yoki email orqali kiring — parol kerak emas. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.</p>
+      <p class="muted">Buyurtma berish uchun Telegram, Google yoki email orqali kiring — parol kerak emas. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.</p>
       <div class="tg-slot" id="tg-slot"></div>
       <div class="or" id="or" hidden>yoki</div>
       <div class="tg-slot" id="g-slot"></div>
@@ -134,13 +136,14 @@ async function showLogin() {
   s.dataset.radius = "20";
   s.dataset.onauth = "onTelegramAuth(user)";
   s.dataset.requestAccess = "write";
+  if (document.documentElement.lang !== "uz") s.dataset.lang = document.documentElement.lang;
   $("tg-slot").replaceChildren(s);
 }
 
 function showGoogle(clientId) {
   const start = () => {
     google.accounts.id.initialize({ client_id: clientId, callback: res => signIn("/api/auth/google", { credential: res.credential }) });
-    google.accounts.id.renderButton($("g-slot"), { theme: "outline", size: "large", shape: "pill", text: "signin_with", locale: "uz" });
+    google.accounts.id.renderButton($("g-slot"), { theme: "outline", size: "large", shape: "pill", text: "signin_with", locale: document.documentElement.lang || "uz" });
   };
   if (window.google && google.accounts) return start();
   const s = document.createElement("script");

@@ -17,7 +17,7 @@ const COOKIE = "ahd_sess";
 const SESSION_DAYS = 30;
 const MAX_AUTH_AGE = 24 * 60 * 60;   // Telegram javobi 24 soatdan eski bo'lmasin
 
-function createAuth({ botToken, store, readOrders, botUsername }) {
+function createAuth({ botToken, store, readOrders, botUsername, publicDir }) {
   const GOOGLE_ID = process.env.GOOGLE_CLIENT_ID || "";
   const BREVO_KEY = process.env.BREVO_API_KEY || "";
   const EMAIL_FROM = process.env.EMAIL_FROM || "";
@@ -213,20 +213,27 @@ function createAuth({ botToken, store, readOrders, botUsername }) {
     });
   }
 
-  // Kirmagan odamni ochiq sahifalardan boshqa joyga qo'ymaymiz
-  // Ochiq: kirish sahifasi, shartlar, admin (o'z paroli bor), AI LEGENDS (o'z havolasi bor), API va bot webhook
+  // Sayt hammaga ochiq. Kirish faqat buyurtma, AI chat va ilova (app.html) uchun kerak.
+  // Kirmagan mehmon bosh sahifani ochsa — chiroyli taqdimot sahifasi (welcome.html) ko'rinadi.
+  // Saytni butunlay yopish kerak bo'lsa: Render → Environment → LOGIN_REQUIRED = 1
+  const PRIVATE = /^\/(app\.html|app)$/i;
   const OPEN = /^\/(welcome\.html|offline\.html|kabinet\.html|shartlar\.html|admin\.html|legends(\/.*|\.html)?|healthz|api\/.*|telegram\/.*)$/i;
   function gate(req, res, next) {
-    if (process.env.LOGIN_REQUIRED === "0") return next();
     const p = req.path;
-    const userApi = req.method === "POST" && (p === "/api/orders" || p === "/api/chat");
-    const page = req.method === "GET" && !OPEN.test(p) && (p === "/" || /\.html$/i.test(p) || !/\.[a-z0-9]+$/i.test(p));
-    if (!userApi && !page) return next();
     const s = readSession(req);
     const user = s && users()[s.id];
-    if (user) { req.user = user; return next(); }
-    if (userApi) return res.status(401).json({ error: "Avval saytga kiring (Telegram, Google yoki email)." });
-    res.redirect(p === "/" || p === "/index.html" ? "/welcome.html" : "/welcome.html?next=" + encodeURIComponent(req.originalUrl));
+    if (user) req.user = user;
+    if (process.env.LOGIN_REQUIRED === "0") return next();
+    const strict = process.env.LOGIN_REQUIRED === "1";
+    const userApi = req.method === "POST" && (p === "/api/orders" || p === "/api/chat");
+    if (userApi) return user ? next() : res.status(401).json({ error: "Buyurtma berish uchun avval kiring (Telegram yoki Google).", login: true });
+    if (req.method !== "GET") return next();
+    const page = !OPEN.test(p) && (p === "/" || /\.html$/i.test(p) || !/\.[a-z0-9]+$/i.test(p));
+    if (!page) return next();
+    if (user) return next();
+    if (p === "/" && !strict) return res.sendFile(require("path").join(publicDir, "welcome.html"));
+    if (PRIVATE.test(p) || strict) return res.redirect("/kabinet.html?mode=signin&next=" + encodeURIComponent(req.originalUrl));
+    next();
   }
 
   return { install, gate, readSession, checkTelegram };
