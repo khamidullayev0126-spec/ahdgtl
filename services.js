@@ -18,10 +18,10 @@ const SERVICES = [
     features: ["Bir nechta sahifa", "Buyurtma yoki aloqa formasi", "Admin panel va backend", "Internetga joylashda yordam"] },
   { id: "pro", group: "plan", kicker: "1 oylik obuna", name: "Pro", price: 100000, period: "oy", featured: true,
     desc: "Bir oy ichida 15 tagacha video, slayd va post yasatishingiz mumkin.",
-    features: ["15 tagacha video, slayd va post", "Vizitka va menyu saytlar", "Katta haqiqiy saytlar"] },
+    features: ["15 tagacha video, slayd va post", "Vizitka va menyu saytlar", "Oyiga 1 ta katta sayt"] },
   { id: "max", group: "plan", kicker: "1 yillik obuna", name: "Max", price: 1200000, period: "yil",
-    desc: "Butun yil davomida cheksiz video, slayd va postlar — hech qanday limit yo'q.",
-    features: ["Cheksiz video, slayd va postlar", "Vizitka va menyu saytlar", "Katta haqiqiy saytlar", "Butun yil davomida"] },
+    desc: "Butun yil davomida cheksiz video, slayd va postlar — bir vaqtda 2 tagacha buyurtma.",
+    features: ["Cheksiz video, slayd va postlar", "Vizitka va menyu saytlar", "Yiliga 2 tagacha katta sayt", "Butun yil davomida"] },
   { id: "legends", group: "course", kicker: "O'quv kursi", name: "AI LEGENDS", price: 400000, period: "oy", legend: true,
     desc: "AI bilan ishlashni shaxsan o'zim o'rgataman — amaliy darslar va qo'llab-quvvatlash.",
     features: ["Amaliy darslar", "Claude va AI vositalari bilan ishlash", "Shaxsiy qo'llab-quvvatlash"] }
