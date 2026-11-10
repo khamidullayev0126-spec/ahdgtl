@@ -182,7 +182,8 @@ window.onTelegramAuth = user => signIn("/api/auth/telegram", user);
 async function signIn(url, body) {
   $("login-err").hidden = true;
   const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  if (r.ok) return load();
+  // Kirish muvaffaqiyatli — kelgan sahifasiga, bo'lmasa bosh sahifaga qaytaramiz
+  if (r.ok) return location.replace(safeNext || "/");
   const { error } = await r.json().catch(() => ({}));
   $("login-err").textContent = error || "Kirib bo'lmadi. Qayta urinib ko'ring.";
   $("login-err").hidden = false;

@@ -213,3 +213,20 @@ renderServices();
   };
   setTimeout(fill, 300);
 })();
+
+// Boshqa sahifadan "index.html#xizmatlar" kabi havola bilan kelinganda brauzer bo'limga yetmay
+// tepada qolib ketishi mumkin (sahifa yuklanayotganda o'lchami o'zgaradi). Yuklanib bo'lgach, bo'limga qayta o'tamiz.
+(function fixHashJump() {
+  const id = decodeURIComponent(location.hash.slice(1));
+  if (!id) return;
+  let userScrolled = false;                    // foydalanuvchi o'zi aylantirgan bo'lsa — tegmaymiz
+  const mark = () => { userScrolled = true; };
+  ["wheel", "touchmove", "keydown"].forEach(ev => addEventListener(ev, mark, { once: true, passive: true }));
+  const go = () => {
+    const el = document.getElementById(id);
+    if (!el || userScrolled || Math.abs(el.getBoundingClientRect().top) < 4) return;
+    scrollTo({ top: el.getBoundingClientRect().top + scrollY, behavior: "instant" });
+  };
+  if (document.readyState === "complete") setTimeout(go, 0);
+  else addEventListener("load", () => setTimeout(go, 0), { once: true });
+})();
