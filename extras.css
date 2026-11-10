@@ -133,6 +133,20 @@
   /* Telefonda chat tugmasi faqat belgi — sahifadagi tugmalarni yopib qo'ymasin */
   .chat-fab { font-size: 0; gap: 0; padding: 14px; }
   .chat-fab span { font-size: 22px; line-height: 1; }
+
+  /* Bosh sahifani telefonda ixchamlash */
+  /* Xizmat kartalari — yonga suriladigan qator (keyingi karta chetdan ko'rinib turadi) */
+  #service-groups .cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px;
+    margin-inline: -16px; padding: 4px 16px 14px; scroll-padding-inline: 16px; scrollbar-width: none; }
+  #service-groups .cards::-webkit-scrollbar { display: none; }
+  #service-groups .card { flex: 0 0 84%; scroll-snap-align: start; }
+  /* Ish jarayoni — 2 × 2 */
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .step { padding: 16px; border-radius: 20px; }
+  .step h3 { font-size: 18px; }
+  .step p { font-size: 14px; }
+  /* Men haqimda — kichikroq rasm */
+  .about-img { max-width: 240px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
