@@ -18,8 +18,8 @@ before(async () => {
     const code = payUrl.split("o=")[1];
     return { id, code, payUrl };
   };
-  order = await mk("vizitka");           // 25 000 so'm → 12 500 + 12 500
-  sub = await mk("pro");                 // 100 000 so'm → bir martada
+  order = await mk("vizitka");           // 30 000 so'm → 15 000 + 15 000
+  sub = await mk("pro");                 // 1 000 000 so'm → bir martada
 });
 after(async () => { await srv.stop(); });
 
@@ -36,12 +36,12 @@ function click(step, f) {
 
 test("bir martalik xizmat 50/50 ga bo'linadi, obuna bir martada", async () => {
   const d = await info(order.code);
-  assert.deepEqual(d.parts.map(p => p.amount), [12500, 12500]);
+  assert.deepEqual(d.parts.map(p => p.amount), [15000, 15000]);
   assert.equal(d.due.n, 1);
   assert.equal(d.due.locked, false);
   assert.deepEqual(d.methods, { payme: true, click: true });
   const s = await info(sub.code);
-  assert.deepEqual(s.parts.map(p => p.amount), [100000]);
+  assert.deepEqual(s.parts.map(p => p.amount), [1000000]);
 });
 
 test("to'lov havolasi: 2-qismni hali to'lab bo'lmaydi, 1-qism Payme sahifasiga olib boradi", async () => {
@@ -51,25 +51,25 @@ test("to'lov havolasi: 2-qismni hali to'lab bo'lmaydi, 1-qism Payme sahifasiga o
   const loc = r.headers.get("location");
   assert.match(loc, /^https:\/\/checkout\.paycom\.uz\//);
   const params = Buffer.from(loc.split("/").pop(), "base64").toString();
-  assert.match(params, new RegExp(`m=pm-merchant;ac.order_id=${order.code}-1;a=1250000;`));
+  assert.match(params, new RegExp(`m=pm-merchant;ac.order_id=${order.code}-1;a=1500000;`));
   const c = await fetch(`${base}/api/pay/${order.code}/1/click`, { redirect: "manual" });
-  assert.match(c.headers.get("location"), /my\.click\.uz\/services\/pay\?service_id=111&merchant_id=222&amount=12500&transaction_param=/);
+  assert.match(c.headers.get("location"), /my\.click\.uz\/services\/pay\?service_id=111&merchant_id=222&amount=15000&transaction_param=/);
 });
 
 test("Payme: noto'g'ri kalit va noto'g'ri summa rad etiladi", async () => {
-  assert.equal((await payme("CheckPerformTransaction", { amount: 1250000, account: { order_id: order.code + "-1" } }, "Basic xato")).error.code, -32504);
+  assert.equal((await payme("CheckPerformTransaction", { amount: 1500000, account: { order_id: order.code + "-1" } }, "Basic xato")).error.code, -32504);
   assert.equal((await payme("CheckPerformTransaction", { amount: 999, account: { order_id: order.code + "-1" } })).error.code, -31001);
-  assert.equal((await payme("CheckPerformTransaction", { amount: 1250000, account: { order_id: "yoq-1" } })).error.code, -31050);
-  assert.equal((await payme("CheckPerformTransaction", { amount: 1250000, account: { order_id: order.code + "-1" } })).result.allow, true);
+  assert.equal((await payme("CheckPerformTransaction", { amount: 1500000, account: { order_id: "yoq-1" } })).error.code, -31050);
+  assert.equal((await payme("CheckPerformTransaction", { amount: 1500000, account: { order_id: order.code + "-1" } })).result.allow, true);
 });
 
 test("Payme: to'liq to'lov jarayoni — 1-qism to'lanadi, buyurtma tasdiqlanadi, xabarlar ketadi", async () => {
   const time = Date.now();
-  const c1 = await payme("CreateTransaction", { id: "pm-tx-1", time, amount: 1250000, account: { order_id: order.code + "-1" } });
+  const c1 = await payme("CreateTransaction", { id: "pm-tx-1", time, amount: 1500000, account: { order_id: order.code + "-1" } });
   assert.equal(c1.result.state, 1);
-  const again = await payme("CreateTransaction", { id: "pm-tx-1", time, amount: 1250000, account: { order_id: order.code + "-1" } });
+  const again = await payme("CreateTransaction", { id: "pm-tx-1", time, amount: 1500000, account: { order_id: order.code + "-1" } });
   assert.equal(again.result.transaction, c1.result.transaction);
-  const other = await payme("CreateTransaction", { id: "pm-tx-2", time, amount: 1250000, account: { order_id: order.code + "-1" } });
+  const other = await payme("CreateTransaction", { id: "pm-tx-2", time, amount: 1500000, account: { order_id: order.code + "-1" } });
   assert.equal(other.error.code, -31051, "bitta qismga ikkita to'lov ochilmasligi kerak");
 
   const p = await payme("PerformTransaction", { id: "pm-tx-1" });
@@ -94,7 +94,7 @@ test("ish 'bajarildi' bo'lgach mijozga qolgan to'lov havolasi boradi va 2-qism o
   const owner = await login(base, OWNER_ID);
   await fetch(base + "/api/orders/" + order.id, { method: "PATCH", headers: { ...JSON_H, cookie: owner }, body: JSON.stringify({ status: "bajarildi" }) });
   const msg = srv.telegram().filter(x => x.method === "sendMessage" && String(x.body.chat_id) === "7001").pop();
-  assert.match(msg.body.text, /К оплате: 12 500 сум/);
+  assert.match(msg.body.text, /К оплате: 15 000 сум/);
   assert.match(msg.body.text, new RegExp(`tolov\\.html\\?o=${order.code}`));
   const d = await info(order.code);
   assert.equal(d.due.locked, false);
@@ -102,29 +102,29 @@ test("ish 'bajarildi' bo'lgach mijozga qolgan to'lov havolasi boradi va 2-qism o
 
 test("Click: noto'g'ri imzo rad etiladi, to'g'ri to'lov 2-qismni yopadi, takrori rad etiladi", async () => {
   const payId = order.code + "-2";
-  assert.equal((await click("prepare", { id: "ck-1", payId, amount: "12500.00", badSign: true })).error, -1);
+  assert.equal((await click("prepare", { id: "ck-1", payId, amount: "15000.00", badSign: true })).error, -1);
   assert.equal((await click("prepare", { id: "ck-1", payId, amount: "500.00" })).error, -2);
-  const prep = await click("prepare", { id: "ck-1", payId, amount: "12500.00" });
+  const prep = await click("prepare", { id: "ck-1", payId, amount: "15000.00" });
   assert.equal(prep.error, 0);
-  const done = await click("complete", { id: "ck-1", payId, amount: "12500.00", prepare: prep.merchant_prepare_id });
+  const done = await click("complete", { id: "ck-1", payId, amount: "15000.00", prepare: prep.merchant_prepare_id });
   assert.equal(done.error, 0);
   const d = await info(order.code);
   assert.equal(d.due, null, "buyurtma to'liq to'langan bo'lishi kerak");
   assert.equal(d.parts.every(p => p.paid), true);
-  assert.equal((await click("prepare", { id: "ck-2", payId, amount: "12500.00" })).error, -4);
+  assert.equal((await click("prepare", { id: "ck-2", payId, amount: "15000.00" })).error, -4);
 });
 
 test("Click: bank tomonida xato bo'lsa — to'lov hisoblanmaydi", async () => {
   const payId = sub.code + "-1";
-  const prep = await click("prepare", { id: "ck-3", payId, amount: "100000" });
+  const prep = await click("prepare", { id: "ck-3", payId, amount: "1000000" });
   assert.equal(prep.error, 0);
-  const c = await click("complete", { id: "ck-3", payId, amount: "100000", prepare: prep.merchant_prepare_id, error: "-5017" });
+  const c = await click("complete", { id: "ck-3", payId, amount: "1000000", prepare: prep.merchant_prepare_id, error: "-5017" });
   assert.equal(c.error, -9);
   assert.equal((await info(sub.code)).parts[0].paid, false);
 });
 
 test("Payme: yaratilgan, lekin to'lanmagan tranzaksiyani bekor qilish", async () => {
-  const c = await payme("CreateTransaction", { id: "pm-tx-9", time: Date.now(), amount: 10000000, account: { order_id: sub.code + "-1" } });
+  const c = await payme("CreateTransaction", { id: "pm-tx-9", time: Date.now(), amount: 100000000, account: { order_id: sub.code + "-1" } });
   assert.equal(c.result.state, 1);
   const x = await payme("CancelTransaction", { id: "pm-tx-9", reason: 3 });
   assert.equal(x.result.state, -1);
@@ -140,5 +140,5 @@ test("kabinetda to'lov holati ko'rinadi", async () => {
   assert.equal(o.parts, 2);
   assert.equal(o.due, null);
   const s = me.orders.find(x => x.code === sub.code);
-  assert.equal(s.due.amount, 100000);
+  assert.equal(s.due.amount, 1000000);
 });

@@ -74,7 +74,7 @@
     "O'quv markazi": ["Учебный центр", "Learning center"],
     "Rang": ["Цвет", "Color"],
     "Sayt rangi": ["Цвет сайта", "Site color"],
-    "Shu saytni buyurtma qilaman — 25 000 so'm": ["Заказать этот сайт — 25 000 сум", "Order this site — 25,000 UZS"],
+    "Shu saytni buyurtma qilaman — 30 000 so'm": ["Заказать этот сайт — 30 000 сум", "Order this site — 30,000 UZS"],
     "Vizitka sayt namunasi": ["Пример сайта-визитки", "Business card site preview"],
     "Biznesingiz nomi": ["Название бизнеса", "Your business name"],
     "Terrakota": ["Терракота", "Terracotta"], "Zaytun": ["Оливковый", "Olive"], "Dengiz": ["Морской", "Sea"], "Olcha": ["Вишнёвый", "Cherry"], "Ko'mir": ["Графит", "Charcoal"],
@@ -163,7 +163,7 @@
     "AI tezligi": ["Скорость AI", "AI speed"],
     "Claude bilan ishlaganim uchun kontent va saytlar odatdagidan ancha tez tayyor bo'ladi.": ["Благодаря Claude контент и сайты готовы гораздо быстрее обычного.", "Because I work with Claude, content and sites are ready much faster than usual."],
     "Hamyonbop narx": ["Доступная цена", "Affordable"],
-    "Bitta video 20 000 so'm, vizitka sayt 25 000 so'm. Ko'p buyurtma uchun obuna foydaliroq.": ["Одно видео — 20 000 сум, сайт-визитка — 25 000 сум. Для частых заказов выгоднее подписка.", "One video is 20,000 UZS, a business card site is 25,000 UZS. A subscription pays off for frequent orders."],
+    "Bitta video 25 000 so'm, vizitka sayt 30 000 so'm. Ko'p buyurtma uchun obuna foydaliroq.": ["Одно видео — 25 000 сум, сайт-визитка — 30 000 сум. Для частых заказов выгоднее подписка.", "One video is 25,000 UZS, a business card site is 30,000 UZS. A subscription pays off for frequent orders."],
     "Telefonga moslashgan": ["Удобно на телефоне", "Mobile-friendly"],
     "Har bir sayt telefonda ham, kompyuterda ham chiroyli ko'rinadi.": ["Каждый сайт красиво выглядит и на телефоне, и на компьютере.", "Every site looks great on both phones and computers."],
     "O'zbek tilida": ["На узбекском", "In Uzbek"],
@@ -217,6 +217,7 @@
     "💳 To'lash": ["💳 Оплатить", "💳 Pay"],
     "To'lash": ["Оплатить", "Pay"],
     "Ma'lumotlaringiz saqlandi — endi «Buyurtmani yuborish»ni bosing.": ["Данные сохранены — теперь нажмите «Отправить заказ».", "Your details are saved — now press “Send order”."],
+    "AI yordamchidan foydalanish uchun avval kiring (Telegram yoki Google).": ["Чтобы пользоваться AI-помощником, сначала войдите (Telegram или Google).", "Please sign in first to use the AI assistant (Telegram or Google)."],
     "Buyurtma berish uchun avval kiring (Telegram yoki Google).": ["Чтобы оформить заказ, сначала войдите (Telegram или Google).", "Please sign in first to place an order (Telegram or Google)."],
     "Ismingizni kiriting (2–60 ta harf).": ["Введите имя (2–60 символов).", "Enter your name (2–60 characters)."],
     "Telefon raqam yoki Telegram username kiriting.": ["Введите номер телефона или Telegram username.", "Enter a phone number or Telegram username."],
@@ -232,7 +233,7 @@
     "Vizitka sayt va katta sayt farqi nimada?": ["Чем сайт-визитка отличается от большого сайта?", "What's the difference between a business card site and a full website?"],
     "Vizitka yoki menyu sayt — bitta sahifa: siz haqingizda ma'lumot, narxlar yoki menyu va aloqa havolalari. Katta sayt esa bir nechta sahifadan iborat, unda buyurtma formasi, admin panel va backend bo'ladi.": ["Сайт-визитка или меню — одна страница: информация о вас, цены или меню и контакты. Большой сайт состоит из нескольких страниц, в нём есть форма заказа, админ-панель и бэкенд.", "A business card or menu site is one page: info about you, prices or a menu, and contact links. A full website has several pages, an order form, an admin panel and a backend."],
     "Pro va Max obunasiga nimalar kiradi?": ["Что входит в подписки Pro и Max?", "What's included in Pro and Max?"],
-    "Pro (oyiga 100 000 so'm) — 15 tagacha video, slayd va post, vizitka va menyu saytlar hamda oyiga 1 ta katta sayt. Max (yiliga 1 200 000 so'm) — butun yil davomida cheksiz video, slayd va postlar, vizitka va menyu saytlar hamda yiliga 2 tagacha katta sayt. Batafsil:": ["Pro (100 000 сум в месяц) — до 15 видео, слайдов и постов, сайты-визитки и меню, а также 1 большой сайт в месяц. Max (1 200 000 сум в год) — безлимитные видео, слайды и посты весь год, сайты-визитки и меню, а также до 2 больших сайтов в год. Подробнее:", "Pro (100,000 UZS a month) — up to 15 videos, slides and posts, business card and menu sites, plus 1 full website a month. Max (1,200,000 UZS a year) — unlimited videos, slides and posts all year, business card and menu sites, plus up to 2 full websites a year. Details:"],
+    "Pro (oyiga 1 000 000 so'm) — 15 tagacha video, slayd va post, vizitka va menyu saytlar hamda oyiga 1 ta katta sayt. Max (yiliga 2 500 000 so'm) — butun yil davomida cheksiz video, slayd va postlar, vizitka va menyu saytlar hamda yiliga 2 tagacha katta sayt. Batafsil:": ["Pro (1 000 000 сум в месяц) — до 15 видео, слайдов и постов, сайты-визитки и меню, а также 1 большой сайт в месяц. Max (2 500 000 сум в год) — безлимитные видео, слайды и посты весь год, сайты-визитки и меню, а также до 2 больших сайтов в год. Подробнее:", "Pro (1,000,000 UZS a month) — up to 15 videos, slides and posts, business card and menu sites, plus 1 full website a month. Max (2,500,000 UZS a year) — unlimited videos, slides and posts all year, business card and menu sites, plus up to 2 full websites a year. Details:"],
     "Saytni internetga joylashga yordam berasizmi?": ["Поможете опубликовать сайт в интернете?", "Will you help put the site online?"],
     "Ha. Katta sayt buyurtma qilsangiz, uni internetga joylashda ham yordam beraman.": ["Да. Если вы заказываете большой сайт, я помогу и с публикацией.", "Yes. If you order a full website, I'll also help you put it online."],
     "AI LEGENDS kursi kimlar uchun?": ["Для кого курс AI LEGENDS?", "Who is the AI LEGENDS course for?"],
@@ -302,7 +303,7 @@
     // Kirish / kabinet
     "Kabinet — AHdigital": ["Кабинет — AHdigital", "Account — AHdigital"],
     "Shaxsiy kabinet": ["Личный кабинет", "My account"],
-    "Buyurtma berish uchun Telegram, Google yoki email orqali kiring — parol kerak emas. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.": ["Чтобы оформить заказ, войдите через Telegram, Google или email — пароль не нужен. В кабинете видны ваши заказы и их статус.", "Sign in with Telegram, Google or email to place an order — no password needed. Your orders and their status appear in your account."],
+        "Buyurtmalaringiz va ularning holatini kuzatish uchun Telegram, Google yoki email orqali kiring — parol kerak emas.": ["Чтобы следить за заказами и их статусом, войдите через Telegram, Google или email — пароль не нужен.", "Sign in with Telegram, Google or email to track your orders and their status — no password needed."],
     "yoki email orqali": ["или через email", "or with email"],
     "Email manzil": ["Email", "Email address"],
     "Kod yuborish": ["Отправить код", "Send code"],
@@ -387,7 +388,7 @@
   if (window.I18N_EXTRA) Object.assign(D, window.I18N_EXTRA);
   const PERIOD = { video: ["видео", "video"], sayt: ["сайт", "site"], buyurtma: ["заказ", "order"], oy: ["мес", "month"], yil: ["год", "year"] };
   const META = {
-    "Claude yordamida video, slayd, postlar va saytlar. Vizitka, menyu va katta saytlar. AI LEGENDS kursi.": ["Видео, слайды, посты и сайты с помощью Claude. Сайты-визитки, меню и большие сайты. Курс AI LEGENDS.", "Videos, slides, posts and websites made with Claude. Business card, menu and full websites. AI LEGENDS course."]
+    "Claude yordamida video, slayd, postlar va saytlar — 25 000 so'mdan. Vizitka, menyu va katta saytlar. AI LEGENDS kursi.": ["Видео, слайды, посты и сайты с помощью Claude — от 25 000 сум. Сайты-визитки, меню и большие сайты. Курс AI LEGENDS.", "Videos, slides, posts and websites made with Claude — from 25,000 UZS. Business card, menu and full websites. AI LEGENDS course."]
   };
 
   const idx = lang === "ru" ? 0 : 1;

@@ -158,6 +158,8 @@ if (FLAT) {
 }
 // Eski portfolio manzillari → yangi portfolio.html
 app.get(["/portfolio", "/portfolio/", "/portfolio/index.html"], (req, res) => res.redirect(301, "/portfolio.html"));
+// Eski taqdimot sahifasi olib tashlandi — bitta bosh sahifa qoldi
+app.get("/welcome.html", (req, res) => res.redirect(301, "/"));
 
 // AI LEGENDS kurs platformasi (/legends)
 createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, store, adminPassword: ADMIN_PASSWORD });
@@ -220,6 +222,8 @@ const siteChat = createSiteChat({ services: SERVICES });
 app.get("/api/chat", (req, res) => res.json({ enabled: !!siteChat }));
 if (siteChat) app.post("/api/chat", siteChat);
 
+// Kirmagan mehmon: bitta IP'dan soatiga 3 tagacha buyurtma (Telegram'ga spam kelmasin). Kirgan mijozga cheklov yo'q.
+const guestOrders = new Map();          // ip -> [buyurtma vaqtlari]
 app.post("/api/orders", rateLimit, async (req, res) => {
   const name = String(req.body.name || "").trim();
   const contact = String(req.body.contact || "").trim();
@@ -238,6 +242,14 @@ app.post("/api/orders", rateLimit, async (req, res) => {
   }
   if (message.length > 1000) {
     return res.status(400).json({ error: "Izoh 1000 ta belgidan oshmasin." });
+  }
+
+  if (!req.user) {
+    const now = Date.now();
+    const recent = (guestOrders.get(req.ip) || []).filter(t => now - t < 3600_000);
+    if (recent.length >= 3) return res.status(429).json({ error: "Bir soatda 3 tadan ko'p buyurtma bo'lmaydi. Kabinetga kiring yoki Telegram'da @Abdulkhamid_2905 ga yozing." });
+    if (guestOrders.size > 5000) guestOrders.clear();
+    guestOrders.set(req.ip, [...recent, now]);
   }
 
   const order = {
