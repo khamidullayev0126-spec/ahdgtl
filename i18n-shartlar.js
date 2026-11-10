@@ -80,7 +80,7 @@ window.I18N_EXTRA = Object.assign(window.I18N_EXTRA || {}, {
   "Birinchi 3 kun ichida hali birorta ish topshirilmagan bo'lsa — to'lov to'liq qaytariladi.": ["Если в первые 3 дня ещё не сдано ни одной работы — оплата возвращается полностью.", "If no work has been delivered within the first 3 days, you get a full refund."],
   "Undan keyin qaytarilmaydi, lekin obuna oy oxirigacha amal qiladi.": ["После этого оплата не возвращается, но подписка действует до конца месяца.", "After that it is non-refundable, but the plan stays active until the end of the month."],
   "D. Max obuna": ["D. Подписка Max", "D. Max plan"],
-  "2 500 000 so'm / 12 oy · bitta to'lov": ["2 500 000 сум / 12 месяцев · один платёж", "2,500,000 UZS / 12 months · one payment"],
+  "7 000 000 so'm / 12 oy · bitta to'lov": ["7 000 000 сум / 12 месяцев · один платёж", "7,000,000 UZS / 12 months · one payment"],
   "Obuna to'lov kunidan boshlab 12 oy amal qiladi.": ["Подписка действует 12 месяцев со дня оплаты.", "The plan is valid for 12 months from the day of payment."],
   "Avtomatik uzaytirilmaydi — xohlasangiz, qayta ulanasiz.": ["Не продлевается автоматически — при желании подключитесь снова.", "It does not renew automatically — you can subscribe again if you wish."],
   "Video, slayd va postlar — soni cheklanmaydi.": ["Видео, слайды и посты — без ограничения количества.", "Videos, slides and posts — no limit on the number."],
