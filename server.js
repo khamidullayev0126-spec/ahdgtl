@@ -108,8 +108,10 @@ function rateLimit(req, res, next) {
 // 1) Telegram bilan kirgan EGASI (Telegram ID = TELEGRAM_CHAT_ID) — parolsiz kiradi.
 // 2) Parol — faqat Render'da ADMIN_PASSWORD o'rnatilgan va u "admin123" bo'lmasa ishlaydi.
 //    Noto'g'ri parol: bitta IP'dan 15 daqiqada 5 martadan ko'p urinish bloklanadi.
+//    ADMIN_PASSWORD_LOGIN=0 — parol bilan kirishni butunlay o'chiradi (faqat Telegram qoladi).
+//    ADMIN_PASSWORD'ning o'zini o'chirmang: AI LEGENDS havolalari shu parol asosida imzolanadi.
 const OWNER_ID = String(TELEGRAM_CHAT_ID || "").trim();
-const PASSWORD_ON = !!process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD !== "admin123";
+const PASSWORD_ON = !!process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD !== "admin123" && process.env.ADMIN_PASSWORD_LOGIN !== "0";
 const failedLogins = new Map();          // ip -> [noto'g'ri urinish vaqtlari]
 function isOwner(req) {
   if (!OWNER_ID || !auth) return false;      // auth pastda yaratiladi; so'rovlar undan keyin keladi

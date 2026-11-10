@@ -13,7 +13,10 @@ const COOKIE = "ahd_legends";
 const TZ_OFFSET = "+05:00";     // Toshkent
 
 function createLegends({ app, requireAdmin, publicDir, store, adminPassword }) {
-  const SECRET = process.env.LEGENDS_SECRET || crypto.createHash("sha256").update("legends:" + adminPassword).digest("hex");
+  // Parol o'rnatilmagan ("admin123") bo'lsa, undan kalit yasamaymiz: bu parolni hamma biladi va havolani soxtalashtirish mumkin bo'lardi.
+  // O'rniga tasodifiy kalit olinadi — server qayta ishga tushganda eski havolalar ishlamay qoladi.
+  const weak = !process.env.LEGENDS_SECRET && adminPassword === "admin123";
+  const SECRET = process.env.LEGENDS_SECRET || (weak ? crypto.randomBytes(32).toString("hex") : crypto.createHash("sha256").update("legends:" + adminPassword).digest("hex"));
   const revoked = new Set(String(process.env.LEGENDS_BEKOR || "").split(",").map(s => s.trim()).filter(Boolean));
   const readLog = () => store.get("legends-oquvchilar", []);
   const writeLog = list => store.set("legends-oquvchilar", list);
@@ -119,7 +122,8 @@ function createLegends({ app, requireAdmin, publicDir, store, adminPassword }) {
   });
 
   console.log("🎓 AI LEGENDS platformasi: /legends");
-  if (!process.env.LEGENDS_SECRET) console.log("ℹ️  LEGENDS_SECRET yo'q — havolalar ADMIN_PASSWORD asosida imzolanadi (parolni o'zgartirsangiz, eski havolalar ishlamay qoladi).");
+  if (weak) console.log("⚠️  LEGENDS_SECRET ham, ADMIN_PASSWORD ham yo'q — kurs havolalari har qayta ishga tushganda bekor bo'ladi. Render'da LEGENDS_SECRET qo'shing.");
+  else if (!process.env.LEGENDS_SECRET) console.log("ℹ️  LEGENDS_SECRET yo'q — havolalar ADMIN_PASSWORD asosida imzolanadi (parolni o'zgartirsangiz, eski havolalar ishlamay qoladi).");
 }
 
 module.exports = { createLegends };

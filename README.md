@@ -51,6 +51,9 @@ Keyin brauzerda: http://localhost:3000 (admin: /admin.html, parol: admin123)
 
 Render'da `ADMIN_PASSWORD` ni o'z parolingizga almashtirishni unutmang (Environment bo'limi).
 
+Admin panelga faqat Telegram bilan kirmoqchi bo'lsangiz, Render'da `ADMIN_PASSWORD_LOGIN` = `0` qo'shing.
+`ADMIN_PASSWORD` ni o'chirmang — AI LEGENDS havolalari shu parol asosida imzolanadi.
+
 ## Narxlarni o'zgartirish
 
 `public/services.js` faylini oching va kerakli `price` ni o'zgartiring.
