@@ -245,9 +245,18 @@ function createPayments({ store, readOrders, writeOrders, services, publicUrl = 
   // ---------- Marshrutlar ----------
   function install(app) {
     // To'lov sahifasi uchun: buyurtma haqida qisqa ma'lumot (kod — havoladagi maxfiy belgi)
+    // Kodni taxmin qilib topishga qarshi: bitta IP'dan 10 daqiqada 20 ta noto'g'ri kod — blok
+    const misses = new Map();          // ip -> [noto'g'ri urinish vaqtlari]
     app.get("/api/pay/:code", (req, res) => {
+      const now = Date.now();
+      const list = (misses.get(req.ip) || []).filter(t => now - t < 600_000);
+      if (list.length >= 20) return res.status(429).json({ error: "Juda ko'p noto'g'ri urinish. 10 daqiqadan keyin qayta urinib ko'ring." });
       const order = readOrders().find(o => o.code === String(req.params.code).toLowerCase());
-      if (!order) return res.status(404).json({ error: "Buyurtma topilmadi." });
+      if (!order) {
+        if (misses.size > 5000) misses.clear();
+        list.push(now); misses.set(req.ip, list);
+        return res.status(404).json({ error: "Buyurtma topilmadi." });
+      }
       res.json({
         code: order.code, serviceName: order.serviceName, serviceId: order.serviceId, price: order.price, status: order.status,
         name: String(order.name || "").split(" ")[0], parts: summary(order), due: dueOf(order), methods: methods()
