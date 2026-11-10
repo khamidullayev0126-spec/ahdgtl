@@ -19,7 +19,7 @@ const SERVICES = [
   { id: "pro", group: "plan", kicker: "1 oylik obuna", name: "Pro", price: 1000000, period: "oy", featured: true,
     desc: "Bir oy ichida 15 tagacha video, slayd va post yasatishingiz mumkin.",
     features: ["15 tagacha video, slayd va post", "Vizitka va menyu saytlar", "Oyiga 1 ta katta sayt"] },
-  { id: "max", group: "plan", kicker: "1 yillik obuna", name: "Max", price: 2500000, period: "yil",
+  { id: "max", group: "plan", kicker: "1 yillik obuna", name: "Max", price: 7000000, period: "yil",
     desc: "Butun yil davomida cheksiz video, slayd va postlar — bir vaqtda 2 tagacha buyurtma.",
     features: ["Cheksiz video, slayd va postlar", "Vizitka va menyu saytlar", "Yiliga 2 tagacha katta sayt", "Butun yil davomida"] },
   { id: "legends", group: "course", kicker: "O'quv kursi", name: "AI LEGENDS", price: 500000, period: "oy", legend: true,
