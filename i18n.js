@@ -49,6 +49,7 @@
 
     // Bosh sahifa — hero
     "AHdigital": ["AHdigital", "AHdigital"],
+    "AHdigital — xizmatlar va narxlar": ["AHdigital — услуги и цены", "AHdigital — services and pricing"],
     "AI bilan kontent va saytlar · Claude": ["Контент и сайты с AI · Claude", "AI-made content & websites · Claude"],
     "Video, slayd, post va saytlar —": ["Видео, слайды, посты и сайты —", "Videos, slides, posts and websites —"],
     "AI tezligida.": ["со скоростью AI.", "at AI speed."],
@@ -63,7 +64,7 @@
     // Vizitka sinovi
     "Sinab ko'ring · 10 soniya": ["Попробуйте · 10 секунд", "Try it · 10 seconds"],
     "Vizitka saytingiz qanday ko'rinadi?": ["Как будет выглядеть ваш сайт-визитка?", "What would your business card site look like?"],
-    "Biznesingiz nomini yozing va rangni tanlang — o'ngda saytingizning namunasi darhol paydo bo'ladi.": ["Введите название бизнеса и выберите цвет — пример сайта сразу появится рядом.", "Type your business name and pick a color — a preview of your site appears instantly."],
+    "Biznesingiz nomini yozing va rangni tanlang — saytingizning namunasi darhol paydo bo'ladi.": ["Введите название бизнеса и выберите цвет — пример сайта сразу появится рядом.", "Type your business name and pick a color — a preview of your site appears instantly."],
     "Biznes nomi": ["Название бизнеса", "Business name"],
     "Faoliyat": ["Сфера", "Business type"],
     "Kafe yoki restoran": ["Кафе или ресторан", "Café or restaurant"],

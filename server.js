@@ -14,6 +14,7 @@ const { createPayments } = require("./payments");
 const { createAuth } = require("./auth");
 
 const app = express();
+app.disable("x-powered-by");   // server turini oshkor qilmaymiz
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
@@ -187,6 +188,9 @@ if (!fs.existsSync(path.join(PUBLIC_DIR, "index.html"))) {
 
 // ================= API =================
 
+// Brauzerlar /favicon.ico ni o'zi so'raydi — bor belgini beramiz
+app.get("/favicon.ico", (req, res) => res.set("Cache-Control", "public, max-age=604800").sendFile(path.join(PUBLIC_DIR, "icon-192.png")));
+
 // Render server ishlayotganini shu manzil orqali tekshiradi
 app.get("/healthz", (req, res) => res.send("ok"));
 
@@ -325,5 +329,10 @@ store.init().catch(err => { console.error("❌", err.message); process.exit(1); 
   }
   if (bot) await bot.start(app).catch(err => console.error("Botni ishga tushirib bo'lmadi:", err.message));
   else console.log("ℹ️  TELEGRAM_BOT_TOKEN yo'q — bot o'chiq.");
+  // Topilmagan manzillar (bot yo'llari qo'shilgandan keyin, eng oxirida): API — JSON, sahifa — o'z 404 sahifamiz
+  app.use((req, res) => {
+    if (req.path.startsWith("/api/")) return res.status(404).json({ error: "Topilmadi." });
+    res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"));
+  });
   if (!process.env.AHD_TEST) { setTimeout(runBackups, 60_000); setInterval(runBackups, 24 * 3600_000).unref(); }
 }));

@@ -20,6 +20,8 @@ function createLegends({ app, requireAdmin, publicDir, store, adminPassword }) {
   const revoked = new Set(String(process.env.LEGENDS_BEKOR || "").split(",").map(s => s.trim()).filter(Boolean));
   const readLog = () => store.get("legends-oquvchilar", []);
   const writeLog = list => store.set("legends-oquvchilar", list);
+  // Bekor qilingan havola: Render'dagi LEGENDS_BEKOR ro'yxati yoki admin paneldagi "Bekor qilish" tugmasi
+  const isRevoked = id => revoked.has(id) || readLog().some(x => x.id === id && x.bekor);
 
   // ---------- Imzolangan token ----------
   const b64 = s => Buffer.from(s).toString("base64url");
@@ -32,7 +34,7 @@ function createLegends({ app, requireAdmin, publicDir, store, adminPassword }) {
     if (good.length !== given.length || !crypto.timingSafeEqual(good, given)) return null;
     try {
       const p = JSON.parse(Buffer.from(data, "base64url").toString());
-      if (!p.exp || Date.now() > p.exp || revoked.has(p.id) || !DARSLAR[p.g]) return null;
+      if (!p.exp || Date.now() > p.exp || isRevoked(p.id) || !DARSLAR[p.g]) return null;
       return p;
     } catch { return null; }
   }
@@ -81,7 +83,17 @@ function createLegends({ app, requireAdmin, publicDir, store, adminPassword }) {
     res.json({ id, link: `${base}/legends/kirish?k=${encodeURIComponent(token)}`, tugaydi: new Date(exp).toISOString(),
       ogohlantirish: inGroup > 10 ? `Diqqat: ${g} guruhda ${inGroup} ta faol o'quvchi (chegara — 10).` : "" });
   });
-  app.get("/api/legends/oquvchilar", requireAdmin, (req, res) => res.json(readLog().reverse()));
+  app.get("/api/legends/oquvchilar", requireAdmin, (req, res) => res.json(readLog().slice().reverse().map(x => ({ ...x, bekor: !!x.bekor || revoked.has(x.id) }))));
+  // Admin: havolani bekor qilish yoki qayta tiklash ({ id, bekor: true|false })
+  app.post("/api/legends/bekor", requireAdmin, (req, res) => {
+    const id = String(req.body.id || "");
+    const log = readLog();
+    const row = log.find(x => x.id === id);
+    if (!row) return res.status(404).json({ error: "O'quvchi topilmadi." });
+    row.bekor = req.body.bekor !== false;
+    writeLog(log);
+    res.json({ ok: true, id, bekor: row.bekor });
+  });
 
   // ---------- O'quvchi: kirish ----------
   app.get("/legends/kirish", (req, res) => {

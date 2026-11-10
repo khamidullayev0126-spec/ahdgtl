@@ -130,6 +130,9 @@
     transform: translateY(110%); transition: transform .25s ease; }
   .m-cta.show { transform: none; }
   body.has-m-cta .chat { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+  /* Telefonda chat tugmasi faqat belgi — sahifadagi tugmalarni yopib qo'ymasin */
+  .chat-fab { font-size: 0; gap: 0; padding: 14px; }
+  .chat-fab span { font-size: 22px; line-height: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
