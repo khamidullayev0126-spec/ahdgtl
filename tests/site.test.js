@@ -13,7 +13,7 @@ after(async () => { await srv.stop(); });
 
 // ---------- Sahifalar ----------
 test("ochiq sahifalar kirmasdan ochiladi", async () => {
-  for (const p of ["/", "/index.html", "/portfolio.html", "/shartlar.html", "/kabinet.html", "/welcome.html", "/admin.html"]) {
+  for (const p of ["/", "/index.html", "/portfolio.html", "/shartlar.html", "/kabinet.html", "/admin.html"]) {
     const r = await fetch(base + p, { redirect: "manual" });
     assert.equal(r.status, 200, `${p} ochilmadi`);
   }
@@ -25,9 +25,12 @@ test("saytga kerakli fayllar ochiq (yashirinib qolmagan)", async () => {
   }
 });
 
-test("kirmagan mehmon bosh sahifada taqdimot sahifasini ko'radi", async () => {
+test("bitta bosh sahifa: / xizmatlar va buyurtma formasini ko'rsatadi, eski welcome.html unga yo'naltiriladi", async () => {
   const html = await (await fetch(base + "/")).text();
-  assert.match(html, /w-hero/);
+  assert.match(html, /id="buyurtma"/);
+  const old = await fetch(base + "/welcome.html", { redirect: "manual" });
+  assert.equal(old.status, 301);
+  assert.equal(old.headers.get("location"), "/");
 });
 
 test("ilova kirishni so'raydi", async () => {
@@ -88,9 +91,11 @@ test("soxta cookie bilan kabinetga kirib bo'lmaydi", async () => {
 });
 
 // ---------- Buyurtma ----------
-test("kirmagan mehmon buyurtma bera olmaydi", async () => {
-  const r = await post("/api/orders", { name: "Ali", contact: "@ali", serviceId: "video" });
-  assert.equal(r.status, 401);
+test("kirmagan mehmon ham buyurtma beradi, lekin AI chat uchun kirish kerak", async () => {
+  const r = await post("/api/orders", { name: "Ali", contact: "@ali_test", serviceId: "video" });
+  assert.equal(r.status, 201);
+  assert.ok((await r.json()).id);
+  assert.equal((await post("/api/chat", { message: "salom" })).status, 401);
 });
 
 test("kirgan mijoz buyurtma beradi va u kabinetda ko'rinadi", async () => {

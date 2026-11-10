@@ -56,7 +56,7 @@
     <h1 id="title">Shaxsiy kabinet</h1>
 
     <section class="card login-box" id="login" hidden>
-      <p class="muted">Buyurtma berish uchun Telegram, Google yoki email orqali kiring — parol kerak emas. Kabinetda buyurtmalaringiz va ularning holati ko'rinadi.</p>
+      <p class="muted">Buyurtmalaringiz va ularning holatini kuzatish uchun Telegram, Google yoki email orqali kiring — parol kerak emas.</p>
       <div class="tg-slot" id="tg-slot"></div>
       <div class="or" id="or" hidden>yoki</div>
       <div class="tg-slot" id="g-slot"></div>
@@ -182,7 +182,8 @@ window.onTelegramAuth = user => signIn("/api/auth/telegram", user);
 async function signIn(url, body) {
   $("login-err").hidden = true;
   const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  if (r.ok) return load();
+  // Kirish muvaffaqiyatli — kelgan sahifasiga, bo'lmasa bosh sahifaga qaytaramiz
+  if (r.ok) return location.replace(safeNext || "/");
   const { error } = await r.json().catch(() => ({}));
   $("login-err").textContent = error || "Kirib bo'lmadi. Qayta urinib ko'ring.";
   $("login-err").hidden = false;

@@ -213,11 +213,11 @@ function createAuth({ botToken, store, readOrders, botUsername, publicDir, order
     });
   }
 
-  // Sayt hammaga ochiq. Kirish faqat buyurtma, AI chat va ilova (app.html) uchun kerak.
-  // Kirmagan mehmon bosh sahifani ochsa — chiroyli taqdimot sahifasi (welcome.html) ko'rinadi.
+  // Sayt hammaga ochiq. Buyurtmani kirmasdan ham berish mumkin; kirish faqat AI chat va ilova (app.html) uchun kerak.
+  // Kirgan mijozning buyurtmasi kabinetda ko'rinadi. Buyurtma uchun ham kirishni talab qilish: ORDER_LOGIN = 1
   // Saytni butunlay yopish kerak bo'lsa: Render → Environment → LOGIN_REQUIRED = 1
   const PRIVATE = /^\/(app\.html|app)$/i;
-  const OPEN = /^\/(welcome\.html|offline\.html|kabinet\.html|shartlar\.html|admin\.html|legends(\/.*|\.html)?|healthz|api\/.*|telegram\/.*)$/i;
+  const OPEN = /^\/(offline\.html|kabinet\.html|shartlar\.html|admin\.html|legends(\/.*|\.html)?|healthz|api\/.*|telegram\/.*)$/i;
   function gate(req, res, next) {
     const p = req.path;
     const s = readSession(req);
@@ -225,13 +225,14 @@ function createAuth({ botToken, store, readOrders, botUsername, publicDir, order
     if (user) req.user = user;
     if (process.env.LOGIN_REQUIRED === "0") return next();
     const strict = process.env.LOGIN_REQUIRED === "1";
-    const userApi = req.method === "POST" && (p === "/api/orders" || p === "/api/chat");
-    if (userApi) return user ? next() : res.status(401).json({ error: "Buyurtma berish uchun avval kiring (Telegram yoki Google).", login: true });
+    if (req.method === "POST" && p === "/api/chat" && !user)        // AI chat pul turadi — faqat kirganlar uchun
+      return res.status(401).json({ error: "AI yordamchidan foydalanish uchun avval kiring (Telegram yoki Google).", login: true });
+    if (req.method === "POST" && p === "/api/orders" && !user && process.env.ORDER_LOGIN === "1")
+      return res.status(401).json({ error: "Buyurtma berish uchun avval kiring (Telegram yoki Google).", login: true });
     if (req.method !== "GET") return next();
     const page = !OPEN.test(p) && (p === "/" || /\.html$/i.test(p) || !/\.[a-z0-9]+$/i.test(p));
     if (!page) return next();
     if (user) return next();
-    if (p === "/" && !strict) return res.sendFile(require("path").join(publicDir, "welcome.html"));
     if (PRIVATE.test(p) || strict) return res.redirect("/kabinet.html?mode=signin&next=" + encodeURIComponent(req.originalUrl));
     next();
   }

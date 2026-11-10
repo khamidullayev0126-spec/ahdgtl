@@ -31,7 +31,7 @@ function showLocked() {
   box.append(el("span", "lg-chip gold", "Yopiq kurs"), el("h1", "", "AI LEGENDS darslari faqat o'quvchilar uchun"));
   if (bad) box.append(el("p", "lg-warn", "Havola noto'g'ri yoki muddati tugagan. Ustozingizdan yangi havola so'rang."));
   const steps = el("ol", "lg-steps");
-  ["Kursga yoziling: Telegram @Abdulkhamid_2905", "To'lovni amalga oshiring — oyiga 400 000 so'm", "To'lov qabul qilingach, sizga shaxsiy maxfiy havola yuboriladi", "Havolani oching — profilingiz va darslaringiz shu yerda"].forEach(t => steps.append(el("li", "", t)));
+  ["Kursga yoziling: Telegram @Abdulkhamid_2905", "To'lovni amalga oshiring — oyiga 500 000 so'm", "To'lov qabul qilingach, sizga shaxsiy maxfiy havola yuboriladi", "Havolani oching — profilingiz va darslaringiz shu yerda"].forEach(t => steps.append(el("li", "", t)));
   const a = el("a", "lg-btn", "Telegram'da yozish"); a.href = "https://t.me/Abdulkhamid_2905"; a.target = "_blank"; a.rel = "noopener";
   box.append(steps, a);
   app.append(box);

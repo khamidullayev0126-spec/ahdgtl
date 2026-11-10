@@ -219,7 +219,7 @@ const screens = {
         <div><p class="small">Xush kelibsiz${first ? "," : ""}</p><p class="h1" style="font-size:26px">${first || "AHdigital"}</p></div>
       </div>
       <p class="lead">Saytlar, Reels videolar, slayd va postlar — Claude yordamida tez, chiroyli va arzon.</p>
-      <div class="stats"><div class="stat"><b>7</b><span>xil xizmat</span></div><div class="stat"><b>20 000</b><span>so'mdan</span></div><div class="stat"><b>1 kun</b><span>kichik ishlar</span></div></div>
+      <div class="stats"><div class="stat"><b>7</b><span>xil xizmat</span></div><div class="stat"><b>25 000</b><span>so'mdan</span></div><div class="stat"><b>1 kun</b><span>kichik ishlar</span></div></div>
       <div style="display:flex;gap:10px"><a class="btn" style="flex:1" href="#buyurtma">Buyurtma berish</a><a class="btn ghost" style="flex:1" href="#chat">AI'dan so'rash</a></div>
       <h2>Mashhur xizmatlar</h2>
       ${pop.map(serviceCard).join("")}
@@ -288,7 +288,7 @@ const screens = {
         <span class="kicker">O'quv kursi · 12 dars</span>
         <p class="h1">AI bilan ishlashni noldan o'rganing</p>
         <p class="lead">Har bir dars 40 daqiqalik video va slayd. Uy ishi slayd oxirida. Savollar — guruhning Telegram chatida.</p>
-        <div><b class="price" style="font-size:28px">${fmt(legends ? legends.price : 400000)}</b> <span class="per">so'm / oy</span></div>
+        <div><b class="price" style="font-size:28px">${fmt(legends ? legends.price : 500000)}</b> <span class="per">so'm / oy</span></div>
         <a class="btn" href="#buyurtma" data-pick="legends">Kursga yozilish</a>
         <a class="btn ghost" href="/legends">Menda shaxsiy havola bor</a>
       </section>
@@ -375,7 +375,7 @@ document.addEventListener("click", async e => {
   if (t.dataset.group) { state.group = t.dataset.group; render(); }
   if (t.dataset.reel) openReel(t.dataset.reel);
   if (t.dataset.act === "again") { state.sent = null; render(); }
-  if (t.dataset.act === "logout") { await fetch("/api/auth/logout", { method: "POST" }); location.href = "/welcome.html"; }
+  if (t.dataset.act === "logout") { await fetch("/api/auth/logout", { method: "POST" }); location.href = "/"; }
   if (t.dataset.act === "install" && deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; showInstall(); }
 });
 
