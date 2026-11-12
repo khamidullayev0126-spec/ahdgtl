@@ -309,6 +309,7 @@ const screens = {
   men: { title: "Men", render() {
     const u = state.me;
     return `
+      ${state.owner ? `<a class="li white" href="/admin.html" style="border:2px solid var(--accent)"><span class="ico">${ICON.card}</span><span style="flex:1"><b>Admin panel</b><span class="s">Buyurtmalar, to'lovlar, statistika</span></span><span aria-hidden="true">›</span></a>` : ""}
       ${u ? `<div class="card"><div class="hello">${u.photo ? `<img class="ava" src="${esc(u.photo)}" alt="">` : `<span class="ava" aria-hidden="true">${esc((u.name || "?")[0])}</span>`}<div style="min-width:0"><b style="font-size:18px">${esc(u.name)}</b><p class="small">${esc(u.username ? "@" + u.username : u.email || "")}</p></div></div></div>` : ""}
       <h2>Buyurtmalarim</h2>
       ${state.orders.length ? orderList(state.orders) : '<p class="small">Hozircha buyurtma yo\'q.</p>'}
@@ -464,6 +465,8 @@ async function loadMe() {
     const r = await fetch("/api/me");
     if (r.status === 401) { location.href = "/kabinet.html?mode=signin&next=" + encodeURIComponent("/app.html" + location.hash); return; }
     if (r.ok) { const d = await r.json(); state.me = d.user; state.orders = d.orders || []; }
+    // Sayt egasi bo'lsa — "Men" bo'limida Admin panel tugmasi chiqadi (server baribir o'zi tekshiradi)
+    state.owner = !!(await (await fetch("/api/admin/me")).json()).owner;
   } catch {}
   render();
 }

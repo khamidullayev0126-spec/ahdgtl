@@ -444,6 +444,9 @@ $("theme-btn").addEventListener("click", () => {
   render();          // grafik ranglari yangilansin
 });
 
+// Ilova (bosh ekrandagi AHdigital) ichidan ochilgan bo'lsa — "Ilovaga qaytish" tugmasi
+if (matchMedia("(display-mode: standalone)").matches || navigator.standalone || document.referrer.includes("/app.html")) $("to-app").hidden = false;
+
 // Qaysi kirish usullari yoqilgan: Telegram (egasi) va/yoki parol
 (async function init() {
   let me = { owner: false, telegram: false, password: true };
