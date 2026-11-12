@@ -8,70 +8,176 @@
   <link rel="icon" type="image/svg+xml" href="images/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
-  <link rel="stylesheet" href="style.css">
-  <style>[hidden]{display:none!important}</style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="admin.css">
+  <script>try{var t=localStorage.getItem("admin-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 </head>
 <body>
-<div class="wrap">
-  <nav class="nav">
-    <a href="index.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
-    <div class="nav-links">
-      <a href="index.html">Saytga qaytish</a>
-      <button class="btn btn-secondary" id="logout-btn" hidden>Chiqish</button>
-    </div>
-  </nav>
 
-  <!-- Kirish oynasi -->
-  <section id="login-box">
-    <form id="login-form" class="order-form admin-login">
-      <h2 class="section-title">Admin panel</h2>
-      <a class="btn btn-primary btn-block" id="tg-admin" href="kabinet.html?mode=signin&amp;next=%2Fadmin.html" hidden>Telegram bilan kirish</a>
-      <p class="form-status" id="tg-note" hidden></p>
-      <div class="field" id="pw-field">
-        <label for="password">Parol</label>
-        <input class="input" id="password" type="password" required autocomplete="current-password">
+<!-- ============ Kirish oynasi ============ -->
+<main class="auth" id="login-box">
+  <form id="login-form" class="auth-card">
+    <a href="index.html" class="auth-brand"><img src="images/logo.svg" alt="" width="44" height="44"><span>AH<i>digital</i></span></a>
+    <h1>Admin panelga kirish</h1>
+    <p class="muted">Buyurtmalar, to'lovlar va o'quvchilarni boshqarish</p>
+    <a class="btn btn-primary btn-block" id="tg-admin" href="kabinet.html?mode=signin&amp;next=%2Fadmin.html" hidden>
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M21.9 4.3 18.6 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.6 1.1 12c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.4 1.3z"/></svg>
+      Telegram bilan kirish
+    </a>
+    <p class="note" id="tg-note" hidden></p>
+    <div class="field" id="pw-field">
+      <label for="password">Parol</label>
+      <input class="input" id="password" type="password" required autocomplete="current-password">
+    </div>
+    <button class="btn btn-ghost btn-block" type="submit" id="pw-btn">Parol bilan kirish</button>
+    <p class="form-status" id="login-status" role="status"></p>
+    <a href="index.html" class="back-link">← Saytga qaytish</a>
+  </form>
+</main>
+
+<!-- ============ Panel ============ -->
+<div class="app" id="orders-box" hidden>
+  <aside class="side" id="side">
+    <a href="index.html" class="side-brand"><img src="images/logo.svg" alt="" width="34" height="34"><span>AH<i>digital</i></span></a>
+    <nav class="side-nav" aria-label="Bo'limlar">
+      <p class="side-label">Asosiy</p>
+      <a href="#dashboard" data-view="dashboard"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z"/></svg>Bosh sahifa</a>
+      <a href="#orders" data-view="orders"><svg viewBox="0 0 24 24"><path d="M19 3h-4.2A3 3 0 0 0 12 1a3 3 0 0 0-2.8 2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2m2 14H7v-2h7zm3-4H7v-2h10zm0-4H7V7h10z"/></svg>Buyurtmalar<b class="side-badge" id="badge-new" hidden></b></a>
+      <a href="#payments" data-view="payments"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 14H4v-6h16zm0-10H4V6h16z"/></svg>To'lovlar</a>
+      <a href="#clients" data-view="clients"><svg viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6m0 2c-2.3 0-7 1.2-7 3.5V19h14v-2.5C15 14.2 10.3 13 8 13m8 0-.9.1c1.2.8 1.9 2 1.9 3.4V19h6v-2.5c0-2.3-4.7-3.5-7-3.5"/></svg>Mijozlar</a>
+      <p class="side-label">Kurs</p>
+      <a href="#legends" data-view="legends"><svg viewBox="0 0 24 24"><path d="M12 3 1 9l11 6 9-4.9V17h2V9zM5 13.2v4L12 21l7-3.8v-4L12 17z"/></svg>AI LEGENDS</a>
+    </nav>
+    <div class="side-foot">
+      <a href="index.html" class="side-out"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Saytga o'tish</a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main">
+    <header class="top">
+      <button class="icon-btn menu-btn" id="menu-btn" aria-label="Menyu"><svg viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg></button>
+      <div class="top-title"><h1 id="view-title">Bosh sahifa</h1><p id="view-sub" class="muted"></p></div>
+      <label class="search" id="search-wrap">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 14 15.5l.3.3v.8l5 5 1.5-1.5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9"/></svg>
+        <input id="search" type="search" placeholder="Ism, aloqa yoki kod bo'yicha qidirish" autocomplete="off">
+      </label>
+      <div class="top-actions">
+        <button class="icon-btn" id="refresh-btn" aria-label="Yangilash" title="Yangilash"><svg viewBox="0 0 24 24"><path d="M17.6 6.4A8 8 0 1 0 19.7 14h-2.1a6 6 0 1 1-1.4-6.2L13 11h7V4z"/></svg></button>
+        <button class="icon-btn" id="theme-btn" aria-label="Rejim" title="Kunduzgi / tungi rejim"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A5.5 5.5 0 0 1 12.4 3.1z"/></svg></button>
+        <div class="me"><span class="avatar">AH</span><span class="me-name">Abdulhamid<small>Egasi</small></span></div>
+        <button class="icon-btn" id="logout-btn" aria-label="Chiqish" title="Chiqish"><svg viewBox="0 0 24 24"><path d="M10 17v-3H3v-4h7V7l5 5zm0-15h9a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2h-9v-2h9V4h-9z"/></svg></button>
       </div>
-      <button class="btn btn-secondary btn-block" type="submit" id="pw-btn">Parol bilan kirish</button>
-      <p class="form-status" id="login-status" role="status"></p>
-    </form>
-  </section>
+    </header>
 
-  <!-- Buyurtmalar -->
-  <section id="orders-box" hidden>
-    <h2 class="section-title">Buyurtmalar</h2>
-    <div class="stats" id="stats"></div>
-    <div class="table-wrap">
-      <table class="table">
-        <thead>
-          <tr><th>Sana</th><th>Ism</th><th>Aloqa</th><th>Xizmat</th><th>Izoh</th><th>Holat</th><th></th></tr>
-        </thead>
-        <tbody id="orders-body"></tbody>
-      </table>
-    </div>
-    <p class="section-lead" id="empty" hidden>Hozircha buyurtma yo'q.</p>
+    <div class="content">
+      <!-- ===== Bosh sahifa ===== -->
+      <section class="view" id="view-dashboard">
+        <div class="kpis" id="kpis"></div>
+        <div class="grid-2">
+          <article class="card">
+            <header class="card-h"><div><h2>Buyurtmalar va tushum</h2><p class="muted">Oxirgi 14 kun</p></div>
+              <div class="legend"><span><i class="dot dot-a"></i>Buyurtmalar</span><span><i class="dot dot-b"></i>Tushum</span></div></header>
+            <div class="chart" id="chart"></div>
+          </article>
+          <article class="card">
+            <header class="card-h"><div><h2>Holatlar</h2><p class="muted">Barcha buyurtmalar</p></div></header>
+            <div class="donut-wrap" id="donut"></div>
+          </article>
+        </div>
+        <div class="grid-2 grid-2b">
+          <article class="card">
+            <header class="card-h"><div><h2>So'nggi buyurtmalar</h2></div><a href="#orders" class="link">Hammasi →</a></header>
+            <div class="mini-list" id="recent"></div>
+          </article>
+          <article class="card">
+            <header class="card-h"><div><h2>Eng ko'p sotilgan</h2><p class="muted">Xizmatlar bo'yicha</p></div></header>
+            <div class="bars" id="top-services"></div>
+          </article>
+        </div>
+      </section>
 
-    <!-- AI LEGENDS o'quvchilari -->
-    <div class="legends-admin">
-      <h2 class="section-title">AI LEGENDS o'quvchilari</h2>
-      <p class="section-lead">To'lov qabul qilingach, o'quvchi uchun shaxsiy maxfiy havola yarating va unga Telegram'da yuboring.</p>
-      <form id="lg-form" class="lg-admin-form" novalidate>
-        <div class="field"><label for="lg-ism">Ism familiya</label><input class="input" id="lg-ism" maxlength="60" required placeholder="Masalan: Aziz Karimov"></div>
-        <div class="field"><label for="lg-guruh">Guruh</label>
-          <select class="input" id="lg-guruh"><option value="A">A · 0–12 yosh</option><option value="B">B · 13–25 yosh</option><option value="C">C · 26–70 yosh</option></select></div>
-        <div class="field"><label for="lg-kun">Necha kunga</label><input class="input" id="lg-kun" type="number" min="1" max="366" value="30"></div>
-        <button class="btn btn-primary" type="submit">✅ To'lov qabul qilindi — havola yaratish</button>
-      </form>
-      <div class="lg-result" id="lg-result" hidden>
-        <p><b id="lg-who"></b> uchun havola tayyor. Faqat shu o'quvchiga yuboring:</p>
-        <div class="lg-link-row"><input class="input" id="lg-link" readonly><button class="btn btn-secondary" type="button" id="lg-copy">Nusxalash</button></div>
-        <p class="form-status" id="lg-warn"></p>
-      </div>
-      <div class="table-wrap"><table class="table"><thead><tr><th>Ism</th><th>Guruh</th><th>Yaratildi</th><th>Tugaydi</th><th>ID</th><th></th></tr></thead><tbody id="lg-body"></tbody></table></div>
-      <p class="section-lead">Ro'yxat serverda saqlanadi va Render qayta deploy qilganda tozalanishi mumkin — havolalarning o'zi baribir ishlayveradi.</p>
+      <!-- ===== Buyurtmalar ===== -->
+      <section class="view" id="view-orders" hidden>
+        <div class="card">
+          <div class="toolbar">
+            <div class="chips" id="status-chips" role="tablist"></div>
+            <button class="btn btn-ghost btn-sm" id="export-btn" type="button">⬇ CSV yuklab olish</button>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Sana</th><th>Mijoz</th><th>Xizmat</th><th class="num">Narx</th><th>To'lov</th><th>Holat</th><th></th></tr></thead>
+              <tbody id="orders-body"></tbody>
+            </table>
+          </div>
+          <p class="empty" id="empty" hidden>Bu yerda hozircha buyurtma yo'q.</p>
+        </div>
+      </section>
+
+      <!-- ===== To'lovlar ===== -->
+      <section class="view" id="view-payments" hidden>
+        <div class="kpis kpis-3" id="pay-kpis"></div>
+        <div class="card">
+          <header class="card-h"><div><h2>To'lovlar tarixi</h2><p class="muted">Click va Payme orqali kelgan pullar</p></div></header>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Sana</th><th>Mijoz</th><th>Xizmat</th><th>Qism</th><th>Usul</th><th class="num">Summa</th></tr></thead>
+              <tbody id="pay-body"></tbody>
+            </table>
+          </div>
+          <p class="empty" id="pay-empty" hidden>Hali onlayn to'lov kelmagan. Click va Payme kalitlari ulangach shu yerda ko'rinadi.</p>
+        </div>
+      </section>
+
+      <!-- ===== Mijozlar ===== -->
+      <section class="view" id="view-clients" hidden>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Mijoz</th><th>Aloqa</th><th class="num">Buyurtmalar</th><th class="num">To'lagan</th><th>Oxirgi buyurtma</th></tr></thead>
+              <tbody id="clients-body"></tbody>
+            </table>
+          </div>
+          <p class="empty" id="clients-empty" hidden>Hali mijoz yo'q.</p>
+        </div>
+      </section>
+
+      <!-- ===== AI LEGENDS ===== -->
+      <section class="view" id="view-legends" hidden>
+        <div class="card">
+          <header class="card-h"><div><h2>Yangi o'quvchi qo'shish</h2><p class="muted">To'lov qabul qilingach, o'quvchi uchun shaxsiy maxfiy havola yarating va unga Telegram'da yuboring.</p></div></header>
+          <form id="lg-form" class="lg-form" novalidate>
+            <div class="field"><label for="lg-ism">Ism familiya</label><input class="input" id="lg-ism" maxlength="60" required placeholder="Masalan: Aziz Karimov"></div>
+            <div class="field"><label for="lg-guruh">Guruh</label>
+              <select class="input" id="lg-guruh"><option value="A">A · 0–12 yosh</option><option value="B">B · 13–25 yosh</option><option value="C">C · 26–70 yosh</option></select></div>
+            <div class="field"><label for="lg-kun">Necha kunga</label><input class="input" id="lg-kun" type="number" min="1" max="366" value="30"></div>
+            <button class="btn btn-primary" type="submit">✅ Havola yaratish</button>
+          </form>
+          <div class="lg-result" id="lg-result" hidden>
+            <p><b id="lg-who"></b> uchun havola tayyor. Faqat shu o'quvchiga yuboring:</p>
+            <div class="lg-link-row"><input class="input" id="lg-link" readonly><button class="btn btn-ghost" type="button" id="lg-copy">Nusxalash</button></div>
+            <p class="form-status" id="lg-warn"></p>
+          </div>
+        </div>
+        <div class="card">
+          <header class="card-h"><div><h2>O'quvchilar</h2></div></header>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Ism</th><th>Guruh</th><th>Yaratildi</th><th>Tugaydi</th><th>ID</th><th></th></tr></thead><tbody id="lg-body"></tbody></table></div>
+        </div>
+      </section>
     </div>
-  </section>
+  </div>
 </div>
+
+<!-- Buyurtma tafsiloti -->
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer-scrim" data-close></div>
+  <aside class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="d-title">
+    <header class="drawer-h"><h2 id="d-title">Buyurtma</h2><button class="icon-btn" data-close aria-label="Yopish"><svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg></button></header>
+    <div class="drawer-body" id="d-body"></div>
+  </aside>
+</div>
+
+<script src="services.js"></script>
 <script src="admin.js"></script>
 <script src="admin-legends.js"></script>
 </body>
