@@ -301,3 +301,11 @@ h1, h2 { margin: 0; }
   #orders-body .row-act .btn { flex: 1; }
   #lg-body td { font-size: 13px; }
 }
+
+/* Qo'lda to'lov */
+.part { flex-wrap: wrap; }
+.part-btn { flex-basis: 100%; }
+.manual { flex-basis: 100%; display: grid; gap: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.input-sm { padding: 8px 10px; font-size: 14px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--strong); cursor: pointer; }
+.check input { width: 16px; height: 16px; accent-color: var(--accent); }

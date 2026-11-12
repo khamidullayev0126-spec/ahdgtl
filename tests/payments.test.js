@@ -142,3 +142,29 @@ test("kabinetda to'lov holati ko'rinadi", async () => {
   const s = me.orders.find(x => x.code === sub.code);
   assert.equal(s.due.amount, 1000000);
 });
+
+test("admin pulni qo'lda (naqd) olganini belgilaydi, xato bo'lsa bekor qiladi", async () => {
+  const owner = await login(base, OWNER_ID);
+  const r = await fetch(base + "/api/orders", { method: "POST", headers: { ...JSON_H, cookie: customer }, body: JSON.stringify({ name: "Olga", contact: "@olga", serviceId: "slayd", lang: "ru" }) });
+  const { id } = await r.json();
+  const mark = (body, cookie = owner) => fetch(`${base}/api/orders/${id}/paid`, { method: "POST", headers: { ...JSON_H, cookie }, body: JSON.stringify(body) });
+
+  assert.equal((await mark({ part: 1, method: "naqd" }, customer)).status, 401, "oddiy mijoz belgilay olmaydi");
+  assert.equal((await mark({ part: 1, method: "bitcoin" })).status, 400);
+  assert.equal((await mark({ part: 3, method: "naqd" })).status, 400);
+
+  const ok = await (await mark({ part: 1, method: "naqd", notify: true })).json();
+  assert.equal(ok.paid[1].amount, 30000);
+  assert.equal(ok.paid[1].manual, true);
+  assert.equal(ok.status, "tasdiqlandi");
+  assert.equal(ok.notified.ok, true);
+  const msg = srv.telegram().filter(x => x.method === "sendMessage" && String(x.body.chat_id) === "7001").pop();
+  assert.match(msg.body.text, /Оплата получена: 30 000 сум \(наличными\)/);
+  assert.equal((await mark({ part: 1, method: "karta" })).status, 409, "ikki marta belgilab bo'lmaydi");
+
+  const del = await fetch(`${base}/api/orders/${id}/paid/1`, { method: "DELETE", headers: { cookie: owner } });
+  assert.equal(del.status, 200);
+  assert.equal((await del.json()).paid[1], undefined);
+  // Click orqali kelgan haqiqiy to'lovni qo'lda o'chirib bo'lmaydi
+  assert.equal((await fetch(`${base}/api/orders/${order.id}/paid/2`, { method: "DELETE", headers: { cookie: owner } })).status, 409);
+});

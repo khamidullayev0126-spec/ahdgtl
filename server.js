@@ -298,6 +298,50 @@ app.patch("/api/orders/:id", requireAdmin, async (req, res) => {
   res.json({ ...order, notified });
 });
 
+// Admin: pulni qo'lda (naqd, karta o'tkazmasi, Telegram orqali) olganini belgilash
+const MANUAL_METHODS = {
+  naqd: { uz: "naqd", ru: "наличными", en: "cash" },
+  karta: { uz: "karta o'tkazmasi", ru: "переводом на карту", en: "card transfer" },
+  boshqa: { uz: "boshqa usul", ru: "другим способом", en: "other method" }
+};
+app.post("/api/orders/:id/paid", requireAdmin, async (req, res) => {
+  const method = String(req.body.method || "");
+  if (!MANUAL_METHODS[method]) return res.status(400).json({ error: "To'lov usulini tanlang." });
+  const orders = readOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Buyurtma topilmadi." });
+  const part = payments.partsOf(order).find(p => p.n === Number(req.body.part));
+  if (!part) return res.status(400).json({ error: "Bunday qism yo'q." });
+  if ((order.paid || {})[part.n]) return res.status(409).json({ error: "Bu qism allaqachon to'langan." });
+  order.paid = { ...(order.paid || {}), [part.n]: { amount: part.amount, method, manual: true, at: new Date().toISOString() } };
+  if (part.n === 1 && order.status === "yangi") order.status = "tasdiqlandi";
+  writeOrders(orders);
+  let notified = null;
+  if (req.body.notify && bot) {
+    const left = payments.dueOf(order), m = MANUAL_METHODS[method];
+    notified = await bot.notifyCustomer(order, {
+      uz: `💳 To'lov qabul qilindi: ${fmtSum(part.amount)} so'm (${m.uz}). Rahmat!${left ? `\nQolgan ${fmtSum(left.amount)} so'm ish tayyor bo'lgach to'lanadi.` : "\nBuyurtma to'liq to'landi ✅"}`,
+      ru: `💳 Оплата получена: ${fmtSum(part.amount)} сум (${m.ru}). Спасибо!${left ? `\nОставшиеся ${fmtSum(left.amount)} сум — после готовности работы.` : "\nЗаказ полностью оплачен ✅"}`,
+      en: `💳 Payment received: ${fmtSum(part.amount)} UZS (${m.en}). Thank you!${left ? `\nThe remaining ${fmtSum(left.amount)} UZS is due when the work is ready.` : "\nThe order is fully paid ✅"}`
+    }).catch(e => ({ ok: false, reason: e.message }));
+    if (!notified || !notified.ok) notified = { ok: false, reason: (notified && notified.reason) || "mijoz botga ulanmagan" };
+    else notified = { ok: true };
+  }
+  res.json({ ...order, notified });
+});
+
+// Admin: qo'lda belgilangan to'lovni bekor qilish (xato bosilgan bo'lsa). Click/Payme to'lovlari o'chirilmaydi.
+app.delete("/api/orders/:id/paid/:part", requireAdmin, (req, res) => {
+  const orders = readOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  const p = order && (order.paid || {})[req.params.part];
+  if (!p) return res.status(404).json({ error: "To'lov topilmadi." });
+  if (!p.manual) return res.status(409).json({ error: "Click/Payme to'lovini bu yerdan o'chirib bo'lmaydi." });
+  delete order.paid[req.params.part];
+  writeOrders(orders);
+  res.json(order);
+});
+
 // Admin: buyurtmani o'chirish
 app.delete("/api/orders/:id", requireAdmin, (req, res) => {
   const orders = readOrders();

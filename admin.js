@@ -7,7 +7,7 @@ const STATUS_COLOR = { yangi: "--info", tasdiqlandi: "--violet", jarayonda: "--w
 const VIEWS = {
   dashboard: ["Bosh sahifa", "Bugungi holat bir qarashda"],
   orders: ["Buyurtmalar", "Hamma buyurtmalar va ularning holati"],
-  payments: ["To'lovlar", "Click va Payme orqali tushgan pullar"],
+  payments: ["To'lovlar", "Onlayn va qo'lda olingan pullar"],
   clients: ["Mijozlar", "Buyurtma bergan odamlar"],
   legends: ["AI LEGENDS", "Kurs o'quvchilari va ularning havolalari"]
 };
@@ -66,6 +66,9 @@ function partsOf(o) {
   const first = Math.ceil(price / 2);
   return [{ n: 1, amount: first }, { n: 2, amount: price - first }];
 }
+const METHOD_NAME = { payme: "Payme", click: "Click", naqd: "Naqd", karta: "Karta o'tkazmasi", boshqa: "Boshqa" };
+const methodName = m => METHOD_NAME[m] || String(m || "—");
+const ONLINE = m => m === "payme" || m === "click";
 const paidOf = o => Object.values(o.paid || {}).reduce((a, p) => a + (Number(p.amount) || 0), 0);
 function payBadge(o) {
   const parts = partsOf(o), n = Object.keys(o.paid || {}).length;
@@ -131,7 +134,7 @@ function renderDashboard() {
   const done = orders.filter(o => o.status === "bajarildi").length;
   $("kpis").replaceChildren(
     kpi({ label: "Jami buyurtmalar", value: String(orders.length), icon: "bag", tone: "t-accent", sub: `Bu oy: <b>+${thisMonth}</b>` }),
-    kpi({ label: "Tushgan pul", value: sum(received), unit: "so'm", icon: "cash", tone: "t-ok", sub: "Click va Payme orqali" }),
+    kpi({ label: "Tushgan pul", value: sum(received), unit: "so'm", icon: "cash", tone: "t-ok", sub: "Onlayn va qo'lda olingan" }),
     kpi({ label: "Kutilayotgan to'lov", value: sum(expected), unit: "so'm", icon: "clock", tone: "t-warn", sub: "Bekor qilinmaganlar bo'yicha" }),
     kpi({ label: "Faol ishlar", value: String(active), icon: "bolt", tone: "t-info", sub: `Bajarilgan: <b>${done}</b>` })
   );
@@ -293,10 +296,7 @@ function openOrder(id) {
     o.message ? h("p", { class: "d-sec" }, "Izoh") : null,
     o.message ? h("p", { class: "msg" }, o.message) : null,
     h("p", { class: "d-sec" }, "To'lov"),
-    h("div", { class: "parts" }, partsOf(o).map(p => h("div", { class: "part" },
-      h("div", {}, h("b", {}, partsOf(o).length > 1 ? `${p.n}-qism` : "To'liq to'lov"),
-        h("small", {}, paid[p.n] ? `${fmtDate(paid[p.n].at)} · ${String(paid[p.n].method || "").toUpperCase()}` : (p.n === 2 && o.status !== "bajarildi" ? "Ish tayyor bo'lgach ochiladi" : "Kutilmoqda"))),
-      h("div", { class: "mini-r" }, sum(p.amount) + " so'm", paid[p.n] ? h("span", { class: "badge s-bajarildi" }, "To'langan") : h("span", { class: "badge pay-none" }, "To'lanmagan"))))),
+    h("div", { class: "parts" }, partsOf(o).map(p => partRow(o, p))),
     h("div", { class: "d-actions" },
       payLink ? h("button", { class: "btn btn-ghost btn-sm", type: "button", onclick: async () => {
         try { await navigator.clipboard.writeText(payLink); toast("To'lov havolasi nusxalandi"); } catch { prompt("To'lov havolasi:", payLink); }
@@ -305,6 +305,43 @@ function openOrder(id) {
   );
   d.hidden = false;
 }
+// Bitta to'lov qismi: holati + "Qo'lda to'landi" yoki "Bekor qilish" tugmasi
+function partRow(o, p) {
+  const pd = (o.paid || {})[p.n];
+  const row = h("div", { class: "part" + (pd ? "" : " part-open") },
+    h("div", {}, h("b", {}, partsOf(o).length > 1 ? `${p.n}-qism` : "To'liq to'lov"),
+      h("small", {}, pd ? `${fmtDate(pd.at)} · ${methodName(pd.method)}${pd.manual ? " (qo'lda)" : ""}` : (p.n === 2 && o.status !== "bajarildi" ? "Odatda ish tayyor bo'lgach to'lanadi" : "Kutilmoqda"))),
+    h("div", { class: "mini-r" }, sum(p.amount) + " so'm", pd ? h("span", { class: "badge s-bajarildi" }, "To'langan") : h("span", { class: "badge pay-none" }, "To'lanmagan")));
+  if (pd && pd.manual) {
+    const undo = h("button", { class: "btn btn-ghost btn-sm btn-danger part-btn", type: "button" }, "Bekor qilish");
+    undo.addEventListener("click", async () => {
+      if (undo.dataset.confirm !== "1") { undo.dataset.confirm = "1"; undo.textContent = "Rostdanmi?"; setTimeout(() => { undo.dataset.confirm = ""; undo.textContent = "Bekor qilish"; }, 3000); return; }
+      try { await api(`api/orders/${o.id}/paid/${p.n}`, { method: "DELETE" }); toast("To'lov belgisi olib tashlandi"); await loadOrders(); openOrder(o.id); }
+      catch (e) { toast("Xatolik: " + e.message); }
+    });
+    row.append(undo);
+  }
+  if (!pd && o.status !== "bekor") {
+    const form = h("form", { class: "manual", hidden: true });
+    const method = h("select", { class: "input input-sm", "aria-label": "Qanday to'landi" },
+      h("option", { value: "naqd" }, "Naqd pul"), h("option", { value: "karta" }, "Karta o'tkazmasi"), h("option", { value: "boshqa" }, "Boshqa usul"));
+    const notify = h("input", { type: "checkbox", checked: true });
+    const ok = h("button", { class: "btn btn-primary btn-sm", type: "submit" }, `✓ ${sum(p.amount)} so'm olindi`);
+    form.append(method, h("label", { class: "check" }, notify, "Mijozga Telegram'da xabar yuborish"), ok);
+    form.addEventListener("submit", async e => {
+      e.preventDefault(); ok.disabled = true;
+      try {
+        const r = await api(`api/orders/${o.id}/paid`, { method: "POST", body: JSON.stringify({ part: p.n, method: method.value, notify: notify.checked }) });
+        toast(r.notified ? (r.notified.ok ? "✅ Saqlandi, mijozga xabar ketdi" : `✅ Saqlandi. Mijozga xabar ketmadi: ${r.notified.reason}`) : "✅ To'lov saqlandi");
+        await loadOrders(); openOrder(o.id);
+      } catch (err) { toast("Xatolik: " + err.message); ok.disabled = false; }
+    });
+    const open = h("button", { class: "btn btn-ghost btn-sm part-btn", type: "button", onclick: () => { form.hidden = !form.hidden; open.hidden = !form.hidden; } }, "💵 Qo'lda to'landi");
+    row.append(open, form);
+  }
+  return row;
+}
+
 function closeDrawer() { $("drawer").hidden = true; }
 $("drawer").addEventListener("click", e => { if (e.target.closest("[data-close]")) closeDrawer(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
@@ -315,11 +352,12 @@ function renderPayments() {
   orders.forEach(o => Object.entries(o.paid || {}).forEach(([n, p]) => rows.push({ o, n, ...p })));
   rows.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   const total = rows.reduce((a, r) => a + (Number(r.amount) || 0), 0);
-  const by = m => rows.filter(r => r.method === m).reduce((a, r) => a + (Number(r.amount) || 0), 0);
+  const on = rows.filter(r => ONLINE(r.method)), off = rows.filter(r => !ONLINE(r.method));
+  const tot = list => list.reduce((a, r) => a + (Number(r.amount) || 0), 0);
   $("pay-kpis").replaceChildren(
     kpi({ label: "Jami tushum", value: sum(total), unit: "so'm", icon: "cash", tone: "t-ok", sub: `${rows.length} ta to'lov` }),
-    kpi({ label: "Payme", value: sum(by("payme")), unit: "so'm", icon: "card", tone: "t-info", sub: `${rows.filter(r => r.method === "payme").length} ta to'lov` }),
-    kpi({ label: "Click", value: sum(by("click")), unit: "so'm", icon: "card", tone: "t-violet", sub: `${rows.filter(r => r.method === "click").length} ta to'lov` })
+    kpi({ label: "Onlayn (Click, Payme)", value: sum(tot(on)), unit: "so'm", icon: "card", tone: "t-info", sub: `${on.length} ta to'lov` }),
+    kpi({ label: "Qo'lda (naqd, karta)", value: sum(tot(off)), unit: "so'm", icon: "card", tone: "t-violet", sub: `${off.length} ta to'lov` })
   );
   const list = rows.filter(r => matches(r.o));
   $("pay-empty").hidden = list.length > 0;
@@ -328,7 +366,7 @@ function renderPayments() {
     h("td", { class: "who" }, h("b", {}, r.o.name), h("span", {}, r.o.contact)),
     h("td", {}, r.o.serviceName),
     h("td", {}, partsOf(r.o).length > 1 ? `${r.n}-qism` : "To'liq"),
-    h("td", {}, h("span", { class: "badge " + (r.method === "click" ? "s-tasdiqlandi" : "s-yangi") }, String(r.method || "—").toUpperCase())),
+    h("td", {}, h("span", { class: "badge " + ({ click: "s-tasdiqlandi", payme: "s-yangi", naqd: "s-bajarildi", karta: "s-jarayonda" }[r.method] || "pay-none") }, methodName(r.method))),
     h("td", { class: "num" }, h("b", {}, sum(r.amount) + " so'm"))
   )));
 }
