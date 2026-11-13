@@ -340,6 +340,7 @@ function serviceCard(s) {
   return `<article class="card ${cls}">
     <div class="row" style="align-items:flex-start"><div><span class="kicker">${esc(s.kicker)}</span><h2 style="margin-top:4px">${esc(s.name)}</h2></div>${s.featured ? '<span class="badge">Ommabop</span>' : ""}</div>
     <p class="lead" style="font-size:14px">${esc(s.desc)}</p>
+    ${s.time ? `<p class="small" style="font-weight:700"><span aria-hidden="true">⏱</span> ${esc(s.time)}</p>` : ""}
     <div class="row"><div><b class="price">${fmt(s.price)}</b> <span class="per">so'm / ${esc(s.period)}</span></div><a class="btn sm" href="#buyurtma" data-pick="${s.id}">Tanlash</a></div>
   </article>`;
 }

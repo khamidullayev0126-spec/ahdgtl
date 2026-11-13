@@ -277,3 +277,26 @@ footer a { color: var(--muted); }
 .lg-result p { margin: 0; }
 .lg-link-row { display: flex; gap: var(--s2); flex-wrap: wrap; }
 .lg-link-row .input { flex: 1; min-width: 0; font-size: 13px; }
+
+/* xizmat kartasi: muddat, natija, namuna */
+.card .card-time { flex: 0; display: inline-flex; align-self: flex-start; gap: 6px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, currentColor 10%, transparent); font-size: 14px; font-weight: 700; }
+.card .card-desc { flex: 0; }
+.card .card-result { flex: 0; font-size: 15px; line-height: 1.45; }
+.card-sample { font-weight: 700; font-size: 15px; color: inherit; text-underline-offset: 3px; margin-top: auto; }
+.card-sample + .btn { margin-top: 0; }
+.card .features { flex: 1; }
+.card [hidden] { display: none !important; }
+
+/* tez aloqa tugmalari (buyurtma bo'limi) */
+.quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: var(--s4); width: 100%; max-width: 560px; }
+.quick-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; min-height: 56px; border-radius: 18px; text-decoration: none; color: #fff; font-weight: 700; transition: transform .15s, box-shadow .15s; }
+.quick-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.quick-btn svg { width: 24px; height: 24px; flex: none; }
+.quick-btn span { display: flex; flex-direction: column; line-height: 1.2; }
+.quick-btn small { font-weight: 500; font-size: 12px; opacity: .85; }
+.quick-tg { background: #229ed9; }
+.quick-wa { background: #1fa855; }
+.quick-call { background: var(--band); color: var(--band-text); }
+.quick-btn[hidden] { display: none !important; }
+.quick-or { margin-top: var(--s3); color: var(--muted); font-size: 15px; }
+@media (max-width: 560px) { .quick { grid-template-columns: 1fr; } }

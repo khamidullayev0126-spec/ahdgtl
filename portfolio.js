@@ -1,6 +1,6 @@
 // Portfolio JavaScript
 // Bu faylda: yozilayotgan matn effekti, o'quv yo'li, loyihalar va narx kalkulyatori.
-// Yangi loyiha qo'shish uchun pastdagi PROJECTS ro'yxatiga yangi obyekt qo'shing.
+// Loyihalar ro'yxati — works.js (window.WORKS). Yangi ish qo'shish uchun o'sha faylga obyekt qo'shing.
 
 // ---------- 1. Ma'lumotlar (massiv va obyektlar) ----------
 
@@ -23,39 +23,6 @@ const JOURNEY = [
   { name: "JavaScript", done: false }
 ];
 
-const PROJECTS = [
-  {
-    title: "AHdigital sayti",
-    status: "ishlayapti",
-    desc: "Xizmatlarim sayti: narxlar, buyurtma formasi, admin panel va Node.js backend.",
-    tags: ["HTML", "CSS", "JavaScript", "Node.js"],
-    link: "index.html",
-    linkText: "Saytni ochish"
-  },
-  {
-    title: "AI kontent",
-    status: "xizmat",
-    desc: "Claude yordamida mijozlar uchun video, taqdimot slaydlari va ijtimoiy tarmoq postlari.",
-    tags: ["Claude", "AI", "Figma"],
-    link: "index.html#xizmatlar",
-    linkText: "Narxlarni ko'rish"
-  },
-  {
-    title: "Narx kalkulyatori",
-    status: "js mashq",
-    desc: "Saytdagi narxlar ro'yxatini olib, tanlangan xizmatlar summasini hisoblaydi.",
-    tags: ["JavaScript", "massiv", "DOM"],
-    link: "#lab",
-    linkText: "Sinab ko'rish"
-  },
-  {
-    title: "Keyingi loyiha",
-    status: "tez orada",
-    desc: "JavaScript bilan yangi loyiha ustida ishlayapman. Tayyor bo'lgach shu yerda paydo bo'ladi.",
-    tags: ["JavaScript"],
-    soon: true
-  }
-];
 
 // ---------- 2. Yozilayotgan matn effekti ----------
 
@@ -103,15 +70,25 @@ JOURNEY.forEach((item, index) => {
 // ---------- 4. Loyihalarni chizish ----------
 
 const projectsEl = document.getElementById("projects");
-PROJECTS.forEach(p => {
+const WORKS = window.WORKS || [];
+WORKS.forEach(p => {
   const card = document.createElement("article");
-  card.className = "project" + (p.soon ? " soon" : "");
+  card.className = "project";
+  card.dataset.cat = p.cat.join(" ");
   card.innerHTML = `
+    <a class="project-img" hidden><img alt="" loading="lazy" width="600" height="375"></a>
     <div class="project-top"><span class="status"></span></div>
     <h3></h3>
     <p></p>
     <div class="tags"></div>
   `;
+  if (p.image) {
+    const a = card.querySelector(".project-img");
+    a.href = p.link || "#";
+    a.hidden = false;
+    a.tabIndex = -1;            // klaviatura uchun pastdagi havola yetarli
+    a.querySelector("img").src = p.image;
+  }
   card.querySelector(".status").textContent = "// " + p.status;
   card.querySelector("h3").textContent = p.title;
   card.querySelector("p").textContent = p.desc;
@@ -131,6 +108,17 @@ PROJECTS.forEach(p => {
     card.appendChild(a);
   }
   projectsEl.appendChild(card);
+});
+
+// Filtr: Hammasi / Sayt / Dizayn / Video / AI
+document.querySelectorAll("#filters .chip").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const f = btn.dataset.f;
+    document.querySelectorAll("#filters .chip").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+    projectsEl.querySelectorAll(".project").forEach(card => {
+      card.hidden = f !== "all" && !card.dataset.cat.split(" ").includes(f);
+    });
+  });
 });
 
 // ---------- 5. Narx kalkulyatori (serverdan ma'lumot olish) ----------

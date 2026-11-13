@@ -20,6 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
   <link rel="stylesheet" href="portfolio.css">
+  <script src="i18n-ishlar.js"></script>
   <script src="i18n.js"></script>
 </head>
 <body>
@@ -69,6 +70,13 @@
   <section id="loyihalar">
     <p class="mono comment">// 02 · loyihalar</p>
     <h2>Ishlarim</h2>
+    <div class="filters" id="filters" role="group" aria-label="Turi bo'yicha saralash">
+      <button type="button" class="chip" data-f="all" aria-pressed="true">Hammasi</button>
+      <button type="button" class="chip" data-f="sayt" aria-pressed="false">Sayt</button>
+      <button type="button" class="chip" data-f="dizayn" aria-pressed="false">Dizayn</button>
+      <button type="button" class="chip" data-f="video" aria-pressed="false">Video</button>
+      <button type="button" class="chip" data-f="ai" aria-pressed="false">AI</button>
+    </div>
     <div class="projects" id="projects"></div>
   </section>
 
@@ -129,6 +137,7 @@
   </footer>
 </div>
 <script src="services.js"></script>
+<script src="works.js"></script>
 <script src="portfolio.js"></script>
 </body>
 </html>

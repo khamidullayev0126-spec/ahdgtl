@@ -13,7 +13,7 @@ after(async () => { await srv.stop(); });
 
 // ---------- Sahifalar ----------
 test("ochiq sahifalar kirmasdan ochiladi", async () => {
-  for (const p of ["/", "/index.html", "/portfolio.html", "/shartlar.html", "/maxfiylik.html", "/kabinet.html", "/admin.html"]) {
+  for (const p of ["/", "/index.html", "/portfolio.html", "/shartlar.html", "/maxfiylik.html", "/ishlar/ahdigital.html", "/kabinet.html", "/admin.html"]) {
     const r = await fetch(base + p, { redirect: "manual" });
     assert.equal(r.status, 200, `${p} ochilmadi`);
   }

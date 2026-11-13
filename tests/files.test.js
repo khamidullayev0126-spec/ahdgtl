@@ -15,7 +15,7 @@ test("barcha .js fayllarda sintaksis xatosi yo'q", () => {
 });
 
 test("tarjima lug'atlari: har bir yozuvda ruscha va inglizcha bor", () => {
-  for (const f of ["i18n-app.js", "i18n-shartlar.js", "i18n-maxfiylik.js"]) {
+  for (const f of ["i18n-app.js", "i18n-shartlar.js", "i18n-maxfiylik.js", "i18n-ishlar.js"]) {
     const ctx = { window: {} };
     vm.runInNewContext(fs.readFileSync(path.join(ROOT, f), "utf8"), ctx);
     for (const [uz, tr] of Object.entries(ctx.window.I18N_EXTRA)) {
@@ -30,5 +30,20 @@ test("har bir xizmat nomi rus va ingliz tiliga tarjima qilingan", () => {
   for (const s of services) {
     assert.ok(i18n.includes(JSON.stringify(s.name) + ":"), `"${s.name}" i18n.js lug'atida yo'q`);
     assert.ok(i18n.includes(JSON.stringify(s.desc) + ":"), `"${s.name}" tavsifi i18n.js lug'atida yo'q`);
+    for (const k of ["time", "result"]) if (s[k]) assert.ok(i18n.includes(JSON.stringify(s[k]) + ":"), `"${s.name}" ${k} i18n.js lug'atida yo'q`);
+    if (s.sample) assert.ok(i18n.includes(JSON.stringify((s.sampleText || "Namunani ko'rish") + " →") + ":"), `"${s.name}" namuna matni i18n.js da yo'q`);
+  }
+});
+
+test("portfolio ishlari (works.js): har birida rasm/havola bor va matnlari tarjima qilingan", () => {
+  const ctx = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(ROOT, "works.js"), "utf8"), ctx);
+  vm.runInNewContext(fs.readFileSync(path.join(ROOT, "i18n-ishlar.js"), "utf8"), ctx);
+  const dict = ctx.window.I18N_EXTRA;
+  for (const w of ctx.window.WORKS) {
+    for (const k of ["title", "desc", "status", "linkText"]) assert.ok(dict[w[k]], `"${w.slug}" ${k} tarjimasi yo'q`);
+    assert.ok(w.cat.every(c => ["sayt", "dizayn", "video", "ai"].includes(c)), `"${w.slug}" noto'g'ri turkum`);
+    if (w.image) assert.ok(fs.existsSync(path.join(ROOT, w.image)), `"${w.slug}" rasmi topilmadi: ${w.image}`);
+    if (w.link && !w.link.startsWith("#")) assert.ok(fs.existsSync(path.join(ROOT, w.link.split("#")[0])), `"${w.slug}" havolasi topilmadi: ${w.link}`);
   }
 });

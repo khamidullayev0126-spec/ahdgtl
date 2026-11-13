@@ -174,3 +174,47 @@ footer a { color: var(--muted); }
 /* logo */
 .logo { display: inline-flex; align-items: center; gap: 10px; }
 .logo img { width: 32px; height: 32px; }
+
+/* ---------- loyihalar filtri va rasmli kartalar ---------- */
+[hidden] { display: none !important; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.chip { font: 600 14px var(--font-body); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+.chip:hover { color: var(--text); border-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.projects { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.project-img { display: block; margin: -24px -24px 4px; border-radius: 20px 20px 0 0; overflow: hidden; aspect-ratio: 16 / 10; background: var(--surface-2); }
+.project-img img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .4s ease; }
+.project:hover .project-img img { transform: scale(1.04); }
+@media (prefers-reduced-motion: reduce) { .project:hover .project-img img { transform: none; } }
+
+/* ---------- keys sahifasi (ishlar/*.html) ---------- */
+.case-hero { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; padding-block: 40px 32px; }
+.case-hero h1 { font-size: clamp(36px, 6vw, 68px); letter-spacing: -0.02em; }
+.shot { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.shot img { width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
+.shot figcaption { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.shot.wide { margin-bottom: 8px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 16px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+.stat strong { font-family: var(--font-display); font-size: 34px; color: var(--accent-2); line-height: 1; }
+.stat span { color: var(--muted); font-size: 14px; }
+.case-sec { display: flex; flex-direction: column; gap: 18px; }
+.case-sec > p { font-size: 17px; max-width: 70ch; color: var(--text); opacity: .9; }
+.case-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.case-cols > div { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; }
+.case-cols h3 { font-size: 18px; font-weight: 500; color: var(--accent); margin-bottom: 12px; }
+.case-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.case-list li::marker { color: var(--accent-2); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 24px; }
+.gallery.phones { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 260px)); justify-content: center; }
+.shot.phone img { border-radius: 28px; }
+.tags.big span { font-size: 14px; padding: 6px 12px; }
+.case-cta { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; background: linear-gradient(135deg, var(--surface-2), var(--surface)); border: 1px solid var(--line); border-radius: 28px; padding: 40px 24px; margin-block: 32px; }
+.case-cta p { color: var(--muted); max-width: 52ch; }
+.case-cta .actions { justify-content: center; }
+.case .stats, .case .shot.wide { margin-block: 8px; }
+@media (max-width: 560px) {
+  .stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat { padding: 16px; }
+  .stat strong { font-size: 28px; }
+}

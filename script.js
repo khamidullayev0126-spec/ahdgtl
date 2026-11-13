@@ -27,8 +27,11 @@ function renderCard(s) {
     </div>
     <h3></h3>
     <div class="price"><strong></strong><span></span></div>
-    <p></p>
+    <p class="card-time"><span aria-hidden="true">⏱</span> <span class="t"></span></p>
+    <p class="card-desc"></p>
+    <p class="card-result"><b>Natija:</b> <span class="r"></span></p>
     <ul class="features"></ul>
+    <a class="card-sample" hidden></a>
     <button type="button" class="btn btn-block ${s.featured ? "btn-secondary" : "btn-primary"}">Tanlash</button>
   `;
   // Matnlarni textContent orqali qo'yamiz — bu xavfsizroq
@@ -36,7 +39,17 @@ function renderCard(s) {
   card.querySelector("h3").textContent = s.name;
   card.querySelector(".price strong").textContent = formatPrice(s.price);
   card.querySelector(".price span").textContent = `so'm / ${s.period}`;
-  card.querySelector("p").textContent = s.desc;
+  card.querySelector(".card-desc").textContent = s.desc;
+  card.querySelector(".card-time .t").textContent = s.time || "";
+  card.querySelector(".card-time").hidden = !s.time;
+  card.querySelector(".card-result .r").textContent = s.result || "";
+  card.querySelector(".card-result").hidden = !s.result;
+  if (s.sample) {
+    const a = card.querySelector(".card-sample");
+    a.href = s.sample;
+    a.textContent = (s.sampleText || "Namunani ko'rish") + " →";
+    a.hidden = false;
+  }
 
   // Har bir imkoniyat uchun <li> yaratamiz
   const list = card.querySelector(".features");
@@ -49,6 +62,7 @@ function renderCard(s) {
   // "Tanlash" bosilsa — formaga o'tib, shu xizmatni tanlab qo'yamiz
   card.querySelector("button").addEventListener("click", () => {
     selectEl.value = s.id;
+    selectEl.dispatchEvent(new Event("change"));
     document.getElementById("buyurtma").scrollIntoView({ behavior: "smooth" });
     document.getElementById("name").focus({ preventScroll: true });
   });
@@ -87,6 +101,11 @@ function renderServices() {
     });
     selectEl.appendChild(og);
   });
+  const want = new URLSearchParams(location.search).get("xizmat");
+  if (want && services.some(s => s.id === want)) {
+    selectEl.value = want;
+    selectEl.dispatchEvent(new Event("change"));
+  }
 }
 
 // Server bo'lmasa (fayl kompyuterda ochilgan bo'lsa) — buyurtmani Telegram orqali yuboramiz
@@ -229,4 +248,29 @@ renderServices();
   };
   if (document.readyState === "complete") setTimeout(go, 0);
   else addEventListener("load", () => setTimeout(go, 0), { once: true });
+})();
+
+// ---------- Tez aloqa: Telegram / WhatsApp / qo'ng'iroq (raqamlar contact.js da) ----------
+// Tanlangan xizmatga qarab tayyor xabar yoziladi — mijoz faqat "Yuborish"ni bosadi.
+(function quickContact() {
+  const C = window.AHD_CONTACT || {};
+  const tg = document.getElementById("q-tg"), wa = document.getElementById("q-wa"), call = document.getElementById("q-call");
+  if (!tg || !selectEl) return;
+  const MSG = {
+    uz: ["Salom! Menga «{x}» kerak.", "Salom! Sayt yoki kontent buyurtma qilmoqchiman."],
+    ru: ["Здравствуйте! Интересует «{x}».", "Здравствуйте! Хочу заказать сайт или контент."],
+    en: ["Hi! I'm interested in “{x}”.", "Hi! I'd like to order a website or content."]
+  };
+  function update() {
+    const m = MSG[window.I18N_LANG] || MSG.uz;
+    const s = (window.SERVICES || []).find(x => x.id === selectEl.value);
+    const text = s ? m[0].replace("{x}", s.name) : m[1];
+    if (C.telegram) tg.href = `https://t.me/${C.telegram}?text=${encodeURIComponent(text)}`;
+    const num = String(C.whatsapp || "").replace(/\D/g, "");
+    wa.hidden = !num;
+    if (num) wa.href = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+    if (C.phone) call.href = "tel:" + C.phone;
+  }
+  selectEl.addEventListener("change", update);
+  update();
 })();
