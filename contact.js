@@ -3,5 +3,5 @@
 window.AHD_CONTACT = {
   telegram: "Abdulkhamid_2905",
   phone: "+998956322905",
-  whatsapp: ""
+  whatsapp: "998956322905"
 };
