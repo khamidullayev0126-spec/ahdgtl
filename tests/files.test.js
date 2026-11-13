@@ -15,7 +15,7 @@ test("barcha .js fayllarda sintaksis xatosi yo'q", () => {
 });
 
 test("tarjima lug'atlari: har bir yozuvda ruscha va inglizcha bor", () => {
-  for (const f of ["i18n-app.js", "i18n-shartlar.js"]) {
+  for (const f of ["i18n-app.js", "i18n-shartlar.js", "i18n-maxfiylik.js"]) {
     const ctx = { window: {} };
     vm.runInNewContext(fs.readFileSync(path.join(ROOT, f), "utf8"), ctx);
     for (const [uz, tr] of Object.entries(ctx.window.I18N_EXTRA)) {

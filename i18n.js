@@ -33,6 +33,8 @@
     "Bo'limlar": ["Разделы", "Sections"],
     "Shartlar": ["Условия", "Terms"],
     "Xizmat shartlari": ["Условия услуг", "Terms of service"],
+    "Maxfiylik siyosati": ["Политика конфиденциальности", "Privacy Policy"],
+    "Kirish bilan quyidagilarga rozilik bildirasiz:": ["Входя, вы соглашаетесь с:", "By signing in, you agree to:"],
     "Xizmat shartlari →": ["Условия услуг →", "Terms of service →"],
     "Kirish": ["Войти", "Sign in"],
     "Ro'yxatdan o'tish": ["Регистрация", "Sign up"],
