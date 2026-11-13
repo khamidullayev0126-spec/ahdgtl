@@ -218,3 +218,9 @@ footer a { color: var(--muted); }
   .stat { padding: 16px; }
   .stat strong { font-size: 28px; }
 }
+/* tor telefonlarda uzun ruscha so'zlar (Хамидуллаев) ekrandan chiqmasin */
+@media (max-width: 420px) {
+  .hero h1 { font-size: 34px; }
+  .case-hero h1 { font-size: 32px; }
+}
+h1, h2 { overflow-wrap: break-word; }

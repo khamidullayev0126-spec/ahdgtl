@@ -23,7 +23,7 @@
   <style>
     .terms { max-width: 820px; display: flex; flex-direction: column; gap: var(--s4); }
     .terms-head { display: flex; flex-direction: column; gap: var(--s3); align-items: flex-start; }
-    .terms-head h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.05; }
+    .terms-head h1 { font-size: clamp(28px, 8vw, 60px); line-height: 1.05; overflow-wrap: break-word; hyphens: auto; max-width: 100%; }
     .terms-price { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: baseline; }
     .terms-price strong { font-family: var(--font-heading); font-size: 40px; font-weight: 400; color: var(--accent); }
     .terms-price span { color: var(--muted); font-weight: 600; }
@@ -44,6 +44,17 @@
     .toc a:hover { background: var(--accent-soft); }
     .part { font-size: clamp(26px, 4vw, 34px); margin-top: var(--s4); scroll-margin-top: 24px; }
     .part small { display: block; font-family: var(--font-body, Figtree, sans-serif); font-size: 15px; font-weight: 600; color: var(--muted); margin-top: 6px; }
+    /* xizmatlar jadvali: uzun matn qatorga bo'linadi, telefonda nomi ustida, tavsifi ostida */
+    .term table.svc td { vertical-align: top; }
+    .term table.svc td:first-child { font-weight: 700; color: var(--text); white-space: nowrap; padding-right: var(--s3); }
+    .term table.svc td:last-child { white-space: normal; text-align: left; font-weight: 500; color: var(--body-strong); }
+    @media (max-width: 600px) {
+      .term { padding: var(--s4); }
+      .term table.svc, .term table.svc tbody, .term table.svc tr, .term table.svc td { display: block; }
+      .term table.svc tr { padding: 10px 0; border-bottom: 1px solid var(--divider); }
+      .term table.svc td { border: 0; padding: 0; }
+      .term table.svc td:last-child { padding-left: 0; margin-top: 2px; }
+    }
   </style>
   <script src="i18n-maxfiylik.js"></script>
   <script src="i18n.js"></script>
@@ -82,7 +93,7 @@
       <ul><li>Buyurtmani bajarish va siz bilan bog'lanish.</li><li>Buyurtma holati va to'lov haqida Telegram orqali xabar yuborish (botga ulangan bo'lsangiz).</li><li>Kabinetingizga kirish va buyurtmalaringizni ko'rsatish.</li><li>Saytni spam, firibgarlik va buzib kirishdan himoya qilish.</li><li>Ma'lumotlaringizni sotmaymiz, ijaraga bermaymiz va reklama uchun ishlatmaymiz.</li></ul></section>
     <h2 class="part" id="saqlanadi">Qayerda saqlanadi</h2>
     <section class="term"><h2><span class="n">4</span>Biz foydalanadigan xizmatlar</h2>
-      <p>Sayt ishlashi uchun quyidagi xizmatlardan foydalanamiz. Har biri ma'lumotlarning faqat o'z vazifasi uchun kerakli qismini oladi.</p><table><tr><td>Render</td><td>Sayt joylashgan server</td></tr><tr><td>Upstash</td><td>Ma'lumotlar bazasi: buyurtmalar, akkauntlar, kurs ro'yxati va kunlik zaxira nusxalar</td></tr><tr><td>Telegram</td><td>Kirish, bot xabarlari va haftalik zaxira nusxa (sayt egasiga)</td></tr><tr><td>Google</td><td>Google orqali kirish va sayt shriftlari</td></tr><tr><td>Anthropic (Claude)</td><td>AI yordamchi javoblari</td></tr><tr><td>Click, Payme</td><td>Onlayn to'lovlar</td></tr><tr><td>Brevo</td><td>Email orqali kirish kodini yuborish</td></tr><tr><td>ElevenLabs</td><td>Sayt egasiga yangi buyurtma haqida ovozli xabar (ism va xizmat nomi bilan)</td></tr></table><p>Brevo va ElevenLabs faqat yoqilgan bo'lsa ishlatiladi.</p></section>
+      <p>Sayt ishlashi uchun quyidagi xizmatlardan foydalanamiz. Har biri ma'lumotlarning faqat o'z vazifasi uchun kerakli qismini oladi.</p><table class="svc"><tr><td>Render</td><td>Sayt joylashgan server</td></tr><tr><td>Upstash</td><td>Ma'lumotlar bazasi: buyurtmalar, akkauntlar, kurs ro'yxati va kunlik zaxira nusxalar</td></tr><tr><td>Telegram</td><td>Kirish, bot xabarlari va haftalik zaxira nusxa (sayt egasiga)</td></tr><tr><td>Google</td><td>Google orqali kirish va sayt shriftlari</td></tr><tr><td>Anthropic (Claude)</td><td>AI yordamchi javoblari</td></tr><tr><td>Click, Payme</td><td>Onlayn to'lovlar</td></tr><tr><td>Brevo</td><td>Email orqali kirish kodini yuborish</td></tr><tr><td>ElevenLabs</td><td>Sayt egasiga yangi buyurtma haqida ovozli xabar (ism va xizmat nomi bilan)</td></tr></table><p>Brevo va ElevenLabs faqat yoqilgan bo'lsa ishlatiladi.</p></section>
     <section class="term warn"><h2><span class="n">5</span>Ma'lumotlar chet elda saqlanadi</h2>
       <ul><li>Bu xizmatlarning serverlari O'zbekistondan tashqarida joylashgan, ya'ni ma'lumotlaringiz chet eldagi serverlarda saqlanadi va qayta ishlanadi.</li><li>Saytdan foydalanib, ma'lumotlaringiz shu xizmatlar orqali qayta ishlanishiga rozilik bildirasiz. Rozi bo'lmasangiz, buyurtmani Telegram yoki telefon orqali bering.</li></ul></section>
     <section class="term"><h2><span class="n">6</span>Qancha vaqt saqlanadi</h2>

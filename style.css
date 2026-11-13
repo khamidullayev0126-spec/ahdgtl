@@ -300,3 +300,6 @@ footer a { color: var(--muted); }
 .quick-btn[hidden] { display: none !important; }
 .quick-or { margin-top: var(--s3); color: var(--muted); font-size: 15px; }
 @media (max-width: 560px) { .quick { grid-template-columns: 1fr; } }
+
+/* Telefonda sahifa hech qachon yon tomonga surilmasin (juda tor ekranlar va uzun ruscha so'zlar uchun) */
+html, body { overflow-x: clip; }
