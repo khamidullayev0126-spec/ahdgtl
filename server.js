@@ -304,6 +304,45 @@ const MANUAL_METHODS = {
   karta: { uz: "karta o'tkazmasi", ru: "переводом на карту", en: "card transfer" },
   boshqa: { uz: "boshqa usul", ru: "другим способом", en: "other method" }
 };
+// Admin: saytdan tashqarida (Telegram, telefon, yuzma-yuz) kelishilgan buyurtmani qo'lda kiritish.
+// Mijozga ham, egasiga ham xabar yuborilmaydi — bu faqat hisob uchun.
+app.post("/api/admin/orders", requireAdmin, (req, res) => {
+  const b = req.body || {};
+  const name = String(b.name || "").trim();
+  const contact = String(b.contact || "").trim();
+  const message = String(b.message || "").trim();
+  const service = SERVICES.find(s => s.id === String(b.serviceId || ""));
+  const status = STATUSES.includes(b.status) ? b.status : "bajarildi";
+  const paidMode = ["none", "part1", "full"].includes(b.paid) ? b.paid : "none";
+  const method = MANUAL_METHODS[b.method] ? b.method : "naqd";
+  if (name.length < 2 || name.length > 60) return res.status(400).json({ error: "Mijoz ismini kiriting (2–60 ta harf)." });
+  if (contact.length > 60) return res.status(400).json({ error: "Aloqa 60 ta belgidan oshmasin." });
+  if (!service) return res.status(400).json({ error: "Xizmatni tanlang." });
+  if (message.length > 1000) return res.status(400).json({ error: "Izoh 1000 ta belgidan oshmasin." });
+  const price = b.price === undefined || b.price === "" ? service.price : Math.round(Number(b.price));
+  if (!Number.isFinite(price) || price < 0 || price > 1e9) return res.status(400).json({ error: "Narx noto'g'ri." });
+  let created = new Date();
+  if (b.date) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.date))) return res.status(400).json({ error: "Sana noto'g'ri." });
+    created = new Date(b.date + "T12:00:00+05:00");
+    if (isNaN(created) || created > new Date(Date.now() + 86400_000)) return res.status(400).json({ error: "Sana kelajakda bo'lmasin." });
+  }
+  const order = {
+    id: crypto.randomUUID(),
+    code: crypto.randomBytes(4).toString("hex"),
+    name, contact: contact || "—", serviceId: service.id, serviceName: service.name, price, message,
+    status, lang: "uz", source: "qo'lda", createdAt: created.toISOString()
+  };
+  const parts = payments.partsOf(order);
+  const paidParts = paidMode === "full" ? parts : paidMode === "part1" ? parts.slice(0, 1) : [];
+  if (paidParts.length) order.paid = Object.fromEntries(paidParts.map(p => [p.n, { amount: p.amount, method, manual: true, at: order.createdAt }]));
+  const orders = readOrders();
+  orders.unshift(order);
+  orders.sort((x, y) => String(y.createdAt).localeCompare(String(x.createdAt)));
+  writeOrders(orders);
+  res.status(201).json(order);
+});
+
 app.post("/api/orders/:id/paid", requireAdmin, async (req, res) => {
   const method = String(req.body.method || "");
   if (!MANUAL_METHODS[method]) return res.status(400).json({ error: "To'lov usulini tanlang." });

@@ -309,3 +309,9 @@ h1, h2 { margin: 0; }
 .input-sm { padding: 8px 10px; font-size: 14px; }
 .check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--strong); cursor: pointer; }
 .check input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+/* Qo'lda buyurtma qo'shish */
+.toolbar-r { display: flex; gap: 8px; flex-wrap: wrap; }
+.new-order { display: grid; gap: 14px; }
+.new-order textarea { resize: vertical; font-family: var(--font); }
+.tag { display: inline-block; margin-left: 6px; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: var(--panel-2); color: var(--muted); vertical-align: middle; }

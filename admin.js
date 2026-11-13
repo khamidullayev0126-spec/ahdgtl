@@ -237,7 +237,7 @@ function renderOrders() {
     return h("tr", {},
       h("td", { class: "nowrap" }, fmtDate(o.createdAt)),
       h("td", { class: "who" }, h("b", {}, o.name), h("span", {}, o.contact)),
-      h("td", {}, o.serviceName, o.message ? h("div", { class: "muted", title: o.message }, o.message.length > 40 ? o.message.slice(0, 40) + "…" : o.message) : null),
+      h("td", {}, o.serviceName, o.source === "qo'lda" ? h("span", { class: "tag" }, "qo'lda") : null, o.message ? h("div", { class: "muted", title: o.message }, o.message.length > 40 ? o.message.slice(0, 40) + "…" : o.message) : null),
       h("td", { class: "num" }, sum(o.price)),
       h("td", {}, payBadge(o)),
       h("td", {}, select),
@@ -341,6 +341,53 @@ function partRow(o, p) {
   }
   return row;
 }
+
+// ---------- Qo'lda buyurtma kiritish (Telegram, telefon yoki yuzma-yuz kelishilgan) ----------
+function openNewOrder() {
+  const d = $("drawer");
+  d.dataset.id = "";
+  $("d-title").textContent = "Buyurtma qo'shish";
+  const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  const field = (label, input) => h("div", { class: "field" }, h("label", {}, label), input);
+  const name = h("input", { class: "input", maxlength: "60", required: true, placeholder: "Masalan: Aziz Karimov" });
+  const contact = h("input", { class: "input", maxlength: "60", placeholder: "@username yoki telefon (ixtiyoriy)" });
+  const service = h("select", { class: "input" }, SERVICES_LIST.map(s => h("option", { value: s.id }, `${s.name} — ${sum(s.price)} so'm`)));
+  const price = h("input", { class: "input", type: "number", min: "0", step: "1000", inputmode: "numeric" });
+  const syncPrice = () => { const s = SERVICES_LIST.find(x => x.id === service.value); price.value = s ? s.price : ""; };
+  service.addEventListener("change", syncPrice); syncPrice();
+  const date = h("input", { class: "input", type: "date", value: today, max: today });
+  const status = h("select", { class: "input" }, STATUSES.map(s => { const op = h("option", { value: s }, STATUS_NAME[s]); op.selected = s === "bajarildi"; return op; }));
+  const paid = h("select", { class: "input" },
+    h("option", { value: "full" }, "To'liq to'langan"), h("option", { value: "part1" }, "Faqat 1-qism (yarmi) to'langan"), h("option", { value: "none" }, "Hali to'lanmagan"));
+  const method = h("select", { class: "input" }, h("option", { value: "naqd" }, "Naqd pul"), h("option", { value: "karta" }, "Karta o'tkazmasi"), h("option", { value: "boshqa" }, "Boshqa usul"));
+  const methodField = field("Qanday to'landi", method);
+  paid.addEventListener("change", () => { methodField.hidden = paid.value === "none"; });
+  const message = h("textarea", { class: "input", rows: "3", maxlength: "1000", placeholder: "Masalan: Telegram orqali kelishilgan, logotip bilan" });
+  const status_ = h("p", { class: "form-status", role: "status" });
+  const submit = h("button", { class: "btn btn-primary btn-block", type: "submit" }, "Saqlash");
+  const form = h("form", { class: "new-order" },
+    h("p", { class: "note" }, "Saytdan tashqarida (Telegram, telefon, yuzma-yuz) kelishilgan buyurtmalar uchun. Mijozga xabar yuborilmaydi."),
+    field("Mijoz ismi", name), field("Aloqa", contact), field("Xizmat", service),
+    field("Haqiqiy narx (so'm)", price), field("Sana", date), field("Holat", status),
+    field("To'lov", paid), methodField, field("Izoh", message), submit, status_);
+  form.addEventListener("submit", async e => {
+    e.preventDefault(); submit.disabled = true; status_.className = "form-status"; status_.textContent = "";
+    try {
+      const o = await api("api/admin/orders", { method: "POST", body: JSON.stringify({
+        name: name.value, contact: contact.value, serviceId: service.value, price: price.value,
+        date: date.value, status: status.value, paid: paid.value, method: method.value, message: message.value }) });
+      toast(`✅ Qo'shildi: ${o.name} · ${sum(o.price)} so'm`);
+      await loadOrders();
+      openNewOrder();          // keyingisini kiritish uchun forma yana tayyor
+    } catch (err) {
+      status_.className = "form-status error"; status_.textContent = err.message; submit.disabled = false;
+    }
+  });
+  $("d-body").replaceChildren(form);
+  d.hidden = false;
+  name.focus();
+}
+$("new-order-btn").addEventListener("click", openNewOrder);
 
 function closeDrawer() { $("drawer").hidden = true; }
 $("drawer").addEventListener("click", e => { if (e.target.closest("[data-close]")) closeDrawer(); });

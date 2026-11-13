@@ -168,3 +168,38 @@ test("admin pulni qo'lda (naqd) olganini belgilaydi, xato bo'lsa bekor qiladi", 
   // Click orqali kelgan haqiqiy to'lovni qo'lda o'chirib bo'lmaydi
   assert.equal((await fetch(`${base}/api/orders/${order.id}/paid/2`, { method: "DELETE", headers: { cookie: owner } })).status, 409);
 });
+
+test("admin saytdan tashqaridagi buyurtmani qo'lda kiritadi (sana, haqiqiy narx, to'lov holati)", async () => {
+  const owner = await login(base, OWNER_ID);
+  const add = (body, cookie = owner) => fetch(base + "/api/admin/orders", { method: "POST", headers: { ...JSON_H, cookie }, body: JSON.stringify(body) });
+  const before = srv.telegram().length;
+
+  assert.equal((await add({ name: "Ali", serviceId: "vizitka" }, customer)).status, 401, "oddiy mijoz kirita olmaydi");
+  assert.equal((await add({ name: "A", serviceId: "vizitka" })).status, 400);
+  assert.equal((await add({ name: "Ali", serviceId: "yoq" })).status, 400);
+  assert.equal((await add({ name: "Ali", serviceId: "vizitka", date: "2999-01-01" })).status, 400, "kelajakdagi sana bo'lmaydi");
+  assert.equal((await add({ name: "Ali", serviceId: "vizitka", price: -5 })).status, 400);
+
+  // Chegirmali narx, 1-qism naqd to'langan, o'tgan sana
+  const r = await add({ name: "Ali Valiyev", contact: "@ali", serviceId: "slayd", price: 40000, date: "2026-10-05", status: "jarayonda", paid: "part1", method: "naqd" });
+  assert.equal(r.status, 201);
+  const o = await r.json();
+  assert.equal(o.price, 40000);
+  assert.equal(o.status, "jarayonda");
+  assert.equal(o.source, "qo'lda");
+  assert.match(o.createdAt, /^2026-10-05/);
+  assert.deepEqual(Object.keys(o.paid), ["1"]);
+  assert.equal(o.paid[1].amount, 20000);
+  assert.equal(o.paid[1].manual, true);
+
+  // To'liq to'langan obuna, narx berilmasa — xizmat narxi olinadi
+  const f = await (await add({ name: "Malika", serviceId: "pro", paid: "full", method: "karta" })).json();
+  const proPrice = require("../services.js").find(x => x.id === "pro").price;
+  assert.equal(f.price, proPrice);
+  assert.equal(f.paid[1].amount, proPrice);
+  assert.equal(f.paid[1].method, "karta");
+
+  const all = await (await fetch(base + "/api/orders", { headers: { cookie: owner } })).json();
+  assert.ok(all.some(x => x.id === o.id) && all.some(x => x.id === f.id), "ro'yxatda ko'rinishi kerak");
+  assert.equal(srv.telegram().length, before, "hech kimga Telegram xabar ketmasligi kerak");
+});
