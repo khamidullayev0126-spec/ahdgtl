@@ -6,7 +6,7 @@
 // 3) Server imzoni bot tokeni bilan tekshiradi — soxtalashtirib bo'lmaydi.
 // 4) To'g'ri bo'lsa, brauzerga 30 kunlik himoyalangan cookie qo'yiladi.
 //
-// Sozlash: BotFather → /setdomain → botingizni tanlang → ahdigital-1pcz.onrender.com
+// Sozlash: BotFather → /setdomain → botingizni tanlang → www.ah-digital.uz
 // Google: Render → Environment → GOOGLE_CLIENT_ID (console.cloud.google.com → Credentials → OAuth client ID)
 // Email (6 xonali kod): Render → Environment → BREVO_API_KEY va EMAIL_FROM (Brevo'da tasdiqlangan email manzil)
 // Ixtiyoriy: Render → Environment → SESSION_SECRET (uzun tasodifiy matn). Bo'lmasa bot tokenidan hosil qilinadi.

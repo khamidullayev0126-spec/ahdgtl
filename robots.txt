@@ -6,4 +6,4 @@ Disallow: /kabinet.html
 Disallow: /tolov.html
 Disallow: /app.html
 
-Sitemap: https://ahdigital-1pcz.onrender.com/sitemap.xml
+Sitemap: https://www.ah-digital.uz/sitemap.xml
