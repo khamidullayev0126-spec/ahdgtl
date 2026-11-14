@@ -10,10 +10,67 @@
   "orientation": "portrait",
   "background_color": "#f5ead8",
   "theme_color": "#f5ead8",
-  "categories": ["business", "productivity", "education"],
+  "categories": [
+    "business",
+    "productivity",
+    "education"
+  ],
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/ishlar/ahdigital-telefon.webp",
+      "sizes": "480x1039",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "AHdigital ilovasi telefonda"
+    },
+    {
+      "src": "/images/ishlar/ahdigital-bosh.webp",
+      "sizes": "1200x750",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "AHdigital bosh sahifasi"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Buyurtma berish",
+      "url": "/app.html#buyurtma",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Xizmatlar",
+      "url": "/app.html#xizmatlar",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }
