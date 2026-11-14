@@ -49,7 +49,7 @@ test("portfolio ishlari (works.js): har birida rasm/havola bor va matnlari tarji
 });
 
 test("sahifalardagi rasm va video fayllari mavjud (src, srcset, poster)", () => {
-  for (const page of ["index.html", "portfolio.html", "ishlar/ahdigital.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html"]) {
+  for (const page of ["index.html", "portfolio.html", "ishlar/ahdigital.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html", "blog/landing-page.html", "blog/landing-page.html"]) {
     const html = fs.readFileSync(path.join(ROOT, page), "utf8");
     const refs = [...html.matchAll(/\b(?:src|poster)="([^"]+)"|\bsrcset="([^"]+)"/g)]
       .flatMap(m => m[1] ? [m[1]] : m[2].split(",").map(x => x.trim().split(/\s+/)[0]))
@@ -98,11 +98,39 @@ test("cookie roziligi: boshida hammasi denied, Google kodi yuklanmaydi; «Rozima
 });
 
 test("ochiq sahifalarda consent.js bor, xizmat sahifalarida yo'q", () => {
-  for (const f of ["index.html", "portfolio.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html", "ishlar/ahdigital.html", "404.html"]) {
+  for (const f of ["index.html", "portfolio.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html", "blog/landing-page.html", "blog/landing-page.html", "ishlar/ahdigital.html", "404.html"]) {
     const s = fs.readFileSync(path.join(ROOT, f), "utf8");
     assert.ok(s.includes("consent.js") && s.includes("analytics.js"), `${f} da consent.js/analytics.js yo'q`);
   }
   for (const f of ["admin.html", "kabinet.html", "tolov.html", "app.html"]) {
     assert.ok(!fs.readFileSync(path.join(ROOT, f), "utf8").includes("consent.js"), `${f} da statistika bo'lmasin`);
   }
+});
+
+test("blog: landing page maqolasidagi narx va muddatlar services.js bilan bir xil", () => {
+  const services = require(path.join(ROOT, "services.js"));
+  const html = fs.readFileSync(path.join(ROOT, "blog/landing-page.html"), "utf8");
+  const fmt = n => n.toLocaleString("ru-RU").replace(/\s/g, " ") + " so'm";
+  for (const id of ["vizitka", "katta-sayt"]) {
+    const s = services.find(x => x.id === id);
+    assert.ok(html.includes(fmt(s.price)), `${id} narxi (${fmt(s.price)}) maqolada eskirgan`);
+    assert.ok(html.includes(s.time), `${id} muddati (${s.time}) maqolada eskirgan`);
+  }
+  const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
+  assert.ok(sitemap.includes("/blog/landing-page.html"), "sitemap'da yo'q");
+  assert.ok(fs.readFileSync(path.join(ROOT, "blog/index.html"), "utf8").includes("/blog/landing-page.html"), "blog ro'yxatida yo'q");
+});
+
+test("blog: landing page maqolasidagi narx va muddatlar services.js bilan bir xil", () => {
+  const services = require(path.join(ROOT, "services.js"));
+  const html = fs.readFileSync(path.join(ROOT, "blog/landing-page.html"), "utf8");
+  const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " so'm";
+  for (const id of ["vizitka", "katta-sayt"]) {
+    const s = services.find(x => x.id === id);
+    assert.ok(html.includes(fmt(s.price)), `${id} narxi (${fmt(s.price)}) maqolada eskirgan`);
+    assert.ok(html.includes(s.time), `${id} muddati (${s.time}) maqolada eskirgan`);
+  }
+  const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
+  assert.ok(sitemap.includes("/blog/landing-page.html"), "sitemap'da yo'q");
+  assert.ok(fs.readFileSync(path.join(ROOT, "blog/index.html"), "utf8").includes("/blog/landing-page.html"), "blog ro'yxatida yo'q");
 });

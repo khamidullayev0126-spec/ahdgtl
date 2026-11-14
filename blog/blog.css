@@ -77,3 +77,4 @@
 .post-card .post-meta { margin-top: 8px; }
 @media (max-width: 600px) { .post-card { grid-template-columns: 1fr; } }
 .soon-note { text-align: center; color: var(--muted); font-size: 15px; }
+.post-body ul.check { list-style: none; padding-left: 0; }
