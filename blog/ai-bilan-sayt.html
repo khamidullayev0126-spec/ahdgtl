@@ -41,7 +41,7 @@
     <header class="post-head">
       <h1>AI bilan sayt qanday yasaladi: 5 qadam va haqiqiy tajribam</h1>
       <p class="post-lead">Men <b>ah-digital.uz</b> saytini Claude yordamida yasadim. Bu maqolada AI nimada yordam berishi, nimada bermasligi, qancha pul ketgani va qanday qiyinchiliklarga uchraganimni — xatolarim bilan birga — yozaman.</p>
-      <p class="post-meta"><span>Abdulhamid Xamidullayev</span><span>·</span><time datetime="2026-11-14">2026-yil 14-noyabr</time><span>·</span><span>8 daqiqa o'qish</span></p>
+      <p class="post-meta"><span>Abdulhamid Xamidullayev</span><span>·</span><time datetime="2026-11-14">2026-yil 14-noyabr</time><span>·</span><span>10 daqiqa o'qish</span></p>
     </header>
 
     <div class="post-body">
@@ -156,20 +156,48 @@
       <h3>🔐 Xavfsizlik</h3>
       <p>Bir marta fayllarni noto'g'ri papkaga yuklab qo'ydim va server kodining bir qismi internetda ochiq qolib ketdi. Tez topib tuzatdik, keyin shunday xato qaytarilmasligi uchun sozlama va test qo'shdik. Eng muhim qoida: <strong>parol va maxfiy kalitlar hech qachon GitHub'ga yuklanmaydi</strong> — ular faqat hosting sozlamalarida (Render → Environment) saqlanadi.</p>
 
-      <h2 id="xarajat">4. Qancha pul va vaqt ketadi</h2>
-      <p>Mening saytimdagi haqiqiy xarajatlar:</p>
+      <h2 id="xarajat">4. Qancha pul va vaqt ketdi</h2>
+      <p>«Sayt yasash bepul» degan gapni ko'p eshitasiz. Qisman to'g'ri: hosting va ma'lumotlar bazasi bepul tarifda ishlaydi. Lekin haqiqatda xarajatlar bo'ladi — men ularni ochiq raqamlar bilan yozaman. Hisob-kitob uchun <strong>1 $ ≈ 12 800 so'm</strong> deb oldim.</p>
+
+      <h3>💻 Sayt uchun to'g'ridan-to'g'ri xarajatlar</h3>
+      <table>
+        <thead><tr><th>Nima</th><th>Nega kerak bo'ldi</th><th>Narx</th></tr></thead>
+        <tbody>
+          <tr><td>Domen (ah-digital.uz)</td><td>Qisqa, eslab qolinadigan manzil — uzun havolani har kimga yuborish shart emas</td><td>32 000 so'm / yil</td></tr>
+          <tr><td>Claude Pro obunasi</td><td>Bepul tarifda limit tez tugardi va ish to'xtab qolardi. Ko'proq ishlash uchun Pro'ga o'tdim</td><td>22.40 $ / oy<small>≈ 287 000 so'm</small></td></tr>
+          <tr><td>Claude API</td><td>Saytdagi AI yordamchi va Telegram botning javoblari. Qancha ishlatilsa, shuncha to'lanadi</td><td>11 $ jami<small>≈ 141 000 so'm</small></td></tr>
+          <tr><td>ElevenLabs</td><td>Videolar va bot uchun sun'iy intellekt ovozi. Avval 1 dollarlik tarifda sinab ko'rdim, keyin 9 dollarlik tarif oldim</td><td>10 $ jami<small>≈ 128 000 so'm</small></td></tr>
+          <tr><td>Render, Upstash, GitHub, Search Console</td><td>Hosting, ma'lumotlar bazasi, kod saqlash va Google'ga tanishtirish</td><td>0 so'm<small>bepul tariflar</small></td></tr>
+          <tr><td><strong>Jami</strong></td><td>Hozirgacha</td><td>≈ 588 000 so'm<small>≈ 46 $</small></td></tr>
+        </tbody>
+      </table>
+      <p>Claude Pro obunasini hozircha bir oy to'ladim va davom ettiraman — u har oy takrorlanadigan xarajat.</p>
+
+      <h3>🎓 O'qish va jihozlar</h3>
+      <p>Bular faqat shu sayt uchun emas — o'qishim va kelajakdagi barcha loyihalarim uchun. Lekin halol bo'lishi uchun ularni ham yozaman: bularsiz bu saytni yasay olmasdim.</p>
       <table>
         <thead><tr><th>Nima</th><th>Izoh</th><th>Narx</th></tr></thead>
         <tbody>
-          <tr><td>Domen (.uz)</td><td>ah-digital.uz, UZCLOUD orqali</td><td>32 000 so'm / yil</td></tr>
-          <tr><td>Hosting</td><td>Render, bepul tarif</td><td>0 so'm</td></tr>
-          <tr><td>Ma'lumotlar bazasi</td><td>Upstash, bepul tarif</td><td>0 so'm</td></tr>
-          <tr><td>Kod saqlash</td><td>GitHub</td><td>0 so'm</td></tr>
-          <tr><td>AI yordamchi saytda</td><td>Claude API — ishlatganingizcha to'lanadi</td><td>Trafikka bog'liq</td></tr>
-          <tr><td>Google Search Console</td><td>Saytni Google'ga tanishtirish</td><td>0 so'm</td></tr>
+          <tr><td>Eski noutbuk ta'miri</td><td>Noutbuk buzilganda ta'mirga berdim</td><td>1 000 000 so'm</td></tr>
+          <tr><td>Yangi noutbuk — MacBook Air M5</td><td>Eskisi baribir yaroqsiz bo'lib qoldi, yangisini oldik. Eskisini 1 500 000 so'mga sotdik</td><td>1 280 $<small>≈ 16 400 000 so'm</small></td></tr>
+          <tr><td>Onlayn AI kursi</td><td>AI vositalari bilan ishlashni o'rganish uchun</td><td>367 $<small>≈ 4 700 000 so'm</small></td></tr>
+          <tr><td>CoddyCamp o'quv markazi</td><td>Dasturlash asoslari: HTML, CSS, Bootstrap, JavaScript</td><td>1 200 000 so'm / oy</td></tr>
         </tbody>
       </table>
-      <p><strong>Vaqt:</strong> oddiy vizitka sayt 2–3 kunda tayyor bo'ladi. Mening saytim esa — admin panel, to'lovlar, bot va 3 til bilan — o'qish bilan parallel ravishda bir necha oy davomida asta-sekin o'sdi.</p>
+      <div class="note"><p>Bu xarajatlarning yarmidan ko'pini <strong>dadam</strong> to'ladi, men ham o'z hissamni qo'shdim. Shu yerda dadamga katta rahmat aytaman — uning qo'llab-quvvatlashisiz bu sayt ham, bu maqola ham bo'lmasdi.</p></div>
+
+      <h3>🤔 Qaysi xarajat arzidi?</h3>
+      <ul>
+        <li><strong>Domen</strong> — eng arzon xarajat (yiliga 32 000 so'm), lekin eng katta farqni berdi: endi odamlar saytimni o'zlari topa oladi.</li>
+        <li><strong>Claude Pro</strong> — men uchun eng foydalisi. Bepul tarifda bir nechta savoldan keyin kutishga to'g'ri kelardi, Pro bilan ish to'xtamasdan davom etadi.</li>
+        <li><strong>Claude API</strong> — saytdagi chat uchun qaysi model tanlanishi muhim ekan. Mijozlar bilan suhbatni arzonroq modelga o'tkazib, bu xarajatni taxminan 2 baravar kamaytirdim — sifat esa deyarli o'zgarmadi.</li>
+        <li><strong>ElevenLabs</strong> — avval eng arzon (1 $) tarifda sinab ko'rganim to'g'ri bo'ldi. Maslahatim: har qanday pullik xizmatni avval eng kichik tarifda sinang.</li>
+        <li><strong>Bepul tariflar</strong> — boshlash uchun to'liq yetarli. Pul faqat haqiqatan kerak bo'lganda sarflang.</li>
+      </ul>
+
+      <h3>⏱ Vaqt</h3>
+      <p>Saytni <strong>2026-yil oktabr o'rtalarida</strong> ochdim. O'qishdan keyin kuniga 2–4 soat, ba'zan 5–6 soat ishladim. Taxminan bir oy ichida sayt oddiy sahifadan admin panel, to'lov tizimi, Telegram bot va 3 tilli saytgacha o'sdi. Noutbuk buzilgan haftalarda esa ish deyarli to'xtab qoldi.</p>
+      <p>Taqqoslash uchun: oddiy vizitka sayt 2–3 ish kunida tayyor bo'ladi — chunki unda admin panel, to'lov va bot yo'q.</p>
 
       <h2 id="kimga">5. O'zingiz qilasizmi yoki mutaxassisga berasizmi?</h2>
       <h3>O'zingiz qiling, agar:</h3>

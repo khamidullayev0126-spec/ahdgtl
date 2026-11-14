@@ -44,6 +44,9 @@
 .post th, .post td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--divider); vertical-align: top; }
 .post th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .post td:last-child { font-weight: 700; color: var(--text); }
+.post td:last-child { white-space: nowrap; }
+.post td small { display: block; font-weight: 500; font-size: 14px; color: var(--muted); }
+@media (max-width: 560px) { .post td:last-child { white-space: normal; } }
 @media (max-width: 560px) {
   .post table, .post tbody, .post tr, .post td { display: block; }
   .post thead { display: none; }
