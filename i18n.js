@@ -34,6 +34,7 @@
     "Shartlar": ["Условия", "Terms"],
     "Xizmat shartlari": ["Условия услуг", "Terms of service"],
     "Maxfiylik siyosati": ["Политика конфиденциальности", "Privacy Policy"],
+    "Cookie sozlamalari": ["Настройки cookie", "Cookie settings"],
     "Blog": ["Блог", "Blog"],
     "Kirish bilan quyidagilarga rozilik bildirasiz:": ["Входя, вы соглашаетесь с:", "By signing in, you agree to:"],
     "Xizmat shartlari →": ["Условия услуг →", "Terms of service →"],

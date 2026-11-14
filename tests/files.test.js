@@ -60,3 +60,49 @@ test("sahifalardagi rasm va video fayllari mavjud (src, srcset, poster)", () => 
     }
   }
 });
+
+// Cookie roziligi: rozilikdan oldin Google kodi yuklanmasligi kerak (Consent Mode v2, basic)
+function runConsent({ stored = null, path = "/" } = {}) {
+  const appended = [], store = {};
+  if (stored) store["ahd-consent"] = JSON.stringify({ c: stored, t: Date.now() });
+  const el = () => ({ setAttribute() {}, querySelector: () => ({}), remove() {}, style: {} });
+  const document = {
+    body: { appendChild: n => appended.push(n) }, head: { appendChild: n => appended.push(n) },
+    documentElement: { lang: "uz" }, createElement: el, addEventListener() {}
+  };
+  const window = { AHD_ANALYTICS: {} };
+  const ctx = { window, document, location: { pathname: path, search: "" }, URLSearchParams,
+    localStorage: { getItem: k => store[k] ?? null, setItem: (k, v) => { store[k] = v; } } };
+  vm.runInNewContext(fs.readFileSync(path_join("analytics.js"), "utf8") + "\n" + fs.readFileSync(path_join("consent.js"), "utf8"),
+    ctx, { filename: "consent.js" });
+  return { window: ctx.window, dataLayer: ctx.window.dataLayer, appended };
+}
+const path_join = f => path.join(ROOT, f);
+
+test("cookie roziligi: boshida hammasi denied, Google kodi yuklanmaydi; «Roziman» saqlangan bo'lsa yuklanadi", () => {
+  const fresh = runConsent();
+  const first = [...fresh.dataLayer[0]];
+  assert.equal(first.slice(0, 2).join(), "consent,default");
+  for (const k of ["ad_storage", "ad_user_data", "ad_personalization", "analytics_storage"]) assert.equal(first[2][k], "denied");
+  assert.ok(!fresh.appended.some(n => String(n.src || "").includes("googletagmanager")), "rozilikdan oldin yuklanmasin");
+
+  const denied = runConsent({ stored: "denied" });
+  assert.equal(denied.appended.length, 0, "rad etilganda hech narsa yuklanmasin");
+
+  const ok = runConsent({ stored: "granted" });
+  assert.ok(ok.appended.some(n => /googletagmanager\.com\/gtm\.js\?id=GTM-/.test(n.src)), "rozilikdan keyin Google tag yuklansin");
+  const upd = ok.dataLayer.map(a => [...a]).find(a => a[0] === "consent" && a[1] === "update");
+  assert.equal(JSON.stringify(upd[2]), JSON.stringify({ analytics_storage: "granted" }), "faqat statistika yoqilsin, reklama yo'q");
+
+  assert.equal(runConsent({ stored: "granted", path: "/admin.html" }).appended.length, 0, "admin sahifada statistika yo'q");
+});
+
+test("ochiq sahifalarda consent.js bor, xizmat sahifalarida yo'q", () => {
+  for (const f of ["index.html", "portfolio.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html", "ishlar/ahdigital.html", "404.html"]) {
+    const s = fs.readFileSync(path.join(ROOT, f), "utf8");
+    assert.ok(s.includes("consent.js") && s.includes("analytics.js"), `${f} da consent.js/analytics.js yo'q`);
+  }
+  for (const f of ["admin.html", "kabinet.html", "tolov.html", "app.html"]) {
+    assert.ok(!fs.readFileSync(path.join(ROOT, f), "utf8").includes("consent.js"), `${f} da statistika bo'lmasin`);
+  }
+});

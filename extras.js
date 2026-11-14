@@ -150,21 +150,17 @@
   });
 })();
 
-// ================= 3. Statistika (Google Analytics 4 — analytics.js da ID bo'lsa) =================
+// ================= 3. Statistika (Google tag consent.js da, faqat rozilikdan keyin yuklanadi) =================
 const track = (name, params = {}) => { try { if (window.gtag) window.gtag("event", name, params); } catch {} };
-(function () {
-  const id = window.AHD_ANALYTICS && window.AHD_ANALYTICS.ga4;
-  if (!id || !/^G-[A-Z0-9]+$/.test(id)) return;
-  const s = document.createElement("script");
-  s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
-  document.head.appendChild(s);
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function () { window.dataLayer.push(arguments); };
-  window.gtag("js", new Date()); window.gtag("config", id);
-})();
 document.getElementById("try-order")?.addEventListener("click", () => track("vizitka_sinov_buyurtma"));
 document.addEventListener("click", e => { if (e.target.closest(".chat-fab")) track("ai_chat_ochildi"); });
-document.getElementById("order-form")?.addEventListener("submit", () => track("buyurtma_formasi_yuborildi"));
+document.getElementById("order-form")?.addEventListener("submit", () => track("generate_lead", { form: "buyurtma" }));
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest("#q-tg, #q-wa, #q-call, a[href^='https://t.me/'], a[href^='tel:'], a[href^='https://wa.me/']");
+  if (!a) return;
+  const method = /wa\.me|q-wa/.test(a.href + a.id) ? "whatsapp" : /^tel:|q-call/.test(a.getAttribute("href") + a.id) ? "telefon" : "telegram";
+  track("contact_click", { method, place: a.id || "boshqa" });
+});
 
 // ================= 4. Reels: ko'ringanda o'zi aylanadi, bosilsa to'xtaydi =================
 (function () {

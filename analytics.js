@@ -1,5 +1,6 @@
-// Statistika sozlamasi. Google Analytics 4 ID'ingizni shu yerga yozing (masalan "G-ABC123XYZ").
-// Bo'sh qolsa — statistika o'chiq, sayt odatdagidek ishlayveradi.
+// Statistika sozlamasi (Google tag / Google Analytics 4).
+// gtm — Google tag ID (GTM-...). Bo'sh qolsa — statistika o'chiq, sayt odatdagidek ishlayveradi.
+// Kod faqat foydalanuvchi cookie bannerida «Roziman» ni bosgandan keyin yuklanadi (consent.js).
 window.AHD_ANALYTICS = {
-  ga4: ""
+  gtm: "GTM-W47RJLDD"
 };
