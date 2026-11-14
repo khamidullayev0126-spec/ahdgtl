@@ -87,7 +87,7 @@ ${priceList}`;
     history.push({ role: "user", content: text });
     try {
       const response = await claude.beta.messages.create({
-        model: "claude-opus-5-5",
+        model: "claude-sonnet-5-5",                           // mijozlar bilan bot suhbati: tez va Opus'dan 2 baravar arzon
         max_tokens: 2000,
         output_config: { effort: "low" },                    // oddiy chat uchun tez va arzon
         betas: ["server-side-fallback-2026-07-01"],
