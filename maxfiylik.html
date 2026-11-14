@@ -36,6 +36,7 @@
     .term table { width: 100%; border-collapse: collapse; margin-top: var(--s3); font-variant-numeric: tabular-nums; }
     .term td { padding: 8px 0; border-bottom: 1px solid var(--divider); color: var(--body-strong); }
     .term td:last-child { text-align: right; font-weight: 700; color: var(--text); white-space: nowrap; padding-left: var(--s3); }
+    @media (max-width: 560px) { .term td:last-child { white-space: normal; } .term h2 { flex-wrap: wrap; } }
     .term.warn { background: var(--accent-soft); }
     .terms-agree { font-weight: 700; }
     .terms-cta { display: flex; gap: var(--s3); flex-wrap: wrap; }
@@ -66,8 +67,8 @@
     <a href="index.html" class="brand"><img src="images/logo.svg" class="brand-logo" alt="" width="40" height="40">AHdigital</a>
     <div class="nav-links" style="display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px">
       <div data-lang-slot></div>
-      <a href="index.html#xizmatlar">Xizmatlar</a>
-      <a href="index.html#buyurtma" class="btn btn-primary">Buyurtma berish</a>
+      <a href="index.html#xizmatlar" class="hide-sm">Xizmatlar</a>
+      <a href="index.html#buyurtma" class="btn btn-primary nav-cta">Buyurtma berish</a>
     </div>
   </nav>
 

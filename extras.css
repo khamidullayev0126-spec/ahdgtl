@@ -135,11 +135,9 @@
   .chat-fab span { font-size: 22px; line-height: 1; }
 
   /* Bosh sahifani telefonda ixchamlash */
-  /* Xizmat kartalari — yonga suriladigan qator (keyingi karta chetdan ko'rinib turadi) */
-  #service-groups .cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px;
-    margin-inline: -16px; padding: 4px 16px 14px; scroll-padding-inline: 16px; scrollbar-width: none; }
-  #service-groups .cards::-webkit-scrollbar { display: none; }
-  #service-groups .card { flex: 0 0 84%; scroll-snap-align: start; }
+  /* Xizmat kartalari — telefonda birin-ketin, to'liq kenglikda (yonga surilmaydi, chetdan kesilmaydi) */
+  #service-groups .cards { grid-template-columns: 1fr; gap: 12px; }
+  #service-groups .card { padding: 22px; }
   /* Ish jarayoni — 2 × 2 */
   .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .step { padding: 16px; border-radius: 20px; }

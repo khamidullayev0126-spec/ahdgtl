@@ -316,3 +316,22 @@ html, body { overflow-x: clip; }
 /* "Mashhur" karta (to'q fon): xira yozuvlar to'liq ko'rinsin, muddat belgisi to'qroq fonda */
 .card.featured .kicker, .card.featured .price span { opacity: 1; }
 .card.featured .card-time { background: rgba(0, 0, 0, .18); }
+
+/* ---------- Telefon xavfsizligi: katta shrift (telefon sozlamasi) va uzun so'zlarda hech narsa ekrandan chiqmasin ---------- */
+h1, h2, h3, h4 { overflow-wrap: anywhere; }
+p, li, td, th, dd, figcaption, label, summary { overflow-wrap: break-word; }
+a[href^="mailto:"], .contact strong { overflow-wrap: anywhere; }
+img, video, svg, iframe { max-width: 100%; }
+/* Tor telefonlarda (360px va kichik) menyu bitta qatorda tursin */
+@media (max-width: 400px) {
+  .nav { gap: var(--s2); }
+  .brand { font-size: 21px; gap: 8px; }
+  .brand-logo { width: 34px; height: 34px; }
+  .menu-btn { padding: 9px 13px; }
+}
+@media (max-width: 560px) { .term td:last-child { white-space: normal; } }
+@media (max-width: 560px) { .nav .hide-sm { display: none; } }
+@media (max-width: 420px) { .nav .nav-cta { display: none; } }
+@media (max-width: 340px) { .brand { font-size: 19px; } .brand-logo { width: 30px; height: 30px; } .menu-btn { padding: 8px 11px; } }
+/* Shartlar/maxfiylik: bu sahifalarda menyu yashirilmaydi — tugmalar logotip yonida bitta qatorda tursin */
+.nav > .nav-links[style] { width: auto; padding-top: 0; }

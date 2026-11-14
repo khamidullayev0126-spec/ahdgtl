@@ -226,3 +226,17 @@ footer a { color: var(--muted); }
 h1, h2 { overflow-wrap: break-word; }
 /* Til tugmasi joyi oldindan ajratiladi — telefonda menyu va butun sahifa pastga surilmasin (CLS) */
 [data-lang-slot] { min-width: 59px; min-height: 36px; }
+
+/* Telefon xavfsizligi: katta shrift sozlamasida ham sarlavha va raqamlar ekrandan chiqmasin */
+h1, h2, h3 { overflow-wrap: anywhere; }
+p, li, td, figcaption { overflow-wrap: break-word; }
+a[href^="mailto:"] { overflow-wrap: anywhere; }
+.stat { min-width: 0; }
+.stat strong, .stat span { overflow-wrap: anywhere; }
+@media (max-width: 560px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) {
+  .hero h1 { font-size: min(34px, 9vw); }
+  .case-hero h1 { font-size: min(32px, 8.6vw); }
+}
+/* Tor telefonda logo yonidagi yozuv yashiriladi — menyu bitta qatorda qoladi */
+@media (max-width: 480px) { .logo-text { display: none; } .nav { gap: 10px; } }

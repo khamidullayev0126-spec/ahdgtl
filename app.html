@@ -43,6 +43,8 @@
     /* ---------- Karkas ---------- */
     .top { position: fixed; top: 0; left: 0; right: 0; z-index: 5; padding-top: var(--safe-t); background: var(--bg); border-bottom: 1px solid var(--line); }
     .top-in { height: var(--head); display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 8px 0 16px; max-width: 640px; margin: 0 auto; }
+    @media (max-width: 360px) { .top-in .pill { padding: 0 12px; } .top-in > * { min-width: 0; } }
+    .stat { min-width: 0; } .stat span, .stat b { overflow-wrap: anywhere; } h1, h2, h3 { overflow-wrap: anywhere; } p, li { overflow-wrap: break-word; }
     .top h1 { margin: 0; font: 400 22px var(--h); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .back { width: 44px; height: 44px; margin-left: -12px; border: 0; background: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .pill { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 20px; background: var(--ink); color: var(--bg); font-weight: 700; font-size: 14px; text-decoration: none; border: 0; cursor: pointer; }
@@ -220,7 +222,7 @@ const screens = {
       </div>
       <p class="lead">Saytlar, Reels videolar, slayd va postlar — Claude yordamida tez, chiroyli va arzon.</p>
       <div class="stats"><div class="stat"><b>7</b><span>xil xizmat</span></div><div class="stat"><b>25 000</b><span>so'mdan</span></div><div class="stat"><b>1 kun</b><span>kichik ishlar</span></div></div>
-      <div style="display:flex;gap:10px"><a class="btn" style="flex:1" href="#buyurtma">Buyurtma berish</a><a class="btn ghost" style="flex:1" href="#chat">AI'dan so'rash</a></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" style="flex:1" href="#buyurtma">Buyurtma berish</a><a class="btn ghost" style="flex:1" href="#chat">AI'dan so'rash</a></div>
       <h2>Mashhur xizmatlar</h2>
       ${pop.map(serviceCard).join("")}
       <a class="btn ghost" href="#xizmatlar">Barcha xizmatlar</a>

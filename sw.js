@@ -1,7 +1,7 @@
 // AHdigital ilovasi — service worker
 // Ilova internet sekin yoki yo'q bo'lsa ham ochilishi uchun asosiy fayllarni saqlab qo'yadi.
 // Yangilanganda VERSION raqamini oshiring — eski kesh o'chadi.
-const VERSION = "ahd-v4";
+const VERSION = "ahd-v5";
 const SHELL = ["/app.html", "/manifest.json", "/icon-192.png", "/icon-512.png", "/images/logo.svg", "/offline.html"];
 
 self.addEventListener("install", e => {
