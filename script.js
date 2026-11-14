@@ -31,7 +31,6 @@ function renderCard(s) {
     <p class="card-desc"></p>
     <p class="card-result"><b>Natija:</b> <span class="r"></span></p>
     <ul class="features"></ul>
-    <a class="card-sample" hidden></a>
     <button type="button" class="btn btn-block ${s.featured ? "btn-secondary" : "btn-primary"}">Tanlash</button>
   `;
   // Matnlarni textContent orqali qo'yamiz — bu xavfsizroq
@@ -44,11 +43,13 @@ function renderCard(s) {
   card.querySelector(".card-time").hidden = !s.time;
   card.querySelector(".card-result .r").textContent = s.result || "";
   card.querySelector(".card-result").hidden = !s.result;
+  // Namuna havolasi faqat namuna bor xizmatlarda yaratiladi (bo'sh <a> bo'lmasin)
   if (s.sample) {
-    const a = card.querySelector(".card-sample");
+    const a = document.createElement("a");
+    a.className = "card-sample";
     a.href = s.sample;
     a.textContent = (s.sampleText || "Namunani ko'rish") + " →";
-    a.hidden = false;
+    card.querySelector("button").before(a);
   }
 
   // Har bir imkoniyat uchun <li> yaratamiz

@@ -33,6 +33,26 @@ test("bitta bosh sahifa: / xizmatlar va buyurtma formasini ko'rsatadi, eski welc
   assert.equal(old.headers.get("location"), "/");
 });
 
+test("Google uchun JSON-LD: narxlar services.js bilan, savollar sahifadagi FAQ bilan bir xil", async () => {
+  const html = await (await fetch(base + "/")).text();
+  const m = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  assert.ok(m, "bosh sahifada JSON-LD yo'q");
+  const graph = JSON.parse(m[1])["@graph"];
+  const biz = graph.find(x => x["@type"] === "ProfessionalService");
+  const services = require("../services.js");
+  assert.deepEqual(biz.hasOfferCatalog.itemListElement.map(o => [o.itemOffered.name, o.price]), services.map(s => [s.name, s.price]));
+  const faq = graph.find(x => x["@type"] === "FAQPage");
+  const visible = [...html.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/g)].map(x => x[1].trim());
+  assert.deepEqual(faq.mainEntity.map(q => q.name), visible);
+  assert.ok(faq.mainEntity.every(q => q.acceptedAnswer.text.length > 20 && !/[<>]/.test(q.acceptedAnswer.text)), "javob bo'sh yoki ichida HTML qolgan");
+  // keys va portfolio sahifalarida ham JSON-LD to'g'ri o'qiladi
+  for (const p of ["/ishlar/ahdigital.html", "/portfolio.html"]) {
+    const h = await (await fetch(base + p)).text();
+    JSON.parse(h.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  }
+  assert.equal((await fetch(base + "/seo.js")).status, 404, "seo.js internetdan ko'rinmasligi kerak");
+});
+
 test("ilova kirishni so'raydi", async () => {
   const r = await fetch(base + "/app.html", { redirect: "manual" });
   assert.equal(r.status, 302);

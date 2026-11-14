@@ -39,7 +39,7 @@
 
 /* ---------- AI suhbat oynasi ---------- */
 .chat { position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 50; font-family: var(--font-body); }
-.chat-fab { display: flex; align-items: center; gap: 8px; border: 0; cursor: pointer; background: var(--accent); color: var(--on-accent);
+.chat-fab { display: flex; align-items: center; gap: 8px; border: 0; cursor: pointer; background: var(--btn-bg); color: var(--on-accent);
   font: 700 15px var(--font-body); padding: 14px 20px; border-radius: 999px; box-shadow: var(--shadow); transition: transform .15s, background .15s; }
 .chat-fab:hover { background: var(--accent-hover); transform: translateY(-2px); }
 .chat-fab:focus-visible, .chat-close:focus-visible, .chat-send:focus-visible, .chat-quick button:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
@@ -53,7 +53,7 @@
 .chat-log { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
 .chat-msg { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
 .chat-msg.bot { background: var(--surface); align-self: flex-start; border-bottom-left-radius: 6px; }
-.chat-msg.me { background: var(--accent); color: var(--on-accent); align-self: flex-end; border-bottom-right-radius: 6px; }
+.chat-msg.me { background: var(--btn-bg); color: var(--on-accent); align-self: flex-end; border-bottom-right-radius: 6px; }
 .chat-msg.typing { color: var(--muted); font-style: italic; }
 .chat-quick { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
 .chat-quick[hidden] { display: none; }
@@ -62,7 +62,7 @@
 .chat-form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--divider); }
 .chat-input { flex: 1; min-width: 0; border: 1px solid var(--divider); background: var(--pill-bg); color: var(--text); border-radius: 999px; padding: 10px 14px; font: 15px var(--font-body); }
 .chat-input:focus-visible { outline: none; border-color: var(--accent); }
-.chat-send { border: 0; width: 42px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-size: 16px; cursor: pointer; }
+.chat-send { border: 0; width: 42px; border-radius: 50%; background: var(--btn-bg); color: var(--on-accent); font-size: 16px; cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) { .phone-screen.pop { animation: none; } .chat-fab, .swatch { transition: none; } }
 
@@ -85,7 +85,7 @@
 .ba-before { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
 .ba-handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 4px; translate: -2px 0; background: var(--accent); pointer-events: none; }
 .ba-handle::after { content: "⟷"; position: absolute; top: 50%; left: 50%; translate: -50% -50%; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--accent); color: var(--on-accent); font-weight: 700; box-shadow: var(--shadow); }
+  background: var(--btn-bg); color: var(--on-accent); font-weight: 700; box-shadow: var(--shadow); }
 .ba-label { position: absolute; top: 14px; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; background: rgba(32,30,29,.75); color: #fff; pointer-events: none; }
 .ba-l { left: 14px; } .ba-r { right: 14px; }
 .ba-range { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
@@ -126,7 +126,7 @@
 @media (max-width: 700px) {
   .m-cta { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; text-align: center; text-decoration: none;
     padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-    background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 16px; box-shadow: 0 -8px 24px rgba(0,0,0,.15);
+    background: var(--btn-bg); color: var(--on-accent); font-weight: 700; font-size: 16px; box-shadow: 0 -8px 24px rgba(0,0,0,.15);
     transform: translateY(110%); transition: transform .25s ease; }
   .m-cta.show { transform: none; }
   body.has-m-cta .chat { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }

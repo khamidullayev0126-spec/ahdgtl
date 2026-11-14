@@ -76,18 +76,28 @@ WORKS.forEach(p => {
   card.className = "project";
   card.dataset.cat = p.cat.join(" ");
   card.innerHTML = `
-    <a class="project-img" hidden><img alt="" loading="lazy" width="600" height="375"></a>
     <div class="project-top"><span class="status"></span></div>
     <h3></h3>
     <p></p>
     <div class="tags"></div>
   `;
+  // Rasm faqat rasmi bor ishlarda (bo'sh havola qolmasin). Rasm havolasi nomini alt matndan oladi.
   if (p.image) {
-    const a = card.querySelector(".project-img");
+    const a = document.createElement("a");
+    a.className = "project-img";
     a.href = p.link || "#";
-    a.hidden = false;
     a.tabIndex = -1;            // klaviatura uchun pastdagi havola yetarli
-    a.querySelector("img").src = p.image;
+    const img = document.createElement("img");
+    img.src = p.image;
+    if (p.image.startsWith("images/ishlar/")) {          // telefonga yengil 600px nusxa
+      img.srcset = `${p.image.replace(".webp", "-600.webp")} 600w, ${p.image.replace(".webp", "-800.webp")} 800w, ${p.image} 1200w`;
+      img.sizes = "(max-width: 700px) 92vw, 380px";
+    }
+    img.alt = p.title;
+    img.loading = "lazy";
+    img.width = 600; img.height = 375;
+    a.appendChild(img);
+    card.prepend(a);
   }
   card.querySelector(".status").textContent = "// " + p.status;
   card.querySelector("h3").textContent = p.title;

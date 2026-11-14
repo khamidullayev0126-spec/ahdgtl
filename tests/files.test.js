@@ -47,3 +47,16 @@ test("portfolio ishlari (works.js): har birida rasm/havola bor va matnlari tarji
     if (w.link && !w.link.startsWith("#")) assert.ok(fs.existsSync(path.join(ROOT, w.link.split("#")[0])), `"${w.slug}" havolasi topilmadi: ${w.link}`);
   }
 });
+
+test("sahifalardagi rasm va video fayllari mavjud (src, srcset, poster)", () => {
+  for (const page of ["index.html", "portfolio.html", "ishlar/ahdigital.html", "maxfiylik.html", "shartlar.html"]) {
+    const html = fs.readFileSync(path.join(ROOT, page), "utf8");
+    const refs = [...html.matchAll(/\b(?:src|poster)="([^"]+)"|\bsrcset="([^"]+)"/g)]
+      .flatMap(m => m[1] ? [m[1]] : m[2].split(",").map(x => x.trim().split(/\s+/)[0]))
+      .filter(u => !/^(https?:|data:|\/\/)/.test(u) && /\.(webp|jpe?g|png|svg|mp4|webm)$/i.test(u));
+    for (const u of refs) {
+      const file = u.startsWith("/") ? path.join(ROOT, u) : path.join(ROOT, path.dirname(page), u);
+      assert.ok(fs.existsSync(file), `${page}: "${u}" fayli topilmadi`);
+    }
+  }
+});

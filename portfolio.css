@@ -146,7 +146,7 @@ section h2 { font-size: clamp(28px, 4vw, 44px); letter-spacing: -0.015em; }
   position: sticky; top: 16px; background: var(--accent); color: var(--bg); border-radius: 20px; padding: 24px;
   display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
 }
-.total .muted { color: rgba(18, 16, 31, 0.7); }
+.total .muted { color: rgba(18, 16, 31, 0.8); }
 .total strong { font-family: var(--font-display); font-size: clamp(32px, 5vw, 48px); font-variant-numeric: tabular-nums; line-height: 1.1; overflow-wrap: anywhere; }
 .total .btn { margin-top: 12px; }
 
@@ -224,3 +224,5 @@ footer a { color: var(--muted); }
   .case-hero h1 { font-size: 32px; }
 }
 h1, h2 { overflow-wrap: break-word; }
+/* Til tugmasi joyi oldindan ajratiladi — telefonda menyu va butun sahifa pastga surilmasin (CLS) */
+[data-lang-slot] { min-width: 59px; min-height: 36px; }

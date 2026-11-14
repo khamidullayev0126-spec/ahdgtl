@@ -12,6 +12,7 @@ const { createLegends } = require("./legends");
 const { createStore } = require("./store");
 const { createPayments } = require("./payments");
 const { createAuth } = require("./auth");
+const { indexWithJsonLd } = require("./seo");
 
 const app = express();
 app.disable("x-powered-by");   // server turini oshkor qilmaymiz
@@ -153,7 +154,7 @@ app.use((req, res, next) => {
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
   // Server kodi, sozlamalar va ichki papkalar internetdan yashiriladi — QAYSI papkada bo'lishidan qat'i nazar
-  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html
@@ -171,6 +172,10 @@ const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, publi
   orderExtra: o => ({ due: PAY_ON() ? payments.dueOf(o) : null, paid: (o.paid && Object.keys(o.paid).length) || 0, parts: payments.partsOf(o).length }), botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
 if (auth) { auth.install(app); app.use(auth.gate); }
 else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
+
+// Bosh sahifa: Google uchun JSON-LD (xizmatlar, narxlar, savol-javoblar) server o'zi qo'shadi — seo.js
+const INDEX_HTML = indexWithJsonLd(PUBLIC_DIR, SERVICES);
+if (INDEX_HTML) app.get(["/", "/index.html"], (req, res) => res.set("Cache-Control", "no-cache").type("html").send(INDEX_HTML));
 
 // Kesh: rasm, video va shriftlar brauzerda 7 kun saqlanadi (qayta kirganda darhol ochiladi).
 // HTML, JS, CSS esa har safar tekshiriladi — yangilanish darhol ko'rinsin.

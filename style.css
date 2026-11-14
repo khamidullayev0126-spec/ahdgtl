@@ -64,7 +64,7 @@ body {
 h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
 p { margin: 0; }
 img { display: block; max-width: 100%; }
-a { color: var(--accent); }
+a { color: var(--link); }
 :focus { outline: none; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
@@ -83,8 +83,8 @@ a { color: var(--accent); }
   padding: 10px 18px; border-radius: 999px; border: 1px solid transparent;
   transition: background .15s;
 }
-.btn-primary { background: var(--accent); color: var(--on-accent); }
-.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary { background: var(--btn-bg); color: var(--on-accent); }
+.btn-primary:hover { background: var(--btn-bg-hover); }
 .btn-secondary { border-color: currentColor; color: inherit; background: transparent; }
 .btn-secondary:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
 .btn-block { width: 100%; }
@@ -130,7 +130,7 @@ section { padding-block: var(--s8); }
   display: flex; flex-direction: column; gap: var(--s4); min-width: 0;
   padding: var(--s6); border-radius: 32px; background: var(--surface); color: var(--text);
 }
-.card.featured { background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow); }
+.card.featured { background: var(--btn-bg); color: var(--on-accent); box-shadow: var(--shadow); }
 .card.legend { background: var(--legend-bg); color: var(--legend-text); }
 .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .kicker { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; opacity: .85; }
@@ -241,7 +241,7 @@ button.btn { font-family: var(--font-body); }
 .step { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s6); border: 1px solid var(--divider); border-radius: 28px; }
 .step-num {
   width: 44px; height: 44px; border-radius: 999px; display: grid; place-items: center;
-  background: var(--accent); color: var(--on-accent); font-family: var(--font-heading); font-size: 20px;
+  background: var(--btn-bg); color: var(--on-accent); font-family: var(--font-heading); font-size: 20px;
 }
 .step h3 { font-size: 22px; }
 .step p { color: var(--muted); }
@@ -254,7 +254,7 @@ button.btn { font-family: var(--font-body); }
 /* ---------- ko'nikmalar ---------- */
 .skills { display: flex; flex-wrap: wrap; gap: 8px; }
 .skills span { border: 1px solid var(--divider); border-radius: 999px; padding: 5px 12px; font-size: 14px; font-weight: 600; }
-.skills .now { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.skills .now { background: var(--btn-bg); color: var(--on-accent); border-color: var(--accent); }
 
 /* ---------- FAQ ---------- */
 .faq { display: flex; flex-direction: column; gap: var(--s3); margin-top: var(--s6); max-width: 820px; }
@@ -293,9 +293,9 @@ footer a { color: var(--muted); }
 .quick-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 .quick-btn svg { width: 24px; height: 24px; flex: none; }
 .quick-btn span { display: flex; flex-direction: column; line-height: 1.2; }
-.quick-btn small { font-weight: 500; font-size: 12px; opacity: .85; }
-.quick-tg { background: #229ed9; }
-.quick-wa { background: #1fa855; }
+.quick-btn small { font-weight: 500; font-size: 12px; }
+.quick-tg { background: #1a76a8; }
+.quick-wa { background: #12803f; }
 .quick-call { background: var(--band); color: var(--band-text); }
 .quick-btn[hidden] { display: none !important; }
 .quick-or { margin-top: var(--s3); color: var(--muted); font-size: 15px; }
@@ -303,3 +303,16 @@ footer a { color: var(--muted); }
 
 /* Telefonda sahifa hech qachon yon tomonga surilmasin (juda tor ekranlar va uzun ruscha so'zlar uchun) */
 html, body { overflow-x: clip; }
+
+/* Tugma foni: yorug' rejimda biroz to'qroq terrakota — oq yozuv o'qilishi uchun (kontrast 4.6:1, WCAG AA).
+   Tungi rejimda asosiy rang o'zi yetarli (6.4:1). */
+:root { --btn-bg: #a3542a; --btn-bg-hover: #8e4824; --link: #a3542a; --link-strong: #8e4824; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --btn-bg: #e08a52; --btn-bg-hover: #f6a06b; --link: #e08a52; --link-strong: #f6a06b; } }
+:root[data-theme="dark"] { --btn-bg: #e08a52; --btn-bg-hover: #f6a06b; --link: #e08a52; --link-strong: #f6a06b; }
+
+/* Til tugmasi (UZ ▾) sahifa yuklangach qo'shiladi — joyi oldindan ajratiladi, menyu surilib ketmasin */
+[data-lang-slot] { min-width: 59px; min-height: 36px; }
+
+/* "Mashhur" karta (to'q fon): xira yozuvlar to'liq ko'rinsin, muddat belgisi to'qroq fonda */
+.card.featured .kicker, .card.featured .price span { opacity: 1; }
+.card.featured .card-time { background: rgba(0, 0, 0, .18); }

@@ -7,7 +7,7 @@
   if (!preview) return;
 
   const COLORS = [
-    { name: "Terrakota", main: "#c67139", soft: "#fff2eb" },
+    { name: "Terrakota", main: "#a3542a", soft: "#fff2eb" },
     { name: "Zaytun", main: "#56633f", soft: "#f0fae1" },
     { name: "Dengiz", main: "#1f6f8b", soft: "#e6f4f8" },
     { name: "Olcha", main: "#a33a4a", soft: "#fbebee" },
