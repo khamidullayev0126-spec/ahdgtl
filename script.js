@@ -23,11 +23,12 @@ function renderCard(s) {
   card.innerHTML = `
     <div class="card-top">
       <span class="kicker"></span>
-      ${s.featured ? '<span class="tag tag-accent">Mashhur</span>' : ""}
+      ${s.featured ? '<span class="tag tag-accent">Mashhur</span>' : ""}${s.soon ? '<span class="tag tag-soon">Tez orada</span>' : ""}
     </div>
     <h3></h3>
     <div class="price"><strong></strong><span></span></div>
     <p class="card-time"><span aria-hidden="true">⏱</span> <span class="t"></span></p>
+    <p class="card-soon" hidden></p>
     <p class="card-desc"></p>
     <p class="card-result"><b>Natija:</b> <span class="r"></span></p>
     <ul class="features"></ul>
@@ -39,6 +40,8 @@ function renderCard(s) {
   card.querySelector(".price strong").textContent = formatPrice(s.price);
   card.querySelector(".price span").textContent = `so'm / ${s.period}`;
   card.querySelector(".card-desc").textContent = s.desc;
+  if (s.soon) { const n = card.querySelector(".card-soon"); n.textContent = s.soon; n.hidden = false; }
+  if (s.cta) card.querySelector("button").textContent = s.cta;
   card.querySelector(".card-time .t").textContent = s.time || "";
   card.querySelector(".card-time").hidden = !s.time;
   card.querySelector(".card-result .r").textContent = s.result || "";

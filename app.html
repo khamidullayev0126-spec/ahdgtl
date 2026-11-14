@@ -82,6 +82,7 @@
     .card.dark .btn { background: var(--dark-accent); color: var(--dark); }
     .card.dark .btn.ghost { background: transparent; color: var(--dark-text); border-color: var(--dark-text); }
     .badge { flex: none; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: var(--accent); color: #fff8f2; }
+    .soon-note.small, .soon-note { color: inherit; opacity: 1; font-weight: 600; padding: 10px 12px; border-radius: 12px; background: rgba(246, 196, 83, .16); border: 1px solid rgba(246, 196, 83, .55); }
     .chips { display: flex; gap: 8px; flex-wrap: wrap; }
     .chip { height: 40px; padding: 0 16px; border-radius: 20px; border: 2px solid var(--field); background: transparent; font-weight: 700; font-size: 14px; cursor: pointer; }
     .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
@@ -289,9 +290,10 @@ const screens = {
       <section class="card dark">
         <span class="kicker">O'quv kursi · 12 dars</span>
         <p class="h1">AI bilan ishlashni noldan o'rganing</p>
+        ${legends && legends.soon ? `<p class="small soon-note">⏳ ${esc(legends.soon)}</p>` : ""}
         <p class="lead">Har bir dars 40 daqiqalik video va slayd. Uy ishi slayd oxirida. Savollar — guruhning Telegram chatida.</p>
         <div><b class="price" style="font-size:28px">${fmt(legends ? legends.price : 500000)}</b> <span class="per">so'm / oy</span></div>
-        <a class="btn" href="#buyurtma" data-pick="legends">Kursga yozilish</a>
+        <a class="btn" href="#buyurtma" data-pick="legends">${legends && legends.cta ? esc(legends.cta) : "Kursga yozilish"}</a>
         <a class="btn ghost" href="/legends">Menda shaxsiy havola bor</a>
       </section>
       <h2>Guruhingizni tanlang</h2>
@@ -340,10 +342,11 @@ const screens = {
 function serviceCard(s) {
   const cls = s.legend ? "dark" : s.featured ? "hot" : "";
   return `<article class="card ${cls}">
-    <div class="row" style="align-items:flex-start"><div><span class="kicker">${esc(s.kicker)}</span><h2 style="margin-top:4px">${esc(s.name)}</h2></div>${s.featured ? '<span class="badge">Ommabop</span>' : ""}</div>
+    <div class="row" style="align-items:flex-start"><div><span class="kicker">${esc(s.kicker)}</span><h2 style="margin-top:4px">${esc(s.name)}</h2></div>${s.featured ? '<span class="badge">Ommabop</span>' : ""}${s.soon ? '<span class="badge">Tez orada</span>' : ""}</div>
     <p class="lead" style="font-size:14px">${esc(s.desc)}</p>
+    ${s.soon ? `<p class="small soon-note">⏳ ${esc(s.soon)}</p>` : ""}
     ${s.time ? `<p class="small" style="font-weight:700"><span aria-hidden="true">⏱</span> ${esc(s.time)}</p>` : ""}
-    <div class="row"><div><b class="price">${fmt(s.price)}</b> <span class="per">so'm / ${esc(s.period)}</span></div><a class="btn sm" href="#buyurtma" data-pick="${s.id}">Tanlash</a></div>
+    <div class="row"><div><b class="price">${fmt(s.price)}</b> <span class="per">so'm / ${esc(s.period)}</span></div><a class="btn sm" href="#buyurtma" data-pick="${s.id}">${esc(s.cta || "Tanlash")}</a></div>
   </article>`;
 }
 

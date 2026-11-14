@@ -24,6 +24,7 @@ const SERVICES = [
     desc: "Butun yil davomida cheksiz video, slayd va postlar — bir vaqtda 2 tagacha buyurtma.",
     features: ["Cheksiz video, slayd va postlar", "Vizitka va menyu saytlar", "Yiliga 2 tagacha katta sayt", "Butun yil davomida"] },
   { id: "legends", time: "1 oy, 12 ta dars", result: "AI vositalari bilan mustaqil ishlay olasiz", group: "course", kicker: "O'quv kursi", name: "AI LEGENDS", price: 500000, period: "oy", legend: true,
+    soon: "Darslar hali boshlanmagan — hozir oldindan yozilish ochiq. Boshlanish sanasini Telegram kanalda e'lon qilaman.", cta: "Oldindan yozilish",
     desc: "AI bilan ishlashni shaxsan o'zim o'rgataman — amaliy darslar va qo'llab-quvvatlash.",
     features: ["Amaliy darslar", "Claude va AI vositalari bilan ishlash", "Shaxsiy qo'llab-quvvatlash"] }
 ];

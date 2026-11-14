@@ -134,3 +134,12 @@ test("blog: landing page maqolasidagi narx va muddatlar services.js bilan bir xi
   assert.ok(sitemap.includes("/blog/landing-page.html"), "sitemap'da yo'q");
   assert.ok(fs.readFileSync(path.join(ROOT, "blog/index.html"), "utf8").includes("/blog/landing-page.html"), "blog ro'yxatida yo'q");
 });
+
+test("AI LEGENDS: darslar hali boshlanmagani yozilgan va tarjima qilingan", () => {
+  const services = require(path.join(ROOT, "services.js"));
+  const l = services.find(s => s.id === "legends");
+  const i18n = fs.readFileSync(path.join(ROOT, "i18n.js"), "utf8");
+  if (!l.soon) return;   // kurs boshlangach soon olib tashlanadi — test ham o'tadi
+  for (const t of [l.soon, l.cta, "Tez orada"]) assert.ok(i18n.includes(JSON.stringify(t) + ":"), `"${t}" i18n.js da yo'q`);
+  assert.match(fs.readFileSync(path.join(ROOT, "chat.js"), "utf8"), /s\.soon/, "AI yordamchi ham bilishi kerak");
+});

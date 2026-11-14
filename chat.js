@@ -9,7 +9,7 @@ function createSiteChat({ services }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   const claude = new Anthropic();
   const fmt = n => n.toLocaleString("ru-RU");
-  const priceList = services.map(s => `- ${s.name}: ${fmt(s.price)} so'm / ${s.period}. ${s.desc || ""}`).join("\n");
+  const priceList = services.map(s => `- ${s.name}: ${fmt(s.price)} so'm / ${s.period}. ${s.desc || ""}${s.soon ? " MUHIM: " + s.soon : ""}`).join("\n");
 
   const SYSTEM = `Sen Claude — Anthropic yaratgan AI yordamchisan. AHdigital saytidagi suhbat oynasida tashrif buyuruvchilar bilan gaplashyapsan. AHdigital — Abdulhamid Xamidullayevning AI kontent va web sayt xizmatlari.
 Qoidalar:

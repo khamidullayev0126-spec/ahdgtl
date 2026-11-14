@@ -335,3 +335,6 @@ img, video, svg, iframe { max-width: 100%; }
 @media (max-width: 340px) { .brand { font-size: 19px; } .brand-logo { width: 30px; height: 30px; } .menu-btn { padding: 8px 11px; } }
 /* Shartlar/maxfiylik: bu sahifalarda menyu yashirilmaydi — tugmalar logotip yonida bitta qatorda tursin */
 .nav > .nav-links[style] { width: auto; padding-top: 0; }
+/* "Tez orada" — hali boshlanmagan xizmat (AI LEGENDS) */
+.tag-soon { background: #f6c453; color: #201e1d; font-weight: 700; }
+.card .card-soon { flex: 0; font-size: 14px; font-weight: 600; line-height: 1.45; padding: 10px 14px; border-radius: 14px; background: rgba(246, 196, 83, .16); border: 1px solid rgba(246, 196, 83, .55); }
