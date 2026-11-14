@@ -49,7 +49,7 @@ test("portfolio ishlari (works.js): har birida rasm/havola bor va matnlari tarji
 });
 
 test("sahifalardagi rasm va video fayllari mavjud (src, srcset, poster)", () => {
-  for (const page of ["index.html", "portfolio.html", "ishlar/ahdigital.html", "maxfiylik.html", "shartlar.html"]) {
+  for (const page of ["index.html", "portfolio.html", "ishlar/ahdigital.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html"]) {
     const html = fs.readFileSync(path.join(ROOT, page), "utf8");
     const refs = [...html.matchAll(/\b(?:src|poster)="([^"]+)"|\bsrcset="([^"]+)"/g)]
       .flatMap(m => m[1] ? [m[1]] : m[2].split(",").map(x => x.trim().split(/\s+/)[0]))

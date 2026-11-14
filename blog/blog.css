@@ -1,0 +1,76 @@
+/* AHdigital blog — maqola va ro'yxat sahifalari (asosiy uslub style.css dan keladi) */
+.blog-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-block: 18px; }
+.blog-nav-links { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.blog-nav-links a:not(.btn) { color: var(--text); text-decoration: none; font-weight: 600; }
+.blog-nav-links a:not(.btn):hover { color: var(--link); }
+@media (max-width: 560px) { .blog-nav-links { gap: 12px; font-size: 15px; } .blog-nav-links .hide-sm { display: none; } }
+
+.crumbs { font-size: 14px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; margin-top: var(--s4); }
+.crumbs a { color: var(--muted); }
+
+/* maqola */
+.post { max-width: 720px; margin-inline: auto; padding-bottom: var(--s8); }
+.post-head { display: flex; flex-direction: column; gap: var(--s3); margin-block: var(--s4) var(--s6); }
+.post-head h1 { font-size: clamp(32px, 7vw, 54px); line-height: 1.08; overflow-wrap: break-word; }
+.post-lead { font-size: 19px; color: var(--body-strong); line-height: 1.55; }
+.post-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 14px; }
+.post-body { font-size: 17.5px; line-height: 1.75; color: var(--body-strong); }
+.post-body > * + * { margin-top: 1.1em; }
+.post-body h2 { font-size: clamp(26px, 4.5vw, 34px); line-height: 1.15; margin-top: 2.2em; color: var(--text); scroll-margin-top: 20px; }
+.post-body h3 { font-size: 21px; line-height: 1.3; margin-top: 1.8em; color: var(--text); font-family: var(--font-body); font-weight: 700; }
+.post-body p, .post-body li { overflow-wrap: break-word; }
+.post-body ul, .post-body ol { padding-left: 1.3em; }
+.post-body li + li { margin-top: .45em; }
+.post-body li::marker { color: var(--link-strong); font-weight: 700; }
+.post-body strong { color: var(--text); }
+.post-body a { color: var(--link-strong); text-underline-offset: 3px; }
+
+.toc { background: var(--surface); border-radius: 22px; padding: var(--s4) var(--s6); }
+.toc b { display: block; margin-bottom: 8px; color: var(--text); }
+.toc ol { margin: 0; padding-left: 1.2em; font-size: 16px; }
+.toc a { color: var(--text); }
+
+.note { background: var(--surface); border-radius: 20px; padding: var(--s4) var(--s6); border-left: 6px solid var(--link-strong); }
+.note.lesson { background: var(--sage-soft); border-left-color: var(--band); color: var(--sage-ink); }
+.note.lesson strong { color: var(--sage-ink); }
+.note p + p { margin-top: .6em; }
+
+.post figure { margin: 1.6em 0; }
+.post figure img { width: 100%; height: auto; border-radius: 18px; box-shadow: var(--shadow); background: var(--surface); }
+.post figcaption { font-size: 14px; color: var(--muted); margin-top: 8px; text-align: center; }
+.post figure.narrow { max-width: 300px; margin-inline: auto; }
+
+.post table { width: 100%; border-collapse: collapse; font-size: 16px; font-variant-numeric: tabular-nums; }
+.post th, .post td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--divider); vertical-align: top; }
+.post th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.post td:last-child { font-weight: 700; color: var(--text); }
+@media (max-width: 560px) {
+  .post table, .post tbody, .post tr, .post td { display: block; }
+  .post thead { display: none; }
+  .post tr { padding: 10px 0; border-bottom: 1px solid var(--divider); }
+  .post td { border: 0; padding: 2px 0; }
+}
+
+.author { display: flex; gap: var(--s4); align-items: center; background: var(--surface); border-radius: 24px; padding: var(--s4) var(--s6); margin-top: var(--s8); }
+.author img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex: none; }
+.author p { margin: 4px 0 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+.author a { color: var(--link-strong); }
+
+.post-cta { text-align: center; background: var(--legend-bg); color: var(--legend-text); border-radius: 28px; padding: var(--s8) var(--s6); margin-top: var(--s8); display: flex; flex-direction: column; align-items: center; gap: var(--s3); }
+.post-cta h2 { font-size: clamp(26px, 5vw, 36px); color: inherit; margin: 0; }
+.post-cta p { opacity: .85; max-width: 46ch; margin: 0; }
+.post-cta .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: var(--s2); }
+.post-cta .btn-secondary { background: transparent; color: inherit; box-shadow: inset 0 0 0 2px currentColor; }
+
+/* blog ro'yxati */
+.blog-head { max-width: 720px; margin: var(--s6) auto var(--s6); display: flex; flex-direction: column; gap: var(--s3); }
+.blog-head h1 { font-size: clamp(40px, 8vw, 64px); }
+.posts { max-width: 720px; margin-inline: auto; display: grid; gap: var(--s4); padding-bottom: var(--s8); }
+.post-card { display: grid; grid-template-columns: 220px 1fr; gap: var(--s4); align-items: center; background: var(--surface); border-radius: 26px; padding: var(--s3); text-decoration: none; color: var(--text); transition: transform .15s, box-shadow .15s; }
+.post-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.post-card img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border-radius: 18px; }
+.post-card h2 { font-size: 24px; line-height: 1.2; }
+.post-card p { color: var(--muted); font-size: 15px; margin-top: 6px; }
+.post-card .post-meta { margin-top: 8px; }
+@media (max-width: 600px) { .post-card { grid-template-columns: 1fr; } }
+.soon-note { text-align: center; color: var(--muted); font-size: 15px; }
