@@ -35,7 +35,7 @@ function buildJsonLd(services, faq) {
     url: SITE + "/",
     logo: SITE + "/icon-512.png",
     image: SITE + "/og.jpg",
-    description: "AI yordamida saytlar, videolar, slayd va postlar. AI LEGENDS kursi.",
+    description: "AI yordamida saytlar, videolar, slayd va postlar.",
     slogan: "AI bilan g'oyadan natijagacha",
     telephone: "+998956322905",
     email: "khamidullayev0126@gmail.com",

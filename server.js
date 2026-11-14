@@ -154,7 +154,7 @@ app.use((req, res, next) => {
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
   // Server kodi, sozlamalar va ichki papkalar internetdan yashiriladi — QAYSI papkada bo'lishidan qat'i nazar
-  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik|play-store)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html
@@ -174,7 +174,8 @@ if (auth) { auth.install(app); app.use(auth.gate); }
 else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
 
 // Bosh sahifa: Google uchun JSON-LD (xizmatlar, narxlar, savol-javoblar) server o'zi qo'shadi — seo.js
-const INDEX_HTML = indexWithJsonLd(PUBLIC_DIR, SERVICES);
+const PUBLIC_SERVICES = SERVICES.filter(s => !s.hidden);   // yashirilgan xizmatlar (masalan AI LEGENDS) saytda chiqmaydi
+const INDEX_HTML = indexWithJsonLd(PUBLIC_DIR, PUBLIC_SERVICES);
 if (INDEX_HTML) app.get(["/", "/index.html"], (req, res) => res.set("Cache-Control", "no-cache").type("html").send(INDEX_HTML));
 
 // Kesh: rasm, video va shriftlar brauzerda 7 kun saqlanadi (qayta kirganda darhol ochiladi).
@@ -218,12 +219,12 @@ app.get("/.well-known/assetlinks.json", (req, res) => {
 payments.install(app);
 
 app.get("/api/services", (req, res) => {
-  res.json(SERVICES);
+  res.json(PUBLIC_SERVICES);
 });
 
 // Yangi buyurtma qabul qilish
 // Saytdagi AI suhbat oynasi (ANTHROPIC_API_KEY bo'lsa)
-const siteChat = createSiteChat({ services: SERVICES });
+const siteChat = createSiteChat({ services: PUBLIC_SERVICES });
 app.get("/api/chat", (req, res) => res.json({ enabled: !!siteChat }));
 if (siteChat) app.post("/api/chat", siteChat);
 
@@ -241,7 +242,7 @@ app.post("/api/orders", rateLimit, async (req, res) => {
   if (contact.length < 5 || contact.length > 60) {
     return res.status(400).json({ error: "Telefon raqam yoki Telegram username kiriting." });
   }
-  const service = SERVICES.find(s => s.id === serviceId);
+  const service = PUBLIC_SERVICES.find(s => s.id === serviceId);
   if (!service) {
     return res.status(400).json({ error: "Xizmatni tanlang." });
   }

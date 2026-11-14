@@ -71,7 +71,7 @@ function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeO
 
   // ---------- Claude ----------
   const claude = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
-  const priceList = services.map(s => `- ${s.name}: ${s.price.toLocaleString("ru-RU")} so'm / ${s.period}. ${s.desc}`).join("\n");
+  const priceList = services.filter(s => !s.hidden).map(s => `- ${s.name}: ${s.price.toLocaleString("ru-RU")} so'm / ${s.period}. ${s.desc}`).join("\n");
   const SYSTEM = `Sen Claude — Anthropic yaratgan AI yordamchisan. AHdigital (Abdulhamid Xamidullayevning AI kontent va web sayt xizmatlari) Telegram botida mijozlar bilan gaplashyapsan.
 Qoidalar:
 - Faqat o'zbek tilida, qisqa (1–4 gap), samimiy javob ber. Markdown ishlatma, oddiy matn yoz.

@@ -23,7 +23,7 @@ const SERVICES = [
   { id: "max", time: "1–14 ish kuni (ish turiga qarab)", result: "Butun yil kontent va saytlar — bitta to'lov bilan", group: "plan", kicker: "1 yillik obuna", name: "Max", price: 7000000, period: "yil",
     desc: "Butun yil davomida cheksiz video, slayd va postlar — bir vaqtda 2 tagacha buyurtma.",
     features: ["Cheksiz video, slayd va postlar", "Vizitka va menyu saytlar", "Yiliga 2 tagacha katta sayt", "Butun yil davomida"] },
-  { id: "legends", time: "1 oy, 12 ta dars", result: "AI vositalari bilan mustaqil ishlay olasiz", group: "course", kicker: "O'quv kursi", name: "AI LEGENDS", price: 500000, period: "oy", legend: true,
+  { id: "legends", time: "1 oy, 12 ta dars", result: "AI vositalari bilan mustaqil ishlay olasiz", group: "course", kicker: "O'quv kursi", name: "AI LEGENDS", price: 500000, period: "oy", legend: true, hidden: true,   // hozircha saytda ko'rsatilmaydi — qaytarish uchun shu qatorni o'chiring
     soon: "Darslar hali boshlanmagan — hozir oldindan yozilish ochiq. Boshlanish sanasini Telegram kanalda e'lon qilaman.", cta: "Oldindan yozilish",
     desc: "AI bilan ishlashni shaxsan o'zim o'rgataman — amaliy darslar va qo'llab-quvvatlash.",
     features: ["Amaliy darslar", "Claude va AI vositalari bilan ishlash", "Shaxsiy qo'llab-quvvatlash"] }
@@ -31,4 +31,4 @@ const SERVICES = [
 
 // Brauzerda: window.SERVICES, Node.js serverda: require("./public/services.js")
 if (typeof module !== "undefined") module.exports = SERVICES;
-else window.SERVICES = SERVICES;
+else window.SERVICES = SERVICES.filter(s => !s.hidden);

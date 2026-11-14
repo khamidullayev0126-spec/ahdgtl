@@ -100,6 +100,7 @@
         <input id="chat-input" class="chat-input" maxlength="500" autocomplete="off" placeholder="Savolingizni yozing...">
         <button class="chat-send" type="submit" aria-label="Yuborish">➤</button>
       </form>
+      <a class="chat-report" href="https://t.me/Abdulkhamid_2905?text=AI%20yordamchi%20noto%27g%27ri%20yoki%20nomaqbul%20javob%20berdi%3A%20" target="_blank" rel="noopener">⚑ Noto'g'ri yoki nomaqbul javob haqida xabar berish</a>
     </div>`;
   document.body.appendChild(root);
 

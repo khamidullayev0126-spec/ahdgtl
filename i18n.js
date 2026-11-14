@@ -98,7 +98,7 @@
 
     // Xizmatlar bo'limi
     "Xizmatlar va narxlar": ["Услуги и цены", "Services & prices"],
-    "Bir martalik buyurtma, obuna yoki o'quv kursi — o'zingizga qulayini tanlang.": ["Разовый заказ, подписка или учебный курс — выберите удобный вариант.", "A one-off order, a subscription or a course — choose what suits you."],
+    "Bir martalik buyurtma yoki oylik/yillik obuna — o'zingizga qulayini tanlang.": ["Разовый заказ или месячная/годовая подписка — выберите удобный вариант.", "A one-time order or a monthly/yearly plan — choose what suits you."],
     "Bir martalik xizmatlar": ["Разовые услуги", "One-off services"],
     "Obunalar": ["Подписки", "Subscriptions"],
     "O'quv kursi": ["Учебный курс", "Course"],
@@ -109,13 +109,14 @@
     "Mashhur": ["Популярно", "Popular"],
     "Tanlash": ["Выбрать", "Choose"],
     "Tez orada": ["Скоро", "Coming soon"],
+    "⚑ Noto'g'ri yoki nomaqbul javob haqida xabar berish": ["⚑ Сообщить о неверном или неуместном ответе", "⚑ Report a wrong or inappropriate answer"],
     "Oldindan yozilish": ["Предзапись", "Pre-register"],
     "Darslar hali boshlanmagan — hozir oldindan yozilish ochiq. Boshlanish sanasini Telegram kanalda e'lon qilaman.": ["Уроки ещё не начались — сейчас открыта предварительная запись. Дату старта объявлю в Telegram-канале.", "Lessons haven't started yet — pre-registration is open now. I'll announce the start date on the Telegram channel."],
     "Darslar hali boshlanmagan. Hozir oldindan yozilish mumkin — boshlanish sanasini Telegram kanalda e'lon qilaman.": ["Уроки ещё не начались. Сейчас можно записаться заранее — дату старта объявлю в Telegram-канале.", "Lessons haven't started yet. You can pre-register now — I'll announce the start date on the Telegram channel."],
     "Natija:": ["Результат:", "Result:"],
     "Post yoki slayd — 1 ish kuni, video — 1–2 ish kuni, vizitka yoki menyu sayt — 2–3 ish kuni, katta sayt — 7–14 ish kuni. Muddat barcha kerakli materiallar olingan kundan boshlab hisoblanadi.": ["Пост или слайды — 1 рабочий день, видео — 1–2 рабочих дня, сайт-визитка или меню — 2–3 рабочих дня, большой сайт — 7–14 рабочих дней. Срок считается со дня получения всех нужных материалов.", "Post or slides — 1 working day, video — 1–2 working days, business card or menu site — 2–3 working days, full website — 7–14 working days. The timeline starts from the day all the needed materials are received."],
     "To'lov qanday qilinadi?": ["Как происходит оплата?", "How does payment work?"],
-    "Bir martalik buyurtmalarda 50% oldindan, qolgan 50% ish tayyor bo'lganda. Obuna va kurs uchun to'lov oldindan qilinadi. Ish hali boshlanmagan bo'lsa, to'lov to'liq qaytariladi.": ["Для разовых заказов — 50% вперёд, остальные 50% после готовности работы. Подписка и курс оплачиваются заранее. Если работа ещё не начата, оплата возвращается полностью.", "For one-off orders, 50% upfront and the remaining 50% when the work is ready. Subscriptions and the course are paid in advance. If work has not started yet, the payment is fully refunded."],
+    "Bir martalik buyurtmalarda 50% oldindan, qolgan 50% ish tayyor bo'lganda. Obuna uchun to'lov oldindan qilinadi. Ish hali boshlanmagan bo'lsa, to'lov to'liq qaytariladi.": ["Для разовых заказов — 50% вперёд, остальные 50% после готовности работы. Подписка оплачивается заранее. Если работа ещё не начата, оплата возвращается полностью.", "For one-off orders, 50% upfront and the remaining 50% when the work is ready. Subscriptions are paid in advance. If work has not started yet, the payment is fully refunded."],
     "Darhol yozish": ["Написать сейчас", "Message now"],
     "Qo'ng'iroq": ["Позвонить", "Call"],
     "yoki formani to'ldiring — o'zim bog'lanaman": ["или заполните форму — я сам свяжусь с вами", "or fill in the form — I'll get back to you"],
@@ -220,7 +221,7 @@
 
     // Men haqimda
     "Salom, men Abdulhamid.": ["Привет, я Абдулхамид.", "Hi, I'm Abdulhamid."],
-    "AI vositalari bilan kontent va saytlar yarataman: Claude yordamida video, taqdimot slaydlari, ijtimoiy tarmoq postlari va web saytlar. AI LEGENDS kursida esa shu bilimlarni amaliy tarzda o'rgataman.": ["Создаю контент и сайты с помощью AI: видео, слайды, посты для соцсетей и веб-сайты с Claude. А на курсе AI LEGENDS учу этому на практике.", "I create content and websites with AI tools: videos, presentation slides, social posts and websites made with Claude. In the AI LEGENDS course I teach these skills hands-on."],
+    "AI vositalari bilan kontent va saytlar yarataman: Claude yordamida video, taqdimot slaydlari, ijtimoiy tarmoq postlari va web saytlar.": ["Создаю контент и сайты с помощью AI: видео, слайды, посты для соцсетей и веб-сайты с Claude.", "I create content and websites with AI tools: videos, presentation slides, social posts and websites made with Claude."],
     "CoddyCamp o'quv markazining Junior guruhida dasturiy muhandislikni o'rganyapman. Scratch, Pictoblox, AI, Figma, HTML, CSS va Bootstrap'ni o'zlashtirdim, hozir esa JavaScript'ni o'rganyapman. Maqsadim — Software Engineer bo'lish.": ["Изучаю программную инженерию в группе Junior учебного центра CoddyCamp. Освоил Scratch, Pictoblox, AI, Figma, HTML, CSS и Bootstrap, сейчас изучаю JavaScript. Моя цель — стать Software Engineer.", "I study software engineering in the Junior group at CoddyCamp. I've learned Scratch, Pictoblox, AI, Figma, HTML, CSS and Bootstrap, and I'm now learning JavaScript. My goal is to become a Software Engineer."],
     "Har bir mijozning vaqtini tejash va AI'dan haqiqiy natija olishiga yordam berishni xohlayman.": ["Хочу помогать каждому клиенту экономить время и получать реальный результат от AI.", "I want to help every client save time and get real results from AI."],
     "JavaScript · hozir": ["JavaScript · сейчас", "JavaScript · now"],

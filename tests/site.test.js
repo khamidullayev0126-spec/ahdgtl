@@ -13,7 +13,7 @@ after(async () => { await srv.stop(); });
 
 // ---------- Sahifalar ----------
 test("ochiq sahifalar kirmasdan ochiladi", async () => {
-  for (const p of ["/", "/index.html", "/portfolio.html", "/shartlar.html", "/maxfiylik.html", "/ishlar/ahdigital.html", "/blog/", "/blog/ai-bilan-sayt.html", "/blog/landing-page.html", "/kabinet.html", "/admin.html"]) {
+  for (const p of ["/", "/index.html", "/portfolio.html", "/shartlar.html", "/maxfiylik.html", "/ishlar/ahdigital.html", "/blog/", "/blog/ai-bilan-sayt.html", "/blog/landing-page.html", "/akkaunt-ochirish.html", "/kabinet.html", "/admin.html"]) {
     const r = await fetch(base + p, { redirect: "manual" });
     assert.equal(r.status, 200, `${p} ochilmadi`);
   }
@@ -40,7 +40,7 @@ test("Google uchun JSON-LD: narxlar services.js bilan, savollar sahifadagi FAQ b
   const graph = JSON.parse(m[1])["@graph"];
   const biz = graph.find(x => x["@type"] === "ProfessionalService");
   const services = require("../services.js");
-  assert.deepEqual(biz.hasOfferCatalog.itemListElement.map(o => [o.itemOffered.name, o.price]), services.map(s => [s.name, s.price]));
+  assert.deepEqual(biz.hasOfferCatalog.itemListElement.map(o => [o.itemOffered.name, o.price]), services.filter(s => !s.hidden).map(s => [s.name, s.price]));
   const faq = graph.find(x => x["@type"] === "FAQPage");
   const visible = [...html.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/g)].map(x => x[1].trim());
   assert.deepEqual(faq.mainEntity.map(q => q.name), visible);
@@ -51,6 +51,7 @@ test("Google uchun JSON-LD: narxlar services.js bilan, savollar sahifadagi FAQ b
     JSON.parse(h.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
   }
   assert.equal((await fetch(base + "/seo.js")).status, 404, "seo.js internetdan ko'rinmasligi kerak");
+  assert.equal((await fetch(base + "/play-store/README.md")).status, 404, "play-store papkasi internetdan ko'rinmasligi kerak");
 });
 
 test("ilova kirishni so'raydi", async () => {
@@ -89,9 +90,13 @@ test("chiroyli havola (Open Graph) belgilari va rasmi bor", async () => {
 });
 
 // ---------- Xizmatlar ----------
-test("xizmatlar ro'yxati: 7 ta xizmat, narxlari musbat son", async () => {
+test("xizmatlar ro'yxati: yashirilganlari chiqmaydi, narxlari musbat son", async () => {
   const list = await (await fetch(base + "/api/services")).json();
-  assert.equal(list.length, 7);
+  const all = require("../services.js");
+  assert.equal(list.length, all.filter(s => !s.hidden).length);
+  assert.ok(!list.some(s => s.hidden), "yashirilgan xizmat API'da chiqmasin");
+  // bosh sahifa va ilovadagi "N xil xizmat" soni haqiqiy ro'yxatga mos
+  assert.match(await (await fetch(base + "/")).text(), new RegExp("<strong>" + list.length + "</strong> xil xizmat"));
   for (const s of list) assert.ok(Number.isInteger(s.price) && s.price > 0, `${s.id} narxi noto'g'ri`);
 });
 

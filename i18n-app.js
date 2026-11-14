@@ -72,7 +72,7 @@ window.I18N_EXTRA = Object.assign(window.I18N_EXTRA || {}, {
   "Yuborish bilan": ["Отправляя, вы соглашаетесь с", "By sending, you agree to the"],
   "xizmat shartlariga": ["условиями услуг", "terms of service"],
   "rozilik bildirasiz.": [".", "."],
-  "Salom! Men AHdigital'ning AI yordamchisiman. Xizmatlar, narxlar yoki kurs haqida so'rang.": ["Привет! Я AI-помощник AHdigital. Спрашивайте об услугах, ценах или курсе.", "Hi! I'm AHdigital's AI assistant. Ask me about services, prices or the course."],
+  "Salom! Men AHdigital'ning AI yordamchisiman. Xizmatlar va narxlar haqida so'rang.": ["Привет! Я AI-помощник AHdigital. Спрашивайте об услугах и ценах.", "Hi! I'm AHdigital's AI assistant. Ask me about services and prices."],
   "Savolingizni yozing": ["Напишите вопрос", "Type your question"],
   "Xabar": ["Сообщение", "Message"],
   "Ismingizni kiriting.": ["Введите имя.", "Enter your name."],

@@ -34,6 +34,7 @@ window.I18N_EXTRA = Object.assign(window.I18N_EXTRA || {}, {
   "Ma'lumotlaringizni sotmaymiz, ijaraga bermaymiz va reklama uchun ishlatmaymiz.": ["Мы не продаём, не сдаём в аренду и не используем ваши данные для рекламы.", "We do not sell, rent out or use your data for advertising."],
   "Nima uchun ishlatiladi": ["Зачем используются", "Why we use it"],
   "Sayt statistikasi — faqat roziligingizdan keyin": ["Статистика сайта — только после вашего согласия", "Site analytics — only after your consent"],
+  "Akkauntni qanday o'chirish mumkin →": ["Как удалить аккаунт →", "How to delete your account →"],
   "Sayt joylashgan server": ["Сервер, на котором работает сайт", "Server that hosts the site"],
   "Ma'lumotlar bazasi: buyurtmalar, akkauntlar, kurs ro'yxati va kunlik zaxira nusxalar": ["База данных: заказы, аккаунты, список курса и ежедневные резервные копии", "Database: orders, accounts, course list and daily backups"],
   "Kirish, bot xabarlari va haftalik zaxira nusxa (sayt egasiga)": ["Вход, сообщения бота и еженедельная резервная копия (владельцу сайта)", "Sign-in, bot messages and a weekly backup (sent to the site owner)"],
