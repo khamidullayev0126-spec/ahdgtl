@@ -84,7 +84,7 @@ window.I18N_EXTRA = Object.assign(window.I18N_EXTRA || {}, {
   "Telegram:": ["Telegram:", "Telegram:"],
   "Telefon:": ["Телефон:", "Phone:"],
   "Gmail:": ["Gmail:", "Gmail:"],
-  "Javob vaqti: har kuni 10:00–20:00": ["Время ответа: ежедневно 10:00–20:00", "Response hours: daily 10:00–20:00"],
+  "Javob vaqti: dushanba–shanba 9:00–12:00 va 18:00–23:00, yakshanba 10:00–23:00": ["Время ответа: пн–сб 9:00–12:00 и 18:00–23:00, вс 10:00–23:00", "Response hours: Mon–Sat 9:00–12:00 and 18:00–23:00, Sun 10:00–23:00"],
   "Saytdan foydalanish, kirish yoki buyurtma berish bilan siz ushbu siyosatga rozilik bildirasiz.": ["Пользуясь сайтом, входя в кабинет или оформляя заказ, вы соглашаетесь с этой политикой.", "By using the site, signing in or placing an order, you agree to this policy."],
   "Xizmat shartlari": ["Условия услуг", "Terms of service"],
   "Savol berish": ["Задать вопрос", "Ask a question"],
