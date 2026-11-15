@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
+const aiUsage = require("./ai-usage");
 let imager = null;                                   // rasm yaratish (satori + resvg o'rnatilgan bo'lsa)
 try { imager = require("./image"); } catch (e) { console.log("ℹ️  Rasm yaratish o'chiq:", e.message); }
 
@@ -295,6 +296,7 @@ ${priceList}`;
           cache_control: { type: "ephemeral" },
           messages: history
         });
+        aiUsage.record("agent", res);
         history.push({ role: "assistant", content: res.content });
         const said = res.content.filter(b => b.type === "text").map(b => b.text).join("\n").trim();
 

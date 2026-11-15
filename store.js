@@ -25,7 +25,7 @@ const COLLECTIONS = {
   "biznes-chatlar": { type: "map" },
   tolovlar: { type: "map" }          // Click / Payme tranzaksiyalari
 };
-const BLOBS = ["agent-xotira", "agent-eslatmalar", "biznes-sozlama", "zaxira-holat"];
+const BLOBS = ["agent-xotira", "agent-eslatmalar", "biznes-sozlama", "zaxira-holat", "ai-xarajat"];
 const KEYS = [...Object.keys(COLLECTIONS), ...BLOBS];
 const BACKUP_DAYS = 14;
 

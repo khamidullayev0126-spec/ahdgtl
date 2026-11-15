@@ -7,6 +7,7 @@
 
 const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
+const aiUsage = require("./ai-usage");
 const path = require("path");
 const { createAgent } = require("./agent");
 const { createCaller } = require("./call");
@@ -95,6 +96,7 @@ ${priceList}`;
         system: SYSTEM,
         messages: history
       });
+      aiUsage.record("bot", response);
       if (response.stop_reason === "refusal") {
         history.pop();
         return "Bu savolga javob bera olmayman. Abdulhamid sizga o'zi javob beradi.";

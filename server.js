@@ -53,6 +53,8 @@ const store = createStore({ dataDir: DATA_DIR, onError: msg => {
     }
   } catch {}
 } });
+const aiUsage = require("./ai-usage");
+aiUsage.init(store);           // Claude so'rovlari xarajatini yozib boradi (admin → AI xarajatlari)
 const readOrders = () => store.get("orders", []);
 const writeOrders = orders => store.set("orders", orders);
 
@@ -154,7 +156,7 @@ app.use((req, res, next) => {
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
   // Server kodi, sozlamalar va ichki papkalar internetdan yashiriladi — QAYSI papkada bo'lishidan qat'i nazar
-  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik|play-store)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik|play-store)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo|ai-usage)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html
@@ -282,6 +284,12 @@ app.post("/api/orders", rateLimit, async (req, res) => {
 });
 
 // Admin: barcha buyurtmalar
+// AI xarajatlari hisoboti (admin panel grafigi uchun)
+app.get("/api/admin/ai-usage", requireAdmin, (req, res) => {
+  const days = Math.min(90, Math.max(7, Number(req.query.days) || 30));
+  res.json({ ...aiUsage.report(days), rate: Number(process.env.USD_RATE) || 12800 });
+});
+
 app.get("/api/orders", requireAdmin, (req, res) => {
   res.json(readOrders());
 });

@@ -45,6 +45,7 @@
       <a href="#orders" data-view="orders"><svg viewBox="0 0 24 24"><path d="M19 3h-4.2A3 3 0 0 0 12 1a3 3 0 0 0-2.8 2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2m2 14H7v-2h7zm3-4H7v-2h10zm0-4H7V7h10z"/></svg>Buyurtmalar<b class="side-badge" id="badge-new" hidden></b></a>
       <a href="#payments" data-view="payments"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 14H4v-6h16zm0-10H4V6h16z"/></svg>To'lovlar</a>
       <a href="#clients" data-view="clients"><svg viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6m0 2c-2.3 0-7 1.2-7 3.5V19h14v-2.5C15 14.2 10.3 13 8 13m8 0-.9.1c1.2.8 1.9 2 1.9 3.4V19h6v-2.5c0-2.3-4.7-3.5-7-3.5"/></svg>Mijozlar</a>
+      <a href="#ai" data-view="ai"><svg viewBox="0 0 24 24"><path d="M3 3v18h18v-2H5V3zm4 12h2v3H7zm4-5h2v8h-2zm4-3h2v11h-2zm4 6h2v5h-2z"/></svg>AI xarajatlari</a>
       <p class="side-label">Kurs</p>
       <a href="#legends" data-view="legends"><svg viewBox="0 0 24 24"><path d="M12 3 1 9l11 6 9-4.9V17h2V9zM5 13.2v4L12 21l7-3.8v-4L12 17z"/></svg>AI LEGENDS</a>
     </nav>
@@ -144,6 +145,28 @@
           </div>
           <p class="empty" id="clients-empty" hidden>Hali mijoz yo'q.</p>
         </div>
+      </section>
+
+      <!-- ===== AI xarajatlari ===== -->
+      <section class="view" id="view-ai" hidden>
+        <div class="kpis" id="ai-kpis"></div>
+        <article class="card">
+          <header class="card-h"><div><h2>Kunlik xarajat</h2><p class="muted" id="ai-sub">so'mda, Claude API</p></div>
+            <div class="seg" role="group" aria-label="Davr" id="ai-range"><button type="button" data-d="7">7 kun</button><button type="button" data-d="30" class="on">30 kun</button><button type="button" data-d="90">90 kun</button></div></header>
+          <div class="legend" id="ai-legend"></div>
+          <div class="chart" id="ai-chart"></div>
+        </article>
+        <article class="card">
+          <header class="card-h"><div><h2>Qayerga ketyapti</h2><p class="muted">Tanlangan davr bo'yicha, manba va model kesimida</p></div></header>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Manba</th><th>Model</th><th class="num">So'rovlar</th><th class="num">Kirish token</th><th class="num">Chiqish token</th><th class="num">Narx</th></tr></thead>
+              <tbody id="ai-body"></tbody>
+            </table>
+          </div>
+          <p class="empty" id="ai-empty" hidden>Hali ma'lumot yo'q. AI yordamchi, bot yoki agent ishlatilgach, xarajat shu yerda paydo bo'ladi.</p>
+          <p class="muted ai-note" id="ai-note"></p>
+        </article>
       </section>
 
       <!-- ===== AI LEGENDS ===== -->

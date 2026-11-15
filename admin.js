@@ -9,6 +9,7 @@ const VIEWS = {
   orders: ["Buyurtmalar", "Hamma buyurtmalar va ularning holati"],
   payments: ["To'lovlar", "Onlayn va qo'lda olingan pullar"],
   clients: ["Mijozlar", "Buyurtma bergan odamlar"],
+  ai: ["AI xarajatlari", "Claude API'ga qancha pul ketyapti"],
   legends: ["AI LEGENDS", "Kurs o'quvchilari va ularning havolalari"]
 };
 const SERVICES_LIST = window.SERVICES || [];
@@ -112,6 +113,7 @@ function render() {
   if (v === "orders") renderOrders();
   if (v === "payments") renderPayments();
   if (v === "clients") renderClients();
+  if (v === "ai") loadAi();
 }
 
 function kpi({ label, value, unit, sub, icon, tone }) {
@@ -517,4 +519,90 @@ setInterval(() => { if ((owner || password) && !ordersBox.hidden && $("drawer").
 if (location.protocol === "file:") {
   loginStatus.className = "form-status error";
   loginStatus.textContent = "Admin panel faqat internetdagi saytda yoki npm start bilan ishlaydi.";
+}
+
+
+// ---------- AI xarajatlari (server: /api/admin/ai-usage, ai-usage.js) ----------
+const AI_COLORS = { chat: "--accent", bot: "--info", agent: "--violet" };
+let aiDays = 30, aiData = null, aiBusy = false;
+const usdFmt = n => "$" + (n >= 10 ? n.toFixed(2) : n >= 0.01 ? n.toFixed(2) : n > 0 ? "<0.01" : "0");
+const tok = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(".0", "") + " mln" : n >= 1e3 ? Math.round(n / 1e3) + " ming" : String(n);
+
+async function loadAi() {
+  if (aiBusy) return;
+  aiBusy = true;
+  try {
+    aiData = await api("/api/admin/ai-usage?days=" + aiDays);
+    renderAi();
+  } catch {
+    $("ai-kpis").replaceChildren(h("p", { class: "empty" }, "AI xarajatlarini yuklab bo'lmadi."));
+  } finally { aiBusy = false; }
+}
+document.querySelectorAll("#ai-range button").forEach(b => b.addEventListener("click", () => {
+  aiDays = Number(b.dataset.d);
+  document.querySelectorAll("#ai-range button").forEach(x => x.classList.toggle("on", x === b));
+  loadAi();
+}));
+
+function renderAi() {
+  const d = aiData, rate = d.rate || 12800, so = usd => sum(usd * rate);
+  const prevDays = d.days.slice(0, -1), avg = prevDays.length ? prevDays.reduce((a, x) => a + x.total, 0) / prevDays.length : 0;
+  $("ai-kpis").replaceChildren(
+    kpi({ label: "Bugun", value: so(d.today), unit: "so'm", icon: "bolt", tone: "t-accent", sub: `${usdFmt(d.today)} · o'rtacha kuniga ${usdFmt(avg)}` }),
+    kpi({ label: "Shu oy", value: so(d.month), unit: "so'm", icon: "cash", tone: "t-info", sub: usdFmt(d.month) }),
+    kpi({ label: "Oy oxirigacha taxmin", value: so(d.forecast), unit: "so'm", icon: "clock", tone: "t-warn", sub: `${usdFmt(d.forecast)} · hozirgi tezlikda` }),
+    kpi({ label: `Oxirgi ${d.days.length} kun`, value: so(d.period), unit: "so'm", icon: "card", tone: "t-violet", sub: `${d.rows.reduce((a, r) => a + r.n, 0)} ta so'rov` })
+  );
+  $("ai-sub").textContent = `so'mda (1 $ = ${sum(rate)} so'm), Claude API`;
+  const used = Object.keys(d.sources).filter(s => d.days.some(x => x.by[s]));
+  $("ai-legend").innerHTML = (used.length ? used : Object.keys(d.sources)).map(s => `<span><i class="dot" style="background:var(${AI_COLORS[s] || "--muted"})"></i>${esc(d.sources[s])}</span>`).join("");
+  aiChart(d, rate);
+  $("ai-body").replaceChildren(...d.rows.map(r => h("tr", {},
+    h("td", {}, r.sourceName), h("td", {}, h("code", {}, r.model)),
+    h("td", { class: "num", "data-l": "So'rov:" }, String(r.n)), h("td", { class: "num", "data-l": "Kirish:" }, tok(r.in + r.cr + r.cw)), h("td", { class: "num", "data-l": "Chiqish:" }, tok(r.out)),
+    h("td", { class: "num" }, h("b", {}, so(r.usd) + " so'm"), h("br"), h("small", { class: "muted" }, usdFmt(r.usd)))
+  )));
+  $("ai-empty").hidden = d.rows.length > 0;
+  $("ai-note").textContent = "Narx Anthropic'ning rasmiy narxlari asosida taxminiy hisoblanadi. Aniq hisob: platform.claude.com → Billing."
+    + (d.unknownModels.length ? ` Narxi ma'lum bo'lmagan model: ${d.unknownModels.join(", ")} — eng qimmat narx bilan hisoblandi.` : "");
+}
+
+function aiChart(d, rate) {
+  const W = 640, H = 240, P = { l: 52, r: 12, t: 12, b: 26 }, n = d.days.length;
+  const max = Math.max(...d.days.map(x => x.total * rate), 1000);
+  const nice = Math.pow(10, Math.floor(Math.log10(max))), top = Math.ceil(max / nice) * nice;
+  const iw = W - P.l - P.r, ih = H - P.t - P.b, step = iw / n, bw = Math.max(3, Math.min(22, step * .6));
+  const y = v => P.t + ih - v / top * ih;
+  let s = "";
+  for (let g = 0; g <= 4; g++) { const v = top / 4 * g, yy = y(v); s += `<line class="grid-l" x1="${P.l}" x2="${W - P.r}" y1="${yy}" y2="${yy}"/><text class="ax" x="${P.l - 8}" y="${yy + 4}" text-anchor="end">${short(Math.round(v))}</text>`; }
+  const every = Math.ceil(n / 8);
+  d.days.forEach((x, i) => {
+    const cx = P.l + step * i + step / 2;
+    let acc = 0, bars = "";
+    for (const src of Object.keys(d.sources)) {
+      const v = (x.by[src] || 0) * rate;
+      if (!v) continue;
+      const hgt = Math.max(1.5, v / top * ih);
+      bars += `<rect x="${cx - bw / 2}" y="${y(acc) - hgt}" width="${bw}" height="${hgt}" rx="1.5" style="fill:var(${AI_COLORS[src] || "--muted"})"/>`;
+      acc += v;
+    }
+    const [, mm, dd] = x.date.split("-");
+    s += `<g class="col" data-i="${i}"><rect class="hit" x="${cx - step / 2}" y="${P.t}" width="${step}" height="${ih}" rx="6"/>${bars}`
+      + ((n - 1 - i) % every === 0 ? `<text class="ax" x="${cx}" y="${H - 6}" text-anchor="middle">${dd}.${mm}</text>` : "") + `</g>`;
+  });
+  const box = $("ai-chart");
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Kunlik AI xarajatlari">${s}</svg>`;
+  const tip = h("div", { class: "tip", hidden: true });
+  box.append(tip);
+  box.querySelectorAll(".col").forEach(g => {
+    g.addEventListener("mouseenter", () => {
+      const x = d.days[g.dataset.i], [, mm, dd] = x.date.split("-"), r = g.querySelector(".hit").getBoundingClientRect(), br = box.getBoundingClientRect();
+      const lines = Object.keys(d.sources).filter(k => x.by[k]).map(k => `${esc(d.sources[k])}: ${sum(x.by[k] * rate)} so'm`).join("<br>");
+      tip.innerHTML = `<b>${Number(dd)}-${OYLAR[Number(mm) - 1]}</b>${lines || "Xarajat yo'q"}<br><b>Jami: ${sum(x.total * rate)} so'm (${usdFmt(x.total)})</b>`;
+      tip.style.left = Math.min(br.width - 130, Math.max(130, r.left - br.left + r.width / 2)) + "px";   // chetdan chiqib ketmasin
+      tip.style.top = (r.top - br.top + 8) + "px";
+      tip.hidden = false;
+    });
+    g.addEventListener("mouseleave", () => { tip.hidden = true; });
+  });
 }

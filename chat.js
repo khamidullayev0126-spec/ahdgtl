@@ -4,6 +4,7 @@
 
 const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
+const aiUsage = require("./ai-usage");
 
 function createSiteChat({ services }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
@@ -56,6 +57,7 @@ ${priceList}`;
         system: SYSTEM,
         messages: s.history
       });
+      aiUsage.record("chat", r);
       if (r.stop_reason === "refusal") { s.history.pop(); return res.json({ session: id, reply: "Bu savolga javob bera olmayman. Abdulhamid sizga yordam beradi: Telegram @Abdulkhamid_2905." }); }
       s.history.push({ role: "assistant", content: r.content });
       const reply = r.content.filter(b => b.type === "text").map(b => b.text).join("\n").trim() || "Abdulhamid sizga tez orada javob beradi.";
