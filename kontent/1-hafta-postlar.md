@@ -1,171 +1,173 @@
-# AHdigital — 1 haftalik post rejasi (16–22 noyabr)
+# AHdigital — kontent tahlili va 1 haftalik reja (16–22 noyabr)
 
-Instagram: @ah.digital_01 · Telegram kanal: @ahdigital_01
+Instagram: @ah.digital_01 (27 post, 31 obunachi) · Telegram: @ahdigital_01 (16 obunachi)
 Bu papka internetda ko'rinmaydi — faqat siz uchun.
 
-**Qoida:** har kuni 1 ta post. Instagram'ga va Telegram kanalga bir xil matn (Telegram'da havola bosiladi, Instagram'da «havola bio'da» deyiladi).
-**Eng yaxshi vaqt:** kechqurun 19:00–21:00 (odamlar ishdan qaytgan).
-**Halollik:** faqat haqiqiy ishlar, haqiqiy narxlar. Soxta sharh yoki «100 ta mijoz» kabi gaplar yo'q.
+---
+
+## 0. Avval tuzatish kerak bo'lgan narsalar (bugun, 15 daqiqa)
+
+### Instagram bio (150 belgigacha)
+```
+AI bilan sayt, video va dizayn 🚀
+💻 Vizitka/menyu sayt — 30 000 so'm
+🎬 Reels video — 25 000 so'm
+📩 Buyurtma: Telegram @Abdulkhamid_2905
+👇 Narxlar va namunalar
+```
+Havola: `www.ah-digital.uz` birinchi tursin.
+**Nega Telegram?** Akkauntingiz «Teen Account» — Instagram notanish odamlarning direkt xabarlarini cheklaydi. Mijoz yoza olmay qolishi mumkin, shuning uchun aloqa Telegram orqali.
+
+### Telegram kanal tavsifi
+```
+AHdigital — AI bilan g'oyadan natijagacha.
+Sayt, video, slayd va postlar — kichik biznes uchun.
+🌐 Narxlar va buyurtma: ah-digital.uz
+💬 Aloqa: @Abdulkhamid_2905
+📸 Instagram: instagram.com/ah.digital_01
+```
+(AI LEGENDS olib tashlandi; Instagram havolasidagi `?xtok=...` qismi keraksiz — olib tashlang.)
+
+### Eski postlarni tahrirlash (Telegram'da postni bosib → «Edit»)
+- **9-noyabr «Ilova chiqdi» posti:** `ahdigital-1pcz.onrender.com` → `https://www.ah-digital.uz/app.html`.
+  «App Store ga ham» → «Google Play'ga tayyorlanmoqda» (App Store hozircha rejada yo'q).
+- **Pinned (mahkamlangan) xabar:** narxlar va sayt havolasi bilan yangilang — pastdagi 1-kun matnini ishlating va uni pin qiling.
+
+### Ulashish rasmi
+Saytning yangi ulashish rasmi tayyor (25 000 so'mdan, kurssiz). Telegram eski rasmni eslab qolgan bo'lishi mumkin — @WebpageBot'ga `https://www.ah-digital.uz/` yuborsangiz, yangilanadi.
+
+### Instagram «Highlights»
+«Konkurs», «AHdigital», «Men haqimda» bor. Qo'shing: **«Narxlar»** (narxlar ro'yxati story) va **«Ishlar»** (portfolio). Mijoz birinchi navbatda shularni qidiradi.
 
 ---
 
-## 1-kun · Dushanba — Tanishuv (Reels yoki karusel)
+## 1. Tahlil: nima yaxshi, nima ishlamayapti
 
-**Nima ko'rsatiladi:** o'zingiz (yuz ko'rinmasa ham bo'ladi — qo'llar, noutbuk), sayt ekrani.
+**Yaxshi tomonlari 👍**
+- Dizayn bir xil uslubda (terrakota rang, logo) — brend tanilib qoladi.
+- «G'uvillovchi» serial — AI video qobiliyatingizning eng kuchli namunasi. Bu tayyor portfolio.
+- Blog va «AI kod yozib berdi» kabi postlar foydali va sifatli.
+- Muntazam joylayapsiz — bu eng qiyin qismi.
 
-**Matn:**
-```
-Salom! Men Abdulhamid — AHdigital asoschisi 👋
+**Muammolar ⚠️**
+1. **Ko'rishlar = obunachilar soni (11–15).** Postlarni faqat mavjud obunachilar (asosan tanishlar) ko'ryapti, yangi odam kelmayapti.
+2. **4 xil auditoriya aralash:** dasturlash o'rganuvchilar (JS saytlar, AI kod), texnologiya yangiliklari (Claude Fable), ko'ngilochar (serial) va mijozlar (xizmatlar). Pul to'laydigan auditoriya — **kichik biznes egalari** — eng kam e'tibor olyapti.
+3. **Serial oxirida chaqiriq yo'q.** Ko'rgan odam «bu kimning ishi, menga ham shunday video kerak» degan fikrga kelmaydi.
+4. **Eskirgan ma'lumotlar:** AI LEGENDS, eski onrender havolasi, «20 000 so'mdan» rasm.
 
-Claude (AI) yordamida kichik bizneslar uchun saytlar, videolar, slayd va postlar tayyorlayman.
+**Mening tavsiyam — kontent nisbati:**
 
-✅ Vizitka va menyu sayt — 30 000 so'mdan, 2–3 kunda
-✅ Reels va reklama videolari — 25 000 so'mdan
-✅ Slayd va postlar — 60 000 so'mdan
-
-Hamma narxlar saytda ochiq: www.ah-digital.uz
-Savol bo'lsa — yozing, javob beraman 🙂
-
-#AHdigital #sayt #vizitkasayt #AI #toshkent #kichikbiznes
-```
-
----
-
-## 2-kun · Seshanba — Foydali karusel: «Instagram yetarli emasmi?»
-
-**Karusel (5 slayd):**
-1. «Instagram sahifangiz bor. Sayt kerakmi?»
-2. «❌ Narxlarni 50 ta post orasidan qidirish qiyin»
-3. «❌ Google'da Instagram postlari deyarli chiqmaydi»
-4. «✅ Sayt: narx, manzil, bir bosishda qo'ng'iroq»
-5. «Eng yaxshisi — ikkalasi birga. Batafsil: blogda»
-
-**Matn:**
-```
-Instagram — yaxshi. Lekin u sizniki emas va cheklovlari bor 👇
-
-Mijoz narxni topa olmasa — boshqa sahifaga o'tib ketadi.
-Google'da «Chilonzorda tort buyurtma» deb qidirgan odam Instagram postlaringizni deyarli ko'rmaydi.
-
-Eng yaxshi yo'l: Instagram'da kontent + bio'dagi havola sayt'ga olib boradi.
-
-To'liq maqola: www.ah-digital.uz/blog/landing-page.html
-
-#landingpage #sayt #instagrambiznes #kichikbiznes #AHdigital
-```
+| Ulush | Kimga | Misol |
+|---|---|---|
+| **40%** | Biznes egalari (mijozlar) | Kafe/do'kon uchun sayt namunasi, narxlar, «oldin → keyin» |
+| **30%** | AI ko'rgazmasi (portfolio) | Serial, AI video, chiroyli postlar — har birining oxirida narx |
+| **20%** | O'rganuvchilar | JS maslahatlar, AI bilan ishlash — ishonch va obunachi beradi |
+| **10%** | Shaxsiy | Jarayon, xatolar, o'sish hikoyasi |
 
 ---
 
-## 3-kun · Chorshanba — Jarayon (Reels, 15–30 soniya)
+## 2. 1 haftalik reja
 
-**Nima ko'rsatiladi:** saytdagi «Sinab ko'ring» bo'limi — biznes nomini yozasiz, rang tanlaysiz, vizitka darhol o'zgaradi. Ekranni telefon bilan yozib oling yoki ekran yozuvi.
+**Vaqt:** kechqurun 19:00–21:00. Instagram'ga va Telegram'ga bir xil post.
 
-**Matn:**
+### Dushanba — Pin uchun «Narxlar» posti (karusel)
+Slaydlar: 1) «AHdigital narxlari» 2) Vizitka/menyu sayt — 30 000 so'm, 2–3 kun 3) Reels — 25 000 so'm 4) Slayd va postlar — 60 000 so'm 5) Katta sayt — 700 000 so'm 6) «Buyurtma: Telegram @Abdulkhamid_2905»
 ```
-10 soniyada saytingiz qanday ko'rinishini ko'ring 👀
+AHdigital narxlari 💰 — hammasi ochiq, yashirin to'lov yo'q.
 
-1. www.ah-digital.uz ga kiring
-2. «Sinab ko'ring» bo'limida biznesingiz nomini yozing
-3. Rangni tanlang — tayyor!
+💻 Vizitka yoki menyu sayt — 30 000 so'm (2–3 kun)
+🎬 Reels / reklama video — 25 000 so'm
+🎨 Slayd va postlar — 60 000 so'm
+🌐 Katta sayt (admin panel bilan) — 700 000 so'm
 
-Yoqsa — shu yerning o'zidan buyurtma berasiz. Vizitka yoki menyu sayt — 30 000 so'm, 2–3 kunda.
+Har bir ishga 2 marta bepul tuzatish.
+Buyurtma: @Abdulkhamid_2905 yoki www.ah-digital.uz
 
-#vizitkasayt #menyusayt #sayt #AHdigital #toshkent
+#AHdigital #sayt #reels #toshkent #kichikbiznes
+```
+→ Telegram'da **pin qiling**, Instagram'da **profil tepasiga mahkamlang**.
+
+### Seshanba — Serial 5-qism + chaqiriq
+Odatdagi serial videongiz. Oxiriga 2 soniyalik kadr qo'shing: *«Bu serial AI yordamida yaratildi. Brendingiz uchun video — 25 000 so'm»*.
+```
+G'uvillovchi · 5-qism 📻
+...(odatdagi matn)...
+
+🎬 Bu serialni AI yordamida o'zim yaratyapman.
+Biznesingiz uchun shunday video kerakmi? — 25 000 so'mdan.
+Yozing: @Abdulkhamid_2905
 ```
 
----
-
-## 4-kun · Payshanba — Kafe va restoranlar uchun (karusel)
-
-**Karusel (5 slayd):**
-1. «Kafengizda hali ham qog'oz menyu?»
-2. «📱 QR kod → menyu telefonda, rasmlar bilan»
-3. «💸 Narx o'zgarsa — qayta chop etish shart emas»
-4. «📞 Bir bosishda yetkazib berish yoki bron»
-5. «Menyu sayt — 30 000 so'm, 2–3 kunda»
-
-**Matn:**
+### Chorshanba — «10 soniyada saytingiz» (Reels, ekran yozuvi)
+Saytdagi «Sinab ko'ring» bo'limida 2–3 xil biznes nomini yozib, rang almashtirib ko'rsating (o'ylab topilgan nomlar: «Lazzat kafe», «Gul do'koni» — haqiqiy biznes nomini ruxsatsiz ishlatmang).
 ```
-QR kodli menyu — kafe uchun arzon va qulay qadam ☕️
+Biznesingiz nomini yozing — saytingiz 10 soniyada tayyor ko'rinishda 👀
 
-Mijoz stolga o'tiradi → kamerani QR kodga qaratadi → menyu rasmlar va narxlar bilan telefonida ochiladi.
+www.ah-digital.uz → «Sinab ko'ring»
+Yoqsa — 30 000 so'mga haqiqiy sayt qilib beraman, 2–3 kunda.
 
+#vizitkasayt #menyusayt #sayt #AHdigital
+```
+
+### Payshanba — Kafe uchun QR menyu (karusel)
+```
+Kafengizda hali ham qog'oz menyu? ☕️
+
+QR kod → menyu telefonda, rasmlar va narxlar bilan.
+✅ Narx o'zgarsa — qayta chop etish shart emas
 ✅ Ilova o'rnatish shart emas
-✅ Narx o'zgarsa — menyuni qayta chop etmaysiz
-✅ Telefon va Telegram tugmasi — yetkazib berish uchun
+✅ Bir bosishda yetkazib berish yoki bron
 
-Batafsil: www.ah-digital.uz/blog/menyu-sayt-qr.html
+To'liq maqola: www.ah-digital.uz/blog/menyu-sayt-qr.html
 Tanish kafe egangiz bormi? Ularga ulashing 🙏
 
-#qrmenyu #menyusayt #kafe #restoran #toshkent #AHdigital
+#qrmenyu #kafe #restoran #toshkent #AHdigital
 ```
+
+### Juma — O'rganuvchilar uchun (karusel, sizning uslubingizda)
+Mavzu: «Saytimni yasashda o'rgangan 5 ta narsa» (blog maqolasidan).
+```
+Saytimni yasab, mana shu 5 ta narsani o'rgandim 👇
+1. Kodni GitHub'da saqlang — noutbuk buzilsa ham yo'qolmaydi
+2. Har o'zgarishdan keyin telefonda tekshiring
+3. AI'dan tayyor kod emas, tushuntirish so'rang
+4. Parol va kalitlarni kodga yozmang
+5. Domenni birinchi kunlardanoq oling
+
+To'liq hikoya: www.ah-digital.uz/blog/ai-bilan-sayt.html
+Saqlab qo'ying 📌
+
+#dasturlash #AI #yoshdasturchi #javascript #AHdigital
+```
+
+### Shanba — Ish namunasi: «oldin → keyin» (Reels)
+Eski Netlify saytingiz → hozirgi ah-digital.uz (skrinshotlar yoki ekran yozuvi). Bu haqiqiy o'sish hikoyasi.
+```
+2 oy oldin → hozir 📈
+
+Oldin: 2 ta xizmatli oddiy sahifa.
+Hozir: buyurtma, admin panel, Telegram bot, 3 til va AI yordamchi.
+
+Sizning biznesingiz uchun ham shunday sayt — www.ah-digital.uz
+
+#portfolio #sayt #AHdigital #yoshdasturchi
+```
+
+### Yakshanba — Story: savol-javob + so'rovnoma
+Story 1: «Savol bering» stikeri — *«Sayt yoki video haqida nima bilmoqchisiz?»*
+Story 2: So'rovnoma — *«Sizga qaysi biri kerak? Sayt / Video / Post»*
+Javoblar — keyingi haftaning post g'oyalari.
 
 ---
 
-## 5-kun · Juma — Shaxsiy hikoya (matnli post yoki Reels)
+## 3. O'sish uchun har kuni 15 daqiqa
 
-**Matn:**
-```
-Saytimni yasayotganimda noutbukim buzilib qoldi 💻❌
+1. **Mijoz qidirish (eng muhim):** Toshkentdagi saytsiz kafe, salon, o'quv markazlarini toping (Instagram'da sayt havolasi yo'q bo'lsa — sayti yo'q). Telegram yoki telefon orqali qisqa, hurmatli xabar yozing va **bepul namuna** taklif qiling (saytdagi «Sinab ko'ring» bilan ularning nomida rasm yasab yuborasiz).
+2. **Izohlar:** mahalliy biznes sahifalarida foydali izoh qoldiring (reklama emas).
+3. **Telegram:** foydali postlarni 2–3 ta mos guruhga ulashing (guruh qoidasi ruxsat bersa).
+4. **Javob:** izoh va xabarlarga 1 soat ichida javob bering.
 
-1–3 hafta noutbuksiz qoldim, ish orqaga ketdi. Domen yo'q edi, pul yetmasdi. Lekin har bir qiyinchilik yangi narsa o'rgatdi.
-
-Bugun saytimda: buyurtma, admin panel, Telegram bot, 3 til va AI yordamchi bor.
-
-To'liq hikoya — xatolarim va xarajatlarim bilan:
-www.ah-digital.uz/blog/ai-bilan-sayt.html
-
-#AI #claude #dasturlash #yoshdasturchi #AHdigital
-```
-
----
-
-## 6-kun · Shanba — Ish namunasi (Reels)
-
-**Nima ko'rsatiladi:** portfolio'dagi ishlaringizdan biri (masalan, AHdigital saytining o'zi yoki Reels namunasi) — oldin/keyin yoki sahifani aylantirib ko'rsatish.
-
-**Matn:**
-```
-Mana shu saytni Claude (AI) bilan birga yasadim 👇
-
-✅ Telefonda ham, kompyuterda ham chiroyli
-✅ Buyurtma formasi va admin panel
-✅ O'zbek, rus, ingliz tillarida
-
-Sizga ham shunday sayt kerakmi? Barcha ishlarim: www.ah-digital.uz/portfolio.html
-
-#portfolio #veb #sayt #AHdigital #yoshdasturchi
-```
-
----
-
-## 7-kun · Yakshanba — Savol-javob (Story yoki post)
-
-**Story:** «Savol bering» stikeri: *«Sayt haqida nima bilmoqchisiz?»*
-Keyingi hafta shu savollarga javob berasiz — bu tayyor post g'oyalari.
-
-**Post matni:**
-```
-Sayt, video yoki post haqida savolingiz bormi? 🤔
-
-Izohda yozing — har biriga javob beraman.
-Masalan:
-— Menga qaysi sayt kerak?
-— Qancha turadi?
-— Qancha vaqtda tayyor bo'ladi?
-
-#savoljavob #sayt #AHdigital
-```
-
----
-
-## Har kuni 10 daqiqa (postdan tashqari)
-
-- Izohlarga va direktga **1 soat ichida** javob bering.
-- Toshkentdagi kafe, salon, o'quv markazlari sahifalariga **foydali izoh** qoldiring (reklama emas — oddiy, samimiy izoh).
-- Telegram kanaldagi postni **2–3 ta guruhga** ulashing (guruh qoidasi ruxsat bersa).
-
-## Hafta oxirida tekshiring
-
-- Qaysi post ko'proq **saqlandi va ulashildi**? Keyingi haftada shunga o'xshashini qiling.
-- GA4 → Отчеты → **Источники трафика**: Instagram yoki Telegram'dan nechta odam saytga kirdi?
+## 4. Hafta oxirida tekshiring
+- Instagram → Professional panel: qaysi post ko'proq **saqlandi va ulashildi**? Keyingi haftada shunga o'xshashini qiling.
+- GA4 → Отчеты → Источники трафика: Instagram/Telegram'dan nechta odam saytga kirdi?
+- Nechta odam **yozdi** (Telegram)? Bu — eng muhim raqam.
