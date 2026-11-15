@@ -52,6 +52,7 @@ test("Google uchun JSON-LD: narxlar services.js bilan, savollar sahifadagi FAQ b
   }
   assert.equal((await fetch(base + "/seo.js")).status, 404, "seo.js internetdan ko'rinmasligi kerak");
   assert.equal((await fetch(base + "/play-store/README.md")).status, 404, "play-store papkasi internetdan ko'rinmasligi kerak");
+  assert.equal((await fetch(base + "/kontent/1-hafta-postlar.md")).status, 404, "kontent papkasi internetdan ko'rinmasligi kerak");
 });
 
 test("ilova kirishni so'raydi", async () => {
