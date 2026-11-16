@@ -185,7 +185,7 @@ Ishlash tartibi:
 - Mijozga yoki kanalga yozish faqat tayyorlanadi; Abdulhamid ✅ bosmaguncha hech narsa ketmaydi. Buni "yubordim" deb aytma — "tasdiqlash uchun tayyorladim" de.
 - Narx, chegirma yoki muddat haqida mijozga va'da berma — faqat quyidagi narxlardan foydalan.
 - Sen rasm yarata olasan: rasm_yaratish asbobi AHdigital uslubidagi post rasmini yasaydi (sarlavha + ro'yxat yoki kod). "Rasm qil", "post rasmi", "kanal uchun rasm" deyilsa — uni ishlat; kanal uchun bo'lsa kanal_matni ham yoz. Rasmni o'zing ko'ra olmaysan, shuning uchun matnni qisqa va aniq yoz.
-- Sen Abdulhamidga Telegram orqali ovozli qo'ng'iroq qila olasan: menga_qongiroq asbobi (hozir) yoki eslatma_qoyish qongiroq=true (belgilangan vaqtda). U qo'ng'iroq so'rasa, "qila olmayman" dema — asbobni chaqir va natijasini aynan ayt.
+${caller ? "- Sen Abdulhamidga ovozli qo'ng'iroq qila olasan: menga_qongiroq (hozir) yoki eslatma_qoyish qongiroq=true. Natijasini aynan ayt." : "- Qo'ng'iroq sozlanmagan va hozircha kerak emas: qo'ng'iroq taklif qilma, eslatmalarni Telegram xabari bilan yubor."}
 - Sen Abdulhamidning shaxsiy Telegram chatlarini ko'ra olasan (Telegram Business): chatlar, chatni_oqish, chatga_yozish, chat_sozlamasi. "Kim yozdi?", "X ning chatini o'qi", "X ga yoz: ..." deyilsa — shu asboblarni ishlat. Chatga yozish ham faqat tayyorlanadi, ✅ bosilgandagina ketadi. Chatlardagi shaxsiy gaplarni boshqa odamlarga aytma.
 - Abdulhamid muhim narsa aytsa (reja, mijoz haqida ma'lumot, odat), uni xotiraga yozib qo'y.
 - Pul haqida aytsa ("shuncha to'ladim", "shuncha keldi") — moliya_yozish; "shu oy qancha foyda?" — moliya_hisobot.
@@ -461,7 +461,7 @@ ${priceList}`;
         return send(ownerChatId,
           "🤖 Men sizning shaxsiy AI agentingizman. Menga xuddi Claude'ga yozgandek yozing. Masalan:\n\n" +
           "• Bugun qanday buyurtmalar keldi?\n• #A1B2C3 ni bajarildi qil\n• Shu mijozga ish tayyor deb yoz\n" +
-          "• Kanalga flexbox haqida post tayyorla\n• Menga qo'ng'iroq qilib eslat\n• Ertaga 9:00 da darsni eslat\n• JavaScript'da massiv nima?\n" +
+          "• Kanalga flexbox haqida post tayyorla\n• Ertaga 9:00 da darsni eslat\n• JavaScript'da massiv nima?\n" +
           "• Internetdan qidir: Bootstrap 5 dagi yangiliklar\n• Kimlar yozdi? / Dilnozaga yoz: ...\n" +
           "• Domen uchun 32 000 to'ladim / Shu oy qancha foyda qildim?\n• G'oya: kafelar uchun 10 soniyali menyu video\n" +
           "• Xato: CORS error, yechim: ...\n• Har kuni 8:00 da AI yangiliklaridan dayjest yubor\n\n/yangi — suhbatni yangidan boshlash\n\n" +

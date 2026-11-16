@@ -12,21 +12,10 @@ Bu papka internetda ko'rinmaydi. ✅ — tayyor, 🔜 — keyinroq.
 | 🐞 **Xatolar kundaligi** | «Xato: CORS, yechim: cors() qo'shdim» · «CORS'ni qanday tuzatgandim?» | oddiy xabar |
 | 📰 **Ertalabki dayjest** | «Har kuni 8:00 da AI va IT yangiliklaridan 5 ta punkt yubor» | ⚠️ har kuni token (internet qidiruvi bilan) |
 | 🧠 **Kunlik mini-mashq** | «Har kuni 19:00 da JavaScript bo'yicha bitta masala ber» | ⚠️ har kuni token |
-| 📞 **Qo'ng'iroq** (oldin ham bor edi) | «Menga qo'ng'iroq qilib eslat», «Ertaga 7:00 da qo'ng'iroq qil» | bepul (CallMeBot) |
 
 **Tuzatilgan xato:** 25 kundan uzoq eslatma (masalan, yillik domen to'lovi) oldin vaqtidan ancha erta kelib qolardi. Endi o'z vaqtida keladi.
 
 **Pul haqida ochiq gap:** dayjest va mashq har kuni Claude'ni chaqiradi. Admin panel → «AI xarajatlari»da qancha ketayotganini ko'rib turing. Qimmat bo'lsa — «dayjest eslatmasini o'chir» deb yozing.
-
-### 📞 Bot sizga qo'ng'iroq qilishi uchun (bir marta, 3 daqiqa)
-1. Telegramda **@CallMeBot_txtbot** ni oching → **/start**.
-2. Telegram → Sozlamalar → Maxfiylik → **Qo'ng'iroqlar** → «Hamma» yoki CallMeBot'ga ruxsat.
-3. Render → servis → **Environment** → qo'shing: `CALLMEBOT_USER` = `@Abdulkhamid_2905`.
-4. (Ixtiyoriy) `CALL_ON_NEW_ORDER` = `1` — yangi buyurtma kelsa ham qo'ng'iroq qiladi.
-5. Botga yozing: «Menga hozir qo'ng'iroq qil, sinov».
-
-O'zbekcha ovoz uchun Render'da `ELEVENLABS_API_KEY` ham bo'lishi kerak (kalitni faqat Render'ga yozing, chatga emas).
-**Bot faqat sizga qo'ng'iroq qiladi**, mijozlarga emas — notanish odamga avtomatik qo'ng'iroq qonun va spam jihatdan xavfli, va pullik xizmat (Twilio) 18 yosh + karta talab qiladi.
 
 ## 2. Kompyuterda ishlaydigan bepul skriptlar ✅ (AI'siz)
 
