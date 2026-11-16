@@ -16,6 +16,21 @@ const MAX_STEPS = 10;            // bitta xabarga agent nechta qadam qila oladi
 const MAX_HISTORY = 60;          // shundan oshsa — suhbat yangidan boshlanadi (eslatmalar va xotira saqlanadi)
 const STATUSES = ["yangi", "tasdiqlandi", "jarayonda", "bajarildi", "bekor"];
 const TZ = "Asia/Tashkent";
+const MAX_TIMEOUT = 2 ** 31 - 1;  // setTimeout ~24,8 kundan uzoqni kuta olmaydi
+const REPEATS = ["kunlik", "haftalik", "oylik", "yillik"];
+const IDEA_PLACES = ["blog", "youtube", "shorts", "instagram", "telegram", "sayt", "biznes", "boshqa"];
+
+// Takrorlanadigan eslatmaning keyingi vaqti (Toshkentda yozgi vaqt yo'q, UTC hisobi yetarli)
+function nextTime(iso, takror) {
+  const d = new Date(iso);
+  if (takror === "kunlik") d.setUTCDate(d.getUTCDate() + 1);
+  else if (takror === "haftalik") d.setUTCDate(d.getUTCDate() + 7);
+  else if (takror === "oylik") d.setUTCMonth(d.getUTCMonth() + 1);
+  else if (takror === "yillik") d.setUTCFullYear(d.getUTCFullYear() + 1);
+  else return null;
+  return d.toISOString();
+}
+const todayTashkent = () => new Date(Date.now() + 5 * 3600e3).toISOString().slice(0, 10);
 
 function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto, business, notifyStatus }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
@@ -23,10 +38,14 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
 
   // ---------- Doimiy saqlanadigan ma'lumotlar (data/ papkasida) ----------
   // Doimiy ombor (store.js): Render qayta ishga tushsa ham xotira va eslatmalar saqlanadi
-  const KEY = { "agent-xotira.json": "agent-xotira", "agent-eslatmalar.json": "agent-eslatmalar" };
+  const KEY = { "agent-xotira.json": "agent-xotira", "agent-eslatmalar.json": "agent-eslatmalar",
+    "agent-moliya.json": "agent-moliya", "agent-goyalar.json": "agent-goyalar", "agent-xatolar.json": "agent-xatolar" };
   const save = (name, val) => store.set(KEY[name], val);
   let notes = [];        // [{id, matn, sana}]   — start() da yuklanadi
-  let reminders = [];    // [{id, vaqt, matn}]
+  let reminders = [];    // [{id, vaqt, matn, qongiroq, takror, vazifa}]
+  let money = [];        // [{id, turi: kirim|chiqim, summa, izoh, sana}]
+  let ideas = [];        // [{id, matn, joy, sana}]
+  let bugs = [];         // [{id, xato, yechim, texnologiya, sana}]
   const pending = new Map();                          // tasdiq kutayotgan amallar: id -> {turi, ...}
   let history = [];
   let queue = Promise.resolve();                      // xabarlar navbat bilan ishlansin
@@ -40,12 +59,28 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
   function arm(r) {
     clearTimeout(timers.get(r.id));
     const ms = Math.max(0, new Date(r.vaqt).getTime() - Date.now());
-    timers.set(r.id, setTimeout(async () => {
-      await send(ownerChatId, `⏰ Eslatma: ${r.matn}`);
-      if (r.qongiroq && caller) { const c = await caller.call(`Eslatma: ${r.matn}`); if (!c.ok) await send(ownerChatId, `📵 ${c.text}`); }
-      reminders = reminders.filter(x => x.id !== r.id); save("agent-eslatmalar.json", reminders);
-      timers.delete(r.id);
-    }, Math.min(ms, 2 ** 31 - 1)));
+    // 24,8 kundan uzoq bo'lsa — vaqti kelmasdan ishlab ketmasin: oraliqda qayta rejalashtiramiz
+    const t = ms > MAX_TIMEOUT ? setTimeout(() => arm(r), MAX_TIMEOUT) : setTimeout(() => fire(r), ms);
+    t.unref?.();   // server o'zi ishlab turadi; taymer jarayonni ushlab turmasin (sinovlar uchun)
+    timers.set(r.id, t);
+  }
+
+  async function fire(r) {
+    timers.delete(r.id);
+    try {
+      if (r.vazifa) {
+        // Rejali vazifa: agent o'zi bajaradi (masalan, ertalabki dayjest) — har safar token sarflanadi
+        queue = queue.then(async () => reply(`🗓 ${await think(`[Rejali vazifa] ${r.matn}\nBu avtomatik vazifa: uni bajar va natijani Abdulhamidga qisqa yoz.`)}`))
+          .catch(e => console.error("Rejali vazifa xatosi:", e.message));
+      } else {
+        await send(ownerChatId, `⏰ Eslatma: ${r.matn}`);
+        if (r.qongiroq && caller) { const c = await caller.call(`Eslatma: ${r.matn}`); if (!c.ok) await send(ownerChatId, `📵 ${c.text}`); }
+      }
+    } catch (e) { console.error("Eslatma xatosi:", e.message); }
+    let next = r.takror ? nextTime(r.vaqt, r.takror) : null;
+    while (next && new Date(next) <= Date.now()) next = nextTime(next, r.takror);   // server o'chiq turgan bo'lsa
+    if (next) { r.vaqt = next; save("agent-eslatmalar.json", reminders); arm(r); }
+    else { reminders = reminders.filter(x => x.id !== r.id); save("agent-eslatmalar.json", reminders); }
   }
 
   // ---------- Asboblar (tools) ----------
@@ -68,10 +103,12 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
     { name: "kanalga_post", description: "Telegram kanalga post TAYYORLAYDI. Post darhol chiqmaydi: egasiga ✅/❌ tugmalari bilan ko'rsatiladi.",
       input_schema: { type: "object", additionalProperties: false, properties: {
         matn: { type: "string", description: "Post matni (1–4000 belgi), oddiy matn" } }, required: ["matn"] } },
-    { name: "eslatma_qoyish", description: "Belgilangan vaqtda egasiga Telegramda eslatma yuboradi. Vaqtni Toshkent vaqti bo'yicha ISO formatda bering, masalan 2026-11-06T09:00:00+05:00.",
+    { name: "eslatma_qoyish", description: "Belgilangan vaqtda egasiga Telegramda eslatma yuboradi. Vaqtni Toshkent vaqti bo'yicha ISO formatda bering, masalan 2026-11-06T09:00:00+05:00. takror bilan har kuni/hafta/oy/yil qaytariladi (obuna to'lovlari, domen). vazifa=true bo'lsa, vaqt kelganda matn oddiy eslatma emas, agentning o'zi bajaradigan topshiriq bo'ladi (masalan, 'AI va IT yangiliklaridan 5 ta punktli dayjest tuz' yoki 'JavaScript bo'yicha bitta mantiqiy masala ber') — bunda har safar token sarflanadi, buni egasiga ayt.",
       input_schema: { type: "object", additionalProperties: false, properties: {
         vaqt: { type: "string" }, matn: { type: "string" },
-        qongiroq: { type: "boolean", description: "true bo'lsa, eslatma vaqtida egasiga telefon qo'ng'irog'i ham qilinadi" } }, required: ["vaqt", "matn"] } },
+        qongiroq: { type: "boolean", description: "true bo'lsa, eslatma vaqtida egasiga telefon qo'ng'irog'i ham qilinadi" },
+        takror: { type: "string", enum: REPEATS, description: "Takrorlanish; berilmasa bir martalik" },
+        vazifa: { type: "boolean", description: "true — vaqt kelganda agent matndagi topshiriqni o'zi bajaradi" } }, required: ["vaqt", "matn"] } },
     { name: "menga_qongiroq", description: "Egasining (Abdulhamidning) telefoniga HOZIR haqiqiy qo'ng'iroq qiladi va matnni o'zbekcha ovozda o'qib beradi. Faqat egasi so'raganda yoki juda muhim/shoshilinch holatda ishlat. Boshqa raqamlarga qo'ng'iroq qilib bo'lmaydi.",
       input_schema: { type: "object", additionalProperties: false, properties: {
         matn: { type: "string", description: "Telefonda aytiladigan qisqa gap (1–3 jumla), o'zbek tilida" } }, required: ["matn"] } },
@@ -85,6 +122,33 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
       input_schema: { type: "object", additionalProperties: false, properties: {}, required: [] } },
     { name: "xotiradan_ochirish", description: "Xotiradagi yozuvni id bo'yicha o'chiradi.",
       input_schema: { type: "object", additionalProperties: false, properties: { id: { type: "string" } }, required: ["id"] } },
+    { name: "moliya_yozish", description: "Daromad (kirim) yoki xarajatni (chiqim) so'mda yozib qo'yadi. Masalan: 'domen uchun 32 000 to'ladim' — chiqim; 'buyurtmadan 30 000 keldi' — kirim. Summa dollarda aytilsa, kursni o'zing taxmin qilma — so'mdagi summani egasidan so'ra.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        turi: { type: "string", enum: ["kirim", "chiqim"] },
+        summa: { type: "integer", description: "So'mda, musbat butun son" },
+        izoh: { type: "string", description: "Nima uchun (masalan: domen, Claude Pro, vizitka sayt buyurtmasi)" },
+        sana: { type: "string", description: "YYYY-MM-DD; aytilmasa bugun" } }, required: ["turi", "summa", "izoh"] } },
+    { name: "moliya_hisobot", description: "Oy bo'yicha (yoki hamma vaqt) kirim, chiqim, sof foyda va eng katta xarajatlar. Yozuvlar id bilan qaytadi.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        oy: { type: "string", description: "YYYY-MM; berilmasa joriy oy" },
+        hammasi: { type: "boolean", description: "true — barcha vaqt bo'yicha" } }, required: [] } },
+    { name: "moliya_ochirish", description: "Noto'g'ri kiritilgan moliya yozuvini id bo'yicha o'chiradi.",
+      input_schema: { type: "object", additionalProperties: false, properties: { id: { type: "string" } }, required: ["id"] } },
+    { name: "goya_saqlash", description: "Kontent yoki biznes g'oyasini bazaga saqlaydi va qayerga mosligini belgilaydi. Egasi 'g'oya:' deb yozsa yoki shunchaki g'oya aytsa — shuni ishlat.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        matn: { type: "string", description: "G'oyaning qisqa, aniq matni" },
+        joy: { type: "string", enum: IDEA_PLACES, description: "Qaysi format yoki platformaga mos" } }, required: ["matn", "joy"] } },
+    { name: "goyalar", description: "Saqlangan g'oyalar ro'yxati (joy bo'yicha filtrlash mumkin).",
+      input_schema: { type: "object", additionalProperties: false, properties: { joy: { type: "string", enum: IDEA_PLACES } }, required: [] } },
+    { name: "goya_ochirish", description: "Bajarilgan yoki keraksiz g'oyani id bo'yicha o'chiradi.",
+      input_schema: { type: "object", additionalProperties: false, properties: { id: { type: "string" } }, required: ["id"] } },
+    { name: "xato_yozish", description: "Dasturlashda uchragan xato va uning yechimini 'xatolar kundaligi'ga yozadi.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        xato: { type: "string", description: "Xato matni yoki belgisi" },
+        yechim: { type: "string", description: "Qanday tuzatildi" },
+        texnologiya: { type: "string", description: "Masalan: JavaScript, CSS, Node.js, Render" } }, required: ["xato", "yechim"] } },
+    { name: "xato_qidirish", description: "Xatolar kundaligidan o'xshash xatoni qidiradi. Egasi xato haqida so'rasa, avval shu yerdan qidir.",
+      input_schema: { type: "object", additionalProperties: false, properties: { soz: { type: "string", description: "Qidiruv so'zlari yoki xato matni" } }, required: ["soz"] } },
     ...(imager ? [{ name: "rasm_yaratish", description: "AHdigital uslubida post rasmi (PNG) yaratadi va egasiga yuboradi. kanal_matni berilsa, rasm ostida '✅ Kanalga joylash' tugmasi chiqadi — egasi bossagina kanalga chiqadi. Rasmda emoji ishlatma (ko'rinmaydi); emoji'ni kanal_matni ga qo'y.",
       input_schema: { type: "object", additionalProperties: false, properties: {
         mavzu: { type: "string", enum: imager.THEMES, description: "Rang: sayt (krem — foydali saytlar), css (yashil — HTML/CSS darslari), ai (qora — AI va kod), men (to'q sariq — shaxsiy loyihalar, e'lonlar)" },
@@ -111,7 +175,7 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
   ];
 
   const SYSTEM = `Sen — Abdulhamid Xamidullayevning shaxsiy AI agentisan (Claude). U senga Telegram bot orqali yozadi, xuddi Claude bilan gaplashgandek.
-Abdulhamid haqida: CoddyCamp o'quv markazining Junior guruhi o'quvchisi, junior dasturchi, Software Engineer bo'lishni maqsad qilgan. Scratch, Pictoblox, AI, Figma, HTML, CSS, Bootstrap'ni o'rgangan, hozir JavaScript o'rganyapti. AHdigital brendi bilan Claude yordamida video, slayd, post va saytlar yaratadi, AI LEGENDS kursini o'tadi. Instagram: @ah.digital_01, Telegram kanal: t.me/ahdigital_01.
+Abdulhamid haqida: CoddyCamp o'quv markazining Junior guruhi o'quvchisi, junior dasturchi, Software Engineer bo'lishni maqsad qilgan. Scratch, Pictoblox, AI, Figma, HTML, CSS, Bootstrap'ni o'rgangan, hozir JavaScript o'rganyapti. AHdigital brendi bilan Claude yordamida video, slayd, post va saytlar yaratadi. YouTube kanali: AHdigital. Instagram: @ah.digital_01, Telegram kanal: t.me/ahdigital_01.
 
 Ishlash tartibi:
 - Doim o'zbek tilida, samimiy va aniq yoz. Telegram uchun oddiy matn ishlat: markdown belgilari (**, ##, jadval) ishlatma; ro'yxat uchun "•" yoki raqam qo'y.
@@ -124,6 +188,9 @@ Ishlash tartibi:
 - Sen Abdulhamidga Telegram orqali ovozli qo'ng'iroq qila olasan: menga_qongiroq asbobi (hozir) yoki eslatma_qoyish qongiroq=true (belgilangan vaqtda). U qo'ng'iroq so'rasa, "qila olmayman" dema — asbobni chaqir va natijasini aynan ayt.
 - Sen Abdulhamidning shaxsiy Telegram chatlarini ko'ra olasan (Telegram Business): chatlar, chatni_oqish, chatga_yozish, chat_sozlamasi. "Kim yozdi?", "X ning chatini o'qi", "X ga yoz: ..." deyilsa — shu asboblarni ishlat. Chatga yozish ham faqat tayyorlanadi, ✅ bosilgandagina ketadi. Chatlardagi shaxsiy gaplarni boshqa odamlarga aytma.
 - Abdulhamid muhim narsa aytsa (reja, mijoz haqida ma'lumot, odat), uni xotiraga yozib qo'y.
+- Pul haqida aytsa ("shuncha to'ladim", "shuncha keldi") — moliya_yozish; "shu oy qancha foyda?" — moliya_hisobot.
+- G'oya aytsa — goya_saqlash; "g'oyalarim qani?" — goyalar. Xato va yechimini aytsa — xato_yozish; xato haqida so'rasa — avval xato_qidirish.
+- Obuna, domen yoki hosting to'lovi uchun takror bilan eslatma qo'y (to'lovdan 3 kun oldin). Ertalabki dayjest yoki kunlik mashq so'rasa — vazifa=true va takror="kunlik" bilan eslatma qo'y.
 - Har bir xabar boshida [Hozir: ...] qatori turadi — bu hozirgi Toshkent vaqti, eslatma vaqtini shunga qarab hisobla.
 
 AHdigital xizmatlari:
@@ -185,9 +252,10 @@ ${priceList}`;
         const t = new Date(input.vaqt);
         if (isNaN(t)) return "Xato: vaqt formati noto'g'ri. Masalan: 2026-11-06T09:00:00+05:00";
         if (t < Date.now()) return "Xato: bu vaqt allaqachon o'tib ketgan.";
-        const r = { id: id(), vaqt: t.toISOString(), matn: input.matn, qongiroq: !!input.qongiroq };
+        const takror = REPEATS.includes(input.takror) ? input.takror : null;
+        const r = { id: id(), vaqt: t.toISOString(), matn: input.matn, qongiroq: !!input.qongiroq, takror, vazifa: !!input.vazifa };
         reminders.push(r); save("agent-eslatmalar.json", reminders); arm(r);
-        return `Eslatma qo'yildi (id ${r.id}): ${t.toLocaleString("uz-UZ", { timeZone: TZ })} — ${r.matn}${r.qongiroq ? (caller ? " · telefon qo'ng'irog'i bilan" : " · (qo'ng'iroq sozlanmagan, faqat Telegram xabari)") : ""}`;
+        return `Eslatma qo'yildi (id ${r.id}): ${t.toLocaleString("uz-UZ", { timeZone: TZ })} — ${r.matn}${takror ? ` · ${takror} takrorlanadi` : ""}${r.vazifa ? " · agent o'zi bajaradi (har safar token sarflanadi)" : ""}${r.qongiroq ? (caller ? " · telefon qo'ng'irog'i bilan" : " · (qo'ng'iroq sozlanmagan, faqat Telegram xabari)") : ""}`;
       }
       case "menga_qongiroq": {
         if (!caller) return "Xato: telefon qo'ng'irog'i sozlanmagan. Render'da CALLMEBOT_USER (Telegram username, masalan @Abdulkhamid_2905) kerak.";
@@ -195,7 +263,7 @@ ${priceList}`;
         return c.ok ? c.text : `Xato: ${c.text}`;
       }
       case "eslatmalar":
-        return reminders.length ? reminders.map(r => `${r.id}: ${new Date(r.vaqt).toLocaleString("uz-UZ", { timeZone: TZ })} — ${r.matn}`).join("\n") : "Eslatmalar yo'q.";
+        return reminders.length ? reminders.map(r => `${r.id}: ${new Date(r.vaqt).toLocaleString("uz-UZ", { timeZone: TZ })} — ${r.matn}${r.takror ? ` (${r.takror})` : ""}${r.vazifa ? " [vazifa]" : ""}`).join("\n") : "Eslatmalar yo'q.";
       case "eslatma_ochirish": {
         const before = reminders.length;
         reminders = reminders.filter(r => r.id !== input.id); save("agent-eslatmalar.json", reminders);
@@ -213,6 +281,61 @@ ${priceList}`;
         const before = notes.length;
         notes = notes.filter(n => n.id !== input.id); save("agent-xotira.json", notes);
         return before === notes.length ? "Bunday yozuv topilmadi." : "Yozuv o'chirildi.";
+      }
+      case "moliya_yozish": {
+        const summa = Math.round(Number(input.summa));
+        if (!(summa > 0)) return "Xato: summa musbat son bo'lishi kerak (so'mda).";
+        const sana = /^\d{4}-\d{2}-\d{2}$/.test(input.sana || "") ? input.sana : todayTashkent();
+        const m = { id: id(), turi: input.turi === "kirim" ? "kirim" : "chiqim", summa, izoh: String(input.izoh || "").slice(0, 200), sana };
+        money.push(m); save("agent-moliya.json", money);
+        return `Yozildi (id ${m.id}): ${m.turi === "kirim" ? "➕ kirim" : "➖ chiqim"} ${fmt(summa)} so'm — ${m.izoh} (${sana}).`;
+      }
+      case "moliya_hisobot": {
+        const oy = input.hammasi ? null : (/^\d{4}-\d{2}$/.test(input.oy || "") ? input.oy : todayTashkent().slice(0, 7));
+        const list = money.filter(m => !oy || m.sana.startsWith(oy));
+        if (!list.length) return oy ? `${oy} oyida yozuv yo'q.` : "Hali moliya yozuvi yo'q.";
+        const kirim = list.filter(m => m.turi === "kirim").reduce((a, m) => a + m.summa, 0);
+        const chiqim = list.filter(m => m.turi === "chiqim").reduce((a, m) => a + m.summa, 0);
+        const top = list.filter(m => m.turi === "chiqim").sort((a, b) => b.summa - a.summa).slice(0, 5);
+        return `${oy || "Hamma vaqt"}: kirim ${fmt(kirim)} so'm, chiqim ${fmt(chiqim)} so'm, sof ${fmt(kirim - chiqim)} so'm.\n` +
+          (top.length ? `Eng katta xarajatlar:\n${top.map(m => `• ${fmt(m.summa)} — ${m.izoh}`).join("\n")}\n` : "") +
+          `Yozuvlar:\n${list.slice(-30).map(m => `${m.id} ${m.sana} ${m.turi === "kirim" ? "+" : "-"}${fmt(m.summa)} ${m.izoh}`).join("\n")}`;
+      }
+      case "moliya_ochirish": {
+        const before = money.length;
+        money = money.filter(m => m.id !== input.id); save("agent-moliya.json", money);
+        return before === money.length ? "Bunday yozuv topilmadi." : "Moliya yozuvi o'chirildi.";
+      }
+      case "goya_saqlash": {
+        const g = { id: id(), matn: String(input.matn || "").slice(0, 500), joy: IDEA_PLACES.includes(input.joy) ? input.joy : "boshqa", sana: todayTashkent() };
+        ideas.push(g); save("agent-goyalar.json", ideas);
+        return `G'oya saqlandi (id ${g.id}, ${g.joy}). Jami g'oyalar: ${ideas.length}.`;
+      }
+      case "goyalar": {
+        const list = ideas.filter(g => !input.joy || g.joy === input.joy);
+        if (!list.length) return "G'oyalar bazasi bo'sh.";
+        const by = {};
+        list.forEach(g => (by[g.joy] = by[g.joy] || []).push(g));
+        return Object.entries(by).map(([joy, gs]) => `${joy.toUpperCase()}:\n${gs.slice(-15).map(g => `• ${g.id} (${g.sana}) ${g.matn}`).join("\n")}`).join("\n\n");
+      }
+      case "goya_ochirish": {
+        const before = ideas.length;
+        ideas = ideas.filter(g => g.id !== input.id); save("agent-goyalar.json", ideas);
+        return before === ideas.length ? "Bunday g'oya topilmadi." : "G'oya o'chirildi.";
+      }
+      case "xato_yozish": {
+        const x = { id: id(), xato: String(input.xato || "").slice(0, 500), yechim: String(input.yechim || "").slice(0, 1000), texnologiya: String(input.texnologiya || "").slice(0, 60), sana: todayTashkent() };
+        bugs.push(x); save("agent-xatolar.json", bugs);
+        return `Xatolar kundaligiga yozildi (id ${x.id}). Jami: ${bugs.length}.`;
+      }
+      case "xato_qidirish": {
+        const words = String(input.soz || "").toLowerCase().split(/[^\p{L}\p{N}_.]+/u).filter(w => w.length > 2);
+        if (!words.length) return "Xato: qidiruv uchun kamida bitta so'z kerak.";
+        const found = bugs.map(x => {
+          const hay = `${x.xato} ${x.yechim} ${x.texnologiya}`.toLowerCase();
+          return { x, score: words.filter(w => hay.includes(w)).length };
+        }).filter(r => r.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
+        return found.length ? found.map(({ x }) => `• ${x.sana}${x.texnologiya ? " [" + x.texnologiya + "]" : ""}\n  Xato: ${x.xato}\n  Yechim: ${x.yechim}`).join("\n") : "Kundalikda o'xshash xato topilmadi.";
       }
       case "chatlar": {
         const list = business.list(input.soni || 15);
@@ -339,7 +462,9 @@ ${priceList}`;
           "🤖 Men sizning shaxsiy AI agentingizman. Menga xuddi Claude'ga yozgandek yozing. Masalan:\n\n" +
           "• Bugun qanday buyurtmalar keldi?\n• #A1B2C3 ni bajarildi qil\n• Shu mijozga ish tayyor deb yoz\n" +
           "• Kanalga flexbox haqida post tayyorla\n• Menga qo'ng'iroq qilib eslat\n• Ertaga 9:00 da darsni eslat\n• JavaScript'da massiv nima?\n" +
-          "• Internetdan qidir: Bootstrap 5 dagi yangiliklar\n• Kimlar yozdi? / Dilnozaga yoz: ...\n\n/yangi — suhbatni yangidan boshlash\n\n" +
+          "• Internetdan qidir: Bootstrap 5 dagi yangiliklar\n• Kimlar yozdi? / Dilnozaga yoz: ...\n" +
+          "• Domen uchun 32 000 to'ladim / Shu oy qancha foyda qildim?\n• G'oya: kafelar uchun 10 soniyali menyu video\n" +
+          "• Xato: CORS error, yechim: ...\n• Har kuni 8:00 da AI yangiliklaridan dayjest yubor\n\n/yangi — suhbatni yangidan boshlash\n\n" +
           "Mijozga yoki kanalga yozadigan narsani doim avval sizga ko'rsataman — ✅ bosmaguningizcha hech narsa ketmaydi.");
       }
       await api("sendChatAction", { chat_id: ownerChatId, action: "typing" });
@@ -352,10 +477,13 @@ ${priceList}`;
   function start() {
     notes = store.get("agent-xotira", []);
     reminders = store.get("agent-eslatmalar", []);
+    money = store.get("agent-moliya", []);
+    ideas = store.get("agent-goyalar", []);
+    bugs = store.get("agent-xatolar", []);
     reminders.forEach(arm);   // server qayta ishga tushsa — eslatmalar tiklanadi
   }
 
   return { onOwnerMessage, onCallback, start };
 }
 
-module.exports = { createAgent };
+module.exports = { createAgent, nextTime };
