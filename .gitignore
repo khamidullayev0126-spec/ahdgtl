@@ -2,6 +2,7 @@
 .env.*
 node_modules/
 data/
-.DS_Storekontent/video/reklama-c/ref/
+.DS_Store
+kontent/video/reklama-c/ref/
 kontent/video/reklama-c/manba/kadrlar.mp4
 kontent/video/reklama-c/ahdigital-reklama-c-musiqali.mp4
