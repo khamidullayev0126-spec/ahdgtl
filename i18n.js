@@ -25,6 +25,7 @@
     "Jarayon": ["Процесс", "Process"],
     "Men haqimda": ["Обо мне", "About me"],
     "AHdigital jamoasi": ["Команда AHdigital", "AHdigital team"],
+    "🎬 Men haqimda video — 5 daqiqa": ["🎬 Видео обо мне — 5 минут (на узбекском)", "🎬 Video about me — 5 minutes (in Uzbek)"],
     "Google sharhlar": ["Отзывы в Google", "Google reviews"],
     "⭐ Fikr qoldirish": ["⭐ Оставить отзыв", "⭐ Leave a review"],
     "Asoschi": ["Основатель", "Founder"],
