@@ -1,0 +1,507 @@
+1
+00:00:00,380 --> 00:00:02,190
+Salom, men Abdulhamid.
+
+2
+00:00:02,620 --> 00:00:05,240
+Bir necha oy oldin men faqat Scratch'da
+
+3
+00:00:05,260 --> 00:00:06,290
+o'yin yasardim.
+
+4
+00:00:06,460 --> 00:00:09,000
+Bugun esa o'z saytim, Telegram botim va
+
+5
+00:00:09,020 --> 00:00:10,330
+kichik biznesim bor.
+
+6
+00:00:10,360 --> 00:00:11,490
+AHdigital.
+
+7
+00:00:12,160 --> 00:00:15,010
+Bu videoda qanday boshlaganimni va bu
+
+8
+00:00:15,080 --> 00:00:17,370
+kanalda nima bo'lishini aytib beraman.
+
+9
+00:00:18,860 --> 00:00:21,980
+Hammasi bir reklamadan boshlangan edi.
+
+10
+00:00:22,000 --> 00:00:24,410
+Internetda CoddyCamp o'quv markazining
+
+11
+00:00:24,540 --> 00:00:25,860
+reklamasini ko'rdim.
+
+12
+00:00:25,880 --> 00:00:27,620
+Boshida to'g'risini aytsam, e'tibor
+
+13
+00:00:27,640 --> 00:00:30,580
+bermadim, chunki mendan men bunday
+
+14
+00:00:30,600 --> 00:00:32,540
+qilishim, men bunday dasturchi bo'lish
+
+15
+00:00:32,560 --> 00:00:35,650
+unaqadashi xayolimda ham yo'q edi.
+
+16
+00:00:36,260 --> 00:00:37,060
+Keyin esa
+
+17
+00:00:37,920 --> 00:00:40,000
+CoddyCamp o'quv markazining reklamasi juda
+
+18
+00:00:40,020 --> 00:00:40,820
+ko'p
+
+19
+00:00:40,860 --> 00:00:42,090
+marta chiqaverdi.
+
+20
+00:00:43,300 --> 00:00:45,260
+Men esa ota-onamga aytdim.
+
+21
+00:00:45,280 --> 00:00:47,370
+Ular meni CoddyCamp'ga yozdirishdi.
+
+22
+00:00:47,500 --> 00:00:49,830
+O'sha paytlari bir orzim bor edi.
+
+23
+00:00:50,000 --> 00:00:52,730
+U ham bo'lsa, qaniydi tezroq
+
+24
+00:00:53,200 --> 00:00:55,570
+kod yozib o'z saytimni qilsam edi.
+
+25
+00:00:55,960 --> 00:00:58,370
+Mana shunday qilib hikoya boshlandi.
+
+26
+00:00:59,360 --> 00:01:02,220
+Hozir CoddyCamp'da CoddyCamp'ning junior
+
+27
+00:01:02,240 --> 00:01:03,370
+guruhida o'qiyman.
+
+28
+00:01:03,540 --> 00:01:05,780
+Scratch va PictoBlox'dan boshladim.
+
+29
+00:01:05,800 --> 00:01:06,930
+Keyin AI,
+
+30
+00:01:08,860 --> 00:01:12,960
+Figma, HTML, CSS'ni va orada Bootstrap'ni
+
+31
+00:01:12,980 --> 00:01:13,870
+ham o'rgandim.
+
+32
+00:01:13,900 --> 00:01:16,170
+Hozir esa JavaScript'ni o'rganayapman.
+
+33
+00:01:17,360 --> 00:01:20,320
+Eng men uchun eng qiziq kun CoddyCamp'da
+
+34
+00:01:20,340 --> 00:01:23,000
+DEMODAY bo'ladi, chunki u yerda o'z
+
+35
+00:01:23,020 --> 00:01:25,530
+saytimni, o'z proyektlarimni ko'rsataman.
+
+36
+00:01:25,760 --> 00:01:29,010
+AI bot, Telegram tizimimni ko'rsatdim.
+
+37
+00:01:29,160 --> 00:01:31,680
+Juda hayajonlangan edim, lekin yaxshi
+
+38
+00:01:31,700 --> 00:01:32,500
+o'tdi.
+
+39
+00:01:34,600 --> 00:01:37,960
+Keyin o'yladim, o'rganganlarimni haqiqiy
+
+40
+00:01:37,980 --> 00:01:39,690
+ishga aylantirsam-chi deb.
+
+41
+00:01:39,880 --> 00:01:43,270
+Shunday qilib AHdigital paydo bo'ldi.
+
+42
+00:01:43,460 --> 00:01:46,740
+To'g'risini aytsam, o'zi boshida bunday
+
+43
+00:01:46,760 --> 00:01:48,390
+emasdi. O'sha
+
+44
+00:01:48,880 --> 00:01:50,070
+nima desam bo'ladi?
+
+45
+00:01:51,020 --> 00:01:52,230
+Saytni boshida
+
+46
+00:01:52,900 --> 00:01:55,520
+yasaganimda, ya'ni CSS'ni ko'rganimda
+
+47
+00:01:55,540 --> 00:01:59,940
+uning nomi juda ham Abdulhamid Digital
+
+48
+00:01:59,960 --> 00:02:00,760
+edi.
+
+49
+00:02:01,000 --> 00:02:02,670
+U sayt boshqacharoq edi.
+
+50
+00:02:03,120 --> 00:02:04,730
+Mana ko'rsangiz bo'ladi.
+
+51
+00:02:06,340 --> 00:02:07,120
+Xullas, shunaqa.
+
+52
+00:02:07,140 --> 00:02:09,770
+U yerda atigi ikkitagina xizmat bor edi.
+
+53
+00:02:09,840 --> 00:02:11,670
+U ham bo'lsa, hozir esimda yo'q.
+
+54
+00:02:12,980 --> 00:02:15,400
+Shular bordi. U oddiygina sayt edi.
+
+55
+00:02:15,420 --> 00:02:17,290
+Shunchaki ko'rinishi bor edi.
+
+56
+00:02:18,140 --> 00:02:20,290
+Ya'ni HTML, CSS bo'ldi.
+
+57
+00:02:21,660 --> 00:02:23,880
+Bundan keyin xullas men sun'iy intellekt
+
+58
+00:02:23,900 --> 00:02:25,600
+bilan sun'iy intellekt bilan ishlashni
+
+59
+00:02:25,620 --> 00:02:28,480
+yaxshi o'rganib oldim-da, men hozir sun'iy
+
+60
+00:02:28,500 --> 00:02:31,070
+intellektni yaxshi o'rganayapman va o'zim
+
+61
+00:02:31,900 --> 00:02:33,340
+Claude sun'iy intellekt yordamida
+
+62
+00:02:33,360 --> 00:02:36,750
+bizneslar uchun sayt, video post yasayman.
+
+63
+00:02:38,080 --> 00:02:40,660
+Saytimda buyurtma berish, admin panel,
+
+64
+00:02:40,680 --> 00:02:42,930
+Telegram bot, uch xil til hammasini
+
+65
+00:02:43,740 --> 00:02:44,540
+o'z
+
+66
+00:02:44,580 --> 00:02:46,960
+hammasini AI bilan birga xatolar qilib,
+
+67
+00:02:46,980 --> 00:02:47,780
+albatta,
+
+68
+00:02:48,480 --> 00:02:50,590
+bir narsani orada tushuntirib bersam,
+
+69
+00:02:51,840 --> 00:02:55,020
+o'ylashingiz mumkin bu bola faqat AI bilan
+
+70
+00:02:55,040 --> 00:02:56,230
+qilar ekan-ku deb.
+
+71
+00:02:56,360 --> 00:02:58,170
+Yo'q, men faqat AI bilan emas.
+
+72
+00:02:58,700 --> 00:03:01,300
+To'g'ri AI kod yoza beradi, lekin men u
+
+73
+00:03:01,320 --> 00:03:02,450
+kodni tushunaman.
+
+74
+00:03:02,600 --> 00:03:04,530
+Ya'ni dasturlashda ham o'sha foyda.
+
+75
+00:03:04,660 --> 00:03:07,540
+Hozir deyarli o'sha, masalan, HTML, CSS
+
+76
+00:03:07,560 --> 00:03:10,400
+hammasini noldan yoza noldan kodni
+
+77
+00:03:10,420 --> 00:03:12,620
+yozadigan deyarli odamlar kamaygan.
+
+78
+00:03:12,640 --> 00:03:14,390
+Deyarli yo'q desa ham bo'ladi.
+
+79
+00:03:15,420 --> 00:03:16,590
+Ya'ni eng muhimi,
+
+80
+00:03:17,120 --> 00:03:19,590
+o'sha AI yoza bergan kodni tushunishdir.
+
+81
+00:03:19,840 --> 00:03:21,760
+Men o'sha kodlarni tushunganim uchun ham
+
+82
+00:03:21,780 --> 00:03:22,640
+AI'ga yozdiraman.
+
+83
+00:03:22,660 --> 00:03:23,570
+Bo'lmasa bu,
+
+84
+00:03:24,660 --> 00:03:27,800
+ya'ni bu AHdigital bo'lmasdi ham.
+
+85
+00:03:27,820 --> 00:03:30,700
+Balki bo'lar, shunchaki ommaga chiqmas
+
+86
+00:03:30,720 --> 00:03:31,520
+edi.
+
+87
+00:03:33,200 --> 00:03:34,900
+Hammasini qildim.
+
+88
+00:03:34,920 --> 00:03:37,940
+Qayta va u yerda xatolar bo'ldi.
+
+89
+00:03:37,960 --> 00:03:40,860
+Juda ko'p xatolar, ya'ni orada ko'p
+
+90
+00:03:40,880 --> 00:03:43,740
+muammolarga duch keldim va bu ishni
+
+91
+00:03:43,760 --> 00:03:44,870
+yolg'iz qilmadim.
+
+92
+00:03:45,080 --> 00:03:47,120
+Afruz o'rtog'im bilan do'stim bilan
+
+93
+00:03:47,140 --> 00:03:47,940
+qildim.
+
+94
+00:03:48,520 --> 00:03:50,210
+U hozir yo'q. To'g'ri,
+
+95
+00:03:50,960 --> 00:03:52,310
+o'z ishlari bordir.
+
+96
+00:03:52,900 --> 00:03:55,650
+Uni keyingi videoda tanishtirib o'taman.
+
+97
+00:03:56,320 --> 00:03:57,930
+Bu kanalda nima bo'ladi?
+
+98
+00:03:58,260 --> 00:03:59,950
+Bu kanalda uchta narsa
+
+99
+00:04:00,400 --> 00:04:01,390
+aniq bo'ladi.
+
+100
+00:04:02,060 --> 00:04:04,960
+AI bilan saytlar, bot va Telegram qanday
+
+101
+00:04:04,980 --> 00:04:06,760
+yasashni o'zbek tilida oddiy qilib
+
+102
+00:04:06,780 --> 00:04:09,540
+ko'rsataman. Ikkinchisi, dasturlashni
+
+103
+00:04:09,560 --> 00:04:12,180
+qanday o'rganayotganimni xatolar bilan
+
+104
+00:04:12,200 --> 00:04:13,000
+birga
+
+105
+00:04:13,780 --> 00:04:16,080
+qanday qilayotganimni xatolaringizni
+
+106
+00:04:16,100 --> 00:04:17,829
+tushuntirib o'tkazib beraman.
+
+107
+00:04:18,220 --> 00:04:19,170
+Uchinchisi,
+
+108
+00:04:21,300 --> 00:04:23,720
+qisqa shorts videolar, foydali maslahatlar
+
+109
+00:04:23,740 --> 00:04:26,130
+va tayyor ishlar bo'ladi.
+
+110
+00:04:27,480 --> 00:04:30,700
+Mening maqsadim software engineer bo'lish.
+
+111
+00:04:30,720 --> 00:04:32,850
+Bu kanal shu yo'lning kundaligi.
+
+112
+00:04:33,620 --> 00:04:35,610
+Yana bunga o'xshagan kundaliklar bor.
+
+113
+00:04:35,680 --> 00:04:37,330
+Bu Instagramimda,
+
+114
+00:04:37,980 --> 00:04:40,200
+Instagramda, Telegramda meni YouTube'da va
+
+115
+00:04:40,220 --> 00:04:41,330
+saytim ham bor.
+
+116
+00:04:42,560 --> 00:04:45,910
+Instagram va Telegram kanallarning linkini
+
+117
+00:04:46,500 --> 00:04:48,900
+YouTube kanalimni biosidan olasiz yoki
+
+118
+00:04:48,920 --> 00:04:52,150
+bo'lmasa shu videoni tagida qoldirganman.
+
+119
+00:04:53,080 --> 00:04:55,820
+Agar siz ham AI va dasturlash qiziq
+
+120
+00:04:55,840 --> 00:04:57,630
+bo'lsa, obuna bo'ling.
+
+121
+00:04:57,680 --> 00:04:58,640
+Qo'ng'iroqchani bosing.
+
+122
+00:04:58,660 --> 00:05:01,080
+Izohda keyingi video nima haqida
+
+123
+00:05:01,100 --> 00:05:04,380
+bo'lishini, nima haqida bo'lsin sayt
+
+124
+00:05:04,400 --> 00:05:07,500
+yasashnimi, Telegram bot yoki AI video
+
+125
+00:05:07,520 --> 00:05:09,720
+qilishnimi yoki boshqa narsa o'zingiz
+
+126
+00:05:09,740 --> 00:05:11,130
+xohlaganingizni yozing.
+
+127
+00:05:11,340 --> 00:05:12,290
+Ko'rishguncha!
