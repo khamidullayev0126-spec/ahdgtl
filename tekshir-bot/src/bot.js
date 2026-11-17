@@ -1,6 +1,7 @@
 // Tekshir — firibgarlikka qarshi Telegram bot. Asosiy fayl.
 // 1-bosqich: /start, til tanlash, /til, /yordam. 6-bosqich: baza, /stats, /export. 7-bosqich: shikoyatlar, raqamlar.
-// 8-bosqich: guruh rejimi (/tekshir, /sozlama, avtomatik ogohlantirish).
+// 8-bosqich: guruh rejimi (/tekshir, /sozlama, avtomatik ogohlantirish). 9-bosqich: AI.
+// 10-bosqich: /demo, /maslahat, so'rovlar chegarasi (daqiqasiga 10), serverda ishlash (webhook).
 // Ishga tushirish: npm start   (avval .env faylida BOT_TOKEN bo'lishi kerak)
 
 // .env faylini doim loyiha papkasidan o'qiymiz (terminal qaysi papkada bo'lishidan qat'i nazar)
@@ -8,13 +9,14 @@ const path = require("path");
 const fs = require("fs");
 const ENV_PATH = path.join(__dirname, "..", ".env");
 require("dotenv").config({ path: ENV_PATH });
-const { Bot, InlineKeyboard, InputFile } = require("grammy");
-const { t, LANGS } = require("./i18n");
+const { Bot, InlineKeyboard, InputFile, webhookCallback } = require("grammy");
+const { t, LANGS, dict, DEFAULT_LANG } = require("./i18n");
 const { extractUrls, checkUrls } = require("./checkers/url");
 const { combineAll } = require("./scoring");
 const { analyzeText } = require("./checkers/text");
 const { checkFile } = require("./checkers/file");
-const { buildReply, buildGroupReply } = require("./reply");
+const { buildReply, buildGroupReply, esc } = require("./reply");
+const { createLimiter } = require("./ratelimit");
 const { openDb, toCsv } = require("./db");
 const { isAdmin, formatStats } = require("./admin");
 const cache = require("./cache");
@@ -43,6 +45,25 @@ function createBot(token, options = {}, deps = {}) {
     const res = await fetch(`https://api.telegram.org/file/bot${token}/${file.file_path}`, { signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error("HTTP " + res.status);
     return Buffer.from(await res.arrayBuffer());
+  });
+
+  // ---------- So'rovlar chegarasi (10-bosqich) ----------
+  // Shaxsiy chat: bitta odam daqiqasiga RATE_LIMIT (10) ta xabar. Oshsa — bir marta ogohlantiramiz, keyin jim.
+  // Guruh: daqiqasiga GROUP_RATE_LIMIT (30) ta xabar tekshiriladi, qolgani jim o'tkazib yuboriladi.
+  // Adminlar (ADMIN_IDS) cheklanmaydi.
+  const userLimit = createLimiter({ limit: Number(process.env.RATE_LIMIT || 10) });
+  const groupLimit = createLimiter({ limit: Number(process.env.GROUP_RATE_LIMIT || 30) });
+  bot.use(async (ctx, next) => {
+    if (!ctx.message || !ctx.from) return next();
+    if (ctx.chat.type === "private") {
+      if (isAdmin(ctx.from.id)) return next();
+      const r = userLimit.hit(ctx.from.id);
+      if (r.ok) return next();
+      if (r.warn) await ctx.reply(t(getLang(ctx.from.id), "rate_limited"));
+      return;
+    }
+    if (isGroup(ctx)) return groupLimit.hit(ctx.chat.id).ok ? next() : undefined;
+    return next();
   });
 
   // /start — til tanlanmagan bo'lsa, avval tilni so'raymiz
@@ -154,7 +175,7 @@ function createBot(token, options = {}, deps = {}) {
     // Havolalar, fayl va AI bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
     const [urlRes, fileRes, aiRes] = await Promise.all([
       urls.length ? checkUrls(urls) : [],
-      doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, () => download(doc.file_id)) : null,
+      doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, opts.download || (() => download(doc.file_id))) : null,
       useAi ? aiCheck(text, opts.lang, userId).catch(() => null) : null
     ]);
     // 7-bosqich: raqamlar va saytlar ustidan shikoyatlar soni. Bazadan faqat HASH bo'yicha qidiramiz.
@@ -179,7 +200,7 @@ function createBot(token, options = {}, deps = {}) {
     if (aiRes) extra.push(aiRes);
     const result = combineAll(urlRes, textRes, fileRes, extra);
     // Bazaga faqat natija yoziladi — xabar matni ham, to'liq havola ham YOZILMAYDI
-    try {
+    if (opts.log !== false) try {
       db.logCheck({ userId, chatType, result, hasText: !!text.trim(), hosts: urlRes.map(r => r.host) });
     } catch (e) { console.error("Baza (logCheck):", e.message); }   // baza xatosi javobga xalaqit bermasin
     return { result, numbers, targets };
@@ -285,6 +306,64 @@ function createBot(token, options = {}, deps = {}) {
       ...(deleted ? {} : { reply_parameters: { message_id: m.message_id, allow_sending_without_reply: true } }) });
   }
 
+  // ---------- /demo — o'quv namunalari (10-bosqich) ----------
+  // Bot haqiqiy havolani ochmaydi va faylni yubormaydi: namuna faqat MATN sifatida ko'rsatiladi,
+  // keyin xuddi oddiy tekshiruvdek tahlil qilinadi. Statistikaga yozilmaydi, AI ishlatilmaydi.
+  const langOf = ctx => isGroup(ctx) ? groupOf(ctx).lang : (getLang(ctx.from.id) || DEFAULT_LANG);
+  const DEMO_APK = path.join(__dirname, "..", "demo", "Rasmlar.apk");
+  const demoMenu = lang => new InlineKeyboard()
+    .text(t(lang, "demo_btn_sms"), "demo:sms").row()
+    .text(t(lang, "demo_btn_link"), "demo:link").row()
+    .text(t(lang, "demo_btn_file"), "demo:file");
+  bot.command("demo", ctx => { const lang = langOf(ctx); return ctx.reply(t(lang, "demo_intro"), { parse_mode: "HTML", reply_markup: demoMenu(lang) }); });
+  bot.callbackQuery("demo:menu", async ctx => {
+    const lang = cbLang(ctx) || DEFAULT_LANG;
+    await ctx.answerCallbackQuery();
+    await ctx.reply(t(lang, "demo_intro"), { parse_mode: "HTML", reply_markup: demoMenu(lang) });
+  });
+  bot.callbackQuery(/^demo:(sms|link|file)$/, async ctx => {
+    const lang = cbLang(ctx) || DEFAULT_LANG;
+    await ctx.answerCallbackQuery();
+    const kind = ctx.match[1];
+    let m, dl;
+    if (kind === "file") {
+      const buf = fs.readFileSync(DEMO_APK);             // zararsiz matnli fayl — faqat hash uchun o'qiladi
+      m = { caption: t(lang, "demo_file"), document: { file_name: "Rasmlar.apk", mime_type: "application/vnd.android.package-archive", file_size: buf.length, file_id: "demo" } };
+      dl = async () => buf;
+      await ctx.reply(`${t(lang, "demo_sample")}
+
+📎 <b>Rasmlar.apk</b>
+<code>${esc(m.caption)}</code>`, { parse_mode: "HTML" });
+    } else {
+      m = { text: t(lang, kind === "sms" ? "demo_sms" : "demo_link") };
+      // <code> ichida — havola bosiladigan bo'lmaydi
+      await ctx.reply(`${t(lang, "demo_sample")}
+
+<code>${esc(m.text)}</code>`, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
+    }
+    const { result, numbers } = await analyze(m, ctx.from.id, "demo", { log: false, download: dl });
+    const { text: answer } = buildReply(lang, result, ctx.me.username, { numbers });
+    await ctx.reply(answer, { parse_mode: "HTML", reply_markup: new InlineKeyboard().text(t(lang, "btn_demo_more"), "demo:menu"), link_preview_options: { is_disabled: true } });
+  });
+
+  // ---------- /maslahat — xavfsizlik maslahatlari ----------
+  const tipsOf = lang => (dict[lang] || dict[DEFAULT_LANG]).tips;
+  function tipView(lang, i) {
+    const tips = tipsOf(lang), n = tips.length;
+    i = ((i % n) + n) % n;
+    return { text: `💡 ${i + 1}/${n}\n\n${tips[i]}`, reply_markup: new InlineKeyboard().text(t(lang, "btn_tip_next"), `tip:${(i + 1) % n}`) };
+  }
+  bot.command("maslahat", ctx => {
+    const lang = langOf(ctx);
+    const v = tipView(lang, Math.floor(Math.random() * tipsOf(lang).length));
+    return ctx.reply(v.text, { reply_markup: v.reply_markup });
+  });
+  bot.callbackQuery(/^tip:(\d+)$/, async ctx => {
+    const v = tipView(cbLang(ctx) || DEFAULT_LANG, Number(ctx.match[1]));
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText(v.text, { reply_markup: v.reply_markup }).catch(() => {});
+  });
+
   // ---------- Boshqa har qanday xabar ----------
   bot.on("message", async ctx => {
     if (isGroup(ctx)) return onGroupMessage(ctx);
@@ -346,6 +425,8 @@ if (require.main === module) {
   bot.api.setMyCommands([
     { command: "start", description: "Boshlash" },
     { command: "yordam", description: "Qanday ishlatish" },
+    { command: "demo", description: "Namunalar: firibgarlar qanday yozadi" },
+    { command: "maslahat", description: "Xavfsizlik maslahati" },
     { command: "til", description: "Tilni o'zgartirish / Сменить язык" }
   ]).catch(e => console.error("Buyruqlar menyusi:", e.message));
   // Guruhlardagi "/" menyusi
@@ -354,7 +435,40 @@ if (require.main === module) {
     { command: "sozlama", description: "Guruh sozlamalari (adminlar)" }
   ], { scope: { type: "all_group_chats" } }).catch(e => console.error("Guruh menyusi:", e.message));
   // Long polling: bot o'zi Telegram'dan yangi xabarlarni so'rab turadi (kompyuterda ishlatish uchun qulay)
-  bot.start({ onStart: info => console.log(`✅ @${info.username} ishga tushdi. To'xtatish: Ctrl + C`) });
+  // Serverda (Render) — WEBHOOK: Telegram xabarlarni o'zi bizning manzilga yuboradi.
+  // Kompyuterda — LONG POLLING: bot o'zi Telegram'dan so'rab turadi.
+  const base = process.env.WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL;
+  if (base) startWebhook(bot, db, base.replace(/\/$/, ""));
+  else bot.start({ onStart: info => console.log(`✅ @${info.username} ishga tushdi. To'xtatish: Ctrl + C`) });
 }
 
-module.exports = { createBot };
+// ---------- Webhook rejimi (serverda) ----------
+// Telegram faqat maxfiy kalit (secret_token) bilan kelgan so'rovlarni qabul qilamiz — begona odam soxta xabar yubora olmaydi.
+function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000)) {
+  const http = require("http");
+  const crypto = require("crypto");
+  const secret = process.env.WEBHOOK_SECRET || crypto.createHash("sha256").update("tekshir:" + process.env.BOT_TOKEN).digest("hex").slice(0, 48);
+  const hookPath = "/telegram/" + secret.slice(0, 16);
+  // Tekshiruv 25 soniyadan oshsa ham Telegram'ga "qabul qildim" deymiz — aks holda u xabarni qayta yuboradi
+  const handle = webhookCallback(bot, "http", { secretToken: secret, onTimeout: "return", timeoutMilliseconds: 25000 });
+  const server = http.createServer((req, res) => {
+    if (req.method === "GET" && (req.url === "/health" || req.url === "/")) {
+      res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+      return res.end("Tekshir bot ishlayapti ✅");
+    }
+    if (req.method === "POST" && req.url === hookPath) return handle(req, res).catch(e => { console.error("Webhook:", e.message); if (!res.headersSent) { res.writeHead(500); res.end(); } });
+    res.writeHead(404); res.end();
+  });
+  server.listen(port, async () => {
+    try {
+      await bot.init();
+      await bot.api.setWebhook(base + hookPath, { secret_token: secret, allowed_updates: ["message", "callback_query", "my_chat_member"] });
+      console.log(`✅ @${bot.botInfo.username} webhook rejimida ishga tushdi (port ${server.address().port})`);
+    } catch (e) { console.error("❌ Webhook o'rnatilmadi:", e.message); }
+  });
+  if (require.main === module)
+    for (const sig of ["SIGINT", "SIGTERM"]) process.removeAllListeners(sig).once(sig, () => { server.close(); db.close(); process.exit(0); });
+  return server;
+}
+
+module.exports = { createBot, startWebhook };

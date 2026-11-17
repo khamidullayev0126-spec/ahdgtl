@@ -1,6 +1,6 @@
 {
   "name": "tekshir-bot",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Tekshir — firibgarlikka qarshi Telegram bot: shubhali havola, matn va fayllarni tekshiradi",
   "main": "src/bot.js",
   "scripts": {

@@ -1,119 +1,208 @@
 # Tekshir — firibgarlikka qarshi Telegram bot
 
-Shubhali havola, xabar yoki faylni botga yuborasiz — bot bir necha soniyada xavf darajasini (✅ / 🟡 / 🔴) aytadi va sodda tilda tushuntiradi.
+Shubhali **havola, xabar, fayl yoki raqamni** botga yuborasiz — bot bir necha soniyada xavf darajasini aytadi va sodda tilda tushuntiradi:
+
+- ✅ **Xavf topilmadi** (lekin 100% kafolat yo'q)
+- 🟡 **Shubhali** — ehtiyot bo'ling
+- 🔴 **Xavfli** — ochmang, o'rnatmang, kod bermang
+
+Tillar: O'zbek (lotin va kirill), Rus.
 
 ## Holat
 - [x] **1-bosqich:** /start, til tanlash (O'zbek lotin / kirill / Rus), /til, /yordam
-- [x] **2-bosqich:** havola tekshiruvi (qoidalar: soxta domen, qisqartirilgan havola, punycode, IP, shubhali oxir)
-- [x] **3-bosqich:** Google Safe Browsing va VirusTotal (24 soatlik kesh, limit nazorati, ishlamasa ham bot javob beradi)
+- [x] **2-bosqich:** havola tekshiruvi (soxta domen, qisqartirilgan havola, punycode, IP, shubhali oxir)
+- [x] **3-bosqich:** Google Safe Browsing va VirusTotal (24 soatlik kesh, limit nazorati)
 - [x] **4-bosqich:** matn tekshiruvi (9 ta firibgarlik guruhi, 3 til, inkor va birikmalar)
 - [x] **5-bosqich:** fayl tekshiruvi (APK, .exe, ikki kengaytma, SHA-256 → VirusTotal)
-- [x] **6-bosqich:** SQLite baza (til, natijalar, domenlar, kesh), admin uchun /stats va /export
-- [x] **7-bosqich:** shikoyatlar (tasdiqlash bilan, 1 odam — 1 shikoyat, kuniga 20 ta) va telefon/karta raqamlarini tekshirish
-- [x] **8-bosqich:** guruh rejimi (jim tekshiruv, faqat xavfda ogohlantirish, /tekshir, /sozlama, 🔴 xabarni o'chirish)
-- [x] **9-bosqich:** AI tahlili (Claude): qoidalar sezmagan aldovlar, maxfiylik (raqamlar yashiriladi), kunlik limit, kesh
-- [ ] 10. Server
+- [x] **6-bosqich:** SQLite baza, admin uchun /stats va /export
+- [x] **7-bosqich:** shikoyatlar va telefon/karta raqamlarini tekshirish (faqat hash)
+- [x] **8-bosqich:** guruh rejimi (/tekshir, /sozlama, avtomatik ogohlantirish)
+- [x] **9-bosqich:** AI tahlili (Claude) — ixtiyoriy
+- [x] **10-bosqich:** /demo, /maslahat, so'rovlar chegarasi, serverga qo'yish (webhook), qabul testlari
+
+## Buyruqlar
+
+| Buyruq | Kim uchun | Nima qiladi |
+|---|---|---|
+| `/start` | hamma | Boshlash, til tanlash |
+| `/til` | hamma | Tilni o'zgartirish |
+| `/yordam` | hamma | Qanday ishlatish |
+| `/demo` | hamma | 3 ta o'quv namunasi: soxta SMS, soxta havola, APK fayl |
+| `/maslahat` | hamma | Xavfsizlik maslahati (12 ta, «yana bir» tugmasi bilan) |
+| `/tekshir` | guruhda | Xabarga **javob (reply)** qilib yozing — o'sha xabarni tekshiradi |
+| `/sozlama` | guruh adminlari | Guruh sozlamalari |
+| `/stats` | bot adminlari | Statistika (faqat shaxsiy chatda) |
+| `/export` | bot adminlari | Oxirgi 30 kun natijalari CSV faylda (`/export 7` — 7 kun) |
+
+## Maxfiylik qoidalari (qat'iy)
+- **Xabar matni saqlanmaydi.** Bazada faqat natija bor: daraja, ball, sabab kodlari, saytning **domeni**.
+- **Telefon va karta raqamlari** faqat SHA-256 + tuz (`HASH_SALT`) ko'rinishida saqlanadi.
+- **Bot havolani o'zi ochmaydi va faylni ishga tushirmaydi.** Fayl faqat xotirada hash hisoblash uchun o'qiladi.
+- **Bot hech qachon «bu odam firibgar» demaydi** — faqat shikoyatlar sonini ko'rsatadi. Shikoyatning o'zi 🔴 bermaydi.
+- **AI'ga** yuborishdan oldin karta → `[KARTA]`, telefon → `[TELEFON]`, havola → faqat domen.
+- Bularning barchasi avtomatik testlarda tekshiriladi (`tests/acceptance.test.js`, Q7).
+
+---
 
 ## Kompyuterda ishga tushirish
 
 ### 1. Bot tokenini olish (BotFather)
-1. Telegram'da **@BotFather** ni oching → `/newbot`.
-2. Bot nomini yozing, masalan: `Tekshir`.
-3. Username yozing — oxiri `bot` bilan tugashi shart, masalan: `tekshir_uz_bot` (band bo'lsa boshqasini o'ylang).
-4. BotFather token beradi: `1234567890:AAH...` — **bu parol kabi**, hech kimga bermang, GitHub'ga yuklamang.
+1. Telegram'da **@BotFather** → `/newbot`.
+2. Bot nomi, masalan `Tekshir`. Username oxiri `bot` bilan tugashi shart.
+3. BotFather token beradi: `1234567890:AAH...` — **bu parol kabi**, hech kimga bermang, GitHub'ga yuklamang.
 
-### 2. Loyihani sozlash
+### 2. Sozlash
 ```bash
 cd tekshir-bot
 npm install
 cp .env.example .env
 ```
-`.env` faylini oching va `BOT_TOKEN=` dan keyin tokenni yozing.
+`.env` faylini oching va kamida `BOT_TOKEN=` va `HASH_SALT=` ni to'ldiring:
+- `HASH_SALT` yaratish: terminalda `openssl rand -hex 32`. **Keyin o'zgartirmang** — aks holda eski shikoyatlar topilmay qoladi.
+- `ADMIN_IDS` — o'z Telegram ID'ingiz (**@userinfobot** ga `/start` yozing).
 
 ### 3. Ishga tushirish
 ```bash
 npm start
 ```
-Terminalda `✅ @sizning_bot ishga tushdi` chiqadi. Telegram'da botingizni oching → `/start`.
+Terminalda `✅ @sizning_bot ishga tushdi` chiqadi. To'xtatish: **Ctrl + C**.
 
-### Tashqi xizmat kalitlari (ixtiyoriy, lekin tavsiya etiladi)
-Kalitlarni faqat `.env` ga yozing. Kalit bo'lmasa, bot qoidalar bilan ishlayveradi.
+Muhim: bot **bir vaqtda faqat bitta joyda** ishlashi kerak. Server ishlab turganda kompyuterda `npm start` qilsangiz, kompyuterdagi bot server webhook'ini o'chirib qo'yadi (serverni qayta ishga tushirsangiz, tiklanadi).
+
+### Tashqi xizmat kalitlari (ixtiyoriy)
+Kalit bo'lmasa, bot qoidalar bilan ishlayveradi.
 
 **VirusTotal** (bepul: daqiqasiga 4, kuniga 500 so'rov)
 1. virustotal.com → **Sign up** → emailni tasdiqlang.
-2. O'ng yuqorida profil → **API key** → nusxalang.
-3. `.env`: `VIRUSTOTAL_KEY=...`
+2. Profil → **API key** → `.env`: `VIRUSTOTAL_KEY=...`
 
 **Google Safe Browsing** (bepul)
-1. console.cloud.google.com → yangi loyiha yarating (masalan `tekshir-bot`).
+1. console.cloud.google.com → yangi loyiha.
 2. **APIs & Services → Library** → «Safe Browsing API» → **Enable**.
-3. **APIs & Services → Credentials → Create credentials → API key** → nusxalang.
-4. Kalitni cheklang: **Edit API key → API restrictions → Safe Browsing API**.
-5. `.env`: `SAFE_BROWSING_KEY=...`
+3. **Credentials → Create credentials → API key** → **Edit API key → API restrictions → Safe Browsing API**.
+4. `.env`: `SAFE_BROWSING_KEY=...`
 
 Eslatma: Safe Browsing Lookup API notijorat foydalanish uchun. Loyiha tijoriy bo'lsa — Google **Web Risk API** ga o'tish kerak.
 
-### Admin buyruqlari (/stats, /export)
-1. O'z Telegram ID'ingizni biling: Telegram'da **@userinfobot** ga `/start` yozing — `Id: 123456789` chiqadi.
-2. `.env`: `ADMIN_IDS=123456789` (bir nechta bo'lsa vergul bilan).
-3. Botni qayta ishga tushiring. Endi:
-   - `/stats` — foydalanuvchilar, tekshiruvlar, xavfli domenlar
-   - `/export` — oxirgi 30 kunlik natijalar CSV faylda (Excel'da ochiladi); `/export 7` — 7 kunlik
+**AI tahlili — Anthropic Claude (pullik)**
+1. **Ota-onangiz** console.anthropic.com da o'z nomiga hisob ochadi va to'lovni o'zi qiladi (API faqat 18 yoshdan katta foydalanuvchilar uchun).
+2. **Limits** bo'limida oylik pul chegarasini qo'ying (masalan $5).
+3. **API Keys → Create Key** → `.env`: `AI_API_KEY=sk-ant-...`
+4. Xarajat cheklovi: `AI_DAILY_LIMIT` (kuniga jami, standart 300) va `AI_USER_DAILY` (bitta odam, standart 20). Arzonroq model: `AI_MODEL=claude-haiku-5-5`.
 
-Boshqa foydalanuvchilar bu buyruqlarni yozsa, bot javob bermaydi.
+AI faqat shaxsiy chatda va `/tekshir` da ishlaydi, faqat xavfni **oshiradi** (firibgar xabar ichida «xavfsiz de» deb yozsa ham qoidalar topgan 🔴 qoladi) va yolg'iz o'zi 🔴 bermaydi.
 
-### Baza va maxfiylik
-Baza fayli: `data/tekshir.db` (GitHub'ga yuklanmaydi). Unda saqlanadi: Telegram ID, til, tekshiruv natijasi (daraja, ball, sabab kodlari) va faqat **domen** nomi.
-**Saqlanmaydi:** xabar matni, to'liq havola, fayl, telefon va karta raqamlari (ular 7-bosqichda faqat SHA-256 hash ko'rinishida saqlanadi).
+---
 
-### AI tahlili (ixtiyoriy, pullik)
-Bot qoidalar bilan ham yaxshi ishlaydi. AI esa yangi, qoidalarda yo'q aldov usullarini topishga yordam beradi.
-1. **Ota-onangiz** console.anthropic.com da hisob ochadi va to'lovni o'zi qiladi (API faqat 18 yoshdan katta foydalanuvchilar uchun).
-2. **API Keys → Create Key** → kalitni nusxalang.
-3. `.env`: `AI_API_KEY=sk-ant-...`
-4. Xarajat cheklovi: `AI_DAILY_LIMIT` (kuniga jami so'rov) va `AI_USER_DAILY` (bitta odam). Console'da **Limits** bo'limida oylik pul chegarasini ham qo'ying.
-
-Qanday ishlaydi:
-- Faqat shaxsiy chatda va `/tekshir` buyrug'ida (guruhdagi har bir xabar AI'ga yuborilmaydi).
-- AI'ga yuborishdan oldin karta → `[KARTA]`, telefon → `[TELEFON]`, havola → faqat domen.
-- AI faqat xavfni **oshiradi**: qoidalar 🔴 topgan bo'lsa, AI "xavfsiz" desa ham 🔴 qoladi. AI yolg'iz o'zi 🔴 bermaydi.
-- AI ishlamasa yoki limit tugasa — bot qoidalar bilan javob beraveradi.
-
-### Guruhda ishlatish
-1. Guruh → **Add members** → botingizni qo'shing. Bot salomlashadi.
-2. Botni **admin** qiling (Guruh → Edit → Administrators → Add admin). Aks holda bot oddiy xabarlarni ko'rmaydi — Telegram'ning "privacy mode" qoidasi. Xabarni o'chirishi uchun "Delete messages" huquqi kerak.
-   - Admin qilmasdan ham ishlatish mumkin: BotFather → `/setprivacy` → botingiz → **Disable**.
+## Guruhda ishlatish
+1. Guruh → **Add members** → botni qo'shing. Bot salomlashadi.
+2. Botni **admin** qiling (barcha xabarlarni ko'rishi uchun; o'chirish uchun "Delete messages" huquqi).
+   Admin qilmasdan: BotFather → `/setprivacy` → botingiz → **Disable**.
 3. Bot xavfsiz xabarlarga **javob yozmaydi** — faqat 🟡/🔴 da qisqa ogohlantiradi.
-4. Istalgan xabarga javob (reply) qilib `/tekshir` yozing — to'liq natija chiqadi (✅ ham).
-5. `/sozlama` (faqat guruh adminlari):
-   - to'xtatish / yoqish
-   - ogohlantirish: 🟡+🔴 yoki faqat 🔴
-   - 🔴 xabarni avtomatik o'chirish (standart: o'chiq)
-   - guruh tili
+4. `/sozlama` (faqat guruh adminlari): to'xtatish/yoqish · ogohlantirish rejimi (🟡+🔴 yoki faqat 🔴) · 🔴 xabarni avtomatik o'chirish (standart: o'chiq) · guruh tili.
+5. Guruhda daqiqasiga 30 tadan ko'p xabar tekshirilmaydi (`GROUP_RATE_LIMIT`).
 
-### Raqamlar va shikoyatlar (HASH_SALT)
-Telefon va karta raqamlari bazada **ochiq saqlanmaydi** — faqat SHA-256 + maxfiy "tuz" (salt) ko'rinishida.
-1. Terminalda tasodifiy tuz yarating: `openssl rand -hex 32`
-2. `.env`: `HASH_SALT=...` (chiqqan uzun qatorni qo'ying)
-3. **Muhim:** HASH_SALT ni keyin O'ZGARTIRMANG va yo'qotmang — aks holda eski shikoyatlar topilmay qoladi. Uni parol kabi saqlang.
+## So'rovlar chegarasi
+Bitta odam daqiqasiga **10 ta** xabar tekshira oladi (`RATE_LIMIT`). Oshsa — bot bir marta «Juda tez yuboryapsiz» deydi va bir daqiqa jim turadi. Bot adminlari (`ADMIN_IDS`) cheklanmaydi.
 
-HASH_SALT bo'lmasa, bot ishlayveradi, faqat raqam tekshiruvi va shikoyatlar o'chiq bo'ladi.
+---
 
-Bot hech qachon "bu odam firibgar" demaydi — faqat **shikoyatlar sonini** ko'rsatadi. Shikoyatning o'zi hech qachon 🔴 bermaydi (eng ko'pi 🟡).
+## Serverga qo'yish (Render.com)
 
-### Testlar
+Bot kompyuteringiz o'chiq bo'lsa ham ishlashi uchun uni serverga qo'yamiz. Serverda bot **webhook** rejimida ishlaydi: Telegram xabarlarni o'zi botga yuboradi (`RENDER_EXTERNAL_URL` bo'lsa avtomatik yoqiladi).
+
+### Narx — ota-onangiz bilan kelishing
+| Variant | Narx | Nima bo'ladi |
+|---|---|---|
+| **Starter + Disk** (tavsiya) | ≈ $7.25/oy | Bot doim ishlaydi, baza (til, shikoyatlar, statistika) saqlanadi |
+| Free | $0 | Faqat **sinov uchun**: 15 daqiqa xabar bo'lmasa bot uxlaydi (birinchi javob ~1 daqiqa kechikadi), **har qayta ishga tushishda baza o'chib ketadi** (shikoyatlar yo'qoladi) |
+
+To'lov kartasi va Render hisobi — **ota-onangiz nomida**. Karta ma'lumotlarini, CVV va SMS kodlarni hech kimga bermang.
+
+### Qadamlar
+1. Kod GitHub'da bo'lishi kerak (`ahdgtl` repozitoriysi, `tekshir-bot` papkasi). `.env` GitHub'ga **yuklanmaydi** — bu to'g'ri.
+2. render.com → **New → Web Service** → GitHub repozitoriyni tanlang.
+3. Sozlamalar:
+   - **Root Directory:** `tekshir-bot`
+   - **Region:** Frankfurt
+   - **Build Command:** `npm ci`
+   - **Start Command:** `npm start`
+   - **Instance Type:** Starter
+   - **Health Check Path:** `/health`
+4. **Disks → Add Disk:** Mount Path `/var/data`, Size 1 GB.
+5. **Environment** bo'limida qiymatlarni kiriting (kompyuterdagi `.env` dan nusxalang):
+   - `BOT_TOKEN`, `HASH_SALT`, `ADMIN_IDS`
+   - `DB_PATH` = `/var/data/tekshir.db`
+   - `NODE_VERSION` = `22`
+   - ixtiyoriy: `VIRUSTOTAL_KEY`, `SAFE_BROWSING_KEY`, `AI_API_KEY`
+6. **Create Web Service**. Log'da `✅ @bot webhook rejimida ishga tushdi` chiqishi kerak.
+7. Brauzerda `https://<servis-nomi>.onrender.com/health` → «Tekshir bot ishlayapti ✅».
+8. **Kompyuterdagi botni to'xtating** (Ctrl + C) — endi bot serverda ishlaydi.
+
+`render.yaml` fayli shu sozlamalarning yozma ko'rinishi (ma'lumot uchun). U repozitoriy ildizida emas — Render uni o'zi qo'llamaydi, shuning uchun pullik xizmat tasodifan yaratilmaydi.
+
+### Yangilash
+GitHub'ga yangi kod yuklansa (`git push`), Render botni o'zi qayta quradi va ishga tushiradi. Baza diskda saqlanib qoladi.
+
+### Muammo bo'lsa
+- **Bot javob bermayapti:** Render → **Logs**. `❌` bilan boshlangan qatorni qidiring.
+- **`Webhook o'rnatilmadi`:** `BOT_TOKEN` to'g'ri kiritilganini tekshiring.
+- **Kompyuterda `npm start` qildingizmi?** U webhook'ni o'chiradi → Render'da **Manual Deploy → Restart**.
+
+---
+
+## Testlar
 ```bash
 npm test
 ```
-Testlar internetga ulanmaydi va token talab qilmaydi.
+108 ta test. Internetga ulanmaydi, token va kalit talab qilmaydi, AI'ga pul sarflamaydi.
+
+**Qabul testlari** (`tests/acceptance.test.js`) — foydalanuvchi ko'zi bilan:
+
+| # | Vaziyat | Kutilgan natija |
+|---|---|---|
+| Q1 | Soxta bank SMS | 🔴, sabab va maslahat, 5 soniyadan tez |
+| Q2 | `https://click.uz` | ✅, «rasmiy sayt» |
+| Q3 | `https://c1ick-uz.com` | 🔴, rasmiy manzil ko'rsatiladi, havola bosilmaydi |
+| Q4 | `Rasmlar.apk` | 🔴, «o'rnatmang» |
+| Q5 | Oddiy xabar | ✅ + «100% kafolat yo'q» |
+| Q6 | Karta raqami + shikoyat | «1 ta shikoyat», «firibgar» so'zi yo'q |
+| Q7 | Maxfiy matn, karta, telefon | Bazaning hech bir jadvalida yo'q |
+| Q8 | 13 ta xabar ketma-ket | 10 ta javob + 1 ogohlantirish |
+| Q9 | `/demo` | 3 ta namuna, hammasi 🔴, statistikaga yozilmaydi |
+| Q10 | `/maslahat` | Maslahat + «yana bir» tugmasi, 3 tilda bir xil son |
+| Q11 | Ruscha firibgar xabar | Rus tilida javob |
+| Q12 | Til tanlanmagan odam | Avval til so'raladi |
+
+### Qo'lda tekshirish (serverga qo'ygandan keyin)
+- [ ] `/start` → til tanlash → salomlashuv
+- [ ] `/demo` → 3 ta namuna ishlaydi
+- [ ] `/maslahat` → «Yana bir maslahat» tugmasi ishlaydi
+- [ ] `https://c1ick-uz.com/bonus` → 🔴
+- [ ] Karta raqami → «Shikoyat qilish» → «Ha» → «Rahmat!»
+- [ ] Guruhga qo'shish → salomlashadi; «Salom» ga jim; soxta havolaga 🔴
+- [ ] `/stats` (admin) → raqamlar
+- [ ] Render'ni qayta ishga tushirish → til va statistika saqlanib qolgan
 
 ## Tuzilishi
 ```
-src/bot.js     — asosiy fayl, buyruqlar
-src/i18n.js    — tarjimalar (locales/ dan o'qiydi)
-src/db.js      — SQLite baza (6-bosqich)
-src/admin.js   — /stats matni, adminni tekshirish
-src/checkers/  — havola, tashqi API, matn, fayl tekshiruvlari
-locales/       — uz-latn.json, uz-cyrl.json, ru.json
-tests/         — avtomatik testlar
+src/bot.js              — asosiy fayl: buyruqlar, guruh, demo, webhook
+src/i18n.js             — tarjimalar (locales/ dan o'qiydi)
+src/db.js               — SQLite baza
+src/admin.js            — /stats matni, adminni tekshirish
+src/reply.js            — javob matni va tugmalar
+src/scoring.js          — ballarni yig'ish, daraja (✅/🟡/🔴)
+src/ratelimit.js        — so'rovlar chegarasi
+src/cache.js            — kesh (xotira + baza)
+src/checkers/url.js     — havola qoidalari
+src/checkers/external.js— Safe Browsing, VirusTotal
+src/checkers/text.js    — matn (kalit so'zlar)
+src/checkers/file.js    — fayl turi va hash
+src/checkers/numbers.js — telefon va karta raqamlari
+src/checkers/ai.js      — AI tahlili (Claude)
+data/                   — qoidalar: ishonchli domenlar, kalit so'zlar; tekshir.db (GitHub'ga yuklanmaydi)
+locales/                — uz-latn.json, uz-cyrl.json, ru.json
+demo/                   — zararsiz soxta APK fayllar (o'quv uchun, ichida faqat matn)
+tests/                  — avtomatik testlar
+render.yaml             — server sozlamasi (ma'lumot uchun)
 ```

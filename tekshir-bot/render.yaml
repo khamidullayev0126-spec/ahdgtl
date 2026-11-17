@@ -1,0 +1,37 @@
+# Render.com sozlamasi — Tekshir bot uchun (10-bosqich).
+# DIQQAT: bu fayl tekshir-bot papkasida turibdi (repozitoriy ildizida emas), shuning uchun
+# Render uni O'ZI qo'llamaydi — pullik xizmat tasodifan yaratilib qolmaydi.
+# Qanday ishlatish — README.md, "Serverga qo'yish" bo'limi.
+services:
+  - type: web
+    name: tekshir-bot
+    runtime: node
+    rootDir: tekshir-bot
+    plan: starter            # $7/oy — uxlamaydi. "free" da bot 15 daqiqadan keyin uxlaydi va baza o'chib ketadi
+    region: frankfurt        # O'zbekistonga eng yaqin
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    disk:                    # baza (data/tekshir.db) qayta ishga tushganda o'chmasligi uchun. 1 GB ≈ $0.25/oy
+      name: tekshir-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DB_PATH
+        value: /var/data/tekshir.db
+      - key: WEBHOOK_SECRET
+        generateValue: true  # Render o'zi tasodifiy maxfiy kalit yaratadi
+      - key: BOT_TOKEN
+        sync: false          # sync: false — qiymatni Render sahifasida O'ZINGIZ kiritasiz (GitHub'da turmaydi)
+      - key: ADMIN_IDS
+        sync: false
+      - key: HASH_SALT
+        sync: false
+      - key: VIRUSTOTAL_KEY
+        sync: false
+      - key: SAFE_BROWSING_KEY
+        sync: false
+      - key: AI_API_KEY
+        sync: false
