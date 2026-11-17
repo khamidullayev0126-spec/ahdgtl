@@ -14,7 +14,7 @@ const { createCaller } = require("./call");
 
 const CONFIRM_DELAY_MS = Number(process.env.BOT_CONFIRM_DELAY_MS) || 60_000;   // buyurtmadan keyin 1 daqiqa
 const MAX_TURNS = 20;
-const ALLOWED = ["message", "callback_query", "business_connection", "business_message"];                     // shundan keyin Claude bilan suhbat yangidan boshlanadi
+const ALLOWED = ["message", "callback_query", "business_connection", "business_message", "channel_post"];                     // shundan keyin Claude bilan suhbat yangidan boshlanadi
 
 function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeOrders, store, tz, kp }) {
   if (!token) return null;
@@ -321,6 +321,12 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
 
   // ---------- Telegram'dan kelgan yangilanishlar ----------
   async function handleUpdate(update) {
+    // Kanalga chiqqan post (qo'lda yoki agent orqali) — agent tarixiga, takrorlanmasligi uchun
+    if (update.channel_post) {
+      const p = update.channel_post, ch = String(process.env.TELEGRAM_CHANNEL || "").replace(/^@/, "").toLowerCase();
+      if (agent && ch && (String(p.chat.username || "").toLowerCase() === ch || String(p.chat.id) === ch)) agent.onChannelPost(p.text || p.caption || "");
+      return;
+    }
     // Business ulanishi yoqildi yoki o'chirildi
     if (update.business_connection) {
       const c = update.business_connection;

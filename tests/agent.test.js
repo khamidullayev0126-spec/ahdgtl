@@ -129,3 +129,25 @@ test("agent: tz_tuzish havola qaytaradi, tz_royxati ko'rsatadi", async () => {
   assert.match(prev, /\/tz\//);
   assert.match(lastResult(client), /⏳ kutilmoqda/);
 });
+
+test("agent: kanalga_post o'xshash postni ogohlantiradi, tasdiqlansa tarixga yoziladi", async () => {
+  const store = makeStore(), sent = [], calls = [];
+  const client = fakeClient([
+    tool("kanal_tarixi", { soz: "rubber" }),
+    tool("kanalga_post", { matn: "🦆 Rubber duck usuli: xatolarni o'rdakchaga tushuntirib toping. Dasturlashda qadimiy usul: kodingiz ishlamay qolganda muammoni o'rdakchaga bosqichma-bosqich tushuntirasiz, sun'iy intellekt ham yordam beradi." })
+  ]);
+  const agent = createAgent({ api: async (m, b) => { calls.push([m, b]); return { ok: true }; }, send: async (_c, t, extra) => { sent.push({ t, extra }); return { ok: true }; },
+    ownerChatId: 1, services: [], readOrders: () => [], writeOrders: () => {}, store, client, channel: "@ahdigital_01" });
+  agent.start();
+  agent.onOwnerMessage("kanalga post");
+  await until(() => sent.some(s => /Kanal uchun post/.test(s.t)) && sent.length >= 2);
+  assert.match(client.seen[2].content[0].content, /Rubber/i, "kanal_tarixi eski postlarni ko'rsatishi kerak");
+  const ask = sent.find(s => /Kanal uchun post/.test(s.t));
+  assert.match(ask.t, /⚠️ O'xshash post/);
+  const before = store.get("kanal-postlar").length;
+  const data = ask.extra.reply_markup.inline_keyboard[0][0].callback_data;
+  await agent.onCallback({ id: "q1", data, message: { chat: { id: 1 }, message_id: 5 } });
+  assert.strictEqual(store.get("kanal-postlar").length, before + 1);
+  agent.onChannelPost("Qo'lda joylangan post: bugun Bootstrap grid tizimini o'rgandim va kichik sahifa yasadim.");
+  assert.strictEqual(store.get("kanal-postlar").length, before + 2);
+});

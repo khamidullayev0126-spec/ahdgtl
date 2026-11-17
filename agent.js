@@ -8,6 +8,7 @@ const path = require("path");
 const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
 const aiUsage = require("./ai-usage");
+const { createChannelHistory } = require("./kanal-tarix");
 let imager = null;                                   // rasm yaratish (satori + resvg o'rnatilgan bo'lsa)
 try { imager = require("./image"); } catch (e) { console.log("ℹ️  Rasm yaratish o'chiq:", e.message); }
 
@@ -41,6 +42,7 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
   const KEY = { "agent-xotira.json": "agent-xotira", "agent-eslatmalar.json": "agent-eslatmalar",
     "agent-moliya.json": "agent-moliya", "agent-goyalar.json": "agent-goyalar", "agent-xatolar.json": "agent-xatolar" };
   const save = (name, val) => store.set(KEY[name], val);
+  const posts = createChannelHistory(store);   // kanal postlari tarixi — takrorlanmasin
   let notes = [];        // [{id, matn, sana}]   — start() da yuklanadi
   let reminders = [];    // [{id, vaqt, matn, qongiroq, takror, vazifa}]
   let money = [];        // [{id, turi: kirim|chiqim, summa, izoh, sana}]
@@ -100,6 +102,9 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
     { name: "mijozga_yozish", description: "Buyurtma bergan mijozga Telegram orqali xabar TAYYORLAYDI. Xabar darhol ketmaydi: egasiga ✅/❌ tugmalari bilan ko'rsatiladi. Faqat botni ochgan mijozlarga yozish mumkin.",
       input_schema: { type: "object", additionalProperties: false, properties: {
         kod: { type: "string" }, matn: { type: "string", description: "Mijozga yuboriladigan matn, o'zbek tilida" } }, required: ["kod", "matn"] } },
+    { name: "kanal_tarixi", description: "Kanaldagi oldingi postlarning sanasi va birinchi qatori (eng yangilari oxirida). Kanal uchun post yoki rasm tayyorlashdan OLDIN doim chaqir — bir xil mavzu yoki usulni takrorlamaslik uchun.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        soz: { type: "string", description: "Ixtiyoriy: shu so'zlar bor postlarni qidirish (masalan «few-shot»)" } }, required: [] } },
     { name: "kanalga_post", description: "Telegram kanalga post TAYYORLAYDI. Post darhol chiqmaydi: egasiga ✅/❌ tugmalari bilan ko'rsatiladi.",
       input_schema: { type: "object", additionalProperties: false, properties: {
         matn: { type: "string", description: "Post matni (1–4000 belgi), oddiy matn" } }, required: ["matn"] } },
@@ -219,6 +224,7 @@ Ishlash tartibi:
 - Buyurtmalar, statistika, eslatma va xotira uchun asboblardan foydalan. Taxmin qilma — kerak bo'lsa asbobni chaqir.
 - Mijozga yoki kanalga yozish faqat tayyorlanadi; Abdulhamid ✅ bosmaguncha hech narsa ketmaydi. Buni "yubordim" deb aytma — "tasdiqlash uchun tayyorladim" de.
 - Narx, chegirma yoki muddat haqida mijozga va'da berma — faqat quyidagi narxlardan foydalan.
+- Kanal uchun post yoki rasm tayyorlashdan OLDIN kanal_tarixi bilan oldingi postlarni ko'r. Bir xil mavzu, usul yoki sarlavhani takrorlama (masalan «Rubber duck» va «Few-shot» allaqachon 3 martadan chiqqan). Mavzu yaqin bo'lsa — yangi burchak tanla yoki Abdulhamidga boshqa mavzu taklif qil. Obunachilar ko'proq Abdulhamidning o'z tajribasi, jarayoni, IT yangiliklari va amaliy maslahatlarga reaksiya bildiradi; umumiy AI maslahatlariga kam.
 - Sen rasm yarata olasan: rasm_yaratish asbobi AHdigital uslubidagi post rasmini yasaydi (sarlavha + ro'yxat yoki kod). "Rasm qil", "post rasmi", "kanal uchun rasm" deyilsa — uni ishlat; kanal uchun bo'lsa kanal_matni ham yoz. Rasmni o'zing ko'ra olmaysan, shuning uchun matnni qisqa va aniq yoz.
 ${caller ? "- Sen Abdulhamidga ovozli qo'ng'iroq qila olasan: menga_qongiroq (hozir) yoki eslatma_qoyish qongiroq=true. Natijasini aynan ayt." : "- Qo'ng'iroq sozlanmagan va hozircha kerak emas: qo'ng'iroq taklif qilma, eslatmalarni Telegram xabari bilan yubor."}
 - Sen Abdulhamidning shaxsiy Telegram chatlarini ko'ra olasan (Telegram Business): chatlar, chatni_oqish, chatga_yozish, chat_sozlamasi. "Kim yozdi?", "X ning chatini o'qi", "X ga yoz: ..." deyilsa — shu asboblarni ishlat. Chatga yozish ham faqat tayyorlanadi, ✅ bosilgandagina ketadi. Chatlardagi shaxsiy gaplarni boshqa odamlarga aytma.
@@ -268,17 +274,23 @@ ${priceList}`;
       }
       case "kanalga_post": {
         if (!channel) return "Xato: kanal sozlanmagan (Render'da TELEGRAM_CHANNEL o'zgaruvchisi yo'q, masalan @ahdigital_01). Bot kanalda admin bo'lishi kerak.";
+        const like = similarNote(input.matn);
         const k = id(); pending.set(k, { turi: "kanal", chatId: channel, matn: input.matn, kim: channel });
-        await approval(k, `📢 Kanal uchun post (${channel}):\n\n${input.matn}`);
-        return "Post tayyorlandi va egasiga tasdiqlash uchun ko'rsatildi. U ✅ bossa kanalga chiqadi.";
+        await approval(k, `📢 Kanal uchun post (${channel}):\n\n${input.matn}${like}`);
+        return `Post tayyorlandi va egasiga tasdiqlash uchun ko'rsatildi. U ✅ bossa kanalga chiqadi.${like ? " Diqqat: kanalda o'xshash post(lar) bor — egasiga ham ko'rsatildi:" + like : ""}`;
+      }
+      case "kanal_tarixi": {
+        const list = posts.recent(input.soz ? 15 : 40, input.soz || "");
+        return list.length ? list.join("\n") : (input.soz ? "Bu mavzuda post topilmadi." : "Kanal tarixi hali bo'sh.");
       }
       case "rasm_yaratish": {
         if (!imager) return "Xato: rasm yaratish o'rnatilmagan (satori va @resvg/resvg-js kerak).";
         const png = await imager.render(input);
         const caption = input.kanal_matni ? String(input.kanal_matni).slice(0, 1024) : "";
         if (caption && channel) {
+          const like = similarNote(`${input.sarlavha || ""}\n${caption}`);
           const k = id(); pending.set(k, { turi: "rasm", chatId: channel, png, matn: caption, kim: channel });
-          await sendPhoto(ownerChatId, png, `${caption}\n\n— Kanalga (${channel}) joylaymi?`, { inline_keyboard: [[
+          await sendPhoto(ownerChatId, png, `${caption}${like}\n\n— Kanalga (${channel}) joylaymi?`.slice(0, 1024), { inline_keyboard: [[
             { text: "✅ Kanalga joylash", callback_data: `ag_ok:${k}` }, { text: "❌ Kerak emas", callback_data: `ag_no:${k}` }]] });
           return "Rasm yaratildi va egasiga ko'rsatildi. U ✅ bossa, matn bilan kanalga chiqadi. Rasmni ko'ra olmaysan — o'zgartirish kerak bo'lsa, egasi aytadi.";
         }
@@ -432,6 +444,12 @@ ${priceList}`;
   }
 
   // Tashqariga ketadigan xabar uchun tasdiq tugmalari
+  // Tasdiqlash xabariga: kanalda o'xshash post bo'lsa — eslatma (qaror egasida)
+  function similarNote(text) {
+    const s = posts.similar(text);
+    return s.length ? `\n\n⚠️ O'xshash post bo'lishi mumkin:\n${s.map(p => `• ${p.sana}: ${(p.matn.split("\n")[0] || "").slice(0, 80)}`).join("\n")}` : "";
+  }
+
   function approval(k, text) {
     return send(ownerChatId, `${text}\n\nYuboraymi?`, { reply_markup: { inline_keyboard: [[
       { text: "✅ Yuborish", callback_data: `ag_ok:${k}` }, { text: "❌ Bekor", callback_data: `ag_no:${k}` }
@@ -449,6 +467,7 @@ ${priceList}`;
       const r = p.turi === "rasm" ? await sendPhoto(p.chatId, p.png, p.matn)
         : p.turi === "biznes" ? await business.send(p.chatId, p.matn)
         : await send(p.chatId, p.matn);
+      if (r.ok && (p.turi === "kanal" || p.turi === "rasm")) posts.add(p.matn, "agent");
       result = r.ok ? `✅ Yuborildi: ${p.kim}` : `⚠️ Yuborib bo'lmadi (${r.description}). ${p.turi === "kanal" ? "Bot kanalda admin ekanini tekshiring." : ""}`;
     } else result = "❌ Bekor qilindi.";
     await api("answerCallbackQuery", { callback_query_id: q.id, text: action === "ag_ok" ? "Bajarildi" : "Bekor qilindi" });
@@ -537,10 +556,14 @@ ${priceList}`;
     money = store.get("agent-moliya", []);
     ideas = store.get("agent-goyalar", []);
     bugs = store.get("agent-xatolar", []);
+    posts.seed();             // kanal tarixi bo'sh bo'lsa — eksportdan boshlang'ich tarix
     reminders.forEach(arm);   // server qayta ishga tushsa — eslatmalar tiklanadi
   }
 
-  return { onOwnerMessage, onCallback, start };
+  // Kanalga qo'lda joylangan postlar ham tarixga yoziladi (bot.js channel_post orqali)
+  const onChannelPost = text => posts.add(text, "kanal");
+
+  return { onOwnerMessage, onCallback, start, onChannelPost };
 }
 
 module.exports = { createAgent, nextTime };

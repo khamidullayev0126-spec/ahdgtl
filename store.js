@@ -27,7 +27,7 @@ const COLLECTIONS = {
   tz: { type: "map" },               // texnik topshiriqlar (tz.js)
   takliflar: { type: "map" }         // tijoriy takliflar (kp.js)
 };
-const BLOBS = ["agent-xotira", "agent-eslatmalar", "biznes-sozlama", "zaxira-holat", "ai-xarajat", "agent-moliya", "agent-goyalar", "agent-xatolar"];
+const BLOBS = ["agent-xotira", "agent-eslatmalar", "biznes-sozlama", "zaxira-holat", "ai-xarajat", "agent-moliya", "agent-goyalar", "agent-xatolar", "kanal-postlar"];
 const KEYS = [...Object.keys(COLLECTIONS), ...BLOBS];
 const BACKUP_DAYS = 14;
 
