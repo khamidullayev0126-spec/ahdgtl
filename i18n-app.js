@@ -19,6 +19,8 @@ window.I18N_EXTRA = Object.assign(window.I18N_EXTRA || {}, {
   "Obuna": ["Подписка", "Subscription"],
   "Kurs ": ["Курс", "Course"],
   "Turi bo'yicha saralash": ["Фильтр по типу", "Filter by type"],
+  "Google'da fikr qoldirish": ["Оставить отзыв в Google", "Leave a Google review"],
+  "Ish yoqqan bo'lsa — 1 daqiqa": ["Если понравилось — 1 минута", "If you liked it — 1 minute"],
   "Instagram Reels — ssenariy, ovoz va montaj AI yordamida. Bossangiz, ovoz bilan ochiladi.": ["Instagram Reels — сценарий, озвучка и монтаж с помощью AI. Нажмите, чтобы смотреть со звуком.", "Instagram Reels — script, voice and editing done with AI. Tap to watch with sound."],
   "Solishtirish uchun suring": ["Двигайте, чтобы сравнить", "Drag to compare"],
   "To'liq portfolio": ["Всё портфолио", "Full portfolio"],

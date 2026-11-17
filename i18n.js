@@ -25,6 +25,8 @@
     "Jarayon": ["Процесс", "Process"],
     "Men haqimda": ["Обо мне", "About me"],
     "AHdigital jamoasi": ["Команда AHdigital", "AHdigital team"],
+    "Google sharhlar": ["Отзывы в Google", "Google reviews"],
+    "⭐ Fikr qoldirish": ["⭐ Оставить отзыв", "⭐ Leave a review"],
     "Asoschi": ["Основатель", "Founder"],
     "Hammuassis": ["Сооснователь", "Co-founder"],
     "Portfolio": ["Портфолио", "Portfolio"],

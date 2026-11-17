@@ -177,6 +177,9 @@ ${priceList}`;
     bajarildi: { uz: "🎉 Buyurtmangiz tayyor! Natijani shu yerda yuboraman — ko'rib chiqing. Tuzatish kerak bo'lsa, yozing.", ru: "🎉 Ваш заказ готов! Отправлю результат здесь — посмотрите. Если нужны правки, напишите.", en: "🎉 Your order is ready! I'll send the result here — take a look. If you need any changes, just write." },
     bekor: { uz: "❌ Buyurtmangiz bekor qilindi. Savol bo'lsa, shu yerga yozing.", ru: "❌ Ваш заказ отменён. Если есть вопросы, напишите сюда.", en: "❌ Your order was cancelled. If you have questions, write here." }
   };
+  // Google'da sharh: ish tayyor bo'lganda yumshoq iltimos (majburiy emas)
+  const REVIEW_URL = process.env.GOOGLE_REVIEW_URL || "https://g.page/r/Ca3yI6-zmsG4ECE/review";
+  const REVIEW = { uz: "Ish yoqqan bo'lsa, Google'da qisqa fikr qoldirsangiz, menga katta yordam bo'ladi 🙏", ru: "Если работа понравилась, оставьте, пожалуйста, короткий отзыв в Google — это очень помогает 🙏", en: "If you liked the work, a short Google review would help me a lot 🙏" };
   const ORDER_WORD = { uz: "Buyurtma", ru: "Заказ", en: "Order" };
   const CABINET = { uz: "Holatini kabinetda kuzating", ru: "Статус — в личном кабинете", en: "Track it in your account" };
   let payInfo = null;                            // payments.js ulanadi: holat xabariga to'lov havolasini qo'shadi
@@ -190,7 +193,8 @@ ${priceList}`;
     const lang = langOf(order);
     const pay = payInfo ? payInfo(order, lang) : "";
     const site = publicUrl ? `\n${CABINET[lang]}: ${publicUrl.replace(/\/$/, "")}/kabinet.html?lang=${lang}` : "";
-    const r = await send(chatId, `${ORDER_WORD[lang]} #${order.code} · ${order.serviceName}\n\n${msg[lang]}${pay}${site}`);
+    const review = order.status === "bajarildi" && REVIEW_URL ? `\n\n${REVIEW[lang]}\n${REVIEW_URL}` : "";
+    const r = await send(chatId, `${ORDER_WORD[lang]} #${order.code} · ${order.serviceName}\n\n${msg[lang]}${pay}${site}${review}`);
     return r.ok ? { ok: true } : { ok: false, reason: r.description || "Telegram xatosi" };
   }
   // Mijozga uning tilida xabar: texts = { uz, ru, en }

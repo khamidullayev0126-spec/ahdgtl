@@ -96,6 +96,7 @@ test("ish 'bajarildi' bo'lgach mijozga qolgan to'lov havolasi boradi va 2-qism o
   const msg = srv.telegram().filter(x => x.method === "sendMessage" && String(x.body.chat_id) === "7001").pop();
   assert.match(msg.body.text, /К оплате: 15 000 сум/);
   assert.match(msg.body.text, new RegExp(`tolov\\.html\\?o=${order.code}`));
+  assert.match(msg.body.text, /отзыв в Google[\s\S]*g\.page\/r\//, "ish tayyor xabarida Google sharh havolasi bo'lishi kerak");
   const d = await info(order.code);
   assert.equal(d.due.locked, false);
 });
