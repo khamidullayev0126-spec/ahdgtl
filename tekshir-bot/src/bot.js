@@ -5,6 +5,9 @@
 require("dotenv").config();
 const { Bot, InlineKeyboard } = require("grammy");
 const { t, LANGS } = require("./i18n");
+const { extractUrls, checkUrls } = require("./checkers/url");
+const { combine } = require("./scoring");
+const { buildReply } = require("./reply");
 
 // Foydalanuvchining tanlagan tili.
 // HOZIRCHA xotirada (Map) saqlanadi — bot qayta ishga tushsa, unutiladi.
@@ -46,12 +49,25 @@ function createBot(token, options = {}) {
     await ctx.reply(t(lang, "welcome"), { parse_mode: "HTML" });
   });
 
-  // Boshqa har qanday xabar (shaxsiy chatda). Tekshiruv 2-bosqichdan boshlab qo'shiladi.
+  // "Shikoyat qilish" tugmasi — 7-bosqichda to'liq ishlaydi
+  bot.callbackQuery("report", ctx => ctx.answerCallbackQuery({ text: t(getLang(ctx.from.id), "report_soon"), show_alert: true }));
+
+  // Boshqa har qanday xabar (shaxsiy chatda): havolalarni topamiz va tekshiramiz
   bot.on("message", async ctx => {
     if (ctx.chat.type !== "private") return;          // guruhlar — 8-bosqichda
     const lang = getLang(ctx.from.id);
     if (!lang) return ctx.reply(t("uz-latn", "choose_lang"), { reply_markup: langKeyboard() });
-    await ctx.reply(t(lang, "soon"));
+
+    // Matn oddiy xabarda "text"da, rasm/fayl ostidagi yozuvda esa "caption"da bo'ladi
+    const m = ctx.message;
+    const text = m.text || m.caption || "";
+    const urls = extractUrls(text, m.entities || m.caption_entities);
+    if (!urls.length) return ctx.reply(t(lang, "no_link"));
+
+    await ctx.replyWithChatAction("typing").catch(() => {});   // "yozmoqda..." belgisi
+    const result = combine(await checkUrls(urls));
+    const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username);
+    await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: m.message_id }, link_preview_options: { is_disabled: true } });
   });
 
   // Xato bo'lsa — bot to'xtab qolmasin: log'ga yozamiz, foydalanuvchiga yumshoq javob

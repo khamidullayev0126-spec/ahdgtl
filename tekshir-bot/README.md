@@ -4,7 +4,8 @@ Shubhali havola, xabar yoki faylni botga yuborasiz — bot bir necha soniyada xa
 
 ## Holat
 - [x] **1-bosqich:** /start, til tanlash (O'zbek lotin / kirill / Rus), /til, /yordam
-- [ ] 2. Havola tekshiruvi (qoidalar) · [ ] 3. VirusTotal / Safe Browsing · [ ] 4. Matn · [ ] 5. Fayl
+- [x] **2-bosqich:** havola tekshiruvi (qoidalar: soxta domen, qisqartirilgan havola, punycode, IP, shubhali oxir)
+- [ ] 3. VirusTotal / Safe Browsing · [ ] 4. Matn · [ ] 5. Fayl
 - [ ] 6. Baza va /stats · [ ] 7. Shikoyatlar · [ ] 8. Guruh rejimi · [ ] 9. AI · [ ] 10. Server
 
 ## Kompyuterda ishga tushirish

@@ -56,9 +56,21 @@ test("til tanlangandan keyin /start darhol salomlashadi (kirillda)", async () =>
   assert.match(calls.find(c => c.method === "sendMessage").payload.text, /Ассалому алайкум/);
 });
 
-test("oddiy xabar: hozircha 'tez orada' javobi (tekshiruv 2-bosqichda)", async () => {
+test("havola yuborilsa — bot tekshirib, natija va tugmalar bilan javob beradi", async () => {
   userLang.clear(); userLang.set(777, "uz-latn");
   const { bot, calls } = fakeBot();
-  await bot.handleUpdate(msg("https://click.uz"));
-  assert.match(calls.find(c => c.method === "sendMessage").payload.text, /tez orada/);
+  await bot.handleUpdate(msg("https://c1ick-uz.com/bonus"));
+  const ans = calls.find(c => c.method === "sendMessage").payload;
+  assert.match(ans.text, /XAVFLI/);
+  assert.match(ans.text, /<code>click\.uz<\/code>/);                 // rasmiy sayt manzili ko'rsatiladi
+  const btns = ans.reply_markup.inline_keyboard.flat();
+  assert.ok(btns.some(b => b.callback_data === "report"));
+  assert.ok(btns.some(b => (b.url || "").startsWith("https://t.me/share/url")));
+});
+
+test("havolasiz xabar — 'havola topmadim' javobi", async () => {
+  userLang.clear(); userLang.set(777, "uz-latn");
+  const { bot, calls } = fakeBot();
+  await bot.handleUpdate(msg("Assalomu alaykum, ertaga soat 10 da uchrashamiz"));
+  assert.match(calls.find(c => c.method === "sendMessage").payload.text, /havola topmadim/);
 });
