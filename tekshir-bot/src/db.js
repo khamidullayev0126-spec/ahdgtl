@@ -83,6 +83,7 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
   const db = new Database(file);
   db.pragma("journal_mode = WAL");      // o'qish va yozish bir-biriga xalaqit bermaydi
   db.exec(SCHEMA);
+  migrate(db);
 
   // Tez-tez ishlatiladigan so'rovlarni oldindan tayyorlab qo'yamiz
   const q = {
@@ -162,6 +163,23 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
     },
     reportCount: targetHash => q.repCount.get(targetHash).n,
 
+    // ---- Guruhlar (8-bosqich) ----
+    // mode: "suspicious" — 🟡 va 🔴 da ogohlantiradi, "danger" — faqat 🔴 da
+    // delete_danger: 1 bo'lsa — 🔴 xabar o'chiriladi (bot admin bo'lsa)
+    getGroup: chatId => db.prepare("SELECT * FROM groups WHERE chat_id = ?").get(chatId),
+    addGroup(chatId, title) {
+      db.prepare(`INSERT INTO groups (chat_id, title, lang, enabled, added_at) VALUES (?, ?, 'uz-latn', 1, ?)
+                  ON CONFLICT(chat_id) DO UPDATE SET title = excluded.title, enabled = 1`).run(chatId, title || "", Date.now());
+      return api.getGroup(chatId);
+    },
+    setGroup(chatId, field, value) {
+      if (!["lang", "enabled", "mode", "delete_danger"].includes(field)) throw new Error("noto'g'ri maydon: " + field);
+      db.prepare(`UPDATE groups SET ${field} = ? WHERE chat_id = ?`).run(value, chatId);
+      return api.getGroup(chatId);
+    },
+    removeGroup: chatId => db.prepare("UPDATE groups SET enabled = 0 WHERE chat_id = ?").run(chatId),
+    groupCounted: (chatId, warned) => db.prepare("UPDATE groups SET checks = checks + 1, warnings = warnings + ? WHERE chat_id = ?").run(warned ? 1 : 0, chatId),
+
     // ---- /stats uchun raqamlar ----
     stats() {
       const now = Date.now(), today = startOfDay(now), week = now - 7 * DAY;
@@ -182,6 +200,9 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
         topReasons: topReasons(db),
         reports: one("SELECT COUNT(*) n FROM reports").n,
         reportsWeek: one("SELECT COUNT(*) n FROM reports WHERE created_at >= ?", week).n,
+        groups: one("SELECT COUNT(*) n FROM groups").n,
+        groupsActive: one("SELECT COUNT(*) n FROM groups WHERE enabled = 1").n,
+        groupWarnings: one("SELECT COALESCE(SUM(warnings), 0) n FROM groups").n,
         reportedTargets: db.prepare("SELECT target_kind kind, COUNT(DISTINCT target_hash) n FROM reports GROUP BY target_kind").all()
       };
     },
@@ -195,6 +216,16 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
     close: () => db.close()
   };
   return api;
+}
+
+// Eski bazaga yangi ustunlar qo'shish (bot yangilanganda ma'lumotlar yo'qolmasin)
+function migrate(db) {
+  const cols = db.prepare("PRAGMA table_info(groups)").all().map(c => c.name);
+  const add = (name, def) => { if (!cols.includes(name)) db.exec(`ALTER TABLE groups ADD COLUMN ${name} ${def}`); };
+  add("mode", "TEXT NOT NULL DEFAULT 'suspicious'");
+  add("delete_danger", "INTEGER NOT NULL DEFAULT 0");
+  add("checks", "INTEGER NOT NULL DEFAULT 0");
+  add("warnings", "INTEGER NOT NULL DEFAULT 0");
 }
 
 function startOfDay(ts) { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }

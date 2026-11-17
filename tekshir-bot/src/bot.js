@@ -1,5 +1,6 @@
 // Tekshir — firibgarlikka qarshi Telegram bot. Asosiy fayl.
 // 1-bosqich: /start, til tanlash, /til, /yordam. 6-bosqich: baza, /stats, /export. 7-bosqich: shikoyatlar, raqamlar.
+// 8-bosqich: guruh rejimi (/tekshir, /sozlama, avtomatik ogohlantirish).
 // Ishga tushirish: npm start   (avval .env faylida BOT_TOKEN bo'lishi kerak)
 
 // .env faylini doim loyiha papkasidan o'qiymiz (terminal qaysi papkada bo'lishidan qat'i nazar)
@@ -13,7 +14,7 @@ const { extractUrls, checkUrls } = require("./checkers/url");
 const { combineAll } = require("./scoring");
 const { analyzeText } = require("./checkers/text");
 const { checkFile } = require("./checkers/file");
-const { buildReply } = require("./reply");
+const { buildReply, buildGroupReply } = require("./reply");
 const { openDb, toCsv } = require("./db");
 const { isAdmin, formatStats } = require("./admin");
 const cache = require("./cache");
@@ -45,6 +46,7 @@ function createBot(token, options = {}, deps = {}) {
 
   // /start — til tanlanmagan bo'lsa, avval tilni so'raymiz
   bot.command("start", async ctx => {
+    if (isGroup(ctx)) return ctx.reply(t(groupOf(ctx).lang, "group_welcome"), { parse_mode: "HTML" });
     const lang = getLang(ctx.from.id);
     if (!lang) return ctx.reply(t("uz-latn", "choose_lang"), { reply_markup: langKeyboard() });
     await ctx.reply(t(lang, "welcome"), { parse_mode: "HTML" });
@@ -54,7 +56,9 @@ function createBot(token, options = {}, deps = {}) {
   bot.command("til", ctx => ctx.reply(t("uz-latn", "choose_lang"), { reply_markup: langKeyboard() }));
 
   // /yordam — qanday ishlatish
-  bot.command(["yordam", "help"], ctx => ctx.reply(t(getLang(ctx.from.id), "help"), { parse_mode: "HTML" }));
+  bot.command(["yordam", "help"], ctx => isGroup(ctx)
+    ? ctx.reply(t(groupOf(ctx).lang, "group_welcome"), { parse_mode: "HTML" })
+    : ctx.reply(t(getLang(ctx.from.id), "help"), { parse_mode: "HTML" }));
 
   // Til tugmasi bosilganda: callback_data = "lang:uz-latn"
   bot.callbackQuery(/^lang:(.+)$/, async ctx => {
@@ -68,14 +72,14 @@ function createBot(token, options = {}, deps = {}) {
 
   // /stats — faqat adminlar uchun (ADMIN_IDS). Boshqalarga bot jim turadi — buyruq borligi ham bilinmasin
   bot.command("stats", async ctx => {
-    if (!isAdmin(ctx.from.id)) return;
+    if (ctx.chat.type !== "private" || !isAdmin(ctx.from.id)) return;   // statistika guruhda ko'rinmasin
     await ctx.reply(formatStats(db.stats()), { parse_mode: "HTML" });
   });
 
   // /export — oxirgi 30 kunlik tekshiruvlar CSV faylda (Excel'da ochiladi). Foydalanuvchi ID'si va matn YO'Q
   // /export 7 — oxirgi 7 kun
   bot.command("export", async ctx => {
-    if (!isAdmin(ctx.from.id)) return;
+    if (ctx.chat.type !== "private" || !isAdmin(ctx.from.id)) return;
     const days = Math.min(365, Math.max(1, parseInt(ctx.match, 10) || 30));
     const rows = db.exportRows(days);
     const name = `tekshir-${new Date().toISOString().slice(0, 10)}.csv`;
@@ -95,14 +99,17 @@ function createBot(token, options = {}, deps = {}) {
     pending.set(id, { targets, owner, until: now + PENDING_TTL });
     return id;
   }
-  const getPending = (id, userId) => { const p = pending.get(id); return p && p.until > Date.now() && p.owner === userId ? p : null; };
+  // owner = null — guruh xabari: guruhdagi har kim shikoyat qila oladi (har biri faqat bir marta)
+  const getPending = (id, userId) => { const p = pending.get(id); return p && p.until > Date.now() && (p.owner === null || p.owner === userId) ? p : null; };
 
   // 1-qadam: "📢 Shikoyat qilish" → tasodifan bosilmasin, tasdiqlash tugmalarini ko'rsatamiz
+  // Tugma tili: shaxsiy tanlangan til, bo'lmasa — guruh tili
+  const cbLang = ctx => getLang(ctx.from.id) || (isGroup(ctx) ? groupOf(ctx).lang : undefined);
   bot.callbackQuery(/^rep:(.+)$/, async ctx => {
-    const lang = getLang(ctx.from.id);
+    const lang = cbLang(ctx);
     const p = getPending(ctx.match[1], ctx.from.id);
     if (!p) return ctx.answerCallbackQuery({ text: t(lang, "report_expired"), show_alert: true });
-    p.markup = ctx.callbackQuery.message?.reply_markup;           // "Bekor qilish" bosilsa — qaytaramiz
+    p.markup = p.markup || ctx.callbackQuery.message?.reply_markup;   // "Bekor qilish" bosilsa — asl tugmalarni qaytaramiz
     await ctx.answerCallbackQuery({ text: t(lang, "report_ask"), show_alert: true });
     await ctx.editMessageReplyMarkup({ reply_markup: new InlineKeyboard()
       .text(t(lang, "btn_report_yes"), `repy:${ctx.match[1]}`).text(t(lang, "btn_report_no"), `repn:${ctx.match[1]}`) }).catch(() => {});
@@ -110,13 +117,17 @@ function createBot(token, options = {}, deps = {}) {
 
   // 2-qadam: "Ha" → shikoyatlar bazaga yoziladi (bir odam — bitta raqamga bir marta)
   bot.callbackQuery(/^repy:(.+)$/, async ctx => {
-    const lang = getLang(ctx.from.id);
+    const lang = cbLang(ctx);
     const p = getPending(ctx.match[1], ctx.from.id);
     if (!p) return ctx.answerCallbackQuery({ text: t(lang, "report_expired"), show_alert: true });
     const results = p.targets.map(x => db.addReport(x.hash, x.kind, ctx.from.id));
     const key = results.includes("ok") ? "report_ok" : results.includes("limit") ? "report_limit" : "report_dup";
-    pending.delete(ctx.match[1]);
     await ctx.answerCallbackQuery({ text: t(lang, key), show_alert: true });
+    if (p.owner === null) {                                       // guruh: boshqalar ham shikoyat qila olsin — asl tugmalar qaytadi
+      if (p.markup) await ctx.editMessageReplyMarkup({ reply_markup: p.markup }).catch(() => {});
+      return;
+    }
+    pending.delete(ctx.match[1]);
     await ctx.editMessageReplyMarkup({ reply_markup: new InlineKeyboard().text(t(lang, "btn_report_done"), "noop") }).catch(() => {});
   });
 
@@ -128,21 +139,13 @@ function createBot(token, options = {}, deps = {}) {
   });
   bot.callbackQuery("noop", ctx => ctx.answerCallbackQuery());
 
-  // Boshqa har qanday xabar (shaxsiy chatda): havolalarni topamiz va tekshiramiz
-  bot.on("message", async ctx => {
-    if (ctx.chat.type !== "private") return;          // guruhlar — 8-bosqichda
-    const lang = getLang(ctx.from.id);
-    if (!lang) return ctx.reply(t("uz-latn", "choose_lang"), { reply_markup: langKeyboard() });
-
-    // Matn oddiy xabarda "text"da, rasm/fayl ostidagi yozuvda esa "caption"da bo'ladi
-    const m = ctx.message;
+  // ---------- Tahlil: shaxsiy chat va guruh uchun umumiy ----------
+  // Xabardagi havola, matn, fayl va raqamlarni tekshiradi. Matn bazaga YOZILMAYDI.
+  async function analyze(m, userId, chatType) {
     const text = m.text || m.caption || "";
     const doc = m.document;                                    // fayl (APK, PDF, ZIP va h.k.)
-    if (!text.trim() && !doc) return ctx.reply(t(lang, "no_text"));   // stiker, ovozli xabar va h.k.
     const urls = extractUrls(text, m.entities || m.caption_entities);
-
-    await ctx.replyWithChatAction("typing").catch(() => {});   // "yozmoqda..." belgisi
-    // Havolalar, matn va fayl bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
+    // Havolalar va fayl bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
     const [urlRes, fileRes] = await Promise.all([
       urls.length ? checkUrls(urls) : [],
       doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, () => download(doc.file_id)) : null
@@ -169,8 +172,125 @@ function createBot(token, options = {}, deps = {}) {
     const result = combineAll(urlRes, analyzeText(text), fileRes, extra);
     // Bazaga faqat natija yoziladi — xabar matni ham, to'liq havola ham YOZILMAYDI
     try {
-      db.logCheck({ userId: ctx.from.id, chatType: "private", result, hasText: !!text.trim(), hosts: urlRes.map(r => r.host) });
+      db.logCheck({ userId, chatType, result, hasText: !!text.trim(), hosts: urlRes.map(r => r.host) });
     } catch (e) { console.error("Baza (logCheck):", e.message); }   // baza xatosi javobga xalaqit bermasin
+    return { result, numbers, targets };
+  }
+
+  // ---------- 8-bosqich: GURUH REJIMI ----------
+  const isGroup = ctx => ["group", "supergroup"].includes(ctx.chat?.type);
+  // Guruh bazada bo'lmasa (bot 8-bosqichdan oldin qo'shilgan bo'lsa) — hozir qo'shamiz
+  const groupOf = ctx => db.getGroup(ctx.chat.id) || db.addGroup(ctx.chat.id, ctx.chat.title);
+
+  // Guruh admini ekanini tekshirish (sozlamalarni faqat adminlar o'zgartiradi)
+  async function isGroupAdmin(ctx) {
+    if (ctx.message?.sender_chat?.id === ctx.chat.id) return true;    // yashirin (anonim) admin
+    try {
+      const mbr = await ctx.api.getChatMember(ctx.chat.id, ctx.from.id);
+      return ["creator", "administrator"].includes(mbr.status);
+    } catch { return false; }
+  }
+
+  // Bot guruhga qo'shilganda — salomlashadi va qanday ishlashini tushuntiradi. Chiqarilsa — o'chiriladi
+  bot.on("my_chat_member", async ctx => {
+    if (!isGroup(ctx)) return;
+    const was = ctx.myChatMember.old_chat_member.status, now = ctx.myChatMember.new_chat_member.status;
+    const inside = st => ["member", "administrator", "creator"].includes(st);
+    if (inside(now) && !inside(was)) {
+      const g = db.addGroup(ctx.chat.id, ctx.chat.title);
+      await ctx.reply(t(g.lang, "group_welcome"), { parse_mode: "HTML" });
+    } else if (!inside(now) && inside(was)) db.removeGroup(ctx.chat.id);
+  });
+
+  // Sozlamalar oynasi
+  function settingsView(g) {
+    const L = g.lang;
+    const text = t(L, "group_settings", {
+      state: t(L, g.enabled ? "gs_on" : "gs_off"),
+      mode: t(L, g.mode === "danger" ? "gs_mode_danger" : "gs_mode_suspicious"),
+      del: t(L, g.delete_danger ? "gs_yes" : "gs_no"),
+      lang: t(L, "lang_name")
+    });
+    const kb = new InlineKeyboard()
+      .text(t(L, g.enabled ? "btn_gs_pause" : "btn_gs_resume"), `gs:enabled:${g.enabled ? 0 : 1}`).row()
+      .text(t(L, "btn_gs_mode"), `gs:mode:${g.mode === "danger" ? "suspicious" : "danger"}`).row()
+      .text(t(L, "btn_gs_del"), `gs:delete_danger:${g.delete_danger ? 0 : 1}`).row();
+    for (const l of LANGS) kb.text(t(l, "lang_name"), `gs:lang:${l}`);
+    return { text, reply_markup: kb };
+  }
+
+  // /sozlama — guruh sozlamalari (faqat guruh adminlari)
+  bot.command("sozlama", async ctx => {
+    if (!isGroup(ctx)) return ctx.reply(t(getLang(ctx.from.id), "group_only"));
+    const g = groupOf(ctx);
+    if (!(await isGroupAdmin(ctx))) return ctx.reply(t(g.lang, "group_admin_only"));
+    const v = settingsView(g);
+    await ctx.reply(v.text, { parse_mode: "HTML", reply_markup: v.reply_markup });
+  });
+
+  bot.callbackQuery(/^gs:(enabled|mode|delete_danger|lang):(.+)$/, async ctx => {
+    if (!isGroup(ctx)) return ctx.answerCallbackQuery();
+    const g0 = groupOf(ctx);
+    if (!(await isGroupAdmin(ctx))) return ctx.answerCallbackQuery({ text: t(g0.lang, "group_admin_only"), show_alert: true });
+    const [, field, raw] = ctx.match;
+    const ok = { enabled: ["0", "1"], delete_danger: ["0", "1"], mode: ["danger", "suspicious"], lang: LANGS }[field];
+    if (!ok.includes(raw)) return ctx.answerCallbackQuery();
+    const g = db.setGroup(ctx.chat.id, field, ["enabled", "delete_danger"].includes(field) ? Number(raw) : raw);
+    await ctx.answerCallbackQuery({ text: t(g.lang, "group_saved") });
+    const v = settingsView(g);
+    await ctx.editMessageText(v.text, { parse_mode: "HTML", reply_markup: v.reply_markup }).catch(() => {});
+  });
+
+  // /tekshir — guruhda shubhali xabarga JAVOB (reply) qilib yoziladi. Natija har doim chiqadi (✅ ham)
+  bot.command("tekshir", async ctx => {
+    const target = ctx.message.reply_to_message;
+    const lang = isGroup(ctx) ? groupOf(ctx).lang : getLang(ctx.from.id);
+    if (!target || (!(target.text || target.caption || "").trim() && !target.document))
+      return ctx.reply(t(lang, "group_tekshir_hint"), { parse_mode: "HTML" });
+    const { result, numbers, targets } = await analyze(target, ctx.from.id, isGroup(ctx) ? "group" : "private");
+    const reportId = targets.length ? remember(targets, isGroup(ctx) ? null : ctx.from.id) : null;
+    const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username, { numbers, reportId });
+    await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: target.message_id, allow_sending_without_reply: true }, link_preview_options: { is_disabled: true } });
+  });
+
+  // Guruhdagi oddiy xabarlar: jim tekshiradi, faqat xavf bo'lsa ogohlantiradi (✅ uchun guruhni to'ldirmaydi)
+  async function onGroupMessage(ctx) {
+    const m = ctx.message;
+    if (m.from?.is_bot) return;                                         // boshqa botlarga e'tibor bermaymiz
+    const text = m.text || m.caption || "";
+    if (!text.trim() && !m.document) return;
+    const g = groupOf(ctx);
+    if (!g.enabled) return;
+    const { result, numbers, targets } = await analyze(m, m.from?.id, "group");
+    const warn = result.level === "danger" || (result.level === "suspicious" && g.mode !== "danger");
+    db.groupCounted(ctx.chat.id, warn);
+    if (!warn) return;
+
+    // 🔴 va sozlamada yoqilgan bo'lsa — xabarni o'chiramiz (bot admin bo'lib, huquqi bo'lsa)
+    let deleted = false;
+    if (result.level === "danger" && g.delete_danger) {
+      try { await ctx.deleteMessage(); deleted = true; } catch (e) { console.error("O'chirib bo'lmadi:", e.message); }
+    }
+    const reportId = targets.length ? remember(targets, null) : null;   // guruhda har kim shikoyat qila oladi
+    const { text: answer, reply_markup } = buildGroupReply(g.lang, result, ctx.me.username, { numbers, reportId, deleted, name: m.from?.first_name });
+    await ctx.reply(answer, { parse_mode: "HTML", reply_markup, link_preview_options: { is_disabled: true },
+      ...(deleted ? {} : { reply_parameters: { message_id: m.message_id, allow_sending_without_reply: true } }) });
+  }
+
+  // ---------- Boshqa har qanday xabar ----------
+  bot.on("message", async ctx => {
+    if (isGroup(ctx)) return onGroupMessage(ctx);
+    if (ctx.chat.type !== "private") return;          // kanallar va h.k. — e'tibor bermaymiz
+    const lang = getLang(ctx.from.id);
+    if (!lang) return ctx.reply(t("uz-latn", "choose_lang"), { reply_markup: langKeyboard() });
+
+    // Matn oddiy xabarda "text"da, rasm/fayl ostidagi yozuvda esa "caption"da bo'ladi
+    const m = ctx.message;
+    const text = m.text || m.caption || "";
+    if (!text.trim() && !m.document) return ctx.reply(t(lang, "no_text"));   // stiker, ovozli xabar va h.k.
+
+    await ctx.replyWithChatAction("typing").catch(() => {});   // "yozmoqda..." belgisi
+    const { result, numbers, targets } = await analyze(m, ctx.from.id, "private");
     const reportId = targets.length ? remember(targets, ctx.from.id) : null;
     const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username, { numbers, reportId });
     await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: m.message_id }, link_preview_options: { is_disabled: true } });
@@ -219,6 +339,11 @@ if (require.main === module) {
     { command: "yordam", description: "Qanday ishlatish" },
     { command: "til", description: "Tilni o'zgartirish / Сменить язык" }
   ]).catch(e => console.error("Buyruqlar menyusi:", e.message));
+  // Guruhlardagi "/" menyusi
+  bot.api.setMyCommands([
+    { command: "tekshir", description: "Xabarga javob qilib yozing — tekshiraman" },
+    { command: "sozlama", description: "Guruh sozlamalari (adminlar)" }
+  ], { scope: { type: "all_group_chats" } }).catch(e => console.error("Guruh menyusi:", e.message));
   // Long polling: bot o'zi Telegram'dan yangi xabarlarni so'rab turadi (kompyuterda ishlatish uchun qulay)
   bot.start({ onStart: info => console.log(`✅ @${info.username} ishga tushdi. To'xtatish: Ctrl + C`) });
 }

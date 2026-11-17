@@ -51,4 +51,22 @@ function buildReply(lang, result, botUsername, opts = {}) {
   return { text, reply_markup: kb };
 }
 
-module.exports = { buildReply, esc };
+// Guruh uchun QISQA ogohlantirish: guruhni uzun matn bilan to'ldirmaslik uchun 2 ta sabab va 1 qator maslahat.
+// To'liq tushuntirish — "Batafsil" tugmasi orqali botning o'zida.
+// opts.deleted — xabar o'chirilgan bo'lsa, kim yuborganini aytamiz (faqat ismi)
+function buildGroupReply(lang, result, botUsername, opts = {}) {
+  let text = `<b>${t(lang, `level_${result.level}`)}</b>`;
+  if (opts.deleted) text += "\n" + t(lang, "group_deleted", { name: esc(opts.name || "?") });
+  const CODE = ["real", "tld", "word", "host", "ext", "name"];
+  const reasons = result.reasons.filter(r => !r.hidden).slice(0, 2).map(r => "• " + t(lang, r.code, Object.fromEntries(Object.entries(r.vars || {}).map(([k, v]) => [k, CODE.includes(k) ? `<code>${esc(v)}</code>` : esc(v)]))));
+  if (reasons.length) text += "\n\n" + reasons.join("\n");
+  const reported = (opts.numbers || []).filter(n => n.count);
+  if (reported.length) text += "\n" + reported.map(n => "• " + t(lang, "num_count", { num: `<code>${esc(n.masked)}</code>`, n: n.count })).join("\n");
+  text += "\n\n" + t(lang, result.level === "danger" ? "group_adv_danger" : "group_adv_suspicious");
+  const kb = new InlineKeyboard();
+  if (opts.reportId) kb.text(t(lang, "btn_report"), `rep:${opts.reportId}`);
+  kb.url(t(lang, "btn_details"), `https://t.me/${botUsername}?start=group`);
+  return { text, reply_markup: kb };
+}
+
+module.exports = { buildReply, buildGroupReply, esc };

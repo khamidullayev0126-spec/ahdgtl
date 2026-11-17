@@ -10,7 +10,8 @@ Shubhali havola, xabar yoki faylni botga yuborasiz — bot bir necha soniyada xa
 - [x] **5-bosqich:** fayl tekshiruvi (APK, .exe, ikki kengaytma, SHA-256 → VirusTotal)
 - [x] **6-bosqich:** SQLite baza (til, natijalar, domenlar, kesh), admin uchun /stats va /export
 - [x] **7-bosqich:** shikoyatlar (tasdiqlash bilan, 1 odam — 1 shikoyat, kuniga 20 ta) va telefon/karta raqamlarini tekshirish
-- [ ] 8. Guruh rejimi · [ ] 9. AI · [ ] 10. Server
+- [x] **8-bosqich:** guruh rejimi (jim tekshiruv, faqat xavfda ogohlantirish, /tekshir, /sozlama, 🔴 xabarni o'chirish)
+- [ ] 9. AI · [ ] 10. Server
 
 ## Kompyuterda ishga tushirish
 
@@ -63,6 +64,18 @@ Boshqa foydalanuvchilar bu buyruqlarni yozsa, bot javob bermaydi.
 ### Baza va maxfiylik
 Baza fayli: `data/tekshir.db` (GitHub'ga yuklanmaydi). Unda saqlanadi: Telegram ID, til, tekshiruv natijasi (daraja, ball, sabab kodlari) va faqat **domen** nomi.
 **Saqlanmaydi:** xabar matni, to'liq havola, fayl, telefon va karta raqamlari (ular 7-bosqichda faqat SHA-256 hash ko'rinishida saqlanadi).
+
+### Guruhda ishlatish
+1. Guruh → **Add members** → botingizni qo'shing. Bot salomlashadi.
+2. Botni **admin** qiling (Guruh → Edit → Administrators → Add admin). Aks holda bot oddiy xabarlarni ko'rmaydi — Telegram'ning "privacy mode" qoidasi. Xabarni o'chirishi uchun "Delete messages" huquqi kerak.
+   - Admin qilmasdan ham ishlatish mumkin: BotFather → `/setprivacy` → botingiz → **Disable**.
+3. Bot xavfsiz xabarlarga **javob yozmaydi** — faqat 🟡/🔴 da qisqa ogohlantiradi.
+4. Istalgan xabarga javob (reply) qilib `/tekshir` yozing — to'liq natija chiqadi (✅ ham).
+5. `/sozlama` (faqat guruh adminlari):
+   - to'xtatish / yoqish
+   - ogohlantirish: 🟡+🔴 yoki faqat 🔴
+   - 🔴 xabarni avtomatik o'chirish (standart: o'chiq)
+   - guruh tili
 
 ### Raqamlar va shikoyatlar (HASH_SALT)
 Telefon va karta raqamlari bazada **ochiq saqlanmaydi** — faqat SHA-256 + maxfiy "tuz" (salt) ko'rinishida.
