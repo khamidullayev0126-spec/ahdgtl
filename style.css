@@ -146,6 +146,13 @@ section { padding-block: var(--s8); }
 .about-img img { object-position: 50% 30%; }
 .about-copy { display: flex; flex-direction: column; gap: var(--s4); align-items: flex-start; min-width: 0; }
 .about-copy h2 { font-size: clamp(34px, 4.5vw, 52px); line-height: 1.08; }
+.team { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: var(--s3); width: 100%; max-width: 560px; }
+.team-title { grid-column: 1 / -1; font-size: 14px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--sage-ink); }
+.member { display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; background: var(--pill-bg); border-radius: 99px; min-width: 0; }
+.member-ph { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; object-position: 50% 25%; flex: none; }
+.member-ini { display: grid; place-items: center; background: var(--sage-blob); color: var(--sage-ink); font-weight: 800; }
+.member b { display: block; font-size: 16px; overflow-wrap: anywhere; }
+.member small { color: var(--body-strong); opacity: .75; font-size: 14px; }
 .about-copy p { font-size: 18px; line-height: 1.6; max-width: 560px; color: var(--body-strong); }
 
 /* contact */

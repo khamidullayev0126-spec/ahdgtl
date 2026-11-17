@@ -43,6 +43,7 @@ function buildJsonLd(services, faq) {
     availableLanguage: ["uz", "ru", "en"],
     ...(services.length ? { priceRange: `${Math.min(...services.map(s => s.price))} – ${Math.max(...services.map(s => s.price))} UZS` } : {}),
     sameAs: ["https://t.me/ahdigital_01", "https://www.instagram.com/ah.digital_01", "https://www.youtube.com/@ahdigital_01"],
+    founder: [{ "@type": "Person", name: "Abdulhamid Xamidullayev" }, { "@type": "Person", name: "Afruz Khayitov" }],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Xizmatlar va narxlar",
