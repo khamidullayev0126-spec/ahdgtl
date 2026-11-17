@@ -6,6 +6,8 @@ const ext = require("../src/checkers/external");
 const cache = require("../src/cache");
 const { combineAll } = require("../src/scoring");
 const { createBot } = require("../src/bot");
+// Testlar haqiqiy AI'ga murojaat qilmasin (pul sarflanmasin) — .env da kalit bo'lsa ham
+delete process.env.AI_API_KEY; delete process.env.ANTHROPIC_API_KEY;
 const { openDb } = require("../src/db");
 // 6-bosqich: til endi bazada. Testlar uchun xotiradagi baza va eski "userLang" ko'rinishidagi yordamchi
 const testDb = openDb(":memory:");

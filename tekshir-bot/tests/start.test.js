@@ -4,6 +4,8 @@
 const test = require("node:test");
 const assert = require("node:assert");
 const { createBot } = require("../src/bot");
+// Testlar haqiqiy AI'ga murojaat qilmasin (pul sarflanmasin) — .env da kalit bo'lsa ham
+delete process.env.AI_API_KEY; delete process.env.ANTHROPIC_API_KEY;
 const { openDb } = require("../src/db");
 // 6-bosqich: til endi bazada. Testlar uchun xotiradagi baza va eski "userLang" ko'rinishidagi yordamchi
 process.env.HASH_SALT = process.env.HASH_SALT || "test-salt";

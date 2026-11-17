@@ -6,6 +6,8 @@ const os = require("os");
 const path = require("path");
 const { openDb, toCsv } = require("../src/db");
 const { createBot } = require("../src/bot");
+// Testlar haqiqiy AI'ga murojaat qilmasin (pul sarflanmasin) — .env da kalit bo'lsa ham
+delete process.env.AI_API_KEY; delete process.env.ANTHROPIC_API_KEY;
 const { isAdmin, formatStats } = require("../src/admin");
 const cache = require("../src/cache");
 // Testlar internetga chiqmasin: kompyuterdagi .env kalitlari bo'lsa ham tashqi API chaqirilmaydi

@@ -11,7 +11,8 @@ Shubhali havola, xabar yoki faylni botga yuborasiz — bot bir necha soniyada xa
 - [x] **6-bosqich:** SQLite baza (til, natijalar, domenlar, kesh), admin uchun /stats va /export
 - [x] **7-bosqich:** shikoyatlar (tasdiqlash bilan, 1 odam — 1 shikoyat, kuniga 20 ta) va telefon/karta raqamlarini tekshirish
 - [x] **8-bosqich:** guruh rejimi (jim tekshiruv, faqat xavfda ogohlantirish, /tekshir, /sozlama, 🔴 xabarni o'chirish)
-- [ ] 9. AI · [ ] 10. Server
+- [x] **9-bosqich:** AI tahlili (Claude): qoidalar sezmagan aldovlar, maxfiylik (raqamlar yashiriladi), kunlik limit, kesh
+- [ ] 10. Server
 
 ## Kompyuterda ishga tushirish
 
@@ -64,6 +65,19 @@ Boshqa foydalanuvchilar bu buyruqlarni yozsa, bot javob bermaydi.
 ### Baza va maxfiylik
 Baza fayli: `data/tekshir.db` (GitHub'ga yuklanmaydi). Unda saqlanadi: Telegram ID, til, tekshiruv natijasi (daraja, ball, sabab kodlari) va faqat **domen** nomi.
 **Saqlanmaydi:** xabar matni, to'liq havola, fayl, telefon va karta raqamlari (ular 7-bosqichda faqat SHA-256 hash ko'rinishida saqlanadi).
+
+### AI tahlili (ixtiyoriy, pullik)
+Bot qoidalar bilan ham yaxshi ishlaydi. AI esa yangi, qoidalarda yo'q aldov usullarini topishga yordam beradi.
+1. **Ota-onangiz** console.anthropic.com da hisob ochadi va to'lovni o'zi qiladi (API faqat 18 yoshdan katta foydalanuvchilar uchun).
+2. **API Keys → Create Key** → kalitni nusxalang.
+3. `.env`: `AI_API_KEY=sk-ant-...`
+4. Xarajat cheklovi: `AI_DAILY_LIMIT` (kuniga jami so'rov) va `AI_USER_DAILY` (bitta odam). Console'da **Limits** bo'limida oylik pul chegarasini ham qo'ying.
+
+Qanday ishlaydi:
+- Faqat shaxsiy chatda va `/tekshir` buyrug'ida (guruhdagi har bir xabar AI'ga yuborilmaydi).
+- AI'ga yuborishdan oldin karta → `[KARTA]`, telefon → `[TELEFON]`, havola → faqat domen.
+- AI faqat xavfni **oshiradi**: qoidalar 🔴 topgan bo'lsa, AI "xavfsiz" desa ham 🔴 qoladi. AI yolg'iz o'zi 🔴 bermaydi.
+- AI ishlamasa yoki limit tugasa — bot qoidalar bilan javob beraveradi.
 
 ### Guruhda ishlatish
 1. Guruh → **Add members** → botingizni qo'shing. Bot salomlashadi.

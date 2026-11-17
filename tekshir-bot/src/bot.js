@@ -20,6 +20,7 @@ const { isAdmin, formatStats } = require("./admin");
 const cache = require("./cache");
 const { extractNumbers, reportPoints } = require("./checkers/numbers");
 const crypto = require("crypto");
+const { aiCheck } = require("./checkers/ai");
 
 // Til tanlash tugmalari: har bir til — alohida qator
 function langKeyboard() {
@@ -141,14 +142,20 @@ function createBot(token, options = {}, deps = {}) {
 
   // ---------- Tahlil: shaxsiy chat va guruh uchun umumiy ----------
   // Xabardagi havola, matn, fayl va raqamlarni tekshiradi. Matn bazaga YOZILMAYDI.
-  async function analyze(m, userId, chatType) {
+  // opts.ai — AI tahlilini ham ishlatish (shaxsiy chat va /tekshir). Guruhdagi har bir xabar uchun — yo'q (narx).
+  async function analyze(m, userId, chatType, opts = {}) {
     const text = m.text || m.caption || "";
     const doc = m.document;                                    // fayl (APK, PDF, ZIP va h.k.)
     const urls = extractUrls(text, m.entities || m.caption_entities);
-    // Havolalar va fayl bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
-    const [urlRes, fileRes] = await Promise.all([
+    const textRes = analyzeText(text);
+    // Qoidalar o'zi aniq 🔴 topgan bo'lsa, AI'ga pul sarflamaymiz
+    const textScore = textRes.reasons.reduce((a, x) => a + x.points, 0);
+    const useAi = opts.ai && textScore < 70;
+    // Havolalar, fayl va AI bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
+    const [urlRes, fileRes, aiRes] = await Promise.all([
       urls.length ? checkUrls(urls) : [],
-      doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, () => download(doc.file_id)) : null
+      doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, () => download(doc.file_id)) : null,
+      useAi ? aiCheck(text, opts.lang, userId).catch(() => null) : null
     ]);
     // 7-bosqich: raqamlar va saytlar ustidan shikoyatlar soni. Bazadan faqat HASH bo'yicha qidiramiz.
     const targets = [], numbers = [], extra = [];
@@ -169,7 +176,8 @@ function createBot(token, options = {}, deps = {}) {
         if (count) r.reasons.push({ code: "url_reports", points: reportPoints(count), vars: { n: count } });
       }
     }
-    const result = combineAll(urlRes, analyzeText(text), fileRes, extra);
+    if (aiRes) extra.push(aiRes);
+    const result = combineAll(urlRes, textRes, fileRes, extra);
     // Bazaga faqat natija yoziladi — xabar matni ham, to'liq havola ham YOZILMAYDI
     try {
       db.logCheck({ userId, chatType, result, hasText: !!text.trim(), hosts: urlRes.map(r => r.host) });
@@ -247,7 +255,7 @@ function createBot(token, options = {}, deps = {}) {
     const lang = isGroup(ctx) ? groupOf(ctx).lang : getLang(ctx.from.id);
     if (!target || (!(target.text || target.caption || "").trim() && !target.document))
       return ctx.reply(t(lang, "group_tekshir_hint"), { parse_mode: "HTML" });
-    const { result, numbers, targets } = await analyze(target, ctx.from.id, isGroup(ctx) ? "group" : "private");
+    const { result, numbers, targets } = await analyze(target, ctx.from.id, isGroup(ctx) ? "group" : "private", { ai: true, lang });
     const reportId = targets.length ? remember(targets, isGroup(ctx) ? null : ctx.from.id) : null;
     const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username, { numbers, reportId });
     await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: target.message_id, allow_sending_without_reply: true }, link_preview_options: { is_disabled: true } });
@@ -290,7 +298,7 @@ function createBot(token, options = {}, deps = {}) {
     if (!text.trim() && !m.document) return ctx.reply(t(lang, "no_text"));   // stiker, ovozli xabar va h.k.
 
     await ctx.replyWithChatAction("typing").catch(() => {});   // "yozmoqda..." belgisi
-    const { result, numbers, targets } = await analyze(m, ctx.from.id, "private");
+    const { result, numbers, targets } = await analyze(m, ctx.from.id, "private", { ai: true, lang });
     const reportId = targets.length ? remember(targets, ctx.from.id) : null;
     const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username, { numbers, reportId });
     await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: m.message_id }, link_preview_options: { is_disabled: true } });
@@ -325,6 +333,7 @@ if (require.main === module) {
     }
     process.exit(1);
   }
+  if (!process.env.AI_API_KEY && !process.env.ANTHROPIC_API_KEY) console.warn("ℹ️  AI_API_KEY yo'q — AI tahlili o'chiq, bot qoidalar bilan ishlaydi.");
   if (!process.env.HASH_SALT) console.warn("⚠️  HASH_SALT yo'q — raqam tekshiruvi va shikoyatlar o'chiq. .env ga qo'shing (README).");
   const db = openDb();                    // data/tekshir.db
   cache.attach(db);                       // VirusTotal/Google javoblari endi bazada ham saqlanadi

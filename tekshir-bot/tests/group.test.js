@@ -3,6 +3,8 @@ const test = require("node:test");
 const assert = require("node:assert");
 const { openDb } = require("../src/db");
 const { createBot } = require("../src/bot");
+// Testlar haqiqiy AI'ga murojaat qilmasin (pul sarflanmasin) — .env da kalit bo'lsa ham
+delete process.env.AI_API_KEY; delete process.env.ANTHROPIC_API_KEY;
 delete process.env.VIRUSTOTAL_KEY; delete process.env.SAFE_BROWSING_KEY;
 process.env.HASH_SALT = "test-salt";
 
