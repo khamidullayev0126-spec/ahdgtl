@@ -22,6 +22,25 @@ window.WORKS = [
     "linkText": "Keysni o'qish"
   },
   {
+    "slug": "tekshir",
+    "cat": [
+      "ai"
+    ],
+    "status": "telegram bot",
+    "title": "Tekshir — firibgarlikka qarshi bot",
+    "desc": "Shubhali havola, xabar, APK fayl yoki karta raqamini bir necha soniyada tekshiradi: ✅ / 🟡 / 🔴. 3 til, guruh rejimi, shikoyatlar, 100+ avtomatik test.",
+    "tags": [
+      "Node.js",
+      "grammY",
+      "SQLite",
+      "VirusTotal",
+      "Claude"
+    ],
+    "image": "images/ishlar/tekshir-bot.webp",
+    "link": "https://t.me/tekshirbot_bot",
+    "linkText": "Botni ochish"
+  },
+  {
     "slug": "admin",
     "cat": [
       "sayt"

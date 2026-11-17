@@ -122,3 +122,12 @@ test("Q12. Til tanlanmagan yangi foydalanuvchi — avval til so'raladi", async (
   await say("https://c1ick-uz.com");
   assert.ok(last().reply_markup.inline_keyboard.flat().some(b => b.callback_data === "lang:ru"));
 });
+
+test("Q13. Bepul server (AUTO_LANG=1): baza o'chgan bo'lsa ham til so'ralmaydi, Telegram tilidan olinadi", async () => {
+  process.env.AUTO_LANG = "1";
+  try {
+    const { say, last, bot } = setup(null);
+    await bot.handleUpdate({ update_id: 777, message: { message_id: 1, date: 0, chat: { id: 1, type: "private" }, from: { id: 1, is_bot: false, first_name: "U", language_code: "ru" }, text: "Срочно сообщите SMS-код" } });
+    assert.match(last().text, /ОПАСНО|ПОДОЗРИТЕЛЬНО/);
+  } finally { delete process.env.AUTO_LANG; }
+});

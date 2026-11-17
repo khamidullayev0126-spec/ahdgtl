@@ -18,7 +18,7 @@ Tillar: O'zbek (lotin va kirill), Rus.
 - [x] **7-bosqich:** shikoyatlar va telefon/karta raqamlarini tekshirish (faqat hash)
 - [x] **8-bosqich:** guruh rejimi (/tekshir, /sozlama, avtomatik ogohlantirish)
 - [x] **9-bosqich:** AI tahlili (Claude) — ixtiyoriy
-- [x] **10-bosqich:** /demo, /maslahat, so'rovlar chegarasi, serverga qo'yish (webhook), qabul testlari
+- [x] **10-bosqich:** /demo, /maslahat, so'rovlar chegarasi, bepul serverga qo'yish (Render, webhook), qabul testlari
 
 ## Buyruqlar
 
@@ -107,47 +107,48 @@ Bitta odam daqiqasiga **10 ta** xabar tekshira oladi (`RATE_LIMIT`). Oshsa — b
 
 ---
 
-## Serverga qo'yish (Render.com)
+## Serverga qo'yish (Render.com — BEPUL)
 
 Bot kompyuteringiz o'chiq bo'lsa ham ishlashi uchun uni serverga qo'yamiz. Serverda bot **webhook** rejimida ishlaydi: Telegram xabarlarni o'zi botga yuboradi (`RENDER_EXTERNAL_URL` bo'lsa avtomatik yoqiladi).
 
-### Narx — ota-onangiz bilan kelishing
-| Variant | Narx | Nima bo'ladi |
-|---|---|---|
-| **Starter + Disk** (tavsiya) | ≈ $7.25/oy | Bot doim ishlaydi, baza (til, shikoyatlar, statistika) saqlanadi |
-| Free | $0 | Faqat **sinov uchun**: 15 daqiqa xabar bo'lmasa bot uxlaydi (birinchi javob ~1 daqiqa kechikadi), **har qayta ishga tushishda baza o'chib ketadi** (shikoyatlar yo'qoladi) |
+### Bepul tarifning kamchiliklari (bilib qo'ying)
+- 15 daqiqa xabar bo'lmasa bot **uxlaydi**. Keyingi birinchi xabarga javob ~1 daqiqa kechikadi (Telegram xabarni kutib turadi, yo'qolmaydi).
+- Uyg'onganda **baza bo'sh** bo'ladi: shikoyatlar va statistika o'chadi. Til esa qayta so'ralmaydi — `AUTO_LANG=1` bilan Telegram tilidan olinadi.
+- Render'ning bepul soatlari (oyiga 750 soat) AHdigital sayti bilan **umumiy**. Ikkalasi ham ko'p vaqt uxlaydi, shuning uchun odatda yetadi.
 
-To'lov kartasi va Render hisobi — **ota-onangiz nomida**. Karta ma'lumotlarini, CVV va SMS kodlarni hech kimga bermang.
+Kelajakda doim ishlashi kerak bo'lsa — Starter (≈ $7/oy) + 1 GB disk; bu faqat ota-onangiz roziligi bilan (`render.yaml` dagi izohga qarang).
 
 ### Qadamlar
 1. Kod GitHub'da bo'lishi kerak (`ahdgtl` repozitoriysi, `tekshir-bot` papkasi). `.env` GitHub'ga **yuklanmaydi** — bu to'g'ri.
 2. render.com → **New → Web Service** → GitHub repozitoriyni tanlang.
 3. Sozlamalar:
+   - **Name:** `tekshir-bot`
    - **Root Directory:** `tekshir-bot`
    - **Region:** Frankfurt
    - **Build Command:** `npm ci`
    - **Start Command:** `npm start`
-   - **Instance Type:** Starter
-   - **Health Check Path:** `/health`
-4. **Disks → Add Disk:** Mount Path `/var/data`, Size 1 GB.
-5. **Environment** bo'limida qiymatlarni kiriting (kompyuterdagi `.env` dan nusxalang):
+   - **Instance Type:** **Free**
+   - **Health Check Path:** `/health` (Advanced bo'limida)
+4. **Environment Variables** — kompyuterdagi `.env` dan nusxalang:
    - `BOT_TOKEN`, `HASH_SALT`, `ADMIN_IDS`
-   - `DB_PATH` = `/var/data/tekshir.db`
    - `NODE_VERSION` = `22`
-   - ixtiyoriy: `VIRUSTOTAL_KEY`, `SAFE_BROWSING_KEY`, `AI_API_KEY`
-6. **Create Web Service**. Log'da `✅ @bot webhook rejimida ishga tushdi` chiqishi kerak.
-7. Brauzerda `https://<servis-nomi>.onrender.com/health` → «Tekshir bot ishlayapti ✅».
-8. **Kompyuterdagi botni to'xtating** (Ctrl + C) — endi bot serverda ishlaydi.
+   - `AUTO_LANG` = `1`
+   - ixtiyoriy: `VIRUSTOTAL_KEY`, `SAFE_BROWSING_KEY` (AI kaliti pullik — bo'sh qoldiring)
+5. **Create Web Service** → 2–4 daqiqa kuting. **Logs** da `✅ @bot webhook rejimida ishga tushdi` chiqishi kerak.
+6. Brauzerda `https://tekshir-bot.onrender.com/health` (o'z manzilingiz) → «Tekshir bot ishlayapti ✅».
+7. **Kompyuterdagi botni to'xtating** (Ctrl + C) — endi bot serverda ishlaydi.
 
-`render.yaml` fayli shu sozlamalarning yozma ko'rinishi (ma'lumot uchun). U repozitoriy ildizida emas — Render uni o'zi qo'llamaydi, shuning uchun pullik xizmat tasodifan yaratilmaydi.
+Render karta so'rasa — **kiritmang**, bepul tarif kartasiz ishlaydi. Agar baribir so'rasa, to'xtang va ota-onangiz bilan gaplashing.
+
+`render.yaml` — shu sozlamalarning yozma ko'rinishi (ma'lumot uchun). U repozitoriy ildizida emas, Render uni o'zi qo'llamaydi.
 
 ### Yangilash
-GitHub'ga yangi kod yuklansa (`git push`), Render botni o'zi qayta quradi va ishga tushiradi. Baza diskda saqlanib qoladi.
+GitHub'ga yangi kod yuklansa (`git push`), Render botni o'zi qayta quradi va ishga tushiradi.
 
 ### Muammo bo'lsa
-- **Bot javob bermayapti:** Render → **Logs**. `❌` bilan boshlangan qatorni qidiring.
+- **Bot javob bermayapti:** 1 daqiqa kuting (uxlab yotgan bo'lishi mumkin). Keyin Render → **Logs** → `❌` bilan boshlangan qatorni qidiring.
 - **`Webhook o'rnatilmadi`:** `BOT_TOKEN` to'g'ri kiritilganini tekshiring.
-- **Kompyuterda `npm start` qildingizmi?** U webhook'ni o'chiradi → Render'da **Manual Deploy → Restart**.
+- **Kompyuterda `npm start` qildingizmi?** U server webhook'ini o'chiradi → Render'da **Manual Deploy → Restart service**.
 
 ---
 
@@ -155,7 +156,7 @@ GitHub'ga yangi kod yuklansa (`git push`), Render botni o'zi qayta quradi va ish
 ```bash
 npm test
 ```
-108 ta test. Internetga ulanmaydi, token va kalit talab qilmaydi, AI'ga pul sarflamaydi.
+109 ta test. Internetga ulanmaydi, token va kalit talab qilmaydi, AI'ga pul sarflamaydi.
 
 **Qabul testlari** (`tests/acceptance.test.js`) — foydalanuvchi ko'zi bilan:
 
@@ -173,6 +174,7 @@ npm test
 | Q10 | `/maslahat` | Maslahat + «yana bir» tugmasi, 3 tilda bir xil son |
 | Q11 | Ruscha firibgar xabar | Rus tilida javob |
 | Q12 | Til tanlanmagan odam | Avval til so'raladi |
+| Q13 | Bepul server, baza bo'sh (`AUTO_LANG=1`) | Til Telegram'dan olinadi, qayta so'ralmaydi |
 
 ### Qo'lda tekshirish (serverga qo'ygandan keyin)
 - [ ] `/start` → til tanlash → salomlashuv
@@ -182,7 +184,7 @@ npm test
 - [ ] Karta raqami → «Shikoyat qilish» → «Ha» → «Rahmat!»
 - [ ] Guruhga qo'shish → salomlashadi; «Salom» ga jim; soxta havolaga 🔴
 - [ ] `/stats` (admin) → raqamlar
-- [ ] Render'ni qayta ishga tushirish → til va statistika saqlanib qolgan
+- [ ] 20 daqiqa kutib xabar yuborish → ~1 daqiqada javob keladi (bot uyg'onadi)
 
 ## Tuzilishi
 ```

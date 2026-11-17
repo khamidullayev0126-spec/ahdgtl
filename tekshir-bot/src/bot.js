@@ -368,7 +368,13 @@ function createBot(token, options = {}, deps = {}) {
   bot.on("message", async ctx => {
     if (isGroup(ctx)) return onGroupMessage(ctx);
     if (ctx.chat.type !== "private") return;          // kanallar va h.k. — e'tibor bermaymiz
-    const lang = getLang(ctx.from.id);
+    let lang = getLang(ctx.from.id);
+    // AUTO_LANG=1 (bepul serverda): baza o'chib ketgan bo'lsa ham tilni qayta so'ramaymiz —
+    // Telegram ilovasining tilidan taxmin qilamiz (rus/ukrain/qozoq → rus, qolgani → o'zbek). /til bilan o'zgartirsa bo'ladi.
+    if (!lang && process.env.AUTO_LANG === "1") {
+      lang = ["ru", "uk", "be", "kk"].includes(ctx.from.language_code) ? "ru" : "uz-latn";
+      db.setLang(ctx.from.id, lang);
+    }
     if (!lang) return ctx.reply(t("uz-latn", "choose_lang"), { reply_markup: langKeyboard() });
 
     // Matn oddiy xabarda "text"da, rasm/fayl ostidagi yozuvda esa "caption"da bo'ladi

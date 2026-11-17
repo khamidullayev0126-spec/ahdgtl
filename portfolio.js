@@ -115,6 +115,7 @@ WORKS.forEach(p => {
     a.className = "more";
     a.href = p.link;
     a.textContent = p.linkText + " →";
+    if (/^https?:/.test(p.link)) { a.target = "_blank"; a.rel = "noopener"; }   // tashqi havola — yangi oynada
     card.appendChild(a);
   }
   projectsEl.appendChild(card);
