@@ -162,7 +162,7 @@ app.use((req, res, next) => {
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
   // Server kodi, sozlamalar va ichki papkalar internetdan yashiriladi — QAYSI papkada bo'lishidan qat'i nazar
-  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik|play-store|kontent)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo|ai-usage|tz|kp|kanal-tarix)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik|play-store|kontent|tekshir-bot)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo|ai-usage|tz|kp|kanal-tarix)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html
