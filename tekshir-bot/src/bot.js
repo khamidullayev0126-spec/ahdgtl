@@ -2,7 +2,11 @@
 // 1-bosqich: /start, til tanlash, /til, /yordam.
 // Ishga tushirish: npm start   (avval .env faylida BOT_TOKEN bo'lishi kerak)
 
-require("dotenv").config();
+// .env faylini doim loyiha papkasidan o'qiymiz (terminal qaysi papkada bo'lishidan qat'i nazar)
+const path = require("path");
+const fs = require("fs");
+const ENV_PATH = path.join(__dirname, "..", ".env");
+require("dotenv").config({ path: ENV_PATH });
 const { Bot, InlineKeyboard } = require("grammy");
 const { t, LANGS } = require("./i18n");
 const { extractUrls, checkUrls } = require("./checkers/url");
@@ -99,7 +103,19 @@ function createBot(token, options = {}, deps = {}) {
 // Testlar esa faqat createBot'ni chaqiradi, internetga ulanmaydi.
 if (require.main === module) {
   if (!process.env.BOT_TOKEN) {
-    console.error("❌ BOT_TOKEN topilmadi. .env.example faylini .env deb nusxalang va tokenni yozing.");
+    // Aniq sababni aytamiz — qayerdan qidirganimizni ham ko'rsatamiz
+    console.error("❌ BOT_TOKEN topilmadi.");
+    console.error("   Qidirilgan fayl: " + ENV_PATH);
+    if (!fs.existsSync(ENV_PATH)) {
+      console.error("   Sabab: bu papkada .env fayli YO'Q.");
+      const ex = path.join(__dirname, "..", ".env.example");
+      if (fs.existsSync(ex) && /BOT_TOKEN=\S+/.test(fs.readFileSync(ex, "utf8")))
+        console.error("   Token .env.example ichiga yozilgan ko'rinadi — uni .env ga ko'chiring.");
+      if (fs.existsSync(ENV_PATH + ".txt")) console.error("   .env.txt bor — nomidan .txt ni olib tashlang.");
+    } else {
+      console.error("   Sabab: .env bor, lekin ichida BOT_TOKEN=... qatori bo'sh yoki noto'g'ri yozilgan.");
+      console.error("   To'g'ri ko'rinish: BOT_TOKEN=1234567890:AAH...  (bo'shliqsiz, qo'shtirnoqsiz)");
+    }
     process.exit(1);
   }
   const bot = createBot(process.env.BOT_TOKEN);
