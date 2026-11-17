@@ -32,7 +32,7 @@ function nextTime(iso, takror) {
 }
 const todayTashkent = () => new Date(Date.now() + 5 * 3600e3).toISOString().slice(0, 10);
 
-function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto, business, notifyStatus, tz }) {
+function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto, business, notifyStatus, tz, kp }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   const claude = client || new Anthropic();   // client — faqat sinov uchun
 
@@ -162,6 +162,21 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
         required: ["xizmat", "mijoz", "biznes", "til"] } },
     { name: "tz_royxati", description: "Tuzilgan TZ'lar ro'yxati: raqam, biznes, narx, tasdiqlanganmi, havola.",
       input_schema: { type: "object", additionalProperties: false, properties: {}, required: [] } }] : []),
+    ...(kp ? [
+    { name: "kp_tuzish", description: "Sayti yoki videosi yo'q biznes uchun shaxsiy tijoriy taklif sahifasini yaratadi. Xizmatlar, narx va muddatni server saytdagi narxlardan o'zi qo'yadi. Sen faqat shaxsiy kirish so'zi va foydalarni yozasan: faqat Abdulhamid aytgan faktlarga tayan, raqamli va'da berma («sotuv 2 barobar oshadi» — yo'q), raqobatchini yomonlama, haqiqiy bo'lmagan maqtov yozma. Kirish qisqa va hurmatli bo'lsin.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        biznes: { type: "string", description: "Biznes nomi, masalan «Gul olami»" },
+        kimga: { type: "string", description: "Egasining ismi, ma'lum bo'lsa" },
+        tur: { type: "string", enum: ["kafe", "salon", "dokon", "usta", "talim", "boshqa"] },
+        til: { type: "string", enum: ["uz", "ru"] },
+        xizmatlar: { type: "array", items: { type: "string", enum: services.filter(s => !s.hidden && s.group === "once" && s.price > 0).map(s => s.id) }, description: "1–3 ta xizmat" },
+        kirish: { type: "string", description: "2–3 gap: nega aynan ularga yozyapsiz (masalan: Instagram'da faol, lekin sayt havolasi yo'q)" },
+        foydalar: { type: "array", items: { type: "string" }, description: "2–5 ta aniq foyda shu biznes uchun, raqamli va'dasiz" },
+        chegirma: { type: "integer", description: "So'mda, faqat Abdulhamid aytsa" },
+        chegirma_izoh: { type: "string", description: "Masalan: «birinchi buyurtma uchun»" } },
+        required: ["biznes", "tur", "til", "xizmatlar", "foydalar"] } },
+    { name: "kp_royxati", description: "Yuborilgan takliflar: kim ochdi, necha marta, «Qiziqaman» bosdimi.",
+      input_schema: { type: "object", additionalProperties: false, properties: {}, required: [] } }] : []),
     { name: "xato_yozish", description: "Dasturlashda uchragan xato va uning yechimini 'xatolar kundaligi'ga yozadi.",
       input_schema: { type: "object", additionalProperties: false, properties: {
         xato: { type: "string", description: "Xato matni yoki belgisi" },
@@ -210,6 +225,7 @@ ${caller ? "- Sen Abdulhamidga ovozli qo'ng'iroq qila olasan: menga_qongiroq (ho
 - Abdulhamid muhim narsa aytsa (reja, mijoz haqida ma'lumot, odat), uni xotiraga yozib qo'y.
 - Pul haqida aytsa ("shuncha to'ladim", "shuncha keldi") — moliya_yozish; "shu oy qancha foyda?" — moliya_hisobot.
 - Mijoz bilan kelishuvni aytsa yoki "TZ tuz" desa — tz_tuzish. Yetishmayotgan muhim narsalarni (bo'limlar, mijoz beradigan materiallar, qo'shimcha ish narxi) avval qisqa savollar bilan so'ra. Tasdiqlangan TZ o'zgarmaydi — o'zgarish bo'lsa yangisini tuz.
+- Sayti yo'q biznesga taklif kerak bo'lsa — kp_tuzish. Mijoz rozi bo'lgach — tz_tuzish.
 - G'oya aytsa — goya_saqlash; "g'oyalarim qani?" — goyalar. Xato va yechimini aytsa — xato_yozish; xato haqida so'rasa — avval xato_qidirish.
 - Obuna, domen yoki hosting to'lovi uchun takror bilan eslatma qo'y (to'lovdan 3 kun oldin). Ertalabki dayjest yoki kunlik mashq so'rasa — vazifa=true va takror="kunlik" bilan eslatma qo'y.
 - Har bir xabar boshida [Hozir: ...] qatori turadi — bu hozirgi Toshkent vaqti, eslatma vaqtini shunga qarab hisobla.
@@ -368,6 +384,16 @@ ${priceList}`;
         const list = tz.list();
         return list.length ? list.map(t => `${t.raqam} · ${t.biznes} · ${fmt(t.jami)} so'm · ${t.tasdiq ? "✅ tasdiqlangan (" + t.tasdiq.ism + ")" : "⏳ kutilmoqda"}\n${(process.env.SITE_URL || "https://www.ah-digital.uz").replace(/\/$/, "")}/tz/${t.id}`).join("\n") : "Hali TZ tuzilmagan.";
       }
+      case "kp_tuzish": {
+        const r = kp.create(input);
+        if (r.error) return `Xato: ${r.error}`;
+        const k = r.kp;
+        return `Taklif tayyor: ${k.raqam} · ${k.biznes} · ${fmt(k.jami)} so'm.\nO'zing tekshirish uchun (sanalmaydi): ${r.preview}\nMijozga yuboriladigan havola: ${r.url}\nAbdulhamidga ikkala havolani ber. Mijozga havola bilan birga qisqa, hurmatli xabar matnini ham taklif qil. Taklif ochilsa va «Qiziqaman» bosilsa, Telegramga xabar keladi.`;
+      }
+      case "kp_royxati": {
+        const list = kp.list();
+        return list.length ? list.map(k => `${k.raqam} · ${k.biznes} · ${fmt(k.jami)} so'm · ${k.ochildi ? `👀 ${k.ochildi} marta ochildi` : "hali ochilmagan"}${k.qiziqdi ? " · 🔥 qiziqdi" : ""}`).join("\n") : "Hali taklif tuzilmagan.";
+      }
       case "chatlar": {
         const list = business.list(input.soni || 15);
         if (!list.length) return "Hali hech kim yozmagan (yoki Telegram Business ulanmagan).";
@@ -495,7 +521,7 @@ ${priceList}`;
           "• Kanalga flexbox haqida post tayyorla\n• Ertaga 9:00 da darsni eslat\n• JavaScript'da massiv nima?\n" +
           "• Internetdan qidir: Bootstrap 5 dagi yangiliklar\n• Kimlar yozdi? / Dilnozaga yoz: ...\n" +
           "• Domen uchun 32 000 to'ladim / Shu oy qancha foyda qildim?\n• G'oya: kafelar uchun 10 soniyali menyu video\n" +
-          "• Lazzat kafe uchun menyu sayt TZ tuz: 3 bo'lim, QR, Telegram tugma\n• Xato: CORS error, yechim: ...\n• Har kuni 8:00 da AI yangiliklaridan dayjest yubor\n\n/yangi — suhbatni yangidan boshlash\n\n" +
+          "• Gul olami do'koniga taklif tuz: Instagram faol, sayti yo'q\n• Lazzat kafe uchun menyu sayt TZ tuz: 3 bo'lim, QR, Telegram tugma\n• Xato: CORS error, yechim: ...\n• Har kuni 8:00 da AI yangiliklaridan dayjest yubor\n\n/yangi — suhbatni yangidan boshlash\n\n" +
           "Mijozga yoki kanalga yozadigan narsani doim avval sizga ko'rsataman — ✅ bosmaguningizcha hech narsa ketmaydi.");
       }
       await api("sendChatAction", { chat_id: ownerChatId, action: "typing" });

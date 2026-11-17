@@ -14,6 +14,7 @@ const { createPayments } = require("./payments");
 const { createAuth } = require("./auth");
 const { indexWithJsonLd } = require("./seo");
 const { createTz } = require("./tz");
+const { createKp } = require("./kp");
 
 const app = express();
 app.disable("x-powered-by");   // server turini oshkor qilmaymiz
@@ -63,8 +64,9 @@ const writeOrders = orders => store.set("orders", orders);
 // Render manzilni RENDER_EXTERNAL_URL orqali o'zi beradi; kompyuterda bot "polling" rejimida ishlaydi
 // TZ (texnik topshiriq): agent tuzadi, mijoz /tz/<id> sahifasida tasdiqlaydi — tz.js
 const tz = createTz({ store, services: SERVICES, notifyOwner: text => bot && bot.sendOwner(text) });
+const kp = createKp({ store, services: SERVICES, notifyOwner: text => bot && bot.sendOwner(text) });   // tijoriy taklif — kp.js
 const bot = createBot({
-  tz,
+  tz, kp,
   token: TELEGRAM_BOT_TOKEN,
   ownerChatId: TELEGRAM_CHAT_ID,
   publicUrl: process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || "",
@@ -160,7 +162,7 @@ app.use((req, res, next) => {
 // Papkasiz tuzilishda server fayllari va buyurtmalar brauzerga ko'rinmasin
 if (FLAT) {
   // Server kodi, sozlamalar va ichki papkalar internetdan yashiriladi — QAYSI papkada bo'lishidan qat'i nazar
-  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik|play-store|kontent)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo|ai-usage|tz)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
+  const HIDDEN = /^\/(data|node_modules|fonts|tests|\.github|\.git|github-toliq|testlar|xavfsizlik|play-store|kontent)(\/|$)|(^|\/)(server|bot|agent|call|image|chat|store|auth|payments|legends|legends-darslar|seo|ai-usage|tz|kp)\.js$|(^|\/)(package(-lock)?\.json|render\.yaml|README\.(md|txt)|\.env.*|\.gitignore)$/i;
   app.use((req, res, next) => (HIDDEN.test(req.path) ? res.status(404).send("Topilmadi") : next()));
 }
 // Eski portfolio manzillari → yangi portfolio.html
@@ -176,7 +178,8 @@ createLegends({ app, requireAdmin, publicDir: PUBLIC_DIR, store, adminPassword: 
 // LOGIN_REQUIRED = 1 — butun saytni yopish, 0 — kirishni umuman o'chirish
 const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, publicDir: PUBLIC_DIR,
   orderExtra: o => ({ due: PAY_ON() ? payments.dueOf(o) : null, paid: (o.paid && Object.keys(o.paid).length) || 0, parts: payments.partsOf(o).length }), botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
-tz.mount(app, { rateLimit });   // mijoz kirmasdan ochadi — shuning uchun kirish tekshiruvidan oldin
+tz.mount(app, { rateLimit });
+kp.mount(app, { rateLimit });   // mijoz kirmasdan ochadi — shuning uchun kirish tekshiruvidan oldin
 if (auth) { auth.install(app); app.use(auth.gate); }
 else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
 

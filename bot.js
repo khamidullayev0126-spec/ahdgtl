@@ -16,7 +16,7 @@ const CONFIRM_DELAY_MS = Number(process.env.BOT_CONFIRM_DELAY_MS) || 60_000;   /
 const MAX_TURNS = 20;
 const ALLOWED = ["message", "callback_query", "business_connection", "business_message"];                     // shundan keyin Claude bilan suhbat yangidan boshlanadi
 
-function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeOrders, store, tz }) {
+function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeOrders, store, tz, kp }) {
   if (!token) return null;
 
   const api = async (method, body = {}) => {
@@ -201,7 +201,7 @@ ${priceList}`;
   }
 
   const agent = ownerChatId ? createAgent({
-    api, send, ownerChatId, services, readOrders, writeOrders, store, business, notifyStatus, tz,
+    api, send, ownerChatId, services, readOrders, writeOrders, store, business, notifyStatus, tz, kp,
     channel: process.env.TELEGRAM_CHANNEL || "",
     caller, sendPhoto
   }) : null;

@@ -58,6 +58,13 @@
     preview.classList.remove("pop"); void preview.offsetWidth; preview.classList.add("pop");
   }
 
+  // Tijoriy taklifdagi havola: /?nom=Gul%20olami&tur=dokon#sinov — namuna shu biznes nomi bilan ochiladi
+  try {
+    const q = new URLSearchParams(location.search);
+    const nom = (q.get("nom") || "").trim().slice(0, 32), tur = q.get("tur");
+    if (nom) $("try-name").value = nom;
+    if (tur && KINDS[tur]) $("try-kind").value = tur;
+  } catch {}
   ["try-name", "try-phone"].forEach(id => $(id).addEventListener("input", draw));
   $("try-kind").addEventListener("change", draw);
   draw();
