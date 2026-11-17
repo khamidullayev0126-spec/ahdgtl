@@ -176,4 +176,43 @@ module.exports = {
       { at: 9, v: "stamp", icon: "📌", text: "Saqlang", sub: "⌘ Space · ⌘⇧4 · ⌘⇧5" }
     ]
   }
+  ,
+  8: {
+    tag: "Xavfsizlik", out: "8-tekshir-bot",
+    chunks: [
+      { c: "Shunday SMS keldimi?" }, { c: "Hech narsani bosmang." },
+      { c: "Firibgarlar bankdan yozgandek qilib," }, { c: "SMS kodingizni so'raydi." },
+      { c: "Kodni bersangiz — kartangiz bo'shaydi." },
+      { c: "Men Tekshir degan bot yasadim." }, { c: "Shubhali xabarni botga uzatasiz —" },
+      { c: "u bir necha soniyada aytadi: xavfli yoki yo'q." },
+      { c: "Havolalarni ham tekshiradi." },
+      { c: "Mana — c1ick: «l» o'rnida «1» raqami.", s: "Mana — klik so'zida \"l\" harfi o'rniga bir raqami turibdi." },
+      { c: "Ko'z bilan sezish qiyin, bot esa darrov topadi." },
+      { c: "Yashil — xavf topilmadi, sariq — ehtiyot bo'ling, qizil — ochmang." },
+      { c: "Bu videoni ota-onangizga yuboring." }
+    ],
+    heads: [
+      { at: 0, lines: [["Shunday SMS", "sm"], ["keldimi?", "acc"]] },
+      { at: 2, lines: [["Bu bank", "sm"], ["emas!", "acc"]] },
+      { at: 4, lines: [["Karta", "sm"], ["bo'shaydi", "acc"]] },
+      { at: 5, lines: [["Men bot", "sm"], ["yasadim", "acc"]] },
+      { at: 7, lines: [["Bir necha", "sm"], ["soniyada", "acc"]] },
+      { at: 8, lines: [["Soxta", "sm"], ["havola", "acc"]] },
+      { at: 9, lines: [["Sezdingizmi?", "sm"], ["1 ≠ L", "acc"]] },
+      { at: 11, lines: [["3 ta", "sm"], ["javob", "acc"]] },
+      { at: 12, lines: [["Oilangizga", "sm"], ["yuboring", "acc"]] }
+    ],
+    vis: [
+      { at: 0, v: "tg", mode: "sms", hl: 3, msg: "Hurmatli mijoz! Kartangiz vaqtincha bloklandi. Blokdan chiqarish uchun <span class='mk'>SMS kodni</span> xavfsizlik xizmatiga yuboring. 1 soat ichida javob bermasangiz, pulingiz yo'qoladi!" },
+      { at: 4, v: "stamp", icon: "💳", text: "0 so'm", bg: "#d94b3d", fs: 90 },
+      { at: 5, v: "tg", mode: "bot", replyAt: 7,
+        msg: "Hurmatli mijoz! Kartangiz vaqtincha bloklandi. Blokdan chiqarish uchun SMS kodni xavfsizlik xizmatiga yuboring…",
+        reply: "<div class='ln' style='font-weight:900;font-size:27px;color:#ff6b5e'>🔴 XAVFLI</div><div class='ln' style='color:#9fb0c0;margin-top:8px'>Nima uchun:</div><div class='ln'>• «SMS kod» so'ralyapti — bank buni hech qachon so'ramaydi</div><div class='ln'>• Sizni shoshiltiryapti («1 soat ichida»)</div><div class='ln' style='margin-top:8px'>❌ Kodni hech kimga bermang</div>" },
+      { at: 8, v: "tg", mode: "bot", hl: 9,
+        msg: "Tabriklaymiz! Siz Click aksiyasida 1 000 000 so'm yutdingiz 🎁 Olish uchun: <span style='white-space:nowrap'>c<span class='mk'>1</span>ick-uz.com/bonus</span>",
+        reply: "<div class='ln' style='font-weight:900;font-size:27px;color:#ff6b5e'>🔴 XAVFLI</div><div class='ln' style='color:#9fb0c0;margin-top:8px'>Nima uchun:</div><div class='ln'>• Sayt Click'ga o'xshatilgan, lekin rasmiy emas</div><div class='ln'>• Rasmiysi: <b style='color:#ffd7b5'>click.uz</b></div><div class='ln'>• «yutdingiz» — eng ko'p aldov usuli</div>" },
+      { at: 11, v: "badges", items: [["✅", "Xavf yo'q"], ["🟡", "Ehtiyot bo'ling"], ["🔴", "Ochmang"]] },
+      { at: 12, v: "cta", line: "Tekshir — firibgarlikka qarshi bot", url: "@tekshirbot_bot", small: "📤 Ota-onangizga yuboring" }
+    ]
+  }
 };

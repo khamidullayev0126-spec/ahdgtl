@@ -1,4 +1,4 @@
-# 7 ta Reels (ovozli, motion) + Reklama C
+# 8 ta Reels (ovozli, motion) + Reklama C
 
 Har bir video: 1080×1920, 30 fps, ~19–33 s, ovoz — Abdulhamidning ElevenLabs'dagi klon ovozi, subtitr videoga yozilgan.
 Musiqa yo'q (mualliflik muammosi bo'lmasin). Xohlasangiz, Instagram'da joylashda **Музыка** orqali ovozdan past qilib qo'shing.
@@ -13,6 +13,7 @@ Captionlar: `kontent/reels-ssenariylar.md` (har bir video uchun tayyor).
 | 5 | 5-birinchi-sayt.mp4 | Birinchi sayt (fakt) | Seshanba |
 | 6 | 6-ai-kod.mp4 | AI kod yozdi — keyin? | Payshanba |
 | 7 | 7-mac-tugmalar.mp4 | Mac'da 3 ta tugma | Shanba |
+| 8 | 8-tekshir-bot.mp4 | Tekshir boti: soxta SMS va havola (caption: `kontent/tekshir-reels.md`, 1-ssenariy) | istalgan kun, 19:00–21:00 |
 
 **Muhim:** ovoz AI bilan yaratilgan (o'z ovozingiz klonlangan). Instagram'da joylashda **«Подпись ИИ» / «AI label»** ni yoqing — bu Instagram qoidasi.
 
