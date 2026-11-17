@@ -3,13 +3,18 @@
 
 const test = require("node:test");
 const assert = require("node:assert");
-const { createBot, userLang } = require("../src/bot");
+const { createBot } = require("../src/bot");
+const { openDb } = require("../src/db");
+// 6-bosqich: til endi bazada. Testlar uchun xotiradagi baza va eski "userLang" ko'rinishidagi yordamchi
+const testDb = openDb(":memory:");
+const userLang = { clear: () => testDb.raw.exec("DELETE FROM users"), set: (id, l) => testDb.setLang(id, l), get: id => testDb.getLang(id) };
+
 const { dict, LANGS } = require("../src/i18n");
 
 // Soxta bot: botInfo beramiz (aks holda grammY Telegram'dan so'raydi) va har bir API so'rovini yozib olamiz
 function fakeBot() {
   const calls = [];
-  const bot = createBot("123:TEST", { botInfo: { id: 1, is_bot: true, first_name: "Tekshir", username: "tekshir_test_bot", can_join_groups: true, can_read_all_group_messages: false, supports_inline_queries: false } });
+  const bot = createBot("123:TEST", { botInfo: { id: 1, is_bot: true, first_name: "Tekshir", username: "tekshir_test_bot", can_join_groups: true, can_read_all_group_messages: false, supports_inline_queries: false } }, { db: testDb });
   bot.api.config.use(async (prev, method, payload) => { calls.push({ method, payload }); return { ok: true, result: method === "sendMessage" ? { message_id: 1, date: 0, chat: { id: payload.chat_id, type: "private" } } : true }; });
   return { bot, calls };
 }

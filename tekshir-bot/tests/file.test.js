@@ -5,7 +5,12 @@ const { analyzeFileName, checkFile, sha256 } = require("../src/checkers/file");
 const ext = require("../src/checkers/external");
 const cache = require("../src/cache");
 const { combineAll } = require("../src/scoring");
-const { createBot, userLang } = require("../src/bot");
+const { createBot } = require("../src/bot");
+const { openDb } = require("../src/db");
+// 6-bosqich: til endi bazada. Testlar uchun xotiradagi baza va eski "userLang" ko'rinishidagi yordamchi
+const testDb = openDb(":memory:");
+const userLang = { clear: () => testDb.raw.exec("DELETE FROM users"), set: (id, l) => testDb.setLang(id, l), get: id => testDb.getLang(id) };
+
 
 const levelOf = async (meta, buf) => combineAll([], null, await checkFile(meta, buf ? async () => buf : null)).level;
 // Soxta VirusTotal: "virus" degan matnli fayl — 12 ta antivirus xavfli deydi
@@ -62,7 +67,7 @@ test("yuklab bo'lmasa ham bot javob beradi (nomiga qarab)", async () => {
 test("bot: APK fayl yuborilsa → 🔴 va 'faylni o'rnatmang' maslahati", async () => {
   userLang.clear(); userLang.set(777, "uz-latn");
   const calls = [];
-  const bot = createBot("123:TEST", { botInfo: { id: 1, is_bot: true, first_name: "T", username: "tekshir_test_bot", can_join_groups: true, can_read_all_group_messages: false, supports_inline_queries: false } }, { download: async () => VIRUS });
+  const bot = createBot("123:TEST", { botInfo: { id: 1, is_bot: true, first_name: "T", username: "tekshir_test_bot", can_join_groups: true, can_read_all_group_messages: false, supports_inline_queries: false } }, { download: async () => VIRUS, db: testDb });
   bot.api.config.use(async (prev, method, payload) => { calls.push({ method, payload }); return { ok: true, result: { message_id: 1, date: 0, chat: { id: 777, type: "private" } } }; });
   await bot.handleUpdate({ update_id: 1, message: { message_id: 9, date: 0, chat: { id: 777, type: "private" }, from: { id: 777, is_bot: false, first_name: "T" }, document: { file_id: "F1", file_unique_id: "U1", file_name: "Rasmlar.apk", mime_type: "application/vnd.android.package-archive", file_size: 2048 } } });
   const ans = calls.find(c => c.method === "sendMessage").payload.text;

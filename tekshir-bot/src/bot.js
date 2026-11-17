@@ -1,5 +1,5 @@
 // Tekshir — firibgarlikka qarshi Telegram bot. Asosiy fayl.
-// 1-bosqich: /start, til tanlash, /til, /yordam.
+// 1-bosqich: /start, til tanlash, /til, /yordam. 6-bosqich: baza, /stats, /export.
 // Ishga tushirish: npm start   (avval .env faylida BOT_TOKEN bo'lishi kerak)
 
 // .env faylini doim loyiha papkasidan o'qiymiz (terminal qaysi papkada bo'lishidan qat'i nazar)
@@ -7,19 +7,16 @@ const path = require("path");
 const fs = require("fs");
 const ENV_PATH = path.join(__dirname, "..", ".env");
 require("dotenv").config({ path: ENV_PATH });
-const { Bot, InlineKeyboard } = require("grammy");
+const { Bot, InlineKeyboard, InputFile } = require("grammy");
 const { t, LANGS } = require("./i18n");
 const { extractUrls, checkUrls } = require("./checkers/url");
 const { combineAll } = require("./scoring");
 const { analyzeText } = require("./checkers/text");
 const { checkFile } = require("./checkers/file");
 const { buildReply } = require("./reply");
-
-// Foydalanuvchining tanlagan tili.
-// HOZIRCHA xotirada (Map) saqlanadi — bot qayta ishga tushsa, unutiladi.
-// 6-bosqichda SQLite bazasiga o'tkazamiz.
-const userLang = new Map();          // telegram_id -> "uz-latn" | "uz-cyrl" | "ru"
-const getLang = id => userLang.get(id);
+const { openDb, toCsv } = require("./db");
+const { isAdmin, formatStats } = require("./admin");
+const cache = require("./cache");
 
 // Til tanlash tugmalari: har bir til — alohida qator
 function langKeyboard() {
@@ -30,8 +27,12 @@ function langKeyboard() {
 
 // Botni yaratuvchi funksiya. Testlarda ham shundan foydalanamiz (shuning uchun alohida).
 // deps.download(file_id) — faylni xotiraga yuklab beradi. Testlarda soxtasi beriladi (internetsiz).
+// deps.db — baza. Berilmasa, vaqtinchalik (xotiradagi) baza ochiladi — testlar uchun qulay.
 function createBot(token, options = {}, deps = {}) {
   const bot = new Bot(token, options);
+  const db = deps.db || openDb(":memory:");
+  // Foydalanuvchi tili endi BAZADA saqlanadi — bot qayta ishga tushsa ham eslab qoladi
+  const getLang = id => db.getLang(id);
   // Faylni Telegram serveridan XOTIRAGA yuklaymiz (diskka yozilmaydi, ishga tushirilmaydi) — faqat hash uchun
   const download = deps.download || (async fileId => {
     const file = await bot.api.getFile(fileId);
@@ -57,10 +58,26 @@ function createBot(token, options = {}, deps = {}) {
   bot.callbackQuery(/^lang:(.+)$/, async ctx => {
     const lang = ctx.match[1];
     if (!LANGS.includes(lang)) return ctx.answerCallbackQuery();   // noto'g'ri qiymat — e'tibor bermaymiz
-    userLang.set(ctx.from.id, lang);
+    db.setLang(ctx.from.id, lang);
     await ctx.answerCallbackQuery({ text: t(lang, "lang_saved") });  // tepada qisqa xabarcha
     await ctx.editMessageText(t(lang, "lang_saved"));                // tugmalar o'rniga tasdiq
     await ctx.reply(t(lang, "welcome"), { parse_mode: "HTML" });
+  });
+
+  // /stats — faqat adminlar uchun (ADMIN_IDS). Boshqalarga bot jim turadi — buyruq borligi ham bilinmasin
+  bot.command("stats", async ctx => {
+    if (!isAdmin(ctx.from.id)) return;
+    await ctx.reply(formatStats(db.stats()), { parse_mode: "HTML" });
+  });
+
+  // /export — oxirgi 30 kunlik tekshiruvlar CSV faylda (Excel'da ochiladi). Foydalanuvchi ID'si va matn YO'Q
+  // /export 7 — oxirgi 7 kun
+  bot.command("export", async ctx => {
+    if (!isAdmin(ctx.from.id)) return;
+    const days = Math.min(365, Math.max(1, parseInt(ctx.match, 10) || 30));
+    const rows = db.exportRows(days);
+    const name = `tekshir-${new Date().toISOString().slice(0, 10)}.csv`;
+    await ctx.replyWithDocument(new InputFile(Buffer.from(toCsv(rows), "utf8"), name), { caption: `📄 Oxirgi ${days} kun: ${rows.length} ta tekshiruv` });
   });
 
   // "Shikoyat qilish" tugmasi — 7-bosqichda to'liq ishlaydi
@@ -86,6 +103,10 @@ function createBot(token, options = {}, deps = {}) {
       doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, () => download(doc.file_id)) : null
     ]);
     const result = combineAll(urlRes, analyzeText(text), fileRes);
+    // Bazaga faqat natija yoziladi — xabar matni ham, to'liq havola ham YOZILMAYDI
+    try {
+      db.logCheck({ userId: ctx.from.id, chatType: "private", result, hasText: !!text.trim(), hosts: urlRes.map(r => r.host) });
+    } catch (e) { console.error("Baza (logCheck):", e.message); }   // baza xatosi javobga xalaqit bermasin
     const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username);
     await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: m.message_id }, link_preview_options: { is_disabled: true } });
   });
@@ -96,6 +117,7 @@ function createBot(token, options = {}, deps = {}) {
     try { await err.ctx.reply(t(getLang(err.ctx.from?.id), "error")); } catch { /* javob ham yuborilmasa — jim */ }
   });
 
+  bot.db = db;          // testlar va ishga tushirish uchun
   return bot;
 }
 
@@ -118,7 +140,13 @@ if (require.main === module) {
     }
     process.exit(1);
   }
-  const bot = createBot(process.env.BOT_TOKEN);
+  const db = openDb();                    // data/tekshir.db
+  cache.attach(db);                       // VirusTotal/Google javoblari endi bazada ham saqlanadi
+  db.cachePurge();                        // muddati o'tgan kesh yozuvlarini tozalaymiz
+  setInterval(() => db.cachePurge(), 6 * 60 * 60 * 1000).unref();
+  const bot = createBot(process.env.BOT_TOKEN, {}, { db });
+  // To'xtatilganda bazani to'g'ri yopamiz
+  for (const sig of ["SIGINT", "SIGTERM"]) process.once(sig, () => { bot.stop(); db.close(); process.exit(0); });
   // Telegram'dagi "/" menyusida ko'rinadigan buyruqlar
   bot.api.setMyCommands([
     { command: "start", description: "Boshlash" },
@@ -129,4 +157,4 @@ if (require.main === module) {
   bot.start({ onStart: info => console.log(`✅ @${info.username} ishga tushdi. To'xtatish: Ctrl + C`) });
 }
 
-module.exports = { createBot, userLang };
+module.exports = { createBot };

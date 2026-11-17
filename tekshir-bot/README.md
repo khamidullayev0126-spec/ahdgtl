@@ -8,7 +8,8 @@ Shubhali havola, xabar yoki faylni botga yuborasiz — bot bir necha soniyada xa
 - [x] **3-bosqich:** Google Safe Browsing va VirusTotal (24 soatlik kesh, limit nazorati, ishlamasa ham bot javob beradi)
 - [x] **4-bosqich:** matn tekshiruvi (9 ta firibgarlik guruhi, 3 til, inkor va birikmalar)
 - [x] **5-bosqich:** fayl tekshiruvi (APK, .exe, ikki kengaytma, SHA-256 → VirusTotal)
-- [ ] 6. Baza va /stats · [ ] 7. Shikoyatlar · [ ] 8. Guruh rejimi · [ ] 9. AI · [ ] 10. Server
+- [x] **6-bosqich:** SQLite baza (til, natijalar, domenlar, kesh), admin uchun /stats va /export
+- [ ] 7. Shikoyatlar · [ ] 8. Guruh rejimi · [ ] 9. AI · [ ] 10. Server
 
 ## Kompyuterda ishga tushirish
 
@@ -49,6 +50,19 @@ Kalitlarni faqat `.env` ga yozing. Kalit bo'lmasa, bot qoidalar bilan ishlayvera
 
 Eslatma: Safe Browsing Lookup API notijorat foydalanish uchun. Loyiha tijoriy bo'lsa — Google **Web Risk API** ga o'tish kerak.
 
+### Admin buyruqlari (/stats, /export)
+1. O'z Telegram ID'ingizni biling: Telegram'da **@userinfobot** ga `/start` yozing — `Id: 123456789` chiqadi.
+2. `.env`: `ADMIN_IDS=123456789` (bir nechta bo'lsa vergul bilan).
+3. Botni qayta ishga tushiring. Endi:
+   - `/stats` — foydalanuvchilar, tekshiruvlar, xavfli domenlar
+   - `/export` — oxirgi 30 kunlik natijalar CSV faylda (Excel'da ochiladi); `/export 7` — 7 kunlik
+
+Boshqa foydalanuvchilar bu buyruqlarni yozsa, bot javob bermaydi.
+
+### Baza va maxfiylik
+Baza fayli: `data/tekshir.db` (GitHub'ga yuklanmaydi). Unda saqlanadi: Telegram ID, til, tekshiruv natijasi (daraja, ball, sabab kodlari) va faqat **domen** nomi.
+**Saqlanmaydi:** xabar matni, to'liq havola, fayl, telefon va karta raqamlari (ular 7-bosqichda faqat SHA-256 hash ko'rinishida saqlanadi).
+
 ### Testlar
 ```bash
 npm test
@@ -59,6 +73,9 @@ Testlar internetga ulanmaydi va token talab qilmaydi.
 ```
 src/bot.js     — asosiy fayl, buyruqlar
 src/i18n.js    — tarjimalar (locales/ dan o'qiydi)
+src/db.js      — SQLite baza (6-bosqich)
+src/admin.js   — /stats matni, adminni tekshirish
+src/checkers/  — havola, tashqi API, matn, fayl tekshiruvlari
 locales/       — uz-latn.json, uz-cyrl.json, ru.json
 tests/         — avtomatik testlar
 ```
