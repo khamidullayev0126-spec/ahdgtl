@@ -5,6 +5,7 @@
 
 const TRUSTED = require("../../data/trusted-domains.json").domains;
 const RULES = require("../../data/url-rules.json");
+const { externalReasons } = require("./external");
 
 // ---------- 1. Matndan havolalarni topish ----------
 // http:// bilan yoki usiz yozilgan havolalarni topadi ("https://click.uz@yomon.top" kabi aldovni ham butunligicha): "https://click.uz", "bit.ly/abc", "c1ick-uz.com/bonus"
@@ -144,6 +145,12 @@ async function checkUrls(urls) {
       results.push(r);
     } else results.push(analyzeUrl(url));
   }
+  // 3-bosqich: rasmiy bo'lmagan havolalarni tashqi xizmatlarda ham tekshiramiz (hammasi parallel)
+  await Promise.all(results.filter(r => !r.trusted && r.host).map(async r => {
+    const ext = await externalReasons(r.url, r.host);
+    r.reasons.push(...ext.reasons);
+    r.checked = ext.checked;          // qaysi xizmat haqiqatan javob berdi (statistika uchun)
+  }));
   return results;
 }
 

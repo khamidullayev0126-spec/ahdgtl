@@ -29,5 +29,9 @@
   "btn_share": "👨‍👩‍👧 Oilamga ulashish",
   "share_text": "Firibgarlardan ehtiyot bo'ling! Shubhali havola yoki xabarni shu botga yuborib tekshiring 👇",
   "no_link": "🔍 Bu xabarda havola topmadim.\n\nMatn va fayllarni tekshirish tez orada qo'shiladi.",
-  "report_soon": "Shikoyat qilish tez orada ishga tushadi"
+  "report_soon": "Shikoyat qilish tez orada ishga tushadi",
+  "ext_gsb_phish": "Google bu saytni firibgar (aldov) sayt deb belgilagan",
+  "ext_gsb_malware": "Google bu saytni virusli yoki zararli deb belgilagan",
+  "ext_vt_bad": "{n} ta antivirus dasturi bu saytni xavfli deb topgan",
+  "ext_vt_some": "{n} ta antivirus dasturi bu saytga shubha bildirgan"
 }
