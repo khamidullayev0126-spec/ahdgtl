@@ -68,9 +68,19 @@ test("havola yuborilsa — bot tekshirib, natija va tugmalar bilan javob beradi"
   assert.ok(btns.some(b => (b.url || "").startsWith("https://t.me/share/url")));
 });
 
-test("havolasiz xabar — 'havola topmadim' javobi", async () => {
+test("oddiy xabar — ✅ xavf topilmadi (shikoyat tugmasisiz)", async () => {
   userLang.clear(); userLang.set(777, "uz-latn");
   const { bot, calls } = fakeBot();
   await bot.handleUpdate(msg("Assalomu alaykum, ertaga soat 10 da uchrashamiz"));
-  assert.match(calls.find(c => c.method === "sendMessage").payload.text, /havola topmadim/);
+  const ans = calls.find(c => c.method === "sendMessage").payload;
+  assert.match(ans.text, /Xavf topilmadi/);
+  assert.ok(!ans.reply_markup.inline_keyboard.flat().some(b => b.callback_data === "report"));
+});
+
+test("firibgar matn — 🔴, maslahatda 'havolani ochmang' YO'Q (havola yo'q), 'pul o'tkazmang' BOR", async () => {
+  userLang.clear(); userLang.set(777, "uz-latn");
+  const { bot, calls } = fakeBot();
+  await bot.handleUpdate(msg("Tabriklaymiz! Siz 5 000 000 so'm yutdingiz, karta raqamingizni yuboring"));
+  const t = calls.find(c => c.method === "sendMessage").payload.text;
+  assert.match(t, /XAVFLI/); assert.doesNotMatch(t, /Havolani ochmang/); assert.match(t, /pul o'tkazmang/);
 });

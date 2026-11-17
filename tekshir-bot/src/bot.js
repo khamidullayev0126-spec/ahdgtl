@@ -6,7 +6,8 @@ require("dotenv").config();
 const { Bot, InlineKeyboard } = require("grammy");
 const { t, LANGS } = require("./i18n");
 const { extractUrls, checkUrls } = require("./checkers/url");
-const { combine } = require("./scoring");
+const { combineAll } = require("./scoring");
+const { analyzeText } = require("./checkers/text");
 const { buildReply } = require("./reply");
 
 // Foydalanuvchining tanlagan tili.
@@ -61,11 +62,12 @@ function createBot(token, options = {}) {
     // Matn oddiy xabarda "text"da, rasm/fayl ostidagi yozuvda esa "caption"da bo'ladi
     const m = ctx.message;
     const text = m.text || m.caption || "";
+    if (!text.trim()) return ctx.reply(t(lang, "no_text"));   // stiker, ovozli xabar va h.k. (fayllar — 5-bosqichda)
     const urls = extractUrls(text, m.entities || m.caption_entities);
-    if (!urls.length) return ctx.reply(t(lang, "no_link"));
 
     await ctx.replyWithChatAction("typing").catch(() => {});   // "yozmoqda..." belgisi
-    const result = combine(await checkUrls(urls));
+    // Havolalar va matn bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
+    const result = combineAll(urls.length ? await checkUrls(urls) : [], analyzeText(text));
     const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username);
     await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: m.message_id }, link_preview_options: { is_disabled: true } });
   });

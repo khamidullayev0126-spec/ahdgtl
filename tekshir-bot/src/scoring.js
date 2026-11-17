@@ -26,4 +26,21 @@ function combine(results) {
   return { score, level: levelOf(score), reasons: risky.length ? risky.sort((a, b) => b.points - a.points) : reasons };
 }
 
-module.exports = { levelOf, combine };
+// Havolalar + matn natijasini birlashtirish (4-bosqich).
+// Ikkalasi ham shubhali bo'lsa (masalan, "SMS kodni yuboring" + soxta havola) — xavf yanada oshadi: +20.
+function combineAll(urlResults = [], textResult = null) {
+  const parts = textResult && textResult.reasons.length ? [...urlResults, textResult] : urlResults;
+  const res = combine(parts);
+  const sum = r => Math.min(100, r.reasons.reduce((a, x) => a + x.points, 0));
+  const urlMax = Math.max(0, ...urlResults.map(sum));
+  const textScore = textResult ? sum(textResult) : 0;
+  if (urlMax >= 30 && textScore >= 30) {
+    res.score = Math.min(100, res.score + 20);
+    res.level = levelOf(res.score);
+  }
+  res.hasUrl = urlResults.length > 0;
+  res.groups = textResult ? textResult.groups : [];
+  return res;
+}
+
+module.exports = { levelOf, combine, combineAll };
