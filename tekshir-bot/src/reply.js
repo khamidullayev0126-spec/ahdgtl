@@ -12,11 +12,13 @@ function advice(lang, r) {
   if (r.level === "safe") return [t(lang, "adv_safe")];
   const out = [];
   if (r.level === "danger") {
+    if (r.hasFile) out.push(t(lang, "adv_no_install"));
     if (r.hasUrl) out.push(t(lang, "adv_no_open"));
     out.push(t(lang, "adv_no_code"));
     if (g.some(x => ["transfer", "money", "prize", "parcel"].includes(x))) out.push(t(lang, "adv_no_money"));
-    out.push(t(lang, "adv_call_bank"));
+    out.push(t(lang, r.hasFile ? "adv_installed" : "adv_call_bank"));
   } else {
+    if (r.hasFile) out.push(t(lang, "adv_file_wait"));
     if (r.hasUrl) out.push(t(lang, "adv_wait"));
     out.push(t(lang, "adv_check_official"));
     out.push(t(lang, "adv_no_code"));
@@ -27,7 +29,7 @@ function advice(lang, r) {
 function buildReply(lang, result, botUsername) {
   const head = t(lang, `level_${result.level}`);
   // Domen va so'zlarni <code> ichida, brend nomini oddiy matn bilan yozamiz
-  const CODE = ["real", "tld", "word", "host"];
+  const CODE = ["real", "tld", "word", "host", "ext", "name"];
   const reasons = result.reasons.slice(0, 4).map(r => "• " + t(lang, r.code, Object.fromEntries(Object.entries(r.vars || {}).map(([k, v]) => [k, CODE.includes(k) ? `<code>${esc(v)}</code>` : esc(v)]))));
   let text = `<b>${head}</b>`;
   if (reasons.length) text += `\n\n${t(lang, "why")}\n${reasons.join("\n")}`;

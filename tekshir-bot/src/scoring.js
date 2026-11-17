@@ -28,8 +28,10 @@ function combine(results) {
 
 // Havolalar + matn natijasini birlashtirish (4-bosqich).
 // Ikkalasi ham shubhali bo'lsa (masalan, "SMS kodni yuboring" + soxta havola) — xavf yanada oshadi: +20.
-function combineAll(urlResults = [], textResult = null) {
-  const parts = textResult && textResult.reasons.length ? [...urlResults, textResult] : urlResults;
+function combineAll(urlResults = [], textResult = null, fileResult = null) {
+  const parts = [...urlResults];
+  if (textResult && textResult.reasons.length) parts.push(textResult);
+  if (fileResult) parts.push(fileResult);
   const res = combine(parts);
   const sum = r => Math.min(100, r.reasons.reduce((a, x) => a + x.points, 0));
   const urlMax = Math.max(0, ...urlResults.map(sum));
@@ -39,6 +41,7 @@ function combineAll(urlResults = [], textResult = null) {
     res.level = levelOf(res.score);
   }
   res.hasUrl = urlResults.length > 0;
+  res.hasFile = !!fileResult;
   res.groups = textResult ? textResult.groups : [];
   return res;
 }

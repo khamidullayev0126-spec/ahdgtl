@@ -79,6 +79,29 @@ async function virusTotalDomain(domain) {
   }
 }
 
+// ---------- VirusTotal: fayl hash'i bo'yicha (5-bosqich) ----------
+// Faylning o'zi emas, faqat SHA-256 "barmoq izi" yuboriladi. 404 — VirusTotal bu faylni hali ko'rmagan.
+async function virusTotalFile(sha) {
+  const key = process.env.VIRUSTOTAL_KEY;
+  if (!key) return null;
+  const ck = "vtf:" + sha;
+  const cached = cache.get(ck);
+  if (cached !== undefined) return cached;
+  if (!vtAllowed()) return null;
+  try {
+    const res = await doFetch(`https://www.virustotal.com/api/v3/files/${sha}`, { headers: { "x-apikey": key }, signal: AbortSignal.timeout(TIMEOUT) });
+    if (res.status === 404) { const out = { malicious: 0, suspicious: 0, unknown: true }; cache.set(ck, out); return out; }
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const s = (await res.json())?.data?.attributes?.last_analysis_stats || {};
+    const out = { malicious: s.malicious || 0, suspicious: s.suspicious || 0 };
+    cache.set(ck, out);
+    return out;
+  } catch (e) {
+    console.error("VirusTotal (fayl) xatosi:", e.message);
+    return null;
+  }
+}
+
 // ---------- Bitta havola uchun ikkala xizmat, parallel ----------
 // Natija — 2-bosqichdagi kabi "sabablar" ro'yxati
 async function externalReasons(url, host) {
@@ -95,4 +118,4 @@ async function externalReasons(url, host) {
   return { reasons, checked: { gsb: gsb !== null, vt: vt !== null } };
 }
 
-module.exports = { safeBrowsing, virusTotalDomain, externalReasons, setFetch, _vtCalls: vtCalls };
+module.exports = { safeBrowsing, virusTotalDomain, virusTotalFile, externalReasons, setFetch, _vtCalls: vtCalls };

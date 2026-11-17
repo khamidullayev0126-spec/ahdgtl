@@ -8,6 +8,7 @@ const { t, LANGS } = require("./i18n");
 const { extractUrls, checkUrls } = require("./checkers/url");
 const { combineAll } = require("./scoring");
 const { analyzeText } = require("./checkers/text");
+const { checkFile } = require("./checkers/file");
 const { buildReply } = require("./reply");
 
 // Foydalanuvchining tanlagan tili.
@@ -24,8 +25,16 @@ function langKeyboard() {
 }
 
 // Botni yaratuvchi funksiya. Testlarda ham shundan foydalanamiz (shuning uchun alohida).
-function createBot(token, options = {}) {
+// deps.download(file_id) — faylni xotiraga yuklab beradi. Testlarda soxtasi beriladi (internetsiz).
+function createBot(token, options = {}, deps = {}) {
   const bot = new Bot(token, options);
+  // Faylni Telegram serveridan XOTIRAGA yuklaymiz (diskka yozilmaydi, ishga tushirilmaydi) — faqat hash uchun
+  const download = deps.download || (async fileId => {
+    const file = await bot.api.getFile(fileId);
+    const res = await fetch(`https://api.telegram.org/file/bot${token}/${file.file_path}`, { signal: AbortSignal.timeout(15000) });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return Buffer.from(await res.arrayBuffer());
+  });
 
   // /start — til tanlanmagan bo'lsa, avval tilni so'raymiz
   bot.command("start", async ctx => {
@@ -62,12 +71,17 @@ function createBot(token, options = {}) {
     // Matn oddiy xabarda "text"da, rasm/fayl ostidagi yozuvda esa "caption"da bo'ladi
     const m = ctx.message;
     const text = m.text || m.caption || "";
-    if (!text.trim()) return ctx.reply(t(lang, "no_text"));   // stiker, ovozli xabar va h.k. (fayllar — 5-bosqichda)
+    const doc = m.document;                                    // fayl (APK, PDF, ZIP va h.k.)
+    if (!text.trim() && !doc) return ctx.reply(t(lang, "no_text"));   // stiker, ovozli xabar va h.k.
     const urls = extractUrls(text, m.entities || m.caption_entities);
 
     await ctx.replyWithChatAction("typing").catch(() => {});   // "yozmoqda..." belgisi
-    // Havolalar va matn bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
-    const result = combineAll(urls.length ? await checkUrls(urls) : [], analyzeText(text));
+    // Havolalar, matn va fayl bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
+    const [urlRes, fileRes] = await Promise.all([
+      urls.length ? checkUrls(urls) : [],
+      doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, () => download(doc.file_id)) : null
+    ]);
+    const result = combineAll(urlRes, analyzeText(text), fileRes);
     const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username);
     await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: m.message_id }, link_preview_options: { is_disabled: true } });
   });

@@ -7,7 +7,7 @@ Shubhali havola, xabar yoki faylni botga yuborasiz — bot bir necha soniyada xa
 - [x] **2-bosqich:** havola tekshiruvi (qoidalar: soxta domen, qisqartirilgan havola, punycode, IP, shubhali oxir)
 - [x] **3-bosqich:** Google Safe Browsing va VirusTotal (24 soatlik kesh, limit nazorati, ishlamasa ham bot javob beradi)
 - [x] **4-bosqich:** matn tekshiruvi (9 ta firibgarlik guruhi, 3 til, inkor va birikmalar)
-- [ ] 5. Fayl
+- [x] **5-bosqich:** fayl tekshiruvi (APK, .exe, ikki kengaytma, SHA-256 → VirusTotal)
 - [ ] 6. Baza va /stats · [ ] 7. Shikoyatlar · [ ] 8. Guruh rejimi · [ ] 9. AI · [ ] 10. Server
 
 ## Kompyuterda ishga tushirish

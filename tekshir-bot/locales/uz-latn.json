@@ -47,5 +47,18 @@
   "txt_transfer": "Sizdan pul o'tkazish so'ralyapti («{word}»)",
   "txt_apk": "Fayl yoki ilova o'rnatish so'ralyapti («{word}») — telefoningizga virus tushishi mumkin",
   "txt_combo": "Bir xabarda bir nechta firibgarlik belgisi birga uchradi",
-  "no_text": "🔍 Menga shubhali xabar, havola yoki faylni yuboring — tekshirib beraman."
+  "no_text": "🔍 Menga shubhali xabar, havola yoki faylni yuboring — tekshirib beraman.",
+  "file_apk": "Bu Android ilova fayli ({ext}). Notanish odamdan kelgan ilova — eng ko'p tarqalgan firibgarlik usuli: o'rnatsangiz, SMS va kartangizni o'g'irlaydi",
+  "file_apk_hidden": "Bu aslida Android ilova fayli, lekin nomi boshqacha ko'rsatilgan ({ext})",
+  "file_exe": "Bu kompyuterda ishga tushadigan dastur fayli ({ext}) — virus bo'lishi mumkin",
+  "file_macro": "Bu hujjat ichida dastur (makros) bo'lishi mumkin ({ext})",
+  "file_archive": "Bu arxiv ({ext}) — ichida xavfli fayl yashirilgan bo'lishi mumkin",
+  "file_double": "Fayl nomi aldamchi: {name} — rasm yoki hujjatga o'xshatilgan",
+  "file_spaces": "Fayl nomida ko'p bo'shliq bilan haqiqiy turi yashirilgan",
+  "file_big": "Fayl 20 MB dan katta — faqat nomi va turiga qarab baholandi",
+  "file_vt_bad": "{n} ta antivirus bu faylni virusli deb topgan",
+  "file_vt_some": "{n} ta antivirus bu faylga shubha bildirgan",
+  "adv_no_install": "❌ Faylni ochmang va o'rnatmang",
+  "adv_installed": "✅ O'rnatib qo'ygan bo'lsangiz — internetni o'chiring, ilovani o'chirib tashlang va darhol bankingizga qo'ng'iroq qiling",
+  "adv_file_wait": "⚠️ Faylni ochishdan oldin yuborgan odamdan boshqa yo'l bilan so'rab ko'ring"
 }
