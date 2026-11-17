@@ -1,0 +1,7 @@
+{
+  "_izoh": "Havola qoidalari. Ballar scoring.js da qo'shiladi.",
+  "shorteners": ["bit.ly", "tinyurl.com", "cutt.ly", "is.gd", "t.ly", "goo.su", "clck.ru", "rb.gy", "shorturl.at", "ow.ly", "tiny.cc", "s.id", "v.gd", "qps.ru", "u.to", "bitly.ws", "short.gy", "lnkd.in", "tinyurl.ru", "surl.li"],
+  "suspicious_tlds": ["xyz", "top", "click", "icu", "buzz", "monster", "rest", "cfd", "sbs", "online", "site", "live", "shop", "fun", "pw", "tk", "ml", "ga", "cf", "gq", "work", "loan", "win", "bid", "vip", "cyou", "lol", "quest", "support"],
+  "path_words": ["bonus", "prize", "priz", "yutuq", "sovg", "sovrin", "aksiya", "gift", "free", "login", "verify", "confirm", "card", "karta", "sms", "otp", "posilka", "parcel", "vote", "ovoz", "golos", "secure", "update", "unlock", "blok"],
+  "second_level": ["com.uz", "org.uz", "net.uz", "co.uk", "com.ru", "com.tr", "co.uz"]
+}

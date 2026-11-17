@@ -2,6 +2,9 @@
 .env.*
 node_modules/
 data/
+# Tekshir botining qoidalari (JSON) GitHub'da bo'lishi SHART — server ularsiz ishga tushmaydi.
+# Baza fayli (tekshir.db) esa tekshir-bot/.gitignore orqali baribir yuklanmaydi.
+!tekshir-bot/data/
 .DS_Store
 kontent/video/reklama-c/ref/
 kontent/video/reklama-c/manba/kadrlar.mp4
