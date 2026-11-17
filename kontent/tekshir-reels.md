@@ -36,7 +36,8 @@ Shubhali xabar, havola yoki faylni tekshirish uchun Telegram bot yasadim — Tek
 🔴 xavfli — ochmang, kod bermang
 
 📌 Saqlab qo'ying va ota-onangizga yuboring.
-Bot havolasi — bio'da.
+🤖 Bot havolasi — Telegram kanalimda (📌 pin'da).
+🔗 Kanal havolasi — bio'da.
 
 #firibgarlik #xavfsizlik #telegram #kiberxavfsizlik #ozbekiston #AHdigital
 ```

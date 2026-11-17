@@ -212,7 +212,7 @@ module.exports = {
         msg: "Tabriklaymiz! Siz Click aksiyasida 1 000 000 so'm yutdingiz 🎁 Olish uchun: <span style='white-space:nowrap'>c<span class='mk'>1</span>ick-uz.com/bonus</span>",
         reply: "<div class='ln' style='font-weight:900;font-size:27px;color:#ff6b5e'>🔴 XAVFLI</div><div class='ln' style='color:#9fb0c0;margin-top:8px'>Nima uchun:</div><div class='ln'>• Sayt Click'ga o'xshatilgan, lekin rasmiy emas</div><div class='ln'>• Rasmiysi: <b style='color:#ffd7b5'>click.uz</b></div><div class='ln'>• «yutdingiz» — eng ko'p aldov usuli</div>" },
       { at: 11, v: "badges", items: [["✅", "Xavf yo'q"], ["🟡", "Ehtiyot bo'ling"], ["🔴", "Ochmang"]] },
-      { at: 12, v: "cta", line: "Tekshir — firibgarlikka qarshi bot", url: "@tekshirbot_bot", small: "📤 Ota-onangizga yuboring" }
+      { at: 12, v: "cta", line: "📌 Bot havolasi — Telegram kanalimda", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
     ]
   }
 };
