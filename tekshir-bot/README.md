@@ -9,7 +9,8 @@ Shubhali havola, xabar yoki faylni botga yuborasiz — bot bir necha soniyada xa
 - [x] **4-bosqich:** matn tekshiruvi (9 ta firibgarlik guruhi, 3 til, inkor va birikmalar)
 - [x] **5-bosqich:** fayl tekshiruvi (APK, .exe, ikki kengaytma, SHA-256 → VirusTotal)
 - [x] **6-bosqich:** SQLite baza (til, natijalar, domenlar, kesh), admin uchun /stats va /export
-- [ ] 7. Shikoyatlar · [ ] 8. Guruh rejimi · [ ] 9. AI · [ ] 10. Server
+- [x] **7-bosqich:** shikoyatlar (tasdiqlash bilan, 1 odam — 1 shikoyat, kuniga 20 ta) va telefon/karta raqamlarini tekshirish
+- [ ] 8. Guruh rejimi · [ ] 9. AI · [ ] 10. Server
 
 ## Kompyuterda ishga tushirish
 
@@ -62,6 +63,16 @@ Boshqa foydalanuvchilar bu buyruqlarni yozsa, bot javob bermaydi.
 ### Baza va maxfiylik
 Baza fayli: `data/tekshir.db` (GitHub'ga yuklanmaydi). Unda saqlanadi: Telegram ID, til, tekshiruv natijasi (daraja, ball, sabab kodlari) va faqat **domen** nomi.
 **Saqlanmaydi:** xabar matni, to'liq havola, fayl, telefon va karta raqamlari (ular 7-bosqichda faqat SHA-256 hash ko'rinishida saqlanadi).
+
+### Raqamlar va shikoyatlar (HASH_SALT)
+Telefon va karta raqamlari bazada **ochiq saqlanmaydi** — faqat SHA-256 + maxfiy "tuz" (salt) ko'rinishida.
+1. Terminalda tasodifiy tuz yarating: `openssl rand -hex 32`
+2. `.env`: `HASH_SALT=...` (chiqqan uzun qatorni qo'ying)
+3. **Muhim:** HASH_SALT ni keyin O'ZGARTIRMANG va yo'qotmang — aks holda eski shikoyatlar topilmay qoladi. Uni parol kabi saqlang.
+
+HASH_SALT bo'lmasa, bot ishlayveradi, faqat raqam tekshiruvi va shikoyatlar o'chiq bo'ladi.
+
+Bot hech qachon "bu odam firibgar" demaydi — faqat **shikoyatlar sonini** ko'rsatadi. Shikoyatning o'zi hech qachon 🔴 bermaydi (eng ko'pi 🟡).
 
 ### Testlar
 ```bash

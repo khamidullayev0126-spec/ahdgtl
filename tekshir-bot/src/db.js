@@ -96,7 +96,10 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
                            ON CONFLICT(domain) DO UPDATE SET checks = checks + 1, danger = danger + @dg, suspicious = suspicious + @sp, last_level = @lv, last_seen = @now`),
     cacheGet:  db.prepare("SELECT value, until FROM cache WHERE key = ?"),
     cacheSet:  db.prepare("INSERT OR REPLACE INTO cache (key, value, until) VALUES (?, ?, ?)"),
-    cacheDel:  db.prepare("DELETE FROM cache WHERE until < ?")
+    cacheDel:  db.prepare("DELETE FROM cache WHERE until < ?"),
+    repAdd:    db.prepare("INSERT OR IGNORE INTO reports (target_hash, target_kind, reporter_id, created_at) VALUES (?, ?, ?, ?)"),
+    repCount:  db.prepare("SELECT COUNT(*) n FROM reports WHERE target_hash = ?"),
+    repToday:  db.prepare("SELECT COUNT(*) n FROM reports WHERE reporter_id = ? AND created_at >= ?")
   };
 
   const api = {
@@ -136,11 +139,28 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
 
     // ---- Hash (7-bosqich: telefon/karta) ----
     // Raqamning o'zi hech qachon bazaga yozilmaydi — faqat shu funksiya natijasi.
+    // SHA-256 + tuz (HASH_SALT): tuzni bilmagan odam bazadan raqamni qayta tiklay olmaydi.
+    canHash: () => !!process.env.HASH_SALT,
     hash(value) {
       const salt = process.env.HASH_SALT;
       if (!salt) throw new Error("HASH_SALT .env da yo'q");
       return crypto.createHash("sha256").update(salt + ":" + String(value).replace(/\D/g, "")).digest("hex");
     },
+    // Domen uchun hash (harflar ham kerak, shuning uchun alohida)
+    hashDomain(domain) {
+      const salt = process.env.HASH_SALT;
+      if (!salt) throw new Error("HASH_SALT .env da yo'q");
+      return crypto.createHash("sha256").update(salt + ":d:" + String(domain).toLowerCase()).digest("hex");
+    },
+
+    // ---- Shikoyatlar ----
+    // Natija: "ok" — qabul qilindi, "dup" — bu odam avval shikoyat qilgan, "limit" — bugungi limit tugadi
+    addReport(targetHash, kind, reporterId, dailyLimit = 20) {
+      const now = Date.now();
+      if (q.repToday.get(reporterId, now - DAY).n >= dailyLimit) return "limit";
+      return q.repAdd.run(targetHash, kind, reporterId, now).changes ? "ok" : "dup";
+    },
+    reportCount: targetHash => q.repCount.get(targetHash).n,
 
     // ---- /stats uchun raqamlar ----
     stats() {
@@ -159,7 +179,10 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
         kinds: one("SELECT SUM(has_url) url, SUM(has_text) text, SUM(has_file) file FROM checks"),
         langs: db.prepare("SELECT lang, COUNT(*) n FROM users WHERE lang IS NOT NULL GROUP BY lang ORDER BY n DESC").all(),
         topDanger: db.prepare("SELECT domain, danger, checks FROM domains WHERE danger > 0 ORDER BY danger DESC, checks DESC LIMIT 10").all(),
-        topReasons: topReasons(db)
+        topReasons: topReasons(db),
+        reports: one("SELECT COUNT(*) n FROM reports").n,
+        reportsWeek: one("SELECT COUNT(*) n FROM reports WHERE created_at >= ?", week).n,
+        reportedTargets: db.prepare("SELECT target_kind kind, COUNT(DISTINCT target_hash) n FROM reports GROUP BY target_kind").all()
       };
     },
 

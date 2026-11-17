@@ -6,6 +6,7 @@ const assert = require("node:assert");
 const { createBot } = require("../src/bot");
 const { openDb } = require("../src/db");
 // 6-bosqich: til endi bazada. Testlar uchun xotiradagi baza va eski "userLang" ko'rinishidagi yordamchi
+process.env.HASH_SALT = process.env.HASH_SALT || "test-salt";
 const testDb = openDb(":memory:");
 const userLang = { clear: () => testDb.raw.exec("DELETE FROM users"), set: (id, l) => testDb.setLang(id, l), get: id => testDb.getLang(id) };
 
@@ -69,7 +70,7 @@ test("havola yuborilsa — bot tekshirib, natija va tugmalar bilan javob beradi"
   assert.match(ans.text, /XAVFLI/);
   assert.match(ans.text, /<code>click\.uz<\/code>/);                 // rasmiy sayt manzili ko'rsatiladi
   const btns = ans.reply_markup.inline_keyboard.flat();
-  assert.ok(btns.some(b => b.callback_data === "report"));
+  assert.ok(btns.some(b => (b.callback_data || "").startsWith("rep:")));
   assert.ok(btns.some(b => (b.url || "").startsWith("https://t.me/share/url")));
 });
 
@@ -79,7 +80,7 @@ test("oddiy xabar — ✅ xavf topilmadi (shikoyat tugmasisiz)", async () => {
   await bot.handleUpdate(msg("Assalomu alaykum, ertaga soat 10 da uchrashamiz"));
   const ans = calls.find(c => c.method === "sendMessage").payload;
   assert.match(ans.text, /Xavf topilmadi/);
-  assert.ok(!ans.reply_markup.inline_keyboard.flat().some(b => b.callback_data === "report"));
+  assert.ok(!ans.reply_markup.inline_keyboard.flat().some(b => (b.callback_data || "").startsWith("rep:")));
 });
 
 test("firibgar matn — 🔴, maslahatda 'havolani ochmang' YO'Q (havola yo'q), 'pul o'tkazmang' BOR", async () => {

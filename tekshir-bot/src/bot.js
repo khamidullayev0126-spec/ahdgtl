@@ -1,5 +1,5 @@
 // Tekshir — firibgarlikka qarshi Telegram bot. Asosiy fayl.
-// 1-bosqich: /start, til tanlash, /til, /yordam. 6-bosqich: baza, /stats, /export.
+// 1-bosqich: /start, til tanlash, /til, /yordam. 6-bosqich: baza, /stats, /export. 7-bosqich: shikoyatlar, raqamlar.
 // Ishga tushirish: npm start   (avval .env faylida BOT_TOKEN bo'lishi kerak)
 
 // .env faylini doim loyiha papkasidan o'qiymiz (terminal qaysi papkada bo'lishidan qat'i nazar)
@@ -17,6 +17,8 @@ const { buildReply } = require("./reply");
 const { openDb, toCsv } = require("./db");
 const { isAdmin, formatStats } = require("./admin");
 const cache = require("./cache");
+const { extractNumbers, reportPoints } = require("./checkers/numbers");
+const crypto = require("crypto");
 
 // Til tanlash tugmalari: har bir til — alohida qator
 function langKeyboard() {
@@ -80,8 +82,51 @@ function createBot(token, options = {}, deps = {}) {
     await ctx.replyWithDocument(new InputFile(Buffer.from(toCsv(rows), "utf8"), name), { caption: `📄 Oxirgi ${days} kun: ${rows.length} ta tekshiruv` });
   });
 
-  // "Shikoyat qilish" tugmasi — 7-bosqichda to'liq ishlaydi
-  bot.callbackQuery("report", ctx => ctx.answerCallbackQuery({ text: t(getLang(ctx.from.id), "report_soon"), show_alert: true }));
+  // ---------- Shikoyatlar (7-bosqich) ----------
+  // Tugma bosilganda raqamning o'zini qayta so'ramaslik uchun, tekshiruv paytida faqat HASH'larni
+  // xotirada 24 soat ushlab turamiz: kod -> { targets: [{hash, kind}], owner, until, markup }
+  // Raqamning o'zi bu yerda ham, bazada ham saqlanmaydi.
+  const pending = new Map();
+  const PENDING_TTL = 24 * 60 * 60 * 1000;
+  function remember(targets, owner) {
+    const now = Date.now();
+    if (pending.size > 5000) for (const [k, v] of pending) if (v.until < now || pending.size > 5000) pending.delete(k);
+    const id = crypto.randomBytes(6).toString("base64url");     // 8 belgi — callback_data 64 baytdan oshmasin
+    pending.set(id, { targets, owner, until: now + PENDING_TTL });
+    return id;
+  }
+  const getPending = (id, userId) => { const p = pending.get(id); return p && p.until > Date.now() && p.owner === userId ? p : null; };
+
+  // 1-qadam: "📢 Shikoyat qilish" → tasodifan bosilmasin, tasdiqlash tugmalarini ko'rsatamiz
+  bot.callbackQuery(/^rep:(.+)$/, async ctx => {
+    const lang = getLang(ctx.from.id);
+    const p = getPending(ctx.match[1], ctx.from.id);
+    if (!p) return ctx.answerCallbackQuery({ text: t(lang, "report_expired"), show_alert: true });
+    p.markup = ctx.callbackQuery.message?.reply_markup;           // "Bekor qilish" bosilsa — qaytaramiz
+    await ctx.answerCallbackQuery({ text: t(lang, "report_ask"), show_alert: true });
+    await ctx.editMessageReplyMarkup({ reply_markup: new InlineKeyboard()
+      .text(t(lang, "btn_report_yes"), `repy:${ctx.match[1]}`).text(t(lang, "btn_report_no"), `repn:${ctx.match[1]}`) }).catch(() => {});
+  });
+
+  // 2-qadam: "Ha" → shikoyatlar bazaga yoziladi (bir odam — bitta raqamga bir marta)
+  bot.callbackQuery(/^repy:(.+)$/, async ctx => {
+    const lang = getLang(ctx.from.id);
+    const p = getPending(ctx.match[1], ctx.from.id);
+    if (!p) return ctx.answerCallbackQuery({ text: t(lang, "report_expired"), show_alert: true });
+    const results = p.targets.map(x => db.addReport(x.hash, x.kind, ctx.from.id));
+    const key = results.includes("ok") ? "report_ok" : results.includes("limit") ? "report_limit" : "report_dup";
+    pending.delete(ctx.match[1]);
+    await ctx.answerCallbackQuery({ text: t(lang, key), show_alert: true });
+    await ctx.editMessageReplyMarkup({ reply_markup: new InlineKeyboard().text(t(lang, "btn_report_done"), "noop") }).catch(() => {});
+  });
+
+  // "Bekor qilish" → asl tugmalar qaytadi
+  bot.callbackQuery(/^repn:(.+)$/, async ctx => {
+    const p = getPending(ctx.match[1], ctx.from.id);
+    await ctx.answerCallbackQuery();
+    if (p?.markup) await ctx.editMessageReplyMarkup({ reply_markup: p.markup }).catch(() => {});
+  });
+  bot.callbackQuery("noop", ctx => ctx.answerCallbackQuery());
 
   // Boshqa har qanday xabar (shaxsiy chatda): havolalarni topamiz va tekshiramiz
   bot.on("message", async ctx => {
@@ -102,12 +147,32 @@ function createBot(token, options = {}, deps = {}) {
       urls.length ? checkUrls(urls) : [],
       doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, () => download(doc.file_id)) : null
     ]);
-    const result = combineAll(urlRes, analyzeText(text), fileRes);
+    // 7-bosqich: raqamlar va saytlar ustidan shikoyatlar soni. Bazadan faqat HASH bo'yicha qidiramiz.
+    const targets = [], numbers = [], extra = [];
+    if (db.canHash()) {
+      for (const n of extractNumbers(text)) {
+        const hash = db.hash(n.digits);
+        const count = db.reportCount(hash);
+        targets.push({ hash, kind: n.kind });
+        numbers.push({ masked: n.masked, count });
+        // Shikoyatlar ballga ham ta'sir qiladi, lekin o'zi yolg'iz "🔴" bermaydi (eng ko'pi 50)
+        if (count) extra.push({ host: "", reasons: [{ code: "num_reports", points: reportPoints(count), vars: { n: count }, hidden: true }] });
+      }
+      for (const r of urlRes) {
+        if (!r.host || r.trusted) continue;                     // rasmiy saytlarga shikoyat qilinmaydi
+        const hash = db.hashDomain(r.host);
+        const count = db.reportCount(hash);
+        targets.push({ hash, kind: "domain" });
+        if (count) r.reasons.push({ code: "url_reports", points: reportPoints(count), vars: { n: count } });
+      }
+    }
+    const result = combineAll(urlRes, analyzeText(text), fileRes, extra);
     // Bazaga faqat natija yoziladi — xabar matni ham, to'liq havola ham YOZILMAYDI
     try {
       db.logCheck({ userId: ctx.from.id, chatType: "private", result, hasText: !!text.trim(), hosts: urlRes.map(r => r.host) });
     } catch (e) { console.error("Baza (logCheck):", e.message); }   // baza xatosi javobga xalaqit bermasin
-    const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username);
+    const reportId = targets.length ? remember(targets, ctx.from.id) : null;
+    const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username, { numbers, reportId });
     await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: m.message_id }, link_preview_options: { is_disabled: true } });
   });
 
@@ -140,6 +205,7 @@ if (require.main === module) {
     }
     process.exit(1);
   }
+  if (!process.env.HASH_SALT) console.warn("⚠️  HASH_SALT yo'q — raqam tekshiruvi va shikoyatlar o'chiq. .env ga qo'shing (README).");
   const db = openDb();                    // data/tekshir.db
   cache.attach(db);                       // VirusTotal/Google javoblari endi bazada ham saqlanadi
   db.cachePurge();                        // muddati o'tgan kesh yozuvlarini tozalaymiz

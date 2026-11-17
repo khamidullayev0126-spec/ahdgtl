@@ -28,8 +28,9 @@ function combine(results) {
 
 // Havolalar + matn natijasini birlashtirish (4-bosqich).
 // Ikkalasi ham shubhali bo'lsa (masalan, "SMS kodni yuboring" + soxta havola) — xavf yanada oshadi: +20.
-function combineAll(urlResults = [], textResult = null, fileResult = null) {
-  const parts = [...urlResults];
+// extra — qo'shimcha natijalar (7-bosqich: raqamlar/domenlar ustidan shikoyatlar)
+function combineAll(urlResults = [], textResult = null, fileResult = null, extra = []) {
+  const parts = [...urlResults, ...extra.filter(r => r.reasons.length)];
   if (textResult && textResult.reasons.length) parts.push(textResult);
   if (fileResult) parts.push(fileResult);
   const res = combine(parts);

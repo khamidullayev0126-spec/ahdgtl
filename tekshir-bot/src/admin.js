@@ -28,6 +28,11 @@ function formatStats(s) {
     "",
     `🔗 Havola: ${s.kinds.url || 0} · 💬 Matn: ${s.kinds.text || 0} · 📎 Fayl: ${s.kinds.file || 0}`
   ];
+  if (s.reports !== undefined) {
+    const k = Object.fromEntries((s.reportedTargets || []).map(r => [r.kind, r.n]));
+    lines.push("", "📢 <b>Shikoyatlar</b>", `Jami: ${s.reports} · 7 kunda: ${s.reportsWeek}`,
+      `Raqamlar: 📞 ${k.phone || 0} · 💳 ${k.card || 0} · 🌐 ${k.domain || 0}`);
+  }
   if (s.langs.length) lines.push("", "🌐 <b>Tillar</b>", ...s.langs.map(l => `${LANG_NAMES[l.lang] || l.lang}: ${l.n}`));
   if (s.topDanger.length) lines.push("", "🚨 <b>Eng ko'p xavfli chiqqan domenlar</b>", ...s.topDanger.map((d, i) => `${i + 1}. <code>${esc(d.domain)}</code> — ${d.danger} marta`));
   if (s.topReasons.length) lines.push("", "🧩 <b>Eng ko'p sabablar</b>", ...s.topReasons.map(r => `<code>${esc(r.code)}</code> — ${r.n}`));
