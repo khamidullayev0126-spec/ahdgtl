@@ -23,7 +23,8 @@ const COLLECTIONS = {
   "legends-oquvchilar": { type: "list", id: "id", sort: (a, b) => String(a.yaratildi).localeCompare(String(b.yaratildi)) },
   foydalanuvchilar: { type: "map" },
   "biznes-chatlar": { type: "map" },
-  tolovlar: { type: "map" }          // Click / Payme tranzaksiyalari
+  tolovlar: { type: "map" },         // Click / Payme tranzaksiyalari
+  tz: { type: "map" }                // texnik topshiriqlar (tz.js)
 };
 const BLOBS = ["agent-xotira", "agent-eslatmalar", "biznes-sozlama", "zaxira-holat", "ai-xarajat", "agent-moliya", "agent-goyalar", "agent-xatolar"];
 const KEYS = [...Object.keys(COLLECTIONS), ...BLOBS];

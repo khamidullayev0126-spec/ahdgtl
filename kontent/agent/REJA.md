@@ -11,6 +11,7 @@ Bu papka internetda ko'rinmaydi. ✅ — tayyor, 🔜 — keyinroq.
 | 💡 **G'oyalar bazasi** | «G'oya: kafelar uchun menyu video» · «Shorts g'oyalarim qani?» | oddiy xabar |
 | 🐞 **Xatolar kundaligi** | «Xato: CORS, yechim: cors() qo'shdim» · «CORS'ni qanday tuzatgandim?» | oddiy xabar |
 | 📰 **Ertalabki dayjest** | «Har kuni 8:00 da AI va IT yangiliklaridan 5 ta punkt yubor» | ⚠️ har kuni token (internet qidiruvi bilan) |
+| 📝 **TZ generatori** | «Lazzat kafe uchun menyu sayt TZ tuz: menyu 4 bo'lim, QR, Telegram tugma, logo bor» → havola mijozga | oddiy xabar |
 | 🧠 **Kunlik mini-mashq** | «Har kuni 19:00 da JavaScript bo'yicha bitta masala ber» | ⚠️ har kuni token |
 
 **Tuzatilgan xato:** 25 kundan uzoq eslatma (masalan, yillik domen to'lovi) oldin vaqtidan ancha erta kelib qolardi. Endi o'z vaqtida keladi.
@@ -36,7 +37,6 @@ Bu papka internetda ko'rinmaydi. ✅ — tayyor, 🔜 — keyinroq.
 | # | Agent | Nima uchun foydali | Nima kerak |
 |---|---|---|---|
 | 1 | **Haftalik hisobot** (yakshanba 20:00) | Buyurtmalar, pul, AI xarajati, g'oyalar — bitta xabarda | Hozir ham ishlaydi: «Har yakshanba 20:00 da haftalik hisobot yubor» (vazifa) |
-| 2 | **TZ (texnik topshiriq) generatori** | Mijoz bilan gaplashgach — aniq ro'yxat, narx, muddat. Kelishmovchilik kamayadi | `kontent-agent.js` kabi skript |
 | 3 | **«Fikr qoldiring» eslatmasi** | Buyurtma «bajarildi» bo'lgach 2 kun o'tib mijozdan Google'da sharh so'rash matnini tayyorlaydi | Google Business tasdiqlangach |
 | 4 | **Tijoriy taklif (KP)** | Kafe/salon uchun chiroyli PDF taklif | TZ generatoridan keyin |
 | 5 | **YouTube/Telegram statistikasi** | Qaysi video/post yaxshi ketdi, izohlardan yangi mavzular | YouTube kanalida 5–10 video bo'lgach; YouTube API kaliti |

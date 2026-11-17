@@ -109,3 +109,23 @@ test("eslatma: takrorlanadigani ishlagach keyingi vaqtga suriladi", async () => 
   assert.strictEqual(left.length, 1);
   assert.ok(new Date(left[0].vaqt) > Date.now() + 23 * 3600e3);
 });
+
+test("agent: tz_tuzish havola qaytaradi, tz_royxati ko'rsatadi", async () => {
+  const { createTz } = require("../tz");
+  const SERVICES = require("../services");
+  const store = makeStore(), sent = [];
+  const client = fakeClient([
+    tool("tz_tuzish", { xizmat: "vizitka", mijoz: "Dilnoza", biznes: "Lazzat kafe", til: "uz", bolimlar: ["Menyu"] }),
+    tool("tz_royxati", {})
+  ]);
+  const tz = createTz({ store, services: SERVICES });
+  const agent = createAgent({ api: async () => ({}), send: async (_c, t) => { sent.push(t); }, ownerChatId: 1, services: SERVICES,
+    readOrders: () => [], writeOrders: () => {}, store, client, tz });
+  agent.start();
+  agent.onOwnerMessage("TZ tuz");
+  await until(() => sent.length);
+  const prev = client.seen.at(-2).content[0].content;
+  assert.match(prev, /TZ-001 · Lazzat kafe/);
+  assert.match(prev, /\/tz\//);
+  assert.match(lastResult(client), /⏳ kutilmoqda/);
+});

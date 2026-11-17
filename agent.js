@@ -32,7 +32,7 @@ function nextTime(iso, takror) {
 }
 const todayTashkent = () => new Date(Date.now() + 5 * 3600e3).toISOString().slice(0, 10);
 
-function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto, business, notifyStatus }) {
+function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders, store, channel, client, caller, sendPhoto, business, notifyStatus, tz }) {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   const claude = client || new Anthropic();   // client — faqat sinov uchun
 
@@ -142,6 +142,26 @@ function createAgent({ api, send, ownerChatId, services, readOrders, writeOrders
       input_schema: { type: "object", additionalProperties: false, properties: { joy: { type: "string", enum: IDEA_PLACES } }, required: [] } },
     { name: "goya_ochirish", description: "Bajarilgan yoki keraksiz g'oyani id bo'yicha o'chiradi.",
       input_schema: { type: "object", additionalProperties: false, properties: { id: { type: "string" } }, required: ["id"] } },
+    ...(tz ? [
+    { name: "tz_tuzish", description: "Mijoz uchun TZ (texnik topshiriq) sahifasini yaratadi va havolasini qaytaradi. Mijoz havolani ochib, PDF qilib saqlaydi va «Tasdiqlayman» bosadi. Faqat Abdulhamid aytgan yoki mijoz suhbatida aniq bo'lgan narsalarni yoz — o'zingdan funksiya, va'da yoki narx qo'shma. Asosiy narxni server o'zi qo'yadi. Muhim narsa noaniq bo'lsa (biznes nomi, qaysi bo'limlar, qo'shimcha ish narxi), avval Abdulhamiddan so'ra.",
+      input_schema: { type: "object", additionalProperties: false, properties: {
+        xizmat: { type: "string", enum: services.filter(s => !s.hidden && s.group === "once" && s.price > 0).map(s => s.id) },
+        mijoz: { type: "string", description: "Mijozning ismi" },
+        biznes: { type: "string", description: "Biznes nomi va turi, masalan «Lazzat kafe (Chilonzor)»" },
+        til: { type: "string", enum: ["uz", "ru"], description: "Mijoz qaysi tilda gaplashsa — TZ matni ham shu tilda bo'lsin" },
+        maqsad: { type: "string", description: "1–2 gap: sayt yoki video nima uchun kerak" },
+        bolimlar: { type: "array", items: { type: "string" }, description: "Sahifalar/bo'limlar yoki video sahnalari" },
+        funksiyalar: { type: "array", items: { type: "string" }, description: "Nima ishlaydi: tugmalar, forma, xarita, QR va h.k." },
+        materiallar: { type: "array", items: { type: "string" }, description: "Mijoz beradigan narsalar: logo, rasmlar, menyu, narxlar, manzil" },
+        kirmaydi: { type: "array", items: { type: "string" }, description: "Narxga kirmaydigan narsalar (masalan: domen to'lovi, matn yozish, fotosurat)" },
+        muddat_kun: { type: "integer", description: "Ish kunlari. Berilmasa xizmatning odatiy muddati" },
+        qoshimcha: { type: "array", items: { type: "object", additionalProperties: false, properties: { nomi: { type: "string" }, narx: { type: "integer" } }, required: ["nomi", "narx"] }, description: "Asosiy narxdan tashqari ishlar — faqat Abdulhamid narxini aytgan bo'lsa" },
+        chegirma: { type: "integer", description: "So'mda, faqat Abdulhamid aytsa" },
+        izoh: { type: "string", description: "Qo'shimcha kelishuvlar" },
+        buyurtma: { type: "string", description: "Bog'liq buyurtma kodi, bo'lsa" } },
+        required: ["xizmat", "mijoz", "biznes", "til"] } },
+    { name: "tz_royxati", description: "Tuzilgan TZ'lar ro'yxati: raqam, biznes, narx, tasdiqlanganmi, havola.",
+      input_schema: { type: "object", additionalProperties: false, properties: {}, required: [] } }] : []),
     { name: "xato_yozish", description: "Dasturlashda uchragan xato va uning yechimini 'xatolar kundaligi'ga yozadi.",
       input_schema: { type: "object", additionalProperties: false, properties: {
         xato: { type: "string", description: "Xato matni yoki belgisi" },
@@ -189,6 +209,7 @@ ${caller ? "- Sen Abdulhamidga ovozli qo'ng'iroq qila olasan: menga_qongiroq (ho
 - Sen Abdulhamidning shaxsiy Telegram chatlarini ko'ra olasan (Telegram Business): chatlar, chatni_oqish, chatga_yozish, chat_sozlamasi. "Kim yozdi?", "X ning chatini o'qi", "X ga yoz: ..." deyilsa — shu asboblarni ishlat. Chatga yozish ham faqat tayyorlanadi, ✅ bosilgandagina ketadi. Chatlardagi shaxsiy gaplarni boshqa odamlarga aytma.
 - Abdulhamid muhim narsa aytsa (reja, mijoz haqida ma'lumot, odat), uni xotiraga yozib qo'y.
 - Pul haqida aytsa ("shuncha to'ladim", "shuncha keldi") — moliya_yozish; "shu oy qancha foyda?" — moliya_hisobot.
+- Mijoz bilan kelishuvni aytsa yoki "TZ tuz" desa — tz_tuzish. Yetishmayotgan muhim narsalarni (bo'limlar, mijoz beradigan materiallar, qo'shimcha ish narxi) avval qisqa savollar bilan so'ra. Tasdiqlangan TZ o'zgarmaydi — o'zgarish bo'lsa yangisini tuz.
 - G'oya aytsa — goya_saqlash; "g'oyalarim qani?" — goyalar. Xato va yechimini aytsa — xato_yozish; xato haqida so'rasa — avval xato_qidirish.
 - Obuna, domen yoki hosting to'lovi uchun takror bilan eslatma qo'y (to'lovdan 3 kun oldin). Ertalabki dayjest yoki kunlik mashq so'rasa — vazifa=true va takror="kunlik" bilan eslatma qo'y.
 - Har bir xabar boshida [Hozir: ...] qatori turadi — bu hozirgi Toshkent vaqti, eslatma vaqtini shunga qarab hisobla.
@@ -337,6 +358,16 @@ ${priceList}`;
         }).filter(r => r.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
         return found.length ? found.map(({ x }) => `• ${x.sana}${x.texnologiya ? " [" + x.texnologiya + "]" : ""}\n  Xato: ${x.xato}\n  Yechim: ${x.yechim}`).join("\n") : "Kundalikda o'xshash xato topilmadi.";
       }
+      case "tz_tuzish": {
+        const r = tz.create(input);
+        if (r.error) return `Xato: ${r.error}`;
+        const t = r.tz;
+        return `TZ tayyor: ${t.raqam} · ${t.biznes} · ${t.xizmatNomi} · ${fmt(t.jami)} so'm · ${t.muddatKun} ish kuni.\nHavola: ${r.url}\nAbdulhamidga havolani ber va avval o'zi ochib tekshirishini, keyin mijozga yuborishini ayt. Tasdiqlansa, Telegramga xabar keladi.`;
+      }
+      case "tz_royxati": {
+        const list = tz.list();
+        return list.length ? list.map(t => `${t.raqam} · ${t.biznes} · ${fmt(t.jami)} so'm · ${t.tasdiq ? "✅ tasdiqlangan (" + t.tasdiq.ism + ")" : "⏳ kutilmoqda"}\n${(process.env.SITE_URL || "https://www.ah-digital.uz").replace(/\/$/, "")}/tz/${t.id}`).join("\n") : "Hali TZ tuzilmagan.";
+      }
       case "chatlar": {
         const list = business.list(input.soni || 15);
         if (!list.length) return "Hali hech kim yozmagan (yoki Telegram Business ulanmagan).";
@@ -464,7 +495,7 @@ ${priceList}`;
           "• Kanalga flexbox haqida post tayyorla\n• Ertaga 9:00 da darsni eslat\n• JavaScript'da massiv nima?\n" +
           "• Internetdan qidir: Bootstrap 5 dagi yangiliklar\n• Kimlar yozdi? / Dilnozaga yoz: ...\n" +
           "• Domen uchun 32 000 to'ladim / Shu oy qancha foyda qildim?\n• G'oya: kafelar uchun 10 soniyali menyu video\n" +
-          "• Xato: CORS error, yechim: ...\n• Har kuni 8:00 da AI yangiliklaridan dayjest yubor\n\n/yangi — suhbatni yangidan boshlash\n\n" +
+          "• Lazzat kafe uchun menyu sayt TZ tuz: 3 bo'lim, QR, Telegram tugma\n• Xato: CORS error, yechim: ...\n• Har kuni 8:00 da AI yangiliklaridan dayjest yubor\n\n/yangi — suhbatni yangidan boshlash\n\n" +
           "Mijozga yoki kanalga yozadigan narsani doim avval sizga ko'rsataman — ✅ bosmaguningizcha hech narsa ketmaydi.");
       }
       await api("sendChatAction", { chat_id: ownerChatId, action: "typing" });
