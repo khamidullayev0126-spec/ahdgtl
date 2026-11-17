@@ -1,0 +1,299 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Caprasimo&family=Figtree:wght@500;700;800;900&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;600;700&display=swap">
+<style>
+:root{--cream:#f5ead8;--acc:#c67139;--acc2:#e08a4f;--dark:#201e1d;--navy:#26283a;--sage:#56633f;--sage3:#ccdbb2;--red:#d94b3d;--green:#3f8f5a}
+*{box-sizing:border-box}html,body{margin:0}
+body{width:1080px;height:1920px;overflow:hidden;background:var(--cream);font-family:Figtree,sans-serif;color:var(--dark);position:relative}
+canvas#bg{position:absolute;inset:0}
+#top{position:absolute;left:70px;right:70px;top:110px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.brand{display:flex;align-items:center;gap:14px;font-family:Caprasimo,serif;font-size:44px}.brand img{width:62px;height:62px}
+.tag{background:var(--navy);color:var(--cream);font-weight:800;font-size:30px;padding:12px 26px;border-radius:999px;letter-spacing:.02em}
+#head{position:absolute;left:60px;right:60px;top:230px;height:420px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;z-index:4}
+.hl{font-family:Anton,sans-serif;text-transform:uppercase;line-height:.95;font-size:150px;color:var(--navy);white-space:nowrap}
+.hl.acc{color:var(--acc)}.hl.sm{font-size:92px}.hl.it{font-family:'Instrument Serif',serif;font-style:italic;text-transform:none;font-size:120px;color:var(--acc)}
+#vis{position:absolute;left:0;right:0;top:600px;height:820px;z-index:3}
+#cap{position:absolute;left:70px;right:70px;top:1490px;min-height:150px;display:flex;justify-content:center;align-items:flex-start;z-index:6}
+.capbox{background:rgba(32,30,29,.92);color:#f5ead8;font-weight:800;font-size:50px;line-height:1.22;padding:20px 34px;border-radius:26px;text-align:center;max-width:940px}
+.capbox b{color:#f6a06b}
+.v{position:absolute;inset:0}
+.phone{position:absolute;left:50%;top:50%;width:470px;height:800px;margin:-400px 0 0 -235px;border-radius:64px;background:#1b1a19;padding:16px;box-shadow:0 40px 90px rgba(32,30,29,.35)}
+.screen{width:100%;height:100%;border-radius:50px;background:#fff;overflow:hidden;position:relative;font-family:Inter,sans-serif}
+.card{position:absolute;background:#fff;border-radius:34px;box-shadow:0 30px 70px rgba(32,30,29,.22)}
+.pill{display:inline-block;border-radius:999px;font-weight:800}
+.mono{font-family:'JetBrains Mono',monospace}
+.key{display:inline-flex;align-items:center;justify-content:center;min-width:190px;height:190px;padding:0 40px;border-radius:38px;background:#fff;border:6px solid var(--navy);box-shadow:0 18px 0 var(--navy);font-weight:900;font-size:84px;color:var(--navy)}
+.x{position:absolute;width:120px;height:120px;border-radius:50%;background:var(--red);color:#fff;font-weight:900;font-size:80px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 0 #8d2b22}
+.ok{background:var(--green);box-shadow:0 10px 0 #24573a}
+</style></head><body>
+<canvas id="bg" width="1080" height="1920"></canvas>
+<div id="top"><div class="brand"><img id="logo">AHdigital</div><div class="tag" id="tag"></div></div>
+<div id="head"></div>
+<div id="vis"></div>
+<div id="cap"></div>
+<script>
+// ===== umumiy =====
+const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)), lin = (t, a, b) => cl((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3), eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c = 1.7; return x <= 0 ? 0 : 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const $ = id => document.getElementById(id);
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const h = (html) => { const d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; };
+let SPEC, CT = [];        // CT[i] = i-bo'lak boshlanish vaqti (s)
+const at = i => CT[Math.min(i, CT.length - 1)];
+
+// ===== fon =====
+const bg = $("bg").getContext("2d");
+function drawBg(t) {
+  bg.fillStyle = "#f5ead8"; bg.fillRect(0, 0, 1080, 1920);
+  bg.save(); bg.strokeStyle = "#c67139"; bg.globalAlpha = .12; bg.lineWidth = 2;
+  const off = (t * 18) % 90;
+  for (let x = -90; x < 1170; x += 90) { bg.beginPath(); bg.moveTo(x + off, 0); bg.lineTo(x + off, 1920); bg.stroke(); }
+  for (let y = -90; y < 2010; y += 90) { bg.beginPath(); bg.moveTo(0, y + off); bg.lineTo(1080, y + off); bg.stroke(); }
+  bg.globalAlpha = .9; bg.fillStyle = "#ffc6a5"; bg.beginPath(); bg.arc(1010 + Math.sin(t * .5) * 20, 330, 230, 0, 7); bg.fill();
+  bg.fillStyle = "#ccdbb2"; bg.beginPath(); bg.arc(60, 1700 + Math.cos(t * .4) * 20, 200, 0, 7); bg.fill();
+  bg.restore();
+}
+
+// ===== sarlavha (kinetik) =====
+let curHead = -1;
+function headline(t) {
+  let idx = -1; SPEC.heads.forEach((s, i) => { if (t >= at(s.at) - .05) idx = i; });
+  const box = $("head");
+  if (idx !== curHead) { curHead = idx; box.innerHTML = ""; if (idx >= 0) SPEC.heads[idx].lines.forEach(l => { const d = document.createElement("div"); d.className = "hl " + (l[1] || ""); d.textContent = l[0]; box.appendChild(d); }); }
+  if (idx < 0) return;
+  const s0 = at(SPEC.heads[idx].at) - .05, u = t - s0;
+  [...box.children].forEach((d, i) => {
+    const p = back(lin(u, i * .09, i * .09 + .38));
+    const w = d.scrollWidth, sc = Math.min(1, 940 / Math.max(w, 1));
+    d.style.transform = `translateY(${(1 - p) * 60}px) scale(${sc * (.6 + .4 * p)})`;
+    d.style.opacity = cl(p * 1.4);
+  });
+}
+
+// ===== subtitr =====
+function caption(t) {
+  let i = -1; CT.forEach((s, k) => { if (t >= s) i = k; });
+  const box = $("cap");
+  if (i < 0 || t > SPEC.speechEnd + .3) { box.innerHTML = ""; return; }
+  const c = SPEC.chunks[i].c, words = c.split(" ");
+  const s = CT[i], e = i + 1 < CT.length ? CT[i + 1] : SPEC.speechEnd;
+  const p = lin(t, s, e - .1), total = c.length;
+  let acc = 0; const html = words.map(w => { const a = acc / total; acc += w.length + 1; return a <= p ? `<b>${w}</b>` : w; }).join(" ");
+  box.innerHTML = `<div class="capbox">${html}</div>`;
+  const k = eo(lin(t, s, s + .18));
+  box.firstChild.style.transform = `translateY(${(1 - k) * 18}px) scale(${.96 + .04 * k})`;
+}
+
+// ===== vizual kutubxona =====
+const V = {};
+let curGrp = -1, visEl = null;
+// Ketma-ket bir xil vizual (masalan, bitta telefon) — bitta guruh: qayta yaratilmaydi, faqat holati o'zgaradi
+function groupOf(i) { let g = i; while (g > 0 && SPEC.vis[g].keep && SPEC.vis[g - 1].v === SPEC.vis[g].v) g--; return g; }
+function visual(t) {
+  let idx = -1; SPEC.vis.forEach((s, i) => { if (t >= at(s.at) - .1) idx = i; });
+  if (idx < 0) return;
+  const g = groupOf(idx);
+  if (g !== curGrp) {
+    curGrp = g; const host = $("vis"); host.innerHTML = "";
+    visEl = document.createElement("div"); visEl.className = "v"; host.appendChild(visEl); V[SPEC.vis[idx].v].init(visEl, SPEC.vis[idx]);
+  }
+  const sc = SPEC.vis[idx], s0 = at(SPEC.vis[g].at) - .1, u = t - s0;
+  let e = idx + 1; while (e < SPEC.vis.length && SPEC.vis[e].keep && SPEC.vis[e].v === sc.v) e++;
+  const next = SPEC.vis[e];
+  const inP = eo(lin(u, 0, .45));
+  const outP = next ? eio(lin(t, at(next.at) - .35, at(next.at) - .1)) : eio(lin(t, SPEC.end - .4, SPEC.end));
+  visEl.style.opacity = cl(inP * 1.5) * (1 - outP);
+  visEl.style.transform = `translateY(${(1 - inP) * 120 - outP * 80}px) scale(${(.92 + .08 * inP - .05 * outP) * 1.1})`;
+  V[sc.v].draw(visEl, t - (at(sc.at) - .1), t, sc);
+}
+
+// --- Instagram profil (1-video): narx, tugma, havola holatlari
+V.ig = {
+  init(el, sc) {
+    el.appendChild(h(`<div class="phone"><div class="screen" style="padding:60px 34px">
+      <div style="display:flex;align-items:center;gap:26px"><div style="width:130px;height:130px;border-radius:50%;background:conic-gradient(#f58529,#dd2a7b,#8134af,#f58529);padding:6px"><div style="width:100%;height:100%;border-radius:50%;background:#c67139;display:flex;align-items:center;justify-content:center;font-size:60px">☕</div></div>
+      <div style="display:flex;gap:26px;text-align:center;font-size:24px"><div><b style="font-size:32px">48</b><br>post</div><div><b style="font-size:32px">2,1K</b><br>obunachi</div><div><b style="font-size:32px">180</b><br>obuna</div></div></div>
+      <div style="margin-top:24px;font-weight:700;font-size:30px">Lazzat kafe (namuna)</div>
+      <div style="font-size:26px;color:#444;margin-top:6px">Milliy taomlar · Toshkent</div>
+      <div id="igPrice" style="margin-top:12px;font-size:28px;font-weight:700;height:44px"></div>
+      <div id="igLink" style="font-size:27px;color:#1d5fd1;font-weight:600;height:40px"></div>
+      <div id="igBtns" style="display:flex;gap:12px;margin-top:16px"><div style="flex:1;background:#efefef;border-radius:14px;padding:16px;text-align:center;font-weight:700;font-size:26px">Obuna</div><div style="flex:1;background:#efefef;border-radius:14px;padding:16px;text-align:center;font-weight:700;font-size:26px">Xabar</div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:22px">${Array.from({ length: 6 }, (_, i) => `<div style="aspect-ratio:1;background:${["#e8c8a8", "#c67139", "#f0dcc4", "#8e4a22", "#e7b48a", "#d9a173"][i]}"></div>`).join("")}</div>
+    </div></div>`));
+    el.appendChild(h(`<div id="igX" class="x" style="left:690px;top:120px">✕</div>`));
+  },
+  draw(el, u, t, sc) {
+    const st = sc.st;       // [narx chiqish, tugma chiqish, havola chiqish] — bo'lak indekslari
+    const price = el.querySelector("#igPrice"), link = el.querySelector("#igLink"), btns = el.querySelector("#igBtns"), x = el.querySelector("#igX");
+    const hasP = t >= at(st[0]), hasB = t >= at(st[1]), hasL = t >= at(st[2]);
+    price.innerHTML = hasP ? `<span class="pill" style="background:#fff2eb;color:#c67139;padding:6px 16px;transform:scale(${back(lin(t, at(st[0]), at(st[0]) + .4))});display:inline-block">💰 Narx: 35 000 so'mdan</span>` : `<span style="color:#bbb">— narx yo'q —</span>`;
+    link.innerHTML = hasL ? `<span style="display:inline-block;transform:scale(${back(lin(t, at(st[2]), at(st[2]) + .4))})">🔗 ah-digital.uz/lazzat</span>` : `<span style="color:#bbb">— havola yo'q —</span>`;
+    if (hasB && btns.childElementCount < 3) btns.appendChild(h(`<div style="flex:1;background:#c67139;color:#fff;border-radius:14px;padding:16px;text-align:center;font-weight:800;font-size:26px">📞 Qo'ng'iroq</div>`));
+    if (hasB) btns.lastChild.style.transform = `scale(${back(lin(t, at(st[1]), at(st[1]) + .4))})`;
+    // qizil X — hozirgi muammo joyida; tuzatilgach yashil ✓
+    const marks = [[0, 320], [1, 470], [2, 370]]; let cur = sc.focus;
+    const ys = { 0: 345, 1: 455, 2: 395 };
+    if (cur == null) { x.style.display = "none"; return; }
+    x.style.display = "flex";
+    const fixed = t >= at(st[cur]);
+    x.className = "x" + (fixed ? " ok" : ""); x.textContent = fixed ? "✓" : "✕";
+    x.style.top = ys[cur] + "px";
+    x.style.transform = `scale(${back(lin(u, .3, .7)) * (1 + .1 * Math.sin(t * 8) * (fixed ? 0 : 1))})`;
+  }
+};
+// --- Katta "3 ta XATO" kartochkalari (hook)
+V.badges = {
+  init(el, sc) { sc.items.forEach((it, i) => el.appendChild(h(`<div class="card" style="left:${110 + i * 300}px;top:220px;width:260px;height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center"><div style="font-size:110px">${it[0]}</div><div style="font-weight:900;font-size:38px;line-height:1.1;padding:0 14px">${it[1]}</div></div>`))); },
+  draw(el, u) { [...el.children].forEach((c, i) => { const p = back(lin(u, .15 + i * .18, .55 + i * .18)); c.style.transform = `translateY(${(1 - p) * 200}px) rotate(${(i - 1) * 5 * p}deg) scale(${p})`; }); }
+};
+// --- Google qidiruv + bilim kartasi
+V.google = {
+  init(el) {
+    el.appendChild(h(`<div class="card" style="left:90px;top:20px;width:900px;height:120px;display:flex;align-items:center;gap:24px;padding:0 40px;font-size:44px;font-family:Inter"><span style="font-weight:700;font-size:48px"><span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span></span><span id="gq" style="flex:1;border-left:3px solid #ddd;padding-left:24px"></span>🔍</div>`));
+    el.appendChild(h(`<div id="gcard" class="card" style="left:150px;top:190px;width:780px;padding:44px 50px;font-family:Inter">
+      <div style="font-size:58px;font-weight:700">AHdigital <span style="color:#1a73e8;font-size:44px">✔</span></div>
+      <div style="font-size:32px;color:#666;margin-top:6px">Vebsaytlar dizayneri · Toshkent</div>
+      <div style="display:flex;gap:16px;margin:28px 0"><span class="pill" style="border:3px solid #dadce0;padding:12px 26px;font-size:30px;color:#1a73e8">🌐 Sayt</span><span class="pill" style="border:3px solid #dadce0;padding:12px 26px;font-size:30px;color:#1a73e8">📞 Qo'ng'iroq</span></div>
+      <div class="gl" style="font-size:32px;margin:14px 0"><b>Telefon:</b> <span style="color:#1a73e8">95 632 29 05</span></div>
+      <div class="gl" style="font-size:32px;margin:14px 0"><b>Ish vaqti:</b> 9:00–23:00</div>
+      <div class="gl" style="font-size:32px;margin:14px 0"><b>Sayt:</b> <span style="color:#1a73e8">ah-digital.uz</span></div>
+      <div class="gl" style="font-size:40px;margin-top:18px;color:#fbbc05">★★★★★ <span style="font-size:28px;color:#666">sharhlar</span></div></div>`));
+  },
+  draw(el, u, t, sc) {
+    const q = "AHdigital", n = Math.floor(cl((u - .2) / .7) * q.length);
+    el.querySelector("#gq").textContent = q.slice(0, n) + (u < 1.2 && Math.floor(t * 3) % 2 ? "|" : "");
+    const c = el.querySelector("#gcard"), p = back(lin(t, at(sc.card), at(sc.card) + .5));
+    c.style.transform = `translateY(${(1 - p) * 120}px) scale(${.85 + .15 * p})`; c.style.opacity = cl(p * 1.5);
+    el.querySelectorAll(".gl").forEach((g, i) => { const k = eo(lin(t, at(sc.card) + .3 + i * .25, at(sc.card) + .6 + i * .25)); g.style.opacity = k; g.style.transform = `translateX(${(1 - k) * 40}px)`; });
+  }
+};
+// --- Raqamli qadamlar ro'yxati
+V.steps = {
+  init(el, sc) { sc.items.forEach((it, i) => el.appendChild(h(`<div class="card" style="left:110px;top:${40 + i * 200}px;width:860px;height:160px;display:flex;align-items:center;gap:34px;padding:0 40px"><div style="flex:none;width:96px;height:96px;border-radius:50%;background:#c67139;color:#fff;font-family:Caprasimo;font-size:56px;display:flex;align-items:center;justify-content:center">${i + 1}</div><div style="font-weight:800;font-size:44px;line-height:1.15">${it[1]}</div><div style="margin-left:auto;font-size:70px">${it[2] || ""}</div></div>`))); },
+  draw(el, u, t, sc) { [...el.children].forEach((c, i) => { const s = sc.items[i][0] != null ? at(sc.items[i][0]) : at(sc.at) + i * .4; const p = back(lin(t, s, s + .45)); c.style.opacity = cl(p * 1.5); c.style.transform = `translateX(${(1 - p) * -260}px)`; }); }
+};
+// --- Katta muhr / ikonka / matn (BEPUL, ⭐, 🔖 va h.k.)
+V.stamp = {
+  init(el, sc) { el.appendChild(h(`<div class="c" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center"><div style="font-size:${sc.size || 260}px;line-height:1">${sc.icon}</div>${sc.text ? `<div style="margin-top:30px;display:inline-block;background:${sc.bg || "#c67139"};color:#fff;font-weight:900;font-size:${sc.fs || 70}px;padding:18px 48px;border-radius:999px">${sc.text}</div>` : ""}${sc.sub ? `<div style="margin-top:26px;font-weight:800;font-size:46px;color:#26283a">${sc.sub}</div>` : ""}</div>`)); },
+  draw(el, u, t) { const c = el.firstChild, p = back(lin(u, .1, .55)); c.style.transform = `translate(-50%,-50%) scale(${p * (1 + .03 * Math.sin(t * 4))}) rotate(${(1 - p) * -14}deg)`; }
+};
+// --- Yulduzlar (sharh)
+V.stars = {
+  init(el) { el.appendChild(h(`<div class="card" style="left:120px;top:120px;width:840px;padding:50px;text-align:center"><div id="st" style="font-size:120px;letter-spacing:10px"></div><div style="font-size:40px;font-weight:700;margin-top:20px;font-family:Inter">"Tez va sifatli ishlashdi!"</div><div style="font-size:30px;color:#777;margin-top:10px;font-family:Inter">— haqiqiy mijoz sharhi</div></div>`)); el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:620px;text-align:center;font-family:Anton;font-size:110px;color:#3f8f5a">↑ YUQORIROQ</div>`)); },
+  draw(el, u) { const n = Math.min(5, Math.floor(u / .18)); el.querySelector("#st").innerHTML = "<span style='color:#fbbc05'>" + "★".repeat(n) + "</span><span style='color:#ddd'>" + "★".repeat(5 - n) + "</span>"; const a = el.children[1], p = back(lin(u, 1.1, 1.5)); a.style.transform = `translateY(${(1 - p) * 80}px) scale(${p})`; a.style.opacity = cl(p * 1.4); }
+};
+// --- Qog'oz menyu → narx eskiradi
+V.paper = {
+  init(el) { el.appendChild(h(`<div class="card" style="left:240px;top:60px;width:600px;height:720px;background:#fffaf0;padding:60px;font-family:'Instrument Serif',serif;transform:rotate(-4deg)"><div style="text-align:center;font-size:76px;font-style:italic">Menyu</div>${[["Osh", "35 000"], ["Lag'mon", "30 000"], ["Somsa", "8 000"], ["Shashlik", "18 000"]].map(r => `<div style="display:flex;justify-content:space-between;font-size:56px;margin-top:40px;border-bottom:2px dotted #b9ae9c"><span>${r[0]}</span><span class="pp">${r[1]}</span></div>`).join("")}<div style="position:absolute;left:40px;right:40px;top:300px;height:6px;background:#d94b3d;transform:rotate(-12deg);display:none" class="slash"></div></div>`)); el.appendChild(h(`<div class="x" style="left:780px;top:20px">?</div>`)); },
+  draw(el, u) { const p = back(lin(u, .5, .9)); el.querySelector(".x").style.transform = `scale(${p}) rotate(${Math.sin(u * 6) * 8}deg)`; el.querySelectorAll(".pp").forEach((s, i) => { s.style.textDecoration = u > 1 + i * .15 ? "line-through" : "none"; s.style.color = u > 1 + i * .15 ? "#d94b3d" : ""; }); }
+};
+// --- Narx yangilanishi (QR menyu, printer kerak emas)
+V.update = {
+  init(el) { el.appendChild(h(`<div class="phone"><div class="screen" style="background:#fffaf2;padding:70px 34px;font-family:Figtree"><div style="font-family:Caprasimo;font-size:52px;text-align:center">Lazzat kafe</div><div style="text-align:center;color:#888;font-size:26px;margin-bottom:30px">QR menyu</div>${[["🍚 Osh", "35 000", "38 000"], ["🍜 Lag'mon", "30 000", "32 000"], ["🥟 Somsa", "8 000", "9 000"]].map(r => `<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:22px;padding:26px;margin:18px 0;font-size:36px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.06)"><span>${r[0]}</span><span class="np" data-a="${r[1]}" data-b="${r[2]}" style="color:#c67139"></span></div>`).join("")}<div id="upd" style="margin-top:30px;text-align:center;font-weight:800;font-size:30px;color:#3f8f5a"></div></div></div>`)); el.appendChild(h(`<div style="position:absolute;left:60px;top:560px;font-size:150px">🖨️</div>`)); el.appendChild(h(`<div class="x" style="left:150px;top:560px">✕</div>`)); },
+  draw(el, u, t, sc) { const ch = at(sc.chg); el.querySelectorAll(".np").forEach((s, i) => { const done = t > ch + i * .2; s.textContent = done ? s.dataset.b : s.dataset.a; s.style.transform = `scale(${done ? 1 + .2 * Math.max(0, 1 - (t - ch - i * .2) * 3) : 1})`; }); el.querySelector("#upd").textContent = t > ch + .7 ? "✓ 1 daqiqada yangilandi" : ""; const x = el.querySelector(".x"), p = back(lin(t, at(sc.noprint), at(sc.noprint) + .4)); x.style.transform = `scale(${p})`; el.children[1].style.opacity = t >= at(sc.noprint) - .3 ? 1 : 0; }
+};
+// --- Telefonda menyu sayt (rasm bilan) + qo'ng'iroq tugmasi
+V.menuPhone = {
+  init(el) { el.appendChild(h(`<div class="phone"><div class="screen"><img src="${window.ASSET.menu}" style="width:100%;height:100%;object-fit:cover;object-position:top"></div></div>`)); el.appendChild(h(`<div id="callb" style="position:absolute;left:50%;top:640px;transform:translateX(-50%);background:#c67139;color:#fff;font-weight:900;font-size:50px;padding:26px 60px;border-radius:999px;box-shadow:0 14px 0 #8e4a22">📞 Qo'ng'iroq</div>`)); },
+  draw(el, u, t, sc) { const b = el.querySelector("#callb"), s = at(sc.call), p = back(lin(t, s, s + .4)); b.style.opacity = t >= s ? 1 : 0; b.style.transform = `translateX(-50%) scale(${p * (1 + .05 * Math.sin((t - s) * 9))})`; el.querySelector(".screen img").style.transform = `translateY(${-u * 40}px)`; }
+};
+// --- Narx kartasi (CTA)
+V.price = {
+  init(el, sc) { el.appendChild(h(`<div class="card" style="left:130px;top:120px;width:820px;padding:60px;text-align:center;background:#26283a;color:#f5ead8"><div style="font-size:44px;font-weight:700">${sc.what}</div><div style="font-family:Anton;font-size:200px;line-height:1;color:#f6a06b;margin:20px 0">${sc.price}</div><div style="font-size:44px;font-weight:800">${sc.sub}</div><div style="margin-top:40px;background:#c67139;color:#fff;border-radius:999px;padding:22px;font-weight:900;font-size:54px">ah-digital.uz</div></div>`)); },
+  draw(el, u) { const c = el.firstChild, p = back(lin(u, .1, .55)); c.style.transform = `scale(${p})`; }
+};
+// --- QR kod chizish (soxta naqsh, deterministik)
+function qrSVG(size, seed) { const r = rng(seed), n = 21, s = size / n; let cells = ""; for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) { const f = (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13); if (f) continue; if (r() > .52) cells += `<rect x="${x * s}" y="${y * s}" width="${s}" height="${s}"/>`; } const finder = (x, y) => `<rect x="${x * s}" y="${y * s}" width="${7 * s}" height="${7 * s}"/><rect x="${(x + 1) * s}" y="${(y + 1) * s}" width="${5 * s}" height="${5 * s}" fill="#fff"/><rect x="${(x + 2) * s}" y="${(y + 2) * s}" width="${3 * s}" height="${3 * s}"/>`; return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" fill="#26283a"><rect width="${size}" height="${size}" fill="#fff"/>${finder(0, 0)}${finder(14, 0)}${finder(0, 14)}${cells}</svg>`; }
+// --- QR: zavod / avtomobil detali
+V.factory = {
+  init(el) { el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:40px;text-align:center;font-size:260px">🚗</div>`)); el.appendChild(h(`<div class="card" style="left:250px;top:400px;width:580px;height:300px;display:flex;align-items:center;gap:40px;padding:0 40px"><div style="font-size:120px">⚙️</div><div id="qrbox">${qrSVG(200, 7)}</div></div>`)); el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:730px;text-align:center;font-weight:800;font-size:40px;color:#26283a">avtomobil detali</div>`)); },
+  draw(el, u) { el.children[0].style.transform = `translateX(${(1 - eo(lin(u, 0, .8))) * -600}px)`; const q = el.querySelector("#qrbox"), p = back(lin(u, .8, 1.2)); q.style.transform = `scale(${p}) rotate(${(1 - p) * 30}deg)`; }
+};
+// --- Yil hisoblagich + joy
+V.year = {
+  init(el, sc) { el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:80px;text-align:center"><div id="yr" style="font-family:Anton;font-size:330px;line-height:1;color:#26283a"></div><div style="font-size:54px;font-weight:800;margin-top:30px">${sc.place}</div><div style="display:inline-block;margin-top:30px;background:#c67139;color:#fff;font-weight:900;font-size:48px;padding:16px 40px;border-radius:999px">${sc.who}</div></div>`)); },
+  draw(el, u, t, sc) { const y = Math.round(sc.from + (sc.year - sc.from) * eo(lin(u, .1, 1.1))); el.querySelector("#yr").textContent = y; }
+};
+// --- Shtrix-kod vs QR
+V.vs = {
+  init(el) { const bars = Array.from({ length: 34 }, (_, i) => `<div style="width:${[4, 8, 4, 12][i % 4]}px;height:220px;background:#26283a;margin-right:${[6, 4, 8][i % 3]}px"></div>`).join(""); el.appendChild(h(`<div class="card" style="left:80px;top:150px;width:420px;height:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px"><div style="display:flex">${bars}</div><div style="font-weight:800;font-size:40px">shtrix-kod</div><div style="font-size:34px;color:#888">kam ma'lumot</div></div>`)); el.appendChild(h(`<div class="card" style="left:580px;top:150px;width:420px;height:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px">${qrSVG(220, 11)}<div style="font-weight:800;font-size:40px">QR kod</div><div style="font-size:34px;color:#3f8f5a;font-weight:800">ko'p ma'lumot ✓</div></div>`)); el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:300px;text-align:center;font-family:Anton;font-size:90px;color:#c67139">VS</div>`)); },
+  draw(el, u) { [0, 1].forEach(i => { const p = back(lin(u, .1 + i * .4, .5 + i * .4)); el.children[i].style.transform = `scale(${p})`; }); el.children[1].style.boxShadow = u > 1.2 ? "0 0 0 8px #3f8f5a, 0 30px 70px rgba(32,30,29,.22)" : ""; }
+};
+// --- Ikonkalar to'ri (menyu, to'lov, Wi-Fi)
+V.icons = {
+  init(el, sc) { sc.items.forEach((it, i) => el.appendChild(h(`<div class="card" style="left:${80 + i * 315}px;top:200px;width:290px;height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px"><div style="font-size:120px">${it[0]}</div><div style="font-weight:900;font-size:40px;text-align:center">${it[1]}</div></div>`))); },
+  draw(el, u, t, sc) { [...el.children].forEach((c, i) => { const s = sc.items[i][2] != null ? at(sc.items[i][2]) : at(sc.at) + i * .3; const p = back(lin(t, s, s + .4)); c.style.transform = `translateY(${(1 - p) * 160}px) scale(${p})`; c.style.opacity = cl(p * 1.5); }); }
+};
+// --- Izoh pufakchasi (CTA)
+V.comment = {
+  init(el, sc) { el.appendChild(h(`<div class="card" style="left:120px;top:160px;width:840px;padding:50px;display:flex;gap:30px;align-items:center"><div style="flex:none;width:110px;height:110px;border-radius:50%;background:#ccdbb2;display:flex;align-items:center;justify-content:center;font-size:60px">🙂</div><div style="font-size:46px;font-weight:700" id="ct"></div></div>`)); el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:520px;text-align:center;font-size:150px">💬</div>`)); },
+  draw(el, u, t, sc) { const txt = sc.text, n = Math.floor(cl((u - .4) / 1.2) * txt.length); el.querySelector("#ct").textContent = txt.slice(0, n) + (Math.floor(t * 3) % 2 ? "|" : ""); const c = el.firstChild, p = back(lin(u, 0, .4)); c.style.transform = `scale(${p})`; el.children[1].style.transform = `scale(${back(lin(u, .2, .6))}) rotate(${Math.sin(t * 3) * 6}deg)`; }
+};
+// --- Eski brauzer: info.cern.ch
+V.cern = {
+  init(el) { el.appendChild(h(`<div class="card" style="left:70px;top:60px;width:940px;height:700px;border-radius:16px;overflow:hidden;font-family:'Times New Roman',serif"><div style="background:#c0c0c0;padding:14px 20px;font-family:Inter;font-size:28px;display:flex;gap:16px;align-items:center"><span>⬅ ➡</span><span style="flex:1;background:#fff;padding:8px 14px;border:2px inset #999">http://info.cern.ch</span></div><div style="padding:40px 50px;font-size:44px;line-height:1.35"><div style="font-size:66px;font-weight:700">World Wide Web</div><p>The WorldWideWeb (W3) is a wide-area <span class="lk">hypermedia</span> information retrieval initiative aiming to give universal access to a large universe of documents.</p><p>Everything there is online about W3 is linked directly or indirectly to this document, including an <span class="lk">executive summary</span> of the project, <span class="lk">Mailing lists</span>, <span class="lk">Policy</span>.</p></div></div>`)); },
+  draw(el, u) { el.querySelectorAll(".lk").forEach((l, i) => { l.style.color = "#0000ee"; l.style.textDecoration = "underline"; l.style.background = u > .8 + i * .3 && u < 1.2 + i * .3 ? "#ffe08a" : "transparent"; }); el.firstChild.style.filter = `grayscale(${1 - eo(lin(u, 0, .6))})`; }
+};
+// --- 1991 → 2026 vaqt chizig'i
+V.timeline = {
+  init(el) { el.appendChild(h(`<div style="position:absolute;left:100px;right:100px;top:330px;height:14px;border-radius:7px;background:#e7d8c2"><div id="tlb" style="height:100%;width:0;border-radius:7px;background:#c67139"></div></div>`)); el.appendChild(h(`<div style="position:absolute;left:80px;top:150px;font-family:Anton;font-size:140px;color:#26283a">1991</div>`)); el.appendChild(h(`<div id="y2" style="position:absolute;right:80px;top:150px;font-family:Anton;font-size:140px;color:#c67139">2026</div>`)); el.appendChild(h(`<div id="yl" style="position:absolute;left:0;right:0;top:420px;text-align:center;font-family:Anton;font-size:180px;color:#26283a">35 YIL</div>`)); },
+  draw(el, u) { const p = eio(lin(u, .2, 1.2)); el.querySelector("#tlb").style.width = p * 100 + "%"; el.querySelector("#y2").style.opacity = p; const q = back(lin(u, 1.1, 1.5)); el.querySelector("#yl").style.transform = `scale(${q})`; }
+};
+// --- Telefonda zamonaviy sayt
+V.sitePhone = {
+  init(el) { el.appendChild(h(`<div class="phone"><div class="screen"><img src="${window.ASSET.site}" style="width:100%;height:100%;object-fit:cover;object-position:top"></div></div>`)); el.appendChild(h(`<div id="callb" style="position:absolute;left:50%;top:640px;transform:translateX(-50%);background:#c67139;color:#fff;font-weight:900;font-size:50px;padding:26px 60px;border-radius:999px;box-shadow:0 14px 0 #8e4a22;opacity:0">📞 Qo'ng'iroq</div>`)); },
+  draw(el, u, t, sc) { el.querySelector("img").style.transform = `scale(${1.04 + u * .01})`; const b = el.querySelector("#callb"), s = at(sc.call), p = back(lin(t, s, s + .4)); b.style.opacity = t >= s ? 1 : 0; b.style.transform = `translateX(-50%) scale(${p * (1 + .05 * Math.sin((t - s) * 9))})`; }
+};
+// --- Kod muharriri (AI yozmoqda)
+const CODE = [["const", "#c67139"], [" narx ", "#26283a"], ["= ", "#888"], ["35000", "#3f8f5a"], [";\n", "#888"], ["function", "#c67139"], [" chegirma", "#26283a"], ["(n) {\n", "#888"], ["  return", "#c67139"], [" n * ", "#26283a"], ["0.9", "#3f8f5a"], [";\n}", "#888"]];
+V.code = {
+  init(el, sc) { el.appendChild(h(`<div class="card" style="left:80px;top:60px;width:920px;height:640px;background:#1f1e2a;overflow:hidden"><div style="display:flex;gap:12px;padding:24px 30px"><i style="width:22px;height:22px;border-radius:50%;background:#ff5f56"></i><i style="width:22px;height:22px;border-radius:50%;background:#ffbd2e"></i><i style="width:22px;height:22px;border-radius:50%;background:#27c93f"></i><span style="margin-left:20px;color:#888;font-family:'JetBrains Mono';font-size:26px">narx.js</span></div><pre id="cd" class="mono" style="margin:0;padding:20px 50px;font-size:46px;line-height:1.5;color:#eee;white-space:pre-wrap"></pre><div id="ai" style="position:absolute;right:30px;bottom:30px;background:#c67139;color:#fff;font-weight:800;font-size:32px;padding:12px 28px;border-radius:999px">🤖 AI yozmoqda...</div></div>`)); },
+  draw(el, u, t, sc) {
+    const all = CODE.map(c => c[0]).join(""), n = Math.floor(cl(u / (sc.dur || 1.8)) * all.length);
+    let left = n, html = ""; for (const [s, c] of CODE) { const part = s.slice(0, Math.max(0, left)); left -= s.length; if (part) html += `<span style="color:${c === "#26283a" ? "#9ecbff" : c === "#888" ? "#aaa" : c === "#c67139" ? "#f6a06b" : "#9be29b"}">${part}</span>`; }
+    el.querySelector("#cd").innerHTML = html + (Math.floor(t * 3) % 2 ? "▋" : "");
+    el.querySelector("#ai").textContent = n >= all.length ? "✓ Tayyor" : "🤖 AI yozmoqda...";
+    if (sc.err != null) { const e = el.querySelector("#err") || el.firstChild.appendChild(h(`<div id="err" class="mono" style="position:absolute;left:30px;right:30px;bottom:110px;background:#3a1f1f;color:#ff8a80;font-size:32px;padding:20px 26px;border-radius:16px;opacity:0">✕ TypeError: n is undefined</div>`)); e.style.opacity = t >= at(sc.err) ? 1 : 0; }
+    if (sc.hl != null) { const s = at(sc.hl), p = eo(lin(t, s, s + .4)); el.querySelector("#cd").style.background = `linear-gradient(transparent ${68}%, rgba(246,160,107,${.3 * p}) ${68}% 100%)`; }
+  }
+};
+// --- ⌘C ⌘V ✕
+V.copy = {
+  init(el) { el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:160px;display:flex;justify-content:center;gap:50px"><div class="key">⌘ C</div><div class="key">⌘ V</div></div>`)); el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:470px;text-align:center;font-family:Anton;font-size:120px;color:#d94b3d">≠ O'RGANISH</div>`)); },
+  draw(el, u) { [...el.firstChild.children].forEach((k, i) => { const press = Math.max(0, 1 - Math.abs(u - .4 - i * .4) * 6); k.style.transform = `translateY(${press * 14}px)`; k.style.boxShadow = `0 ${18 - press * 14}px 0 #26283a`; }); const p = back(lin(u, 1.1, 1.5)); el.children[1].style.transform = `scale(${p})`; }
+};
+// --- Claude bilan suhbat
+V.chat = {
+  init(el, sc) { el.appendChild(h(`<div class="card" style="left:80px;top:20px;width:920px;height:780px;background:#faf7f2;padding:40px;font-family:Inter"><div style="font-weight:700;font-size:32px;color:#c67139;margin-bottom:24px">✳ Claude</div><div id="q" style="margin-left:auto;max-width:720px;background:#26283a;color:#fff;border-radius:30px 30px 6px 30px;padding:26px 32px;font-size:38px;font-weight:600"></div><div id="a" style="margin-top:28px;max-width:780px;background:#fff;border-radius:30px 30px 30px 6px;padding:26px 32px;font-size:34px;line-height:1.45;box-shadow:0 6px 16px rgba(0,0,0,.06)"></div></div>`)); },
+  draw(el, u, t, sc) {
+    const q = "Har bir qatorni oddiy so'zlar bilan tushuntir", qs = at(sc.q), n = Math.floor(cl((t - qs) / 1.6) * q.length);
+    el.querySelector("#q").textContent = t >= qs ? q.slice(0, n) : ""; el.querySelector("#q").style.opacity = t >= qs ? 1 : 0;
+    const ans = ["<b>1-qator:</b> <code>narx</code> — taomning narxi, 35 000.", "<b>2-qator:</b> <code>chegirma</code> — narxni 10% arzonlatadi.", "<b>3-qator:</b> <code>n * 0.9</code> — narxning 90% i."], as = qs + 1.8;
+    el.querySelector("#a").innerHTML = ans.map((a, i) => `<div style="opacity:${eo(lin(t, as + i * .5, as + i * .5 + .4))}">${a}</div>`).join("");
+    el.querySelector("#a").style.opacity = t >= as ? 1 : 0;
+  }
+};
+// --- Klaviatura tugmalari + natija
+V.keys = {
+  init(el, sc) { el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:40px;display:flex;justify-content:center;align-items:center;gap:26px">${sc.keys.map((k, i) => (i ? `<span style="font-size:80px;font-weight:900;color:#c67139">+</span>` : "") + `<div class="key" style="${k.length > 2 ? "font-size:56px" : ""}">${k}</div>`).join("")}</div>`)); el.appendChild(h(`<div id="res" style="position:absolute;left:80px;right:80px;top:380px;height:400px"></div>`)); V.keys.res[sc.res].init(el.querySelector("#res")); },
+  draw(el, u, t, sc) { [...el.firstChild.querySelectorAll(".key")].forEach((k, i) => { const p = back(lin(u, .1 + i * .15, .45 + i * .15)), press = Math.max(0, 1 - Math.abs(u - .9) * 5); k.style.transform = `scale(${p}) translateY(${press * 14}px)`; k.style.boxShadow = `0 ${18 - press * 14}px 0 #26283a`; }); const s = sc.r != null ? at(sc.r) : at(sc.at) + 1.2; V.keys.res[sc.res].draw(el.querySelector("#res"), t - s, t); },
+  res: {
+    spot: { init(r) { r.appendChild(h(`<div class="card" style="left:0;right:0;top:40px;height:130px;display:flex;align-items:center;gap:26px;padding:0 40px;font-size:52px;font-family:Inter"><span>🔍</span><span id="sq"></span></div>`)); r.appendChild(h(`<div class="card" style="left:0;right:0;top:200px;height:120px;display:flex;align-items:center;gap:26px;padding:0 40px;font-size:44px;font-family:Inter;opacity:0"><span>🧭</span><b>Safari</b><span style="margin-left:auto;color:#888;font-size:30px">Dastur</span></div>`)); }, draw(r, u, t) { const q = "Safari", n = Math.floor(cl(u / .7) * q.length); r.querySelector("#sq").textContent = q.slice(0, Math.max(0, n)) + (Math.floor(t * 3) % 2 ? "|" : ""); const p = back(lin(u, .8, 1.1)); r.children[1].style.opacity = cl(p * 1.5); r.children[1].style.transform = `translateY(${(1 - p) * 30}px)`; r.style.opacity = u > -.2 ? 1 : 0; } },
+    shot: { init(r) { r.appendChild(h(`<div class="card" style="left:0;right:0;top:0;height:400px;background:#e9e4dc;overflow:hidden"><div id="sel" style="position:absolute;border:5px dashed #26283a;background:rgba(198,113,57,.2)"></div><div id="ch" style="position:absolute;font-size:70px;font-weight:300;color:#26283a">+</div></div>`)); }, draw(r, u) { const p = eio(lin(u, .1, 1)), x0 = 150, y0 = 80, w = 560 * p, hh = 240 * p; const s = r.querySelector("#sel"); s.style.left = x0 + "px"; s.style.top = y0 + "px"; s.style.width = w + "px"; s.style.height = hh + "px"; const c = r.querySelector("#ch"); c.style.left = x0 + w - 20 + "px"; c.style.top = y0 + hh - 50 + "px"; r.style.opacity = u > -.2 ? 1 : 0; s.style.background = u > 1.1 ? "rgba(255,255,255,.7)" : "rgba(198,113,57,.2)"; } },
+    rec: { init(r) { r.appendChild(h(`<div class="card" style="left:120px;right:120px;top:120px;height:150px;display:flex;align-items:center;justify-content:center;gap:40px;font-size:60px;background:#26283a;color:#fff"><span>▭</span><span>⬚</span><span id="rd" style="width:80px;height:80px;border-radius:50%;background:#ff3b30;display:inline-block"></span><span style="font-size:40px;font-family:'JetBrains Mono'" id="tm">00:00</span></div>`)); }, draw(r, u, t) { r.querySelector("#rd").style.transform = `scale(${1 + .12 * Math.sin(t * 6)})`; r.querySelector("#tm").textContent = "00:0" + Math.max(0, Math.min(9, Math.floor(u * 2))); r.style.opacity = u > -.2 ? 1 : 0; } },
+    clock: { init(r) { r.appendChild(h(`<div style="position:absolute;left:0;right:0;top:0;text-align:center;font-size:240px">⏳</div>`)); }, draw(r, u, t) { r.firstChild.style.transform = `rotate(${Math.floor(t * 2) * 180}deg)`; } }
+  }
+};
+// --- Final: brend kartasi
+V.cta = {
+  init(el, sc) { el.appendChild(h(`<div class="card" style="left:110px;top:90px;width:860px;padding:70px 60px;text-align:center"><div style="display:flex;align-items:center;justify-content:center;gap:22px;font-family:Caprasimo;font-size:100px"><img src="${window.ASSET.logo}" style="width:110px;height:110px">AHdigital</div><div style="font-weight:800;font-size:50px;margin-top:20px">${sc.line || "Sayt · Video · Dizayn"}</div><div style="margin-top:34px;background:#c67139;color:#fff;border-radius:999px;padding:24px;font-weight:900;font-size:62px">${sc.url || "ah-digital.uz"}</div><div style="margin-top:24px;font-weight:800;font-size:46px;color:#26283a">${sc.small || "✈️ @Abdulkhamid_2905"}</div></div>`)); },
+  draw(el, u) { const p = back(lin(u, .05, .5)); el.firstChild.style.transform = `scale(${p})`; }
+};
+
+// ===== asosiy =====
+window.setup = function (spec, asset) {
+  SPEC = spec; CT = spec.times; window.ASSET = asset;
+  $("logo").src = asset.logo; $("tag").textContent = spec.tag;
+};
+window.render = function (t) { drawBg(t); headline(t); visual(t); caption(t); };
+</script></body></html>
