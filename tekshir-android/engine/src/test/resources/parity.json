@@ -1,0 +1,413 @@
+[
+ {
+  "text": "https://click.uz",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": [
+   "url_trusted"
+  ]
+ },
+ {
+  "text": "https://my.click.uz/pay",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": [
+   "url_trusted"
+  ]
+ },
+ {
+  "text": "https://c1ick-uz.com/bonus",
+  "file": null,
+  "level": "danger",
+  "score": 85,
+  "codes": [
+   "url_brand",
+   "txt_prize",
+   "url_words"
+  ]
+ },
+ {
+  "text": "paymee.uz",
+  "file": null,
+  "level": "danger",
+  "score": 70,
+  "codes": [
+   "url_lookalike"
+  ]
+ },
+ {
+  "text": "https://clock.uz",
+  "file": null,
+  "level": "suspicious",
+  "score": 45,
+  "codes": [
+   "url_lookalike"
+  ]
+ },
+ {
+  "text": "http://192.168.1.10/login",
+  "file": null,
+  "level": "suspicious",
+  "score": 60,
+  "codes": [
+   "url_ip",
+   "url_words"
+  ]
+ },
+ {
+  "text": "https://click.uz@yomon.top/login",
+  "file": null,
+  "level": "danger",
+  "score": 90,
+  "codes": [
+   "url_at",
+   "url_tld",
+   "url_words"
+  ]
+ },
+ {
+  "text": "https://сlick.uz/login",
+  "file": null,
+  "level": "danger",
+  "score": 100,
+  "codes": [
+   "url_lookalike",
+   "url_punycode",
+   "url_words",
+   "url_hyphens"
+  ]
+ },
+ {
+  "text": "Kirish: https://pаyme.uz",
+  "file": null,
+  "level": "danger",
+  "score": 100,
+  "codes": [
+   "url_lookalike",
+   "url_punycode",
+   "url_hyphens"
+  ]
+ },
+ {
+  "text": "https://payme-uz.top/karta",
+  "file": null,
+  "level": "danger",
+  "score": 100,
+  "codes": [
+   "url_brand",
+   "url_tld",
+   "url_words"
+  ]
+ },
+ {
+  "text": "https://secure-click-uz-bonus.xyz/sms",
+  "file": null,
+  "level": "danger",
+  "score": 100,
+  "codes": [
+   "url_brand",
+   "url_tld",
+   "txt_prize",
+   "url_words",
+   "url_hyphens"
+  ]
+ },
+ {
+  "text": "https://login.click.uz.secure.top",
+  "file": null,
+  "level": "danger",
+  "score": 95,
+  "codes": [
+   "url_brand",
+   "url_tld"
+  ]
+ },
+ {
+  "text": "https://kun.uz/news/2026",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": [
+   "url_trusted"
+  ]
+ },
+ {
+  "text": "https://olx.uz/item",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": [
+   "url_trusted"
+  ]
+ },
+ {
+  "text": "https://0lx-uz.com",
+  "file": null,
+  "level": "danger",
+  "score": 70,
+  "codes": [
+   "url_brand"
+  ]
+ },
+ {
+  "text": "https://uzum.uz",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": [
+   "url_trusted"
+  ]
+ },
+ {
+  "text": "https://uzurn-market.uz/aksiya",
+  "file": null,
+  "level": "danger",
+  "score": 85,
+  "codes": [
+   "url_brand",
+   "url_words"
+  ]
+ },
+ {
+  "text": "https://bit.ly/abc123",
+  "file": null,
+  "level": "safe",
+  "score": 15,
+  "codes": [
+   "url_shortener_wait"
+  ]
+ },
+ {
+  "text": "Narxi 5.000 so'm",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": []
+ },
+ {
+  "text": "Hurmatli mijoz! Kartangiz bloklandi. SMS kodni yuboring",
+  "file": null,
+  "level": "danger",
+  "score": 80,
+  "codes": [
+   "txt_secret",
+   "txt_urgent",
+   "txt_combo"
+  ]
+ },
+ {
+  "text": "SMS kodni hech kimga aytmang!",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": []
+ },
+ {
+  "text": "Tabriklaymiz! Siz iPhone yutib oldingiz",
+  "file": null,
+  "level": "safe",
+  "score": 25,
+  "codes": [
+   "txt_prize"
+  ]
+ },
+ {
+  "text": "Bank xodimi: kartangiz bloklandi, SMS kodni ayting https://c1ick-uz.com",
+  "file": null,
+  "level": "danger",
+  "score": 100,
+  "codes": [
+   "url_brand",
+   "txt_secret",
+   "txt_bank",
+   "txt_urgent",
+   "txt_combo"
+  ]
+ },
+ {
+  "text": "Срочно! Ваша карта заблокирована, сообщите SMS-код",
+  "file": null,
+  "level": "danger",
+  "score": 80,
+  "codes": [
+   "txt_secret",
+   "txt_urgent",
+   "txt_combo"
+  ]
+ },
+ {
+  "text": "Посылка задержана на таможне, оплатите пошлину",
+  "file": null,
+  "level": "suspicious",
+  "score": 60,
+  "codes": [
+   "txt_transfer",
+   "txt_parcel",
+   "txt_combo"
+  ]
+ },
+ {
+  "text": "Iltimos ovoz bering, jiyanim tanlovda",
+  "file": null,
+  "level": "suspicious",
+  "score": 30,
+  "codes": [
+   "txt_vote"
+  ]
+ },
+ {
+  "text": "Kuniga 500 000 so'm daromad, tajriba shart emas",
+  "file": null,
+  "level": "suspicious",
+  "score": 30,
+  "codes": [
+   "txt_money"
+  ]
+ },
+ {
+  "text": "Posilkangiz bojxonada. 25 000 so'm to'lang",
+  "file": null,
+  "level": "suspicious",
+  "score": 60,
+  "codes": [
+   "txt_transfer",
+   "txt_parcel",
+   "txt_combo"
+  ]
+ },
+ {
+  "text": "8600 1234 ga 50 000 tashlang",
+  "file": null,
+  "level": "safe",
+  "score": 25,
+  "codes": [
+   "txt_transfer"
+  ]
+ },
+ {
+  "text": "Assalomu alaykum, ertaga soat 10 da uchrashamiz",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": []
+ },
+ {
+  "text": "Ilovani o'rnating: rasmlar.apk",
+  "file": null,
+  "level": "suspicious",
+  "score": 35,
+  "codes": [
+   "txt_apk"
+  ]
+ },
+ {
+  "text": "CVV kodini yozing",
+  "file": null,
+  "level": "suspicious",
+  "score": 45,
+  "codes": [
+   "txt_secret"
+  ]
+ },
+ {
+  "text": "Ertaga majlis",
+  "file": null,
+  "level": "safe",
+  "score": 0,
+  "codes": []
+ },
+ {
+  "text": "Шошилинг! Картангиз блокланди, SMS кодни юборинг",
+  "file": null,
+  "level": "danger",
+  "score": 80,
+  "codes": [
+   "txt_secret",
+   "txt_urgent",
+   "txt_combo"
+  ]
+ },
+ {
+  "text": "",
+  "file": "Rasmlar.apk",
+  "level": "danger",
+  "score": 80,
+  "codes": [
+   "file_apk"
+  ]
+ },
+ {
+  "text": "",
+  "file": "Hujjat.jpg.apk",
+  "level": "danger",
+  "score": 100,
+  "codes": [
+   "file_apk",
+   "file_double"
+  ]
+ },
+ {
+  "text": "",
+  "file": "hisobot.pdf",
+  "level": "safe",
+  "score": 0,
+  "codes": []
+ },
+ {
+  "text": "",
+  "file": "dastur.exe",
+  "level": "danger",
+  "score": 75,
+  "codes": [
+   "file_exe"
+  ]
+ },
+ {
+  "text": "",
+  "file": "jadval.xlsm",
+  "level": "suspicious",
+  "score": 40,
+  "codes": [
+   "file_macro"
+  ]
+ },
+ {
+  "text": "",
+  "file": "arxiv.zip",
+  "level": "safe",
+  "score": 15,
+  "codes": [
+   "file_archive"
+  ]
+ },
+ {
+  "text": "Mana rasm",
+  "file": "photo.jpg",
+  "level": "safe",
+  "score": 0,
+  "codes": []
+ },
+ {
+  "text": "",
+  "file": "faktura.pdf          .exe",
+  "level": "danger",
+  "score": 95,
+  "codes": [
+   "file_exe",
+   "file_spaces"
+  ]
+ },
+ {
+  "text": "Yutuq! https://prize-uz.top",
+  "file": "sovga.apk",
+  "level": "danger",
+  "score": 80,
+  "codes": [
+   "file_apk",
+   "url_tld",
+   "txt_prize"
+  ]
+ }
+]

@@ -1,0 +1,6 @@
+engine/build/
+engine/.gradle/
+engine/.kotlin/
+*.keystore
+*.jks
+local.properties

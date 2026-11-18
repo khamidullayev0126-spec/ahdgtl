@@ -1,0 +1,274 @@
+{
+  "_izoh": "Firibgarlik belgilari. Har bir guruh bir marta ball beradi. 'p' — qidiriladigan so'z boshlari (kichik harf, apostrof '). Lotin, kirill (o'zbek) va rus tilida. So'z oxirini yozmaslik mumkin: 'yutdingiz' → 'yutib', 'yutgan' kabi shakllarni alohida yozing.",
+  "groups": [
+    {
+      "id": "secret",
+      "points": 45,
+      "neg": true,
+      "p": [
+        "sms kod",
+        "sms-kod",
+        "smsdagi kod",
+        "smsda kelgan kod",
+        "tasdiqlash kodi",
+        "kodni ayt",
+        "kodni yubor",
+        "kodni yoz",
+        "kodni ber",
+        "karta raqam",
+        "kartangiz raqam",
+        "karta ma'lumot",
+        "cvv",
+        "cvc",
+        "amal qilish muddat",
+        "kartaning orqa",
+        "parolingiz",
+        "смс код",
+        "смс-код",
+        "кодни айт",
+        "кодни юбор",
+        "карта рақам",
+        "амал қилиш муддат",
+        "код из смс",
+        "код из sms",
+        "назовите код",
+        "продиктуйте код",
+        "сообщите код",
+        "номер карты",
+        "номер вашей карты",
+        "срок действия карты",
+        "пароль от",
+        "sms-код",
+        "sms код",
+        "sms-kodni",
+        "назовите sms",
+        "назовите смс",
+        "код из сообщения"
+      ]
+    },
+    {
+      "id": "prize",
+      "points": 25,
+      "p": [
+        "yutdingiz",
+        "yutib oldingiz",
+        "yutuq",
+        "g'olib bo'ldingiz",
+        "g'olibi bo'ldingiz",
+        "sovrin",
+        "sovg'a",
+        "bonus",
+        "tekin",
+        "pul mukofot",
+        "ютдингиз",
+        "ютиб олдингиз",
+        "ютуқ",
+        "ғолиб бўлдингиз",
+        "совринг",
+        "совға",
+        "бонус",
+        "текин",
+        "вы выиграли",
+        "выиграли",
+        "выигрыш",
+        "приз",
+        "подарок",
+        "розыгрыш"
+      ]
+    },
+    {
+      "id": "bank",
+      "points": 35,
+      "p": [
+        "bank xodimi",
+        "bankdan qo'ng'iroq",
+        "bankdan yozyapmiz",
+        "bank xavfsizlik",
+        "xavfsizlik xizmati",
+        "markaziy bank",
+        "банк ходими",
+        "банкдан",
+        "хавфсизлик хизмати",
+        "служба безопасности",
+        "службы безопасности",
+        "сотрудник банка",
+        "из банка",
+        "центробанк",
+        "центрального банка"
+      ]
+    },
+    {
+      "id": "urgent",
+      "points": 20,
+      "p": [
+        "bloklandi",
+        "bloklanadi",
+        "to'xtatildi",
+        "shoshiling",
+        "24 soat ichida",
+        "darhol",
+        "oxirgi imkoniyat",
+        "zudlik bilan",
+        "блокланди",
+        "шошилинг",
+        "24 соат ичида",
+        "дарҳол",
+        "заблокирован",
+        "срочно",
+        "в течение 24 часов",
+        "немедленно",
+        "последний шанс"
+      ]
+    },
+    {
+      "id": "money",
+      "points": 30,
+      "p": [
+        "uyda o'tirib",
+        "kafolatlangan foyda",
+        "kafolatlangan daromad",
+        "passiv daromad",
+        "investitsiya",
+        "kuniga 500",
+        "kuniga 1 000 000",
+        "oyiga 10 000 000",
+        "tez pul",
+        "уйда ўтириб",
+        "кафолатланган",
+        "инвестиция",
+        "заработок без вложений",
+        "гарантированный доход",
+        "пассивный доход",
+        "инвестиции",
+        "без вложений"
+      ]
+    },
+    {
+      "id": "vote",
+      "points": 30,
+      "p": [
+        "ovoz bering",
+        "ovoz berib",
+        "do'stimga ovoz",
+        "golos bering",
+        "овоз беринг",
+        "проголосуйте",
+        "проголосуй",
+        "голосуй",
+        "отдай голос"
+      ]
+    },
+    {
+      "id": "parcel",
+      "points": 20,
+      "p": [
+        "posilka",
+        "pochtadan",
+        "bojxona",
+        "yetkazib berish uchun to'lov",
+        "посилка",
+        "почтадан",
+        "божхона",
+        "посылка",
+        "посылку",
+        "таможн",
+        "оплатите доставку"
+      ]
+    },
+    {
+      "id": "transfer",
+      "points": 25,
+      "p": [
+        "pul o'tkazing",
+        "kartaga tashlang",
+        "oldindan to'lov",
+        "oldindan pul",
+        "to'lovni amalga oshiring",
+        "пул ўтказинг",
+        "олдиндан тўлов",
+        "переведите",
+        "предоплат",
+        "оплатите комиссию",
+        "to'lov qiling",
+        "to'lang",
+        "тўлов қилинг",
+        "тўланг",
+        "оплатите",
+        "оплатить",
+        "tashlang",
+        "tashlab bering",
+        "tashlab yuboring",
+        "ташланг",
+        "ташлаб беринг",
+        "скиньте",
+        "перекиньте",
+        "закиньте"
+      ]
+    },
+    {
+      "id": "apk",
+      "points": 35,
+      "p": [
+        ".apk",
+        "ilovani o'rnating",
+        "ilovani yuklab",
+        "faylni oching",
+        "иловани ўрнатинг",
+        "файлни очинг",
+        "установите приложение",
+        "скачайте приложение",
+        "откройте файл"
+      ]
+    }
+  ],
+  "negation": [
+    "hech kimga",
+    "aytmang",
+    "bermang",
+    "yubormang",
+    "ҳеч кимга",
+    "айтманг",
+    "берманг",
+    "никому не",
+    "не сообщайте",
+    "не называйте",
+    "не передавайте"
+  ],
+  "combos": [
+    {
+      "need": [
+        "secret",
+        "prize"
+      ],
+      "points": 20
+    },
+    {
+      "need": [
+        "secret",
+        "bank"
+      ],
+      "points": 20
+    },
+    {
+      "need": [
+        "secret",
+        "urgent"
+      ],
+      "points": 15
+    },
+    {
+      "need": [
+        "transfer",
+        "prize"
+      ],
+      "points": 15
+    },
+    {
+      "need": [
+        "parcel",
+        "transfer"
+      ],
+      "points": 15
+    }
+  ]
+}
