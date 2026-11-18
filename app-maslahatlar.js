@@ -44,8 +44,8 @@ window.TIPS = [
   ["telefon", "📍", "Yo'qolgan telefonni topish", "Android: «Find My Device» (Qurilmani topish) yoqilgan bo'lsin. U orqali telefonni topish, qulflash yoki o'chirish mumkin."],
   ["telefon", "☁️", "Rasmlarning zaxira nusxasi", "Google Photos yoki iCloud'da zaxira yoqilsa, telefon buzilsa ham rasmlar yo'qolmaydi."],
   ["telefon", "📩", "Notanish raqamdan havola", "Bankdan kelgandek SMS'dagi havolani bosmang. Bankingiz haqiqatan yozgan bo'lsa — rasmiy ilovada ham xabar bo'ladi."],
-  ["telefon", "🔌", "Begona zaryadlovchi kabeli", "Jamoat joylaridagi USB portlarga emas, rozetkaga o'z adapteringiz bilan ulang. Telefon «Ma'lumot uzatish» so'rasa — rad eting."],
-  ["telefon", "🧹", "Keraksiz ilovalarni o'chiring", "Ishlatmayotgan ilova ham ruxsatlarga ega bo'lib turadi. Kam ilova — kam xavf va ko'proq bo'sh joy."],
+  ["telefon", "🛡", "Samsung'da Auto Blocker'ni yoqing", "Sozlamalar → Xavfsizlik va maxfiylik → Auto Blocker. Yoqilsa, Play Market'dan tashqaridagi APK o'rnatilmaydi va USB orqali telefonga buyruq yuborib bo'lmaydi."],
+  ["telefon", "🚫", "«Noma'lum ilovalar»ni yoping", "Sozlamalar → Ilovalar → Maxsus ruxsatlar → Noma'lum ilovalarni o'rnatish — Telegram va brauzer uchun «Ruxsat berilmagan» bo'lsin. Shunda kelgan APK'ni bosib yuborsangiz ham o'rnatilmaydi. Play Market → Play Protect ham yoniq bo'lsin."],
 
   // ---------- 👨‍👩‍👧 Oila va bolalar ----------
   ["oila", "🗣", "Bolalar bilan gaplashing", "Onlayn biror narsa qo'rqitsa yoki g'alati bo'lsa, ota-onasiga aytishi mumkinligini bolaga ayting — urishmasligingizni ham."],
