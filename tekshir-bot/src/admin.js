@@ -7,7 +7,7 @@ const isAdmin = id => adminIds().includes(Number(id));
 
 const LANG_NAMES = { "uz-latn": "O'zbek (lotin)", "uz-cyrl": "O'zbek (kirill)", ru: "Rus" };
 // /start havolasidagi belgi → odam tushunadigan nom. Masalan: t.me/tekshirbot_bot?start=kanal
-const SOURCE_NAMES = { kanal: "📢 Telegram kanal", qr: "🔳 QR kod", insta: "📸 Instagram", youtube: "▶️ YouTube", sayt: "🌐 Sayt", group: "👥 Guruhdagi tugma", demo: "🎓 /demo", ulash: "👨‍👩‍👧 Do'sti ulashgan havola", start: "▶️ /start (belgisiz)", xabar: "💬 To'g'ridan-to'g'ri xabar", "nomaʼlum": "❔ Noma'lum (eski foydalanuvchi)" };
+const SOURCE_NAMES = { kanal: "📢 Telegram kanal", qr: "🔳 QR kod", insta: "📸 Instagram", youtube: "▶️ YouTube", sayt: "🌐 Sayt", group: "👥 Guruhdagi tugma", demo: "🎓 /demo", app: "📱 AHdigital ilovasi", ulash: "👨‍👩‍👧 Do'sti ulashgan havola", start: "▶️ /start (belgisiz)", xabar: "💬 To'g'ridan-to'g'ri xabar", "nomaʼlum": "❔ Noma'lum (eski foydalanuvchi)" };
 const pct = (n, total) => total ? Math.round(n * 100 / total) + "%" : "0%";
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
