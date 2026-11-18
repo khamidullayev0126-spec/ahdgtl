@@ -1,7 +1,7 @@
 // AHdigital ilovasi — service worker
 // Ilova internet sekin yoki yo'q bo'lsa ham ochilishi uchun asosiy fayllarni saqlab qo'yadi.
 // Yangilanganda VERSION raqamini oshiring — eski kesh o'chadi.
-const VERSION = "ahd-v19";
+const VERSION = "ahd-v20";
 const SHELL = ["/app.html", "/manifest.json", "/icon-192.png", "/icon-512.png", "/images/logo.svg", "/offline.html"];
 
 self.addEventListener("install", e => {
@@ -29,8 +29,14 @@ self.addEventListener("fetch", e => {
     return;
   }
 
-  // Rasm, shrift, CSS: keshdan darhol, orqada yangilab qo'yamiz
-  if (/\.(png|jpe?g|svg|webp|css|woff2?|ttf)$/i.test(url.pathname)) {
+  // CSS: avval internetdan (sahifa bilan bezagi doim bir xil versiyada bo'lsin), internet yo'q bo'lsa — keshdan
+  if (/\.css$/i.test(url.pathname)) {
+    e.respondWith(fetch(req).then(res => { if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); } return res; }).catch(() => caches.match(req)));
+    return;
+  }
+
+  // Rasm, shrift: keshdan darhol, orqada yangilab qo'yamiz
+  if (/\.(png|jpe?g|svg|webp|woff2?|ttf)$/i.test(url.pathname)) {
     e.respondWith(
       caches.match(req).then(hit => {
         const net = fetch(req).then(res => { if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); } return res; }).catch(() => hit);
