@@ -4,7 +4,8 @@
 // fayl esa umuman yuborilmaydi — telefon faqat uning nomi va SHA-256 "barmoq izi"ni hisoblab yuboradi.
 
 (function () {
-  const API = window.TEKSHIR_API || "https://ahdgtl.onrender.com/api/check";
+  // Asosiy manzil — tekshir.ah-digital.uz; u ishlamasa (masalan, SSL hali tayyor bo'lmasa) — eski Render manzili
+  const APIS = window.TEKSHIR_API ? [window.TEKSHIR_API] : ["https://tekshir.ah-digital.uz/api/check", "https://ahdgtl.onrender.com/api/check"];
   const BOT = "https://t.me/tekshirbot_bot?start=app";
 
   // ---------- Maslahatlar ----------
@@ -29,7 +30,13 @@
     state.tk = { busy: true, res: null, err: "", file: payload.file ? payload.file.name : "", lastText: payload.text || state.tk.lastText || "" };
     render();
     try {
-      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, lang: lang() }) });
+      const body = JSON.stringify({ ...payload, lang: lang() });
+      let r, lastErr;
+      for (const url of APIS) {
+        try { r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body }); break; }
+        catch (e) { lastErr = e; }                       // tarmoq xatosi — keyingi manzilni sinaymiz
+      }
+      if (!r) throw lastErr;
       if (r.status === 429) throw new Error("Juda tez yuboryapsiz. Bir daqiqa kuting.");
       if (!r.ok) throw new Error("Hozir tekshirib bo'lmadi. Birozdan keyin urinib ko'ring.");
       state.tk.res = await r.json();

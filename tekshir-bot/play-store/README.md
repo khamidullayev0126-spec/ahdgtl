@@ -2,6 +2,7 @@
 
 Bu papka internetda ko'rinmaydi. Play Console'ga yuklash uchun.
 Ilova manzili: **https://tekshir.ah-digital.uz** (bot serveri, doim uyg'oq).
+Domen tasdiqlangan: 2026-11-19 (Render Custom Domain + UZCLOUD CNAME → ahdgtl.onrender.com).
 
 ## Fayllar
 
