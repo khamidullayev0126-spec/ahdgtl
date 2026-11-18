@@ -4,6 +4,8 @@ const assert = require("node:assert");
 const crypto = require("crypto");
 const { createBot, startWebhook } = require("../src/bot");
 const { openDb } = require("../src/db");
+// Server loglari test natijalari bilan aralashib ketmasin (Node test runner shunga sezgir)
+console.log = () => {};
 delete process.env.AI_API_KEY; delete process.env.ANTHROPIC_API_KEY;
 delete process.env.WEBHOOK_SECRET;
 

@@ -187,7 +187,7 @@ function createBot(token, options = {}, deps = {}) {
     // Havolalar, fayl va AI bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
     const [urlRes, fileRes, aiRes] = await Promise.all([
       urls.length ? checkUrls(urls, { fast: opts.fast }) : [],
-      doc ? checkFile(fileMeta, opts.download || (() => download(doc.file_id)), { fast: opts.fast }) : null,
+      doc ? checkFile(fileMeta, opts.download === null ? null : (opts.download || (() => download(doc.file_id))), { fast: opts.fast, sha: opts.sha }) : null,
       useAi ? aiCheck(text, opts.lang, userId).catch(() => null) : null
     ]);
     // Keyingi (to'liq) bosqichda nimadir o'zgarishi mumkinmi? Kalit yo'q bo'lsa — kutishning ma'nosi yo'q
@@ -440,6 +440,32 @@ function createBot(token, options = {}, deps = {}) {
     try { await err.ctx.reply(t(getLang(err.ctx.from?.id), "error")); } catch { /* javob ham yuborilmasa — jim */ }
   });
 
+  // ---------- Ilova uchun tekshiruv (10-bosqichdan keyin: AHdigital va Tekshir ilovalari) ----------
+  // Kiradi: { text, file: { name, size, mime, sha256 }, lang }. Fayl o'zi kelmaydi — faqat nomi va hash'i.
+  // Chiqadi: oddiy matnlar (HTML'siz), ilova o'zi chizadi. Matn saqlanmaydi, faqat natija (chat_type = "app").
+  const plain = s => String(s).replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+  bot.checkForApp = async ({ text = "", file = null, lang = "uz-latn" } = {}) => {
+    if (!LANGS.includes(lang)) lang = "uz-latn";
+    text = String(text).slice(0, 4000);
+    const m = { text };
+    let opts = { lang, log: true };
+    if (file && file.name) {
+      m.document = { file_name: String(file.name).slice(0, 200), mime_type: String(file.mime || "").slice(0, 100), file_size: Number(file.size) || 0, file_id: "app" };
+      opts.download = null;
+      opts.sha = String(file.sha256 || "");
+    }
+    const r = await analyze(m, null, "app", opts);
+    const reply = buildReply(lang, r.result, "x", { numbers: r.numbers });
+    const parts = plain(reply.text).split("\n\n");
+    return {
+      level: r.result.level, score: r.result.score,
+      title: t(lang, `level_${r.result.level}`),
+      reasons: r.result.reasons.filter(x => !x.hidden).slice(0, 5).map(x => plain(t(lang, x.code, x.vars || {}))),
+      advice: (parts.find(p => p.startsWith(t(lang, "what_to_do"))) || "").split("\n").slice(1),
+      numbers: r.numbers
+    };
+  };
+
   bot.db = db;          // testlar va ishga tushirish uchun
   return bot;
 }
@@ -525,6 +551,32 @@ async function main() {
   else bot.start({ onStart: info => console.log(`✅ @${info.username} ishga tushdi. To'xtatish: Ctrl + C`) });
 }
 
+// ---------- /api/check — ilovalar uchun ----------
+// Faqat ruxsat etilgan saytlardan (CORS), bitta IP'dan daqiqasiga 10 ta so'rov, 16 KB dan katta so'rov yo'q.
+const APP_ORIGINS = () => (process.env.APP_ORIGINS || "https://ah-digital.uz,https://www.ah-digital.uz,https://ahdigital.onrender.com").split(",").map(s => s.trim());
+const apiLimit = createLimiter({ limit: 10 });
+async function apiCheck(bot, req, res) {
+  const origin = req.headers.origin || "";
+  const allowed = APP_ORIGINS().includes(origin);
+  const send = (code, obj) => {
+    res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
+      ...(allowed ? { "Access-Control-Allow-Origin": origin, "Vary": "Origin", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400" } : {}) });
+    res.end(obj === undefined ? "" : JSON.stringify(obj));
+  };
+  if (req.method === "OPTIONS") return send(allowed ? 204 : 403);
+  if (req.method !== "POST") return send(405, { error: "POST kerak" });
+  if (origin && !allowed) return send(403, { error: "ruxsat yo'q" });
+  const ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+  if (!apiLimit.hit(ip).ok) return send(429, { error: "juda tez" });
+  let body = "";
+  for await (const chunk of req) { body += chunk; if (body.length > 16 * 1024) return send(413, { error: "juda katta" }); }
+  let data;
+  try { data = JSON.parse(body || "{}"); } catch { return send(400, { error: "JSON xato" }); }
+  if (!String(data.text || "").trim() && !(data.file && data.file.name)) return send(400, { error: "bo'sh" });
+  try { send(200, await bot.checkForApp(data)); }
+  catch (e) { console.error("API:", e.message); send(500, { error: "xato" }); }
+}
+
 // ---------- Webhook rejimi (serverda) ----------
 // Telegram faqat maxfiy kalit (secret_token) bilan kelgan so'rovlarni qabul qilamiz — begona odam soxta xabar yubora olmaydi.
 function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), onStop = null) {
@@ -539,6 +591,7 @@ function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), on
       res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
       return res.end("Tekshir bot ishlayapti ✅");
     }
+    if (req.url === "/api/check") return apiCheck(bot, req, res);
     if (req.method === "POST" && req.url === hookPath) return handle(req, res).catch(e => { console.error("Webhook:", e.message); if (!res.headersSent) { res.writeHead(500); res.end(); } });
     res.writeHead(404); res.end();
   });

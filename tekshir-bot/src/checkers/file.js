@@ -47,6 +47,16 @@ const sha256 = buf => crypto.createHash("sha256").update(buf).digest("hex");
 async function checkFile({ name, mime, size }, download, opts = {}) {
   const reasons = analyzeFileName(name, mime, size);
   let hashChecked = false;
+  // opts.sha — hash tayyor bo'lsa (ilova faylni o'zi hisoblab yuboradi — fayl serverga YUKLANMAYDI)
+  if (opts.sha && !opts.fast) {
+    const vt = /^[0-9a-f]{64}$/i.test(opts.sha) ? await virusTotalFile(opts.sha.toLowerCase()) : null;
+    if (vt) {
+      hashChecked = true;
+      if (vt.malicious >= 2) reasons.push({ code: "file_vt_bad", points: 85, vars: { n: vt.malicious } });
+      else if (vt.malicious === 1 || vt.suspicious >= 2) reasons.push({ code: "file_vt_some", points: 35, vars: { n: vt.malicious + vt.suspicious } });
+    }
+    return { host: "", reasons, hashChecked };
+  }
   if (size <= MAX_DOWNLOAD && download && !opts.fast) {
     try {
       const buf = await download();
