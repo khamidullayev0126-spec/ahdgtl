@@ -22,8 +22,13 @@
 - [x] **🔳 QR kod yasagich** — menyu, Wi-Fi, telefon, havola uchun; rasmini saqlash va ulashish.
 - [x] **💡 70 ta maslahat, 7 yo'nalishda** (har biri 10 tadan) — firibgarlik, parol va akkaunt, telefon va internet, oila va bolalar, kichik biznes, Instagram, AI bilan ishlash. Har kuni yangi «kun maslahati».
 
-### Tekshir — alohida ilova (jarayonda)
-- [ ] O'z dizayni (xavfsizlik paneli uslubida), «Ulashish → Tekshir», tekshiruvlar tarixi.
+### Tekshir — alohida ilova 🛡
+- [x] **O'z dizayni** — to'q ko'k xavfsizlik paneli, markazda yashil qalqon (AHdigital'dan butunlay farqli).
+- [x] **«Ulashish → Tekshir»** — SMS yoki Telegram'dagi xabarni ulashish tugmasi bilan to'g'ridan-to'g'ri tekshirish.
+- [x] **APK faylni tekshirish** — fayl internetga yuklanmaydi.
+- [x] **Tekshiruvlar tarixi** — faqat telefonda, raqamlar yashirilgan.
+- [x] **70 ta maslahat**, o'zbek va rus tilida interfeys.
+- [ ] Google Play'ga chiqarish (AHdigital'dan keyin).
 
 ## Dadamga qanday ko'rsataman (reja)
 1. Telefonda ilovani ochib, «Foydali» bo'limini ko'rsataman — dadamning o'z SMS'larini tekshirib beraman.

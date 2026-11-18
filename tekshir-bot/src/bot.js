@@ -444,7 +444,7 @@ function createBot(token, options = {}, deps = {}) {
   // Kiradi: { text, file: { name, size, mime, sha256 }, lang }. Fayl o'zi kelmaydi — faqat nomi va hash'i.
   // Chiqadi: oddiy matnlar (HTML'siz), ilova o'zi chizadi. Matn saqlanmaydi, faqat natija (chat_type = "app").
   const plain = s => String(s).replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
-  bot.checkForApp = async ({ text = "", file = null, lang = "uz-latn" } = {}) => {
+  bot.checkForApp = async ({ text = "", file = null, lang = "uz-latn", app = "" } = {}) => {
     if (!LANGS.includes(lang)) lang = "uz-latn";
     text = String(text).slice(0, 4000);
     const m = { text };
@@ -454,7 +454,7 @@ function createBot(token, options = {}, deps = {}) {
       opts.download = null;
       opts.sha = String(file.sha256 || "");
     }
-    const r = await analyze(m, null, "app", opts);
+    const r = await analyze(m, null, app === "tekshir" ? "tekshir-app" : "app", opts);
     const reply = buildReply(lang, r.result, "x", { numbers: r.numbers });
     const parts = plain(reply.text).split("\n\n");
     return {
@@ -551,13 +551,32 @@ async function main() {
   else bot.start({ onStart: info => console.log(`✅ @${info.username} ishga tushdi. To'xtatish: Ctrl + C`) });
 }
 
+// ---------- Tekshir ilovasi (PWA): app/ papkasidagi fayllar ----------
+// Bosh sahifa "/" — ilova. "/share?text=..." — boshqa ilovadan «Ulashish → Tekshir» (o'sha sahifa ochiladi).
+const APP_DIR = path.join(__dirname, "..", "app");
+const APP_TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".webmanifest": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml", ".json": "application/json" };
+function serveApp(req, res) {
+  let p = decodeURIComponent((req.url || "/").split("?")[0]);
+  if (p === "/" || p === "/share") p = "/index.html";
+  if (p.includes("..") || !/^\/[a-z0-9._-]+$/i.test(p)) return false;      // faqat app/ ichidagi oddiy fayl nomlari
+  const file = path.join(APP_DIR, p), ext = path.extname(p);
+  if (!APP_TYPES[ext] || !fs.existsSync(file)) return false;
+  const immutable = ext === ".png" || ext === ".svg";
+  res.writeHead(200, { "Content-Type": APP_TYPES[ext], "Cache-Control": immutable ? "public, max-age=604800" : "no-cache",
+    "X-Content-Type-Options": "nosniff", ...(ext === ".html" ? { "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer" } : {}) });
+  fs.createReadStream(file).pipe(res);
+  return true;
+}
+
 // ---------- /api/check — ilovalar uchun ----------
 // Faqat ruxsat etilgan saytlardan (CORS), bitta IP'dan daqiqasiga 10 ta so'rov, 16 KB dan katta so'rov yo'q.
 const APP_ORIGINS = () => (process.env.APP_ORIGINS || "https://ah-digital.uz,https://www.ah-digital.uz,https://ahdigital.onrender.com").split(",").map(s => s.trim());
 const apiLimit = createLimiter({ limit: 10 });
 async function apiCheck(bot, req, res) {
   const origin = req.headers.origin || "";
-  const allowed = APP_ORIGINS().includes(origin);
+  // O'z manzilimizdan (Tekshir ilovasi shu serverda) yoki ruxsat etilgan saytlardan
+  const self = origin && req.headers.host && (origin === "https://" + req.headers.host || origin === "http://" + req.headers.host);
+  const allowed = self || APP_ORIGINS().includes(origin);
   const send = (code, obj) => {
     res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
       ...(allowed ? { "Access-Control-Allow-Origin": origin, "Vary": "Origin", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400" } : {}) });
@@ -587,7 +606,14 @@ function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), on
   // Tekshiruv 25 soniyadan oshsa ham Telegram'ga "qabul qildim" deymiz — aks holda u xabarni qayta yuboradi
   const handle = webhookCallback(bot, "http", { secretToken: secret, onTimeout: "return", timeoutMilliseconds: 25000 });
   const server = http.createServer((req, res) => {
-    if (req.method === "GET" && (req.url === "/health" || req.url === "/")) {
+    // Google Play (TWA): ilova shu sayt egasiniki ekanini tasdiqlash. Render → Environment: ANDROID_PACKAGE, ANDROID_SHA256
+    if (req.method === "GET" && req.url === "/.well-known/assetlinks.json") {
+      const pkg = process.env.ANDROID_PACKAGE, sha = process.env.ANDROID_SHA256;
+      res.writeHead(pkg && sha ? 200 : 404, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify(pkg && sha ? [{ relation: ["delegate_permission/common.handle_all_urls"], target: { namespace: "android_app", package_name: pkg, sha256_cert_fingerprints: sha.split(",").map(x => x.trim()) } }] : []));
+    }
+    if (req.method === "GET" && serveApp(req, res)) return;
+    if (req.method === "GET" && req.url === "/health") {
       res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
       return res.end("Tekshir bot ishlayapti ✅");
     }

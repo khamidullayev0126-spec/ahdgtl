@@ -59,3 +59,25 @@ test("bitta IP'dan daqiqasiga 10 tadan ko'p — 429", async () => withServer(asy
   for (let i = 0; i < 11; i++) last = await post({ text: "Salom " + i }, ORIGIN, "9.9.9.9");
   assert.strictEqual(last.status, 429);
 }));
+
+test("Tekshir ilovasi: sahifa, /share, manifest; o'z manzilidan API'ga ruxsat; begona fayl yo'q", async () => withServer(async ({ url }) => {
+  const base = url.replace("/api/check", "");
+  const home = await fetch(base + "/");
+  assert.strictEqual(home.status, 200);
+  assert.match(await home.text(), /<title>Tekshir/);
+  assert.strictEqual((await fetch(base + "/share?text=salom")).status, 200);
+  const m = await (await fetch(base + "/manifest.webmanifest")).json();
+  assert.strictEqual(m.share_target.action, "/share");
+  for (const bad of ["/..%2Fsrc%2Fbot.js", "/../package.json", "/.env", "/src/bot.js"]) assert.strictEqual((await fetch(base + bad)).status, 404, bad);
+  const host = new URL(base).host;
+  const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json", origin: "http://" + host, "x-forwarded-for": "7.7.7.7" }, body: JSON.stringify({ text: "SMS kodni ayting", app: "tekshir" }) });
+  assert.strictEqual(r.status, 200);
+  assert.strictEqual((await fetch(base + "/health")).status, 200);
+}));
+
+test("ilova maslahatlari sayt bilan bir xil (nusxa eskirmasin)", () => {
+  const fs = require("fs"), path = require("path");
+  const site = path.join(__dirname, "..", "..", "app-maslahatlar.js");
+  if (!fs.existsSync(site)) return;                       // faqat repozitoriy to'liq bo'lsa
+  assert.strictEqual(fs.readFileSync(path.join(__dirname, "..", "app", "maslahatlar.js"), "utf8"), fs.readFileSync(site, "utf8"));
+});

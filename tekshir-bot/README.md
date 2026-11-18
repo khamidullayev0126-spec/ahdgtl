@@ -94,6 +94,16 @@ AI faqat shaxsiy chatda va `/tekshir` da ishlaydi, faqat xavfni **oshiradi** (fi
 
 ---
 
+## Tekshir ilovasi (PWA)
+Bot serveri bosh sahifada (`/`) **Tekshir ilovasini** ham beradi — `app/` papkasi. Server pullik va doim uyg'oq, shuning uchun ilova darhol ochiladi.
+- **Ekranlar:** Himoya (qalqon, statistika) · Tekshirish · Tarix · Maslahat (70 ta) · Haqida (o'zbek/rus tili).
+- **Ulashish → Tekshir:** ilova telefonga o'rnatilgach, boshqa ilovadagi xabarni «Ulashish» orqali to'g'ridan-to'g'ri tekshirish (`/share`).
+- **APK fayl:** fayl serverga yuklanmaydi — telefon SHA-256 ni hisoblab, faqat nom va hash'ni yuboradi.
+- **Tarix** faqat telefonda (localStorage), raqamlar yashirilgan.
+- API: `POST /api/check` — o'z manzilidan va `APP_ORIGINS` dagi saytlardan (standart: ah-digital.uz). Bitta IP'dan daqiqasiga 10 ta.
+- Google Play uchun: Render → Environment → `ANDROID_PACKAGE`, `ANDROID_SHA256` → `/.well-known/assetlinks.json`.
+- `app/maslahatlar.js` — saytdagi `app-maslahatlar.js` nusxasi (test ikkalasi bir xilligini tekshiradi).
+
 ## Guruhda ishlatish
 1. Guruh → **Add members** → botni qo'shing. Bot salomlashadi.
 2. Botni **admin** qiling (barcha xabarlarni ko'rishi uchun; o'chirish uchun "Delete messages" huquqi).
@@ -171,7 +181,7 @@ GitHub'ga yangi kod yuklansa (`git push`), Render botni o'zi qayta quradi va ish
 ```bash
 npm test
 ```
-116 ta test. Internetga ulanmaydi, token va kalit talab qilmaydi, AI'ga pul sarflamaydi.
+123 ta test. Internetga ulanmaydi, token va kalit talab qilmaydi, AI'ga pul sarflamaydi.
 
 **Qabul testlari** (`tests/acceptance.test.js`) — foydalanuvchi ko'zi bilan:
 
