@@ -118,6 +118,12 @@ a { color: var(--link); }
 .portrait-img { position: absolute; inset: 6%; border-radius: 999px; overflow: hidden; }
 .portrait-img img, .about-img img { width: 100%; height: 100%; object-fit: cover; }
 .portrait-img img { object-position: 50% 20%; }
+/* Hammuassis — asosiy rasm burchagida kichik doira + ism yorliqlari */
+.portrait-co { position: absolute; left: 0; bottom: 3%; width: 32%; margin: 0; z-index: 2; text-align: center; }
+.portrait-co img { width: 100%; aspect-ratio: 1; height: auto; border-radius: 50%; object-fit: cover; border: 6px solid var(--bg); box-shadow: 0 10px 30px rgba(32,30,29,.18); }
+.portrait-co figcaption, .portrait-name { display: inline-block; margin-top: 6px; background: var(--legend-bg); color: var(--legend-text); font-size: 13px; padding: 5px 12px; border-radius: 99px; white-space: nowrap; }
+.portrait-name { position: absolute; right: 6%; bottom: 8%; z-index: 2; margin: 0; }
+.portrait-co figcaption b, .portrait-name b { font-weight: 800; }
 
 /* sections */
 section { padding-block: var(--s8); }
