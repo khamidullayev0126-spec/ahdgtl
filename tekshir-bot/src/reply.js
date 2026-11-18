@@ -44,7 +44,7 @@ function buildReply(lang, result, botUsername, opts = {}) {
   text += `\n\n${t(lang, "what_to_do")}\n${advice(lang, result).join("\n")}`;
 
   // Tugmalar: shikoyat va oilaga ulashish (Telegram'ning "ulashish" oynasi)
-  const share = `https://t.me/share/url?url=${encodeURIComponent("https://t.me/" + botUsername)}&text=${encodeURIComponent(t(lang, "share_text"))}`;
+  const share = `https://t.me/share/url?url=${encodeURIComponent("https://t.me/" + botUsername + "?start=ulash")}&text=${encodeURIComponent(t(lang, "share_text"))}`;
   const kb = new InlineKeyboard();
   if (opts.reportId) kb.text(t(lang, "btn_report"), `rep:${opts.reportId}`);
   kb.url(t(lang, "btn_share"), share);

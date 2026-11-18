@@ -37,7 +37,7 @@ window.WORKS = [
       "Claude"
     ],
     "image": "images/ishlar/tekshir-bot.webp",
-    "link": "https://t.me/tekshirbot_bot",
+    "link": "https://t.me/tekshirbot_bot?start=sayt",
     "linkText": "Botni ochish"
   },
   {

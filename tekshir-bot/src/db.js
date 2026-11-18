@@ -111,6 +111,11 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
     getLang: id => q.getLang.get(id)?.lang || undefined,
     setLang: (id, lang) => q.upsertUser.run({ id, lang, now: Date.now() }),
     touchUser: id => q.upsertUser.run({ id, lang: null, now: Date.now() }),
+    // Faqat BIRINCHI manba yoziladi (keyin o'zgarmaydi)
+    noteSource(id, source) {
+      q.upsertUser.run({ id, lang: null, now: Date.now() });
+      db.prepare("UPDATE users SET source = ? WHERE telegram_id = ? AND source IS NULL").run(String(source).slice(0, 24), id);
+    },
 
     // ---- Tekshiruvni yozish (matnsiz!) ----
     // result — combineAll natijasi. Faqat daraja, ball, sabab kodlari va domenlar (hosts) olinadi.
@@ -200,6 +205,10 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
         topDanger: db.prepare("SELECT domain, danger, checks FROM domains WHERE danger > 0 ORDER BY danger DESC, checks DESC LIMIT 10").all(),
         topReasons: topReasons(db),
         reports: one("SELECT COUNT(*) n FROM reports").n,
+        daily: daily(db, now),
+        sources: db.prepare("SELECT COALESCE(source, 'nomaʼlum') source, COUNT(*) n FROM users GROUP BY 1 ORDER BY n DESC LIMIT 8").all(),
+        hours: topHours(db, now),
+        groupsList: db.prepare("SELECT chat_id, title, enabled, checks, warnings FROM groups ORDER BY checks DESC LIMIT 10").all(),
         reportsWeek: one("SELECT COUNT(*) n FROM reports WHERE created_at >= ?", week).n,
         groups: one("SELECT COUNT(*) n FROM groups").n,
         groupsActive: one("SELECT COUNT(*) n FROM groups WHERE enabled = 1").n,
@@ -221,12 +230,36 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
 
 // Eski bazaga yangi ustunlar qo'shish (bot yangilanganda ma'lumotlar yo'qolmasin)
 function migrate(db) {
+  // users.source — odam botga birinchi marta qayerdan kelgani (kanal, qr, guruh, demo...). Ism saqlanmaydi.
+  if (!db.prepare("PRAGMA table_info(users)").all().some(c => c.name === "source")) db.exec("ALTER TABLE users ADD COLUMN source TEXT");
   const cols = db.prepare("PRAGMA table_info(groups)").all().map(c => c.name);
   const add = (name, def) => { if (!cols.includes(name)) db.exec(`ALTER TABLE groups ADD COLUMN ${name} ${def}`); };
   add("mode", "TEXT NOT NULL DEFAULT 'suspicious'");
   add("delete_danger", "INTEGER NOT NULL DEFAULT 0");
   add("checks", "INTEGER NOT NULL DEFAULT 0");
   add("warnings", "INTEGER NOT NULL DEFAULT 0");
+}
+
+// Toshkent vaqti (UTC+5): kunlar va soatlar shu bo'yicha hisoblanadi
+const TZ = 5 * 60 * 60 * 1000;
+const dayKey = ts => new Date(ts + TZ).toISOString().slice(0, 10);
+
+// Oxirgi 7 kun: har kuni nechta yangi foydalanuvchi va nechta tekshiruv
+function daily(db, now) {
+  const from = now - 7 * DAY;
+  const days = [];
+  for (let i = 6; i >= 0; i--) days.push({ day: dayKey(now - i * DAY), users: 0, checks: 0 });
+  const idx = Object.fromEntries(days.map((d, i) => [d.day, i]));
+  for (const r of db.prepare("SELECT first_seen t FROM users WHERE first_seen >= ?").all(from)) { const i = idx[dayKey(r.t)]; if (i != null) days[i].users++; }
+  for (const r of db.prepare("SELECT created_at t FROM checks WHERE created_at >= ?").all(from)) { const i = idx[dayKey(r.t)]; if (i != null) days[i].checks++; }
+  return days;
+}
+
+// Eng faol soatlar (oxirgi 30 kun, Toshkent vaqti)
+function topHours(db, now) {
+  const h = new Array(24).fill(0);
+  for (const r of db.prepare("SELECT created_at t FROM checks WHERE created_at >= ?").all(now - 30 * DAY)) h[new Date(r.t + TZ).getUTCHours()]++;
+  return h.map((n, hour) => ({ hour, n })).filter(x => x.n).sort((a, b) => b.n - a.n).slice(0, 3);
 }
 
 function startOfDay(ts) { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }

@@ -70,6 +70,9 @@ function createBot(token, options = {}, deps = {}) {
   // /start — til tanlanmagan bo'lsa, avval tilni so'raymiz
   bot.command("start", async ctx => {
     if (isGroup(ctx)) return ctx.reply(t(groupOf(ctx).lang, "group_welcome"), { parse_mode: "HTML" });
+    // Qayerdan kelgani: t.me/bot?start=kanal → "kanal". Faqat harf/raqam, ism saqlanmaydi
+    const src = String(ctx.match || "").toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 24) || "start";
+    try { db.noteSource(ctx.from.id, src); } catch (e) { console.error("Manba:", e.message); }
     const lang = getLang(ctx.from.id);
     if (!lang) return ctx.reply(t("uz-latn", "choose_lang"), { reply_markup: langKeyboard() });
     await ctx.reply(t(lang, "welcome"), { parse_mode: "HTML" });
@@ -99,7 +102,10 @@ function createBot(token, options = {}, deps = {}) {
     // Oxirida — baza qayerda turibdi (serverda /var/data bo'lmasa, qayta ishga tushganda o'chadi)
     const where = db.file === ":memory:" ? "xotirada (vaqtinchalik)" : db.file;
     const safe = db.file.startsWith("/var/data") ? "✅ doimiy disk" : "⚠️ vaqtinchalik — server qayta ishga tushsa o'chadi";
-    await ctx.reply(formatStats(db.stats()) + `\n\n📂 Baza: <code>${where}</code>\n${safe}`, { parse_mode: "HTML" });
+    const st = db.stats();
+    // Guruhlardagi a'zolar soni — Telegram'dan so'raymiz (ism emas, faqat son)
+    await Promise.all(st.groupsList.map(async g => { try { g.members = await ctx.api.getChatMemberCount(g.chat_id); } catch { /* bot chiqarilgan bo'lsa */ } }));
+    await ctx.reply(formatStats(st) + `\n\n📂 Baza: <code>${where}</code>\n${safe}`, { parse_mode: "HTML" });
   });
 
   // /export — oxirgi 30 kunlik tekshiruvlar CSV faylda (Excel'da ochiladi). Foydalanuvchi ID'si va matn YO'Q
@@ -357,7 +363,7 @@ function createBot(token, options = {}, deps = {}) {
     .text(t(lang, "demo_btn_sms"), "demo:sms").row()
     .text(t(lang, "demo_btn_link"), "demo:link").row()
     .text(t(lang, "demo_btn_file"), "demo:file");
-  bot.command("demo", ctx => { const lang = langOf(ctx); return ctx.reply(t(lang, "demo_intro"), { parse_mode: "HTML", reply_markup: demoMenu(lang) }); });
+  bot.command("demo", ctx => { if (ctx.chat.type === "private") { try { db.noteSource(ctx.from.id, "demo"); } catch { /* statistika — muhim emas */ } } const lang = langOf(ctx); return ctx.reply(t(lang, "demo_intro"), { parse_mode: "HTML", reply_markup: demoMenu(lang) }); });
   bot.callbackQuery("demo:menu", async ctx => {
     const lang = cbLang(ctx) || DEFAULT_LANG;
     await ctx.answerCallbackQuery();
@@ -413,6 +419,7 @@ function createBot(token, options = {}, deps = {}) {
     let lang = getLang(ctx.from.id);
     // AUTO_LANG=1 (bepul serverda): baza o'chib ketgan bo'lsa ham tilni qayta so'ramaymiz —
     // Telegram ilovasining tilidan taxmin qilamiz (rus/ukrain/qozoq → rus, qolgani → o'zbek). /til bilan o'zgartirsa bo'ladi.
+    if (!lang) { try { db.noteSource(ctx.from.id, "xabar"); } catch { /* statistika — muhim emas */ } }
     if (!lang && process.env.AUTO_LANG === "1") {
       lang = ["ru", "uk", "be", "kk"].includes(ctx.from.language_code) ? "ru" : "uz-latn";
       db.setLang(ctx.from.id, lang);

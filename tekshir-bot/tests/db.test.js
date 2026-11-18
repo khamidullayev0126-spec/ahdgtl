@@ -114,3 +114,25 @@ test("kesh bazada saqlanadi: xotira tozalansa ham bazadan topiladi", () => {
   assert.strictEqual(db.cachePurge(), 1);
   cache.attach(null);
 });
+
+test("/stats: kunlik o'sish, manbalar, faol soatlar va guruhlar (ismsiz)", async () => {
+  process.env.ADMIN_IDS = "111";
+  const db = openDb(":memory:");
+  const { bot, calls } = fakeBot(db);
+  const start = (id, payload) => bot.handleUpdate({ update_id: uid++, message: { message_id: uid, date: 0, chat: { id, type: "private" }, from: { id, is_bot: false, first_name: "Maxfiy Ism", username: "maxfiy_user" }, text: "/start" + (payload ? " " + payload : ""), entities: [{ type: "bot_command", offset: 0, length: 6 }] } });
+  await start(1, "kanal"); await start(2, "kanal"); await start(3, "qr"); await start(4);
+  await start(1, "qr");                                       // ikkinchi marta — manba o'zgarmaydi
+  db.addGroup(-5, "Mahalla <guruhi>");
+  db.logCheck({ userId: 1, chatType: "private", result: { level: "safe", score: 0, hasUrl: false, hasFile: false, reasons: [] }, hasText: true });
+  await bot.handleUpdate(msg(111, "/stats"));
+  const text = calls.filter(c => c.method === "sendMessage").pop().payload.text;
+  assert.match(text, /Telegram kanal: 2/);
+  assert.match(text, /QR kod: 1/);
+  assert.match(text, /\/start \(belgisiz\): 1/);
+  assert.match(text, /Oxirgi 7 kun/);
+  assert.match(text, /\+4 · 1/);                              // bugun 4 ta yangi, 1 ta tekshiruv
+  assert.match(text, /Eng faol soatlar/);
+  assert.match(text, /Mahalla &lt;guruhi&gt;/);               // guruh nomi xavfsiz ko'rsatiladi
+  assert.ok(!/Maxfiy Ism|maxfiy_user/.test(text), "ism va username hech qayerda yo'q");
+  assert.ok(!JSON.stringify(db.raw.prepare("SELECT * FROM users").all()).includes("maxfiy"), "bazada ham yo'q");
+});
