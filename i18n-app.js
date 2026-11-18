@@ -2,6 +2,13 @@
 window.I18N_EXTRA = Object.assign(window.I18N_EXTRA || {}, {
   "Bosh": ["Главная", "Home"],
   "Foydali": ["Полезное", "Tools"],
+  "Firibgarlik": ["Мошенничество", "Scams"],
+  "Parol va akkaunt": ["Пароли и аккаунты", "Passwords & accounts"],
+  "Telefon va internet": ["Телефон и интернет", "Phone & internet"],
+  "Oila va bolalar": ["Семья и дети", "Family & kids"],
+  "Kichik biznes": ["Малый бизнес", "Small business"],
+  "Instagram va kontent": ["Instagram и контент", "Instagram & content"],
+  "AI bilan ishlash": ["Работа с AI", "Working with AI"],
   "Tekshirish": ["Проверка", "Check"],
   "QR kod": ["QR-код", "QR code"],
   "Maslahatlar": ["Советы", "Tips"],

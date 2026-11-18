@@ -8,30 +8,12 @@
   const BOT = "https://t.me/tekshirbot_bot?start=app";
 
   // ---------- Maslahatlar ----------
-  const TIPS = [
-    ["xavfsizlik", "🔐", "SMS kodni hech kimga aytmang", "Bank xodimi, operator yoki Click ham uni hech qachon so'ramaydi. SMS kod — sizning imzoingiz."],
-    ["xavfsizlik", "📱", "Notanish .apk faylni o'rnatmang", "«Rasmlar», «Hujjat», «Posilka» deb kelgan .apk — bu ilova. U SMS va karta ma'lumotingizni o'g'irlaydi. Ilovalarni faqat Google Play'dan oling."],
-    ["xavfsizlik", "🎁", "«Siz yutdingiz!» — aldov", "Qatnashmagan tanlovda yutib bo'lmaydi. «Yutuqni olish uchun avval to'lang» — doim firibgarlik."],
-    ["xavfsizlik", "🔗", "Manzilni harfma-harf o'qing", "click.uz va c1ick-uz.com — butunlay boshqa saytlar. To'lovni havola orqali emas, rasmiy ilova orqali qiling."],
-    ["xavfsizlik", "📞", "«Bankdan qo'ng'iroq qilyapmiz»", "Go'shakni qo'ying va kartangiz orqasidagi raqamga o'zingiz qo'ng'iroq qiling."],
-    ["xavfsizlik", "⏰", "Shoshiltirishyaptimi? To'xtang", "«1 soat ichida», «hozir bloklanadi» — firibgarlarning asosiy usuli. Haqiqiy bank sizni shoshiltirmaydi."],
-    ["xavfsizlik", "👨‍👩‍👧", "Qarindosh yangi raqamdan pul so'rasa", "Eski raqamiga qo'ng'iroq qilib tekshiring yoki faqat ikkingiz biladigan savol bering."],
-    ["xavfsizlik", "🗳", "«Ovoz bering» havolasi", "Agar Telegram kodi so'ralsa — bu akkauntni o'g'irlash. Telegram kodini hech qayerga yozmang."],
-    ["xavfsizlik", "🛡", "Telegram'da ikki bosqichli himoya", "Sozlamalar → Maxfiylik va xavfsizlik → Ikki bosqichli tasdiqlash. 1 daqiqa — akkauntingiz ancha xavfsizroq."],
-    ["xavfsizlik", "💸", "Oson daromad va'dasi", "«Kuniga 500 000 so'm, tajriba shart emas». Sizga pul to'lashi kerak bo'lgan odam sizdan pul so'ramaydi."],
-    ["xavfsizlik", "📦", "Posilka uchun «bojxona to'lovi»", "Trek-raqamni rasmiy pochta saytida o'zingiz tekshiring — SMS'dagi havoladan emas."],
-    ["xavfsizlik", "👵", "Bu maslahatlarni ulashing", "Ota-onangiz va buvi-bobolaringizga yuboring — firibgarlar ko'pincha aynan ularni nishonga oladi."],
-    ["biznes", "🗺", "Google'da bepul chiqing", "business.google.com — nom, telefon, ish vaqti va rasmlar. «Kafe yaqinimda» deb qidirganlar sizni topadi."],
-    ["biznes", "⭐", "Mijozdan sharh so'rang", "Har mamnun mijozdan Google'da sharh so'rang. Sharh ko'p bo'lsa, Google sizni yuqoriroq ko'rsatadi."],
-    ["biznes", "💰", "Narxni yashirmang", "Instagram'da narx yo'q bo'lsa, ko'p odam so'rashga erinadi va ketadi. Hech bo'lmasa «...dan boshlab» deb yozing."],
-    ["biznes", "📞", "Aloqa tugmasini qo'shing", "Instagram profilida «Qo'ng'iroq» yoki «Xabar» tugmasi 1 daqiqada qo'shiladi — mijozga oson bo'ladi."],
-    ["biznes", "🔗", "Bio'da bitta havola", "Narx, manzil va rasmlar bir joyda bo'lsin — kichik sayt yoki menyu havolasi."],
-    ["biznes", "🔳", "QR menyu — chop etish shart emas", "Narx o'zgarsa, qog'oz menyuni qayta chop etmaysiz — saytdagi narxni yangilaysiz, QR o'sha qoladi."],
-    ["biznes", "📸", "Haftada 2–3 ta reels", "Bitta foydali fikr, 20–40 soniya, birinchi 2 soniyada qiziqtiruvchi gap. Ko'p emas, lekin muntazam."],
-    ["biznes", "📶", "Wi-Fi uchun QR kod", "Mehmonlar parolni so'rab o'tirmaydi — stolga Wi-Fi QR kodini qo'ying. «Foydali → QR kod» bo'limida 10 soniyada yasaladi."]
-  ];
+  // 70 ta maslahat — app-maslahatlar.js dan (7 yo'nalish × 10)
+  const TIPS = window.TIPS || [];
+  const CATS = window.TIP_CATS || [];
+  const catName = id => (CATS.find(c => c[0] === id) || ["", "", ""])[2];
   const dayIndex = () => Math.floor((Date.now() + 5 * 3600e3) / 864e5) % TIPS.length;      // Toshkent vaqti bo'yicha har kuni yangi
-  const tipCard = (t, big) => `<div class="card tip"><span class="kicker">${t[0] === "biznes" ? "Biznes uchun" : "Xavfsizlik"}</span><b style="font-size:${big ? 18 : 16}px">${t[1]} ${esc(t[2])}</b><p class="lead">${esc(t[3])}</p></div>`;
+  const tipCard = (t, big) => `<div class="card tip"><span class="kicker">${esc(catName(t[0]))}</span><b style="font-size:${big ? 18 : 16}px">${t[1]} ${esc(t[2])}</b><p class="lead">${esc(t[3])}</p></div>`;
 
   // ---------- Tekshirish ----------
   const LEVEL = { danger: ["#c0392b", "#fdecea", "🔴"], suspicious: ["#b7791f", "#fff7e0", "🟡"], safe: ["#2f7d4f", "#eaf7ee", "✅"] };
@@ -108,7 +90,7 @@
         ${tipCard(TIPS[dayIndex()], true)}
         <a class="tool" href="#tekshir"><span class="tool-ic" style="background:#1f6f4a">🛡</span><span><b>Tekshirish</b><span class="s">Shubhali xabar, havola yoki APK faylni tekshiring</span></span><span aria-hidden="true">›</span></a>
         <a class="tool" href="#qr"><span class="tool-ic" style="background:#26283a">🔳</span><span><b>QR kod yasash</b><span class="s">Menyu, Wi-Fi, Instagram yoki telefon uchun — bepul</span></span><span aria-hidden="true">›</span></a>
-        <a class="tool" href="#maslahat"><span class="tool-ic" style="background:#c67139">💡</span><span><b>Maslahatlar</b><span class="s">Xavfsizlik va biznes uchun ${TIPS.length} ta maslahat</span></span><span aria-hidden="true">›</span></a>`;
+        <a class="tool" href="#maslahat"><span class="tool-ic" style="background:#c67139">💡</span><span><b>Maslahatlar</b><span class="s">${TIPS.length} ta maslahat · ${CATS.length} yo'nalish</span></span><span aria-hidden="true">›</span></a>`;
     } },
 
     tekshir: { title: "Tekshirish", back: true, render() {
@@ -157,10 +139,10 @@
     } },
 
     maslahat: { title: "Maslahatlar", back: true, render() {
-      const cats = [["all", "Barchasi"], ["xavfsizlik", "🛡 Xavfsizlik"], ["biznes", "💼 Biznes"]];
+      const cats = [["all", `Barchasi · ${TIPS.length}`], ...CATS.map(c => [c[0], `${c[1]} ${c[2]}`])];
       const list = TIPS.filter(t => state.tipCat === "all" || t[0] === state.tipCat);
       return `
-        <div class="chips" role="group" aria-label="Turi">${cats.map(([id, l]) => `<button class="chip" type="button" data-tipcat="${id}" aria-pressed="${state.tipCat === id}">${l}</button>`).join("")}</div>
+        <div class="chips scroll" role="group" aria-label="Yo'nalish">${cats.map(([id, l]) => `<button class="chip" type="button" data-tipcat="${id}" aria-pressed="${state.tipCat === id}">${l}</button>`).join("")}</div>
         ${list.map(t => tipCard(t)).join("")}
         <button class="btn ghost" type="button" data-act="share-tips">↗️ Oilamga ulashish</button>`;
     } }
@@ -176,7 +158,7 @@
     }
     if (t.dataset.tk === "file") document.getElementById("tk-file").click();
     if (t.dataset.qrtype) { state.qr.type = t.dataset.qrtype; render(); drawQr(); }
-    if (t.dataset.tipcat) { state.tipCat = t.dataset.tipcat; render(); }
+    if (t.dataset.tipcat) { state.tipCat = t.dataset.tipcat; render(); document.querySelector(".chips.scroll [aria-pressed='true']")?.scrollIntoView({ inline: "center", block: "nearest" }); }
     if (t.dataset.qract === "save") {
       const a = document.createElement("a"); a.href = URL.createObjectURL(await qrBlob()); a.download = "qr-kod.png"; a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 5000);
