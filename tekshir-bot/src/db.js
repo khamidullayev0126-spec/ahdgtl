@@ -105,6 +105,7 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
 
   const api = {
     raw: db,
+    file,                                  // bazaning qayerda turgani (diagnostika uchun)
 
     // ---- Foydalanuvchi va til ----
     getLang: id => q.getLang.get(id)?.lang || undefined,

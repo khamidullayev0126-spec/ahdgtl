@@ -96,7 +96,10 @@ function createBot(token, options = {}, deps = {}) {
   // /stats — faqat adminlar uchun (ADMIN_IDS). Boshqalarga bot jim turadi — buyruq borligi ham bilinmasin
   bot.command("stats", async ctx => {
     if (ctx.chat.type !== "private" || !isAdmin(ctx.from.id)) return;   // statistika guruhda ko'rinmasin
-    await ctx.reply(formatStats(db.stats()), { parse_mode: "HTML" });
+    // Oxirida — baza qayerda turibdi (serverda /var/data bo'lmasa, qayta ishga tushganda o'chadi)
+    const where = db.file === ":memory:" ? "xotirada (vaqtinchalik)" : db.file;
+    const safe = db.file.startsWith("/var/data") ? "✅ doimiy disk" : "⚠️ vaqtinchalik — server qayta ishga tushsa o'chadi";
+    await ctx.reply(formatStats(db.stats()) + `\n\n📂 Baza: <code>${where}</code>\n${safe}`, { parse_mode: "HTML" });
   });
 
   // /export — oxirgi 30 kunlik tekshiruvlar CSV faylda (Excel'da ochiladi). Foydalanuvchi ID'si va matn YO'Q
@@ -483,6 +486,7 @@ async function main() {
     }
   } else console.warn("ℹ️  BACKUP_CHAT_ID yo'q — bepul serverda baza qayta ishga tushganda o'chadi (README: «Baza zaxirasi»).");
   const db = openDb(dbPath);
+  { const st = db.stats(); console.log(`📂 Baza: ${dbPath} — ${st.users} foydalanuvchi, ${st.checks} tekshiruv${process.env.DB_PATH ? "" : " (DB_PATH o'rnatilmagan!)"}`); }
   cache.attach(db);                       // VirusTotal/Google javoblari endi bazada ham saqlanadi
   db.cachePurge();                        // muddati o'tgan kesh yozuvlarini tozalaymiz
   setInterval(() => db.cachePurge(), 6 * 60 * 60 * 1000).unref();
