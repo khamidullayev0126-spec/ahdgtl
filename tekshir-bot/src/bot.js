@@ -9,7 +9,7 @@ const path = require("path");
 const fs = require("fs");
 const ENV_PATH = path.join(__dirname, "..", ".env");
 require("dotenv").config({ path: ENV_PATH });
-const { Bot, InlineKeyboard, InputFile, webhookCallback } = require("grammy");
+const { Bot, Api, InlineKeyboard, InputFile, webhookCallback } = require("grammy");
 const { t, LANGS, dict, DEFAULT_LANG } = require("./i18n");
 const { extractUrls, checkUrls } = require("./checkers/url");
 const { combineAll } = require("./scoring");
@@ -17,8 +17,9 @@ const { analyzeText } = require("./checkers/text");
 const { checkFile } = require("./checkers/file");
 const { buildReply, buildGroupReply, esc } = require("./reply");
 const { createLimiter } = require("./ratelimit");
-const { openDb, toCsv } = require("./db");
-const { isAdmin, formatStats } = require("./admin");
+const { openDb, toCsv, DEFAULT_PATH } = require("./db");
+const { restore, createBackup } = require("./backup");
+const { isAdmin, adminIds, formatStats } = require("./admin");
 const cache = require("./cache");
 const { extractNumbers, reportPoints } = require("./checkers/numbers");
 const crypto = require("crypto");
@@ -257,6 +258,12 @@ function createBot(token, options = {}, deps = {}) {
 
   // Bot guruhga qo'shilganda — salomlashadi va qanday ishlashini tushuntiradi. Chiqarilsa — o'chiriladi
   bot.on("my_chat_member", async ctx => {
+    // Zaxira kanali: bot yopiq kanalga admin qilinsa — ID'sini adminlarga yuboramiz (BACKUP_CHAT_ID uchun)
+    if (ctx.chat?.type === "channel" && ctx.myChatMember.new_chat_member.status === "administrator") {
+      console.log(`📦 Kanal: «${ctx.chat.title}» ID: ${ctx.chat.id}`);
+      for (const id of adminIds()) await ctx.api.sendMessage(id, `📦 Meni «${ctx.chat.title}» kanaliga admin qildingiz.\n\nZaxira uchun Render → Environment ga qo'shing:\n<code>BACKUP_CHAT_ID=${ctx.chat.id}</code>`, { parse_mode: "HTML" }).catch(() => {});
+      return;
+    }
     if (!isGroup(ctx)) return;
     const was = ctx.myChatMember.old_chat_member.status, now = ctx.myChatMember.new_chat_member.status;
     const inside = st => ["member", "administrator", "creator"].includes(st);
@@ -448,13 +455,44 @@ if (require.main === module) {
   }
   if (!process.env.AI_API_KEY && !process.env.ANTHROPIC_API_KEY) console.warn("ℹ️  AI_API_KEY yo'q — AI tahlili o'chiq, bot qoidalar bilan ishlaydi.");
   if (!process.env.HASH_SALT) console.warn("⚠️  HASH_SALT yo'q — raqam tekshiruvi va shikoyatlar o'chiq. .env ga qo'shing (README).");
-  const db = openDb();                    // data/tekshir.db
+  main().catch(e => { console.error("❌ Ishga tushmadi:", e.message); process.exit(1); });
+}
+
+// Telegram serveridagi faylni xotiraga yuklash (zaxirani tiklash uchun)
+async function downloadFile(api, fileId) {
+  const f = await api.getFile(fileId);
+  const r = await fetch(`https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${f.file_path}`, { signal: AbortSignal.timeout(20000) });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return Buffer.from(await r.arrayBuffer());
+}
+
+async function main() {
+  // 0) Bepul serverda disk har qayta ishga tushishda tozalanadi — avval Telegram'dagi zaxiradan tiklaymiz
+  const dbPath = process.env.DB_PATH || DEFAULT_PATH;
+  const backupChat = process.env.BACKUP_CHAT_ID;
+  let backupOk = !!backupChat;
+  if (backupChat) {
+    try {
+      fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+      const api = new Api(process.env.BOT_TOKEN);
+      const ok = await restore(api, backupChat, dbPath, id => downloadFile(api, id));
+      console.log(ok ? "📦 Baza zaxiradan tiklandi" : "📦 Zaxira hali yo'q — yangi baza bilan boshlaymiz");
+    } catch (e) {
+      backupOk = false;   // tiklab bo'lmadi — bo'sh baza bilan eski yaxshi nusxani ustidan yozib yubormaylik
+      console.error("❌ Zaxiradan tiklab bo'lmadi:", e.message, "— bu safar zaxiraga yozilmaydi");
+    }
+  } else console.warn("ℹ️  BACKUP_CHAT_ID yo'q — bepul serverda baza qayta ishga tushganda o'chadi (README: «Baza zaxirasi»).");
+  const db = openDb(dbPath);
   cache.attach(db);                       // VirusTotal/Google javoblari endi bazada ham saqlanadi
   db.cachePurge();                        // muddati o'tgan kesh yozuvlarini tozalaymiz
   setInterval(() => db.cachePurge(), 6 * 60 * 60 * 1000).unref();
   const bot = createBot(process.env.BOT_TOKEN, {}, { db });
-  // To'xtatilganda bazani to'g'ri yopamiz
-  for (const sig of ["SIGINT", "SIGTERM"]) process.once(sig, () => { bot.stop(); db.close(); process.exit(0); });
+  // Zaxira: har 5 daqiqada (o'zgargan bo'lsa) va to'xtashdan oldin
+  const backup = backupOk ? createBackup(bot.api, backupChat, db) : null;
+  if (backup) backup.start();
+  const onStop = async () => { if (backup) await backup.run(); try { db.close(); } catch { /* allaqachon yopilgan */ } };
+  // To'xtatilganda: zaxira, keyin bazani to'g'ri yopamiz
+  for (const sig of ["SIGINT", "SIGTERM"]) process.once(sig, async () => { try { await bot.stop(); } catch { /* ishlamayotgan bo'lsa */ } await onStop(); process.exit(0); });
   // Telegram'dagi "/" menyusida ko'rinadigan buyruqlar
   bot.api.setMyCommands([
     { command: "start", description: "Boshlash" },
@@ -472,13 +510,13 @@ if (require.main === module) {
   // Serverda (Render) — WEBHOOK: Telegram xabarlarni o'zi bizning manzilga yuboradi.
   // Kompyuterda — LONG POLLING: bot o'zi Telegram'dan so'rab turadi.
   const base = process.env.WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL;
-  if (base) startWebhook(bot, db, base.replace(/\/$/, ""));
+  if (base) startWebhook(bot, db, base.replace(/\/$/, ""), undefined, onStop);
   else bot.start({ onStart: info => console.log(`✅ @${info.username} ishga tushdi. To'xtatish: Ctrl + C`) });
 }
 
 // ---------- Webhook rejimi (serverda) ----------
 // Telegram faqat maxfiy kalit (secret_token) bilan kelgan so'rovlarni qabul qilamiz — begona odam soxta xabar yubora olmaydi.
-function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000)) {
+function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), onStop = null) {
   const http = require("http");
   const crypto = require("crypto");
   const secret = process.env.WEBHOOK_SECRET || crypto.createHash("sha256").update("tekshir:" + process.env.BOT_TOKEN).digest("hex").slice(0, 48);
@@ -501,7 +539,7 @@ function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000)) {
     } catch (e) { console.error("❌ Webhook o'rnatilmadi:", e.message); }
   });
   if (require.main === module)
-    for (const sig of ["SIGINT", "SIGTERM"]) process.removeAllListeners(sig).once(sig, () => { server.close(); db.close(); process.exit(0); });
+    for (const sig of ["SIGINT", "SIGTERM"]) process.removeAllListeners(sig).once(sig, async () => { server.close(); if (onStop) await onStop(); else db.close(); process.exit(0); });
   return server;
 }
 

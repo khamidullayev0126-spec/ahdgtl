@@ -134,6 +134,7 @@ Kelajakda doim ishlashi kerak bo'lsa — Starter (≈ $7/oy) + 1 GB disk; bu faq
    - `NODE_VERSION` = `22`
    - `AUTO_LANG` = `1`
    - ixtiyoriy: `VIRUSTOTAL_KEY`, `SAFE_BROWSING_KEY` (AI kaliti pullik — bo'sh qoldiring)
+   - `BACKUP_CHAT_ID` — pastdagi «Baza zaxirasi» bo'limiga qarang
 5. **Create Web Service** → 2–4 daqiqa kuting. **Logs** da `✅ @bot webhook rejimida ishga tushdi` chiqishi kerak.
 6. Brauzerda `https://tekshir-bot.onrender.com/health` (o'z manzilingiz) → «Tekshir bot ishlayapti ✅».
 7. **Kompyuterdagi botni to'xtating** (Ctrl + C) — endi bot serverda ishlaydi.
@@ -141,6 +142,20 @@ Kelajakda doim ishlashi kerak bo'lsa — Starter (≈ $7/oy) + 1 GB disk; bu faq
 Render karta so'rasa — **kiritmang**, bepul tarif kartasiz ishlaydi. Agar baribir so'rasa, to'xtang va ota-onangiz bilan gaplashing.
 
 `render.yaml` — shu sozlamalarning yozma ko'rinishi (ma'lumot uchun). U repozitoriy ildizida emas, Render uni o'zi qo'llamaydi.
+
+### Baza zaxirasi (bepul serverda SHART)
+Bepul serverda disk har qayta ishga tushishda tozalanadi — statistika, shikoyatlar va tillar o'chadi.
+Bot bazani **yopiq Telegram kanalingizda** saqlaydi va qayta ishga tushganda o'sha yerdan tiklaydi:
+1. Telegram → **New Channel** → nom: `Tekshir zaxira` → **Private** (yopiq).
+2. Kanal → **Administrators → Add Admin** → botingiz → «Post», «Edit» va «Pin» huquqlari.
+3. Bot sizga (ADMIN_IDS) shaxsiy xabar yuboradi: `BACKUP_CHAT_ID=-100...`
+4. Render → **Environment** → shu qatorni qo'shing → **Save** (bot qayta ishga tushadi).
+5. Logs'da: `📦 Zaxira hali yo'q — yangi baza bilan boshlaymiz`, keyingi safar — `📦 Baza zaxiradan tiklandi`.
+
+Bot har 5 daqiqada (o'zgarish bo'lsa) va to'xtashdan oldin kanaldagi **bitta pin xabarni** yangilaydi — kanal to'lib ketmaydi. Bu xabarni o'chirmang.
+Zaxirada xabar matni yo'q: faqat Telegram ID, til, natijalar va raqamlarning hash'i. Kanalni hech kimga ochmang.
+
+**Render Build Filters:** Settings → **Build Filters → Included Paths** → `tekshir-bot/**`. Shunda sayt o'zgarganda bot qayta ishga tushmaydi.
 
 ### Yangilash
 GitHub'ga yangi kod yuklansa (`git push`), Render botni o'zi qayta quradi va ishga tushiradi.
@@ -156,7 +171,7 @@ GitHub'ga yangi kod yuklansa (`git push`), Render botni o'zi qayta quradi va ish
 ```bash
 npm test
 ```
-109 ta test. Internetga ulanmaydi, token va kalit talab qilmaydi, AI'ga pul sarflamaydi.
+116 ta test. Internetga ulanmaydi, token va kalit talab qilmaydi, AI'ga pul sarflamaydi.
 
 **Qabul testlari** (`tests/acceptance.test.js`) — foydalanuvchi ko'zi bilan:
 
