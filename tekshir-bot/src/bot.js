@@ -22,7 +22,7 @@ const { isAdmin, formatStats } = require("./admin");
 const cache = require("./cache");
 const { extractNumbers, reportPoints } = require("./checkers/numbers");
 const crypto = require("crypto");
-const { aiCheck } = require("./checkers/ai");
+const { aiCheck, enabled: aiEnabled } = require("./checkers/ai");
 
 // Til tanlash tugmalari: har bir til — alohida qator
 function langKeyboard() {
@@ -164,6 +164,7 @@ function createBot(token, options = {}, deps = {}) {
   // ---------- Tahlil: shaxsiy chat va guruh uchun umumiy ----------
   // Xabardagi havola, matn, fayl va raqamlarni tekshiradi. Matn bazaga YOZILMAYDI.
   // opts.ai — AI tahlilini ham ishlatish (shaxsiy chat va /tekshir). Guruhdagi har bir xabar uchun — yo'q (narx).
+  // opts.fast = true — faqat ichki qoidalar (internetsiz, ~0.1 s). Natijada pending: tashqi tekshiruv kerakmi.
   async function analyze(m, userId, chatType, opts = {}) {
     const text = m.text || m.caption || "";
     const doc = m.document;                                    // fayl (APK, PDF, ZIP va h.k.)
@@ -171,13 +172,20 @@ function createBot(token, options = {}, deps = {}) {
     const textRes = analyzeText(text);
     // Qoidalar o'zi aniq 🔴 topgan bo'lsa, AI'ga pul sarflamaymiz
     const textScore = textRes.reasons.reduce((a, x) => a + x.points, 0);
-    const useAi = opts.ai && textScore < 70;
+    const useAi = opts.ai && textScore < 70 && !opts.fast;
+    const fileMeta = doc && { name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 };
     // Havolalar, fayl va AI bir vaqtda tekshiriladi, keyin natijalar birlashtiriladi
     const [urlRes, fileRes, aiRes] = await Promise.all([
-      urls.length ? checkUrls(urls) : [],
-      doc ? checkFile({ name: doc.file_name || "", mime: doc.mime_type || "", size: doc.file_size || 0 }, opts.download || (() => download(doc.file_id))) : null,
+      urls.length ? checkUrls(urls, { fast: opts.fast }) : [],
+      doc ? checkFile(fileMeta, opts.download || (() => download(doc.file_id)), { fast: opts.fast }) : null,
       useAi ? aiCheck(text, opts.lang, userId).catch(() => null) : null
     ]);
+    // Keyingi (to'liq) bosqichda nimadir o'zgarishi mumkinmi? Kalit yo'q bo'lsa — kutishning ma'nosi yo'q
+    const extKeys = !!(process.env.SAFE_BROWSING_KEY || process.env.VIRUSTOTAL_KEY);
+    const pending = !!opts.fast && (
+      urlRes.some(r => r.pending || (extKeys && !r.trusted && r.host)) ||
+      (doc && !!process.env.VIRUSTOTAL_KEY && fileMeta.size <= 20 * 1024 * 1024) ||
+      (opts.ai && textScore < 70 && aiEnabled() && text.trim().length >= 25));
     // 7-bosqich: raqamlar va saytlar ustidan shikoyatlar soni. Bazadan faqat HASH bo'yicha qidiramiz.
     const targets = [], numbers = [], extra = [];
     if (db.canHash()) {
@@ -203,7 +211,34 @@ function createBot(token, options = {}, deps = {}) {
     if (opts.log !== false) try {
       db.logCheck({ userId, chatType, result, hasText: !!text.trim(), hosts: urlRes.map(r => r.host) });
     } catch (e) { console.error("Baza (logCheck):", e.message); }   // baza xatosi javobga xalaqit bermasin
-    return { result, numbers, targets };
+    return { result, numbers, targets, pending, hosts: urlRes.map(r => r.host) };
+  }
+
+  // ---------- Tez javob (2 bosqich) ----------
+  // 1) Ichki qoidalar bilan DARHOL javob (~1 s), pastida "⏳ qo'shimcha tekshirilmoqda".
+  // 2) Google, VirusTotal, AI javob bergach — o'sha xabarni yangilaymiz.
+  // Qoidalar o'zi 🔴 topgan bo'lsa yoki tashqi tekshiruv kerak bo'lmasa — 2-bosqich yo'q.
+  async function replyChecked(ctx, m, { lang, chatType, owner, replyTo }) {
+    const t0 = Date.now();
+    const opts = { ai: true, lang };
+    const fast = await analyze(m, ctx.from.id, chatType, { ...opts, fast: true, log: false });
+    const slow = fast.pending && fast.result.level !== "danger";
+    const reportId = fast.targets.length ? remember(fast.targets, owner) : null;
+    const send = { parse_mode: "HTML", link_preview_options: { is_disabled: true } };
+    const first = buildReply(lang, fast.result, ctx.me.username, { numbers: fast.numbers, reportId });
+    const sent = await ctx.reply(first.text + (slow ? "\n\n" + t(lang, "pending") : ""),
+      { ...send, reply_markup: first.reply_markup, reply_parameters: { message_id: replyTo, allow_sending_without_reply: true } });
+    const t1 = Date.now() - t0;
+    if (!slow) {
+      try { db.logCheck({ userId: ctx.from.id, chatType, result: fast.result, hasText: !!(m.text || m.caption || "").trim(), hosts: fast.hosts }); } catch (e) { console.error("Baza (logCheck):", e.message); }
+      console.log(`⏱ javob: ${t1} ms`);
+      return;
+    }
+    const full = await analyze(m, ctx.from.id, chatType, opts);
+    const fin = buildReply(lang, full.result, ctx.me.username, { numbers: full.numbers, reportId });
+    await ctx.api.editMessageText(sent.chat.id, sent.message_id, fin.text, { ...send, reply_markup: fin.reply_markup })
+      .catch(e => { if (!/not modified/.test(e.message)) console.error("Yangilab bo'lmadi:", e.message); });
+    console.log(`⏱ javob: ${t1} ms, to'liq: ${Date.now() - t0} ms`);
   }
 
   // ---------- 8-bosqich: GURUH REJIMI ----------
@@ -276,10 +311,7 @@ function createBot(token, options = {}, deps = {}) {
     const lang = isGroup(ctx) ? groupOf(ctx).lang : getLang(ctx.from.id);
     if (!target || (!(target.text || target.caption || "").trim() && !target.document))
       return ctx.reply(t(lang, "group_tekshir_hint"), { parse_mode: "HTML" });
-    const { result, numbers, targets } = await analyze(target, ctx.from.id, isGroup(ctx) ? "group" : "private", { ai: true, lang });
-    const reportId = targets.length ? remember(targets, isGroup(ctx) ? null : ctx.from.id) : null;
-    const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username, { numbers, reportId });
-    await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: target.message_id, allow_sending_without_reply: true }, link_preview_options: { is_disabled: true } });
+    await replyChecked(ctx, target, { lang, chatType: isGroup(ctx) ? "group" : "private", owner: isGroup(ctx) ? null : ctx.from.id, replyTo: target.message_id });
   });
 
   // Guruhdagi oddiy xabarlar: jim tekshiradi, faqat xavf bo'lsa ogohlantiradi (✅ uchun guruhni to'ldirmaydi)
@@ -382,11 +414,7 @@ function createBot(token, options = {}, deps = {}) {
     const text = m.text || m.caption || "";
     if (!text.trim() && !m.document) return ctx.reply(t(lang, "no_text"));   // stiker, ovozli xabar va h.k.
 
-    await ctx.replyWithChatAction("typing").catch(() => {});   // "yozmoqda..." belgisi
-    const { result, numbers, targets } = await analyze(m, ctx.from.id, "private", { ai: true, lang });
-    const reportId = targets.length ? remember(targets, ctx.from.id) : null;
-    const { text: answer, reply_markup } = buildReply(lang, result, ctx.me.username, { numbers, reportId });
-    await ctx.reply(answer, { parse_mode: "HTML", reply_markup, reply_parameters: { message_id: m.message_id }, link_preview_options: { is_disabled: true } });
+    await replyChecked(ctx, m, { lang, chatType: "private", owner: ctx.from.id, replyTo: m.message_id });
   });
 
   // Xato bo'lsa — bot to'xtab qolmasin: log'ga yozamiz, foydalanuvchiga yumshoq javob

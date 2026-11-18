@@ -43,10 +43,11 @@ function analyzeFileName(name = "", mime = "", size = 0) {
 const sha256 = buf => crypto.createHash("sha256").update(buf).digest("hex");
 
 // Asosiy funksiya. download — faylni xotiraga yuklab beradigan funksiya (bot.js beradi; testlarda soxtasi).
-async function checkFile({ name, mime, size }, download) {
+// opts.fast = true — faqat nomi va turi (yuklab olmaymiz, VirusTotal'ga so'ramaymiz)
+async function checkFile({ name, mime, size }, download, opts = {}) {
   const reasons = analyzeFileName(name, mime, size);
   let hashChecked = false;
-  if (size <= MAX_DOWNLOAD && download) {
+  if (size <= MAX_DOWNLOAD && download && !opts.fast) {
     try {
       const buf = await download();
       const vt = await virusTotalFile(sha256(buf));

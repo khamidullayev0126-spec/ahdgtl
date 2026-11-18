@@ -5,7 +5,7 @@
 
 const cache = require("../cache");
 
-const TIMEOUT = 4000;               // 4 soniyadan ko'p kutmaymiz — foydalanuvchi 5 soniyada javob olishi kerak
+const TIMEOUT = 3000;               // 3 soniyadan ko'p kutmaymiz (bot baribir oldin javob berib bo'lgan)
 let doFetch = (...a) => fetch(...a);
 function setFetch(f) { doFetch = f; }  // testlarda internetsiz ishlash uchun
 

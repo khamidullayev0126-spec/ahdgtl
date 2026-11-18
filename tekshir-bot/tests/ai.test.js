@@ -95,9 +95,12 @@ test("bot: qoidalar sezmagan xabarni AI 🟡 qiladi va sababini ko'rsatadi", asy
   const db = openDb(":memory:"); db.setLang(1, "uz-latn");
   const { bot, calls } = fakeBot(db);
   await bot.handleUpdate(msg({ id: 1, type: "private" }, LONG));
-  const text = calls.find(c => c.method === "sendMessage").payload.text;
+  // 1-bosqich: darhol javob + "qo'shimcha tekshirilmoqda"; 2-bosqich: AI natijasi bilan xabar yangilanadi
+  assert.match(calls.find(c => c.method === "sendMessage").payload.text, /qo'shimcha tekshirilmoqda/);
+  const text = calls.find(c => c.method === "editMessageText").payload.text;
   assert.match(text, /SHUBHALI/);
   assert.match(text, /🤖 AI tahlili: Qarindosh nomidan/);
+  assert.ok(!/tekshirilmoqda/.test(text), "yangilangan xabarda kutish yozuvi qolmaydi");
 });
 
 test("bot: AI 'xavfsiz' desa ham qoidalar topgan 🔴 saqlanadi (prompt injection'dan himoya)", async () => {

@@ -117,12 +117,14 @@ function setFetch(f) { doFetch = f; }                    // testlarda internetsi
 
 async function expandShort(url, hops = 5) {
   let cur = url;
+  const deadline = Date.now() + 5000;                   // hammasi bo'lib 5 soniyadan ko'p kutmaymiz
   for (let i = 0; i < hops; i++) {
+    if (Date.now() > deadline) return null;
     const u = parse(cur);
     if (!u || !isShortener(hostOf(u))) return cur;     // endi qisqartiruvchi emas — oxirgi manzil topildi
     let res;
     try {
-      res = await doFetch(cur, { method: "HEAD", redirect: "manual", signal: AbortSignal.timeout(4000), headers: { "User-Agent": "TekshirBot/1.0 (link safety check)" } });
+      res = await doFetch(cur, { method: "HEAD", redirect: "manual", signal: AbortSignal.timeout(Math.max(500, Math.min(2500, deadline - Date.now()))), headers: { "User-Agent": "TekshirBot/1.0 (link safety check)" } });
     } catch { return null; }
     const loc = res.headers.get("location");
     if (!loc) return null;
@@ -132,10 +134,16 @@ async function expandShort(url, hops = 5) {
 }
 
 // ---------- 5. Asosiy funksiya: xabardagi barcha havolalar ----------
-async function checkUrls(urls) {
+// opts.fast = true — faqat ichki qoidalar (internetga chiqmaydi): bot DARHOL javob berishi uchun.
+// Qisqartirilgan havolani ochish va Google/VirusTotal — keyingi (to'liq) bosqichda.
+async function checkUrls(urls, opts = {}) {
   const results = [];
   for (const url of urls) {
     const u = parse(url);
+    if (u && isShortener(hostOf(u)) && opts.fast) {
+      results.push({ url, host: hostOf(u), trusted: false, pending: true, reasons: [{ code: "url_shortener_wait", points: 15, vars: {} }] });
+      continue;
+    }
     if (u && isShortener(hostOf(u))) {
       const finalUrl = await expandShort(url);
       if (!finalUrl) { results.push({ url, host: hostOf(u), trusted: false, reasons: [{ code: "url_short_hidden", points: 35, vars: {} }] }); continue; }
@@ -145,6 +153,7 @@ async function checkUrls(urls) {
       results.push(r);
     } else results.push(analyzeUrl(url));
   }
+  if (opts.fast) return results;
   // 3-bosqich: rasmiy bo'lmagan havolalarni tashqi xizmatlarda ham tekshiramiz (hammasi parallel)
   await Promise.all(results.filter(r => !r.trusted && r.host).map(async r => {
     const ext = await externalReasons(r.url, r.host);
