@@ -213,7 +213,7 @@ const screens = {
       <div class="card"><p>${t("about_p")}</p></div>
       <div class="card"><span class="kicker">${t("how")}</span><p>1. ${t("how_1")}</p><p>2. ${t("how_2")}</p><p>3. ${t("how_3")}</p></div>
       <div class="card"><span class="kicker">${t("lang")}</span><div class="sel"><button class="chip" type="button" data-lang="uz" aria-pressed="${S.lang === "uz"}">O'zbekcha</button><button class="chip" type="button" data-lang="ru" aria-pressed="${S.lang === "ru"}">Русский</button></div></div>
-      <div class="card"><span class="kicker">${t("priv_title")}</span><p class="muted">${t("priv_p")}</p></div>
+      <a class="card" style="text-decoration:none;color:var(--text)" href="/maxfiylik.html"><span class="kicker">${t("priv_title")}</span><p class="muted">${t("priv_p")}</p><span class="link">${S.lang === "ru" ? "Полная политика →" : "To'liq siyosat →"}</span></a>
       <a class="card" style="text-decoration:none;color:var(--text)" href="https://t.me/tekshirbot_bot?start=tekshirapp" target="_blank" rel="noopener"><b>✈️ ${t("bot")}</b><span class="muted">${t("bot_s")}</span></a>
       <p class="note" style="text-align:center">${t("made")} · <a class="link" href="https://www.ah-digital.uz" target="_blank" rel="noopener">ah-digital.uz</a></p>`;
   }

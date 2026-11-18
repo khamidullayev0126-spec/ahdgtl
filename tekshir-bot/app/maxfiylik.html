@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maxfiylik siyosati — Tekshir</title>
+<meta name="theme-color" content="#0a1020">
+<link rel="icon" href="/icon-192.png">
+<style>
+  body { margin: 0; background: #0a1020; color: #e8eefc; font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 18px 64px; }
+  h1 { font-size: 28px; margin: 0 0 4px; } h2 { font-size: 19px; margin: 28px 0 8px; color: #22c55e; }
+  p, li { color: #cfd8ee; } a { color: #38bdf8; } .muted { color: #8b97b5; font-size: 14px; }
+  .card { background: #16213a; border: 1px solid #24314f; border-radius: 16px; padding: 16px 18px; margin-top: 16px; }
+  hr { border: 0; border-top: 1px solid #24314f; margin: 40px 0; }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="/">← Tekshir</a></p>
+  <h1>Maxfiylik siyosati</h1>
+  <p class="muted">Tekshir ilovasi va @tekshirbot_bot uchun · Oxirgi yangilanish: 2026-yil 19-noyabr</p>
+
+  <div class="card"><b>Qisqasi:</b> biz xabaringiz matnini saqlamaymiz, faylingizni yuklab olmaymiz, ro'yxatdan o'tish yo'q. Tekshiruvlar tarixi faqat telefoningizda turadi.</div>
+
+  <h2>1. Nima yuboriladi</h2>
+  <ul>
+    <li><b>Xabar yoki havola</b> — siz «Tekshirish»ni bosganingizda tekshirish uchun serverimizga yuboriladi. Tekshiruv tugagach, <b>matn saqlanmaydi</b>.</li>
+    <li><b>Fayl</b> — fayl o'zi <b>yuborilmaydi</b>. Telefon faqat fayl nomi, hajmi, turi va SHA-256 «barmoq izi»ni (hash) yuboradi.</li>
+    <li><b>Tanlangan til</b> — javobni shu tilda qaytarish uchun.</li>
+  </ul>
+
+  <h2>2. Serverda nima saqlanadi</h2>
+  <ul>
+    <li>Tekshiruv <b>natijasi</b>: xavf darajasi (✅/🟡/🔴), ball va sabab kodi — umumiy statistika uchun. Kim tekshirgani ilovada yozilmaydi.</li>
+    <li>Havoladan faqat <b>sayt nomi (domen)</b>, masalan «c1ick-uz.com» — to'liq manzil emas.</li>
+    <li><b>Telegram botda</b> — Telegram ID raqamingiz, tanlangan til va botga qayerdan kelganingiz (masalan «kanal», «QR») — sozlama va statistika uchun. Ism va username saqlanmaydi. Ilovada esa hech qanday ID yo'q.</li>
+    <li>Telefon va karta raqamlari ustidan <b>shikoyatlar</b> faqat shifrlangan ko'rinishda (SHA-256 + maxfiy kalit) saqlanadi — raqamning o'zi saqlanmaydi va uni tiklab bo'lmaydi.</li>
+  </ul>
+
+  <h2>3. Telefoningizda nima saqlanadi</h2>
+  <p>Tekshiruvlar tarixi va tanlangan til — faqat telefonning o'zida (brauzer xotirasi). Raqamlar yashirilgan holda yoziladi. «Tarix → Tarixni tozalash» bilan istalgan vaqt o'chirasiz. Ilovani o'chirsangiz, tarix ham o'chadi.</p>
+
+  <h2>4. Tashqi xizmatlar</h2>
+  <p>Xavfni aniqlash uchun havola manzili <b>Google Safe Browsing</b>ga, sayt nomi va fayl hash'i <b>VirusTotal</b>ga so'rov sifatida yuborilishi mumkin. Xabaringiz matni, ismingiz yoki raqamingiz bu xizmatlarga yuborilmaydi.</p>
+  <p>Telegram botda <b>AI tahlili</b> yoqilgan bo'lsa (hozir o'chiq), xabar matni oldin karta va telefon raqamlari yashirilib, Anthropic (Claude) xizmatiga tahlil uchun yuboriladi. Ilovada AI ishlatilmaydi.</p>
+
+  <h2>5. Biz nima qilmaymiz</h2>
+  <ul>
+    <li>Reklama yo'q, ma'lumot sotilmaydi va reklama uchun ishlatilmaydi.</li>
+    <li>Ro'yxatdan o'tish, kontaktlar, SMS yoki joylashuvga ruxsat so'ralmaydi.</li>
+    <li>Ilova havolalarni o'zi ochmaydi va fayllarni ishga tushirmaydi.</li>
+  </ul>
+
+  <h2>6. Bolalar</h2>
+  <p>Ilova bolalar uchun maxsus mo'ljallanmagan va bolalardan shaxsiy ma'lumot to'plamaydi.</p>
+
+  <h2>7. Kafolat</h2>
+  <p>Tekshir yordamchi vosita: natija 100% kafolat emas. Shubha bo'lsa, rasmiy manba (bank, xizmat) bilan o'zingiz bog'laning.</p>
+
+  <h2>8. Aloqa</h2>
+  <p>Savol yoki ma'lumotni o'chirish so'rovi: <a href="https://t.me/Abdulkhamid_2905">Telegram: @Abdulkhamid_2905</a> · <a href="https://www.ah-digital.uz">ah-digital.uz</a></p>
+
+  <hr>
+
+  <h1>Политика конфиденциальности</h1>
+  <p class="muted">Для приложения Tekshir и @tekshirbot_bot</p>
+  <div class="card"><b>Коротко:</b> мы не храним текст ваших сообщений, не загружаем ваши файлы, регистрации нет. История проверок хранится только на вашем телефоне.</div>
+  <h2>Что отправляется</h2>
+  <p>Сообщение или ссылка отправляются на сервер только для проверки и <b>не сохраняются</b>. Файл <b>не загружается</b> — отправляются только имя, размер, тип и SHA-256 хеш.</p>
+  <h2>Что хранится на сервере</h2>
+  <p>В Telegram-боте — ваш Telegram ID, выбранный язык и источник (например «канал»); имя и username не хранятся. Также только результат (уровень, балл, код причины) для общей статистики, имя сайта (домен) без полного адреса и жалобы на номера — только в зашифрованном виде (хеш).</p>
+  <h2>Внешние сервисы</h2>
+  <p>Адрес ссылки может проверяться в Google Safe Browsing, имя сайта и хеш файла — в VirusTotal. Текст сообщения и ваши данные туда не отправляются.</p>
+  <p>Если в боте включён AI-анализ (сейчас выключен), текст со скрытыми номерами отправляется в Anthropic (Claude). В приложении AI не используется.</p>
+  <h2>Мы не</h2>
+  <p>показываем рекламу, продаём данные, запрашиваем доступ к контактам, SMS или геолокации, открываем ссылки и запускаем файлы.</p>
+  <h2>Контакты</h2>
+  <p><a href="https://t.me/Abdulkhamid_2905">Telegram: @Abdulkhamid_2905</a> · <a href="https://www.ah-digital.uz">ah-digital.uz</a></p>
+</main>
+</body>
+</html>

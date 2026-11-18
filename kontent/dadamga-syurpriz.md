@@ -28,6 +28,8 @@
 - [x] **APK faylni tekshirish** — fayl internetga yuklanmaydi.
 - [x] **Tekshiruvlar tarixi** — faqat telefonda, raqamlar yashirilgan.
 - [x] **70 ta maslahat**, o'zbek va rus tilida interfeys.
+- [x] **O'z manzili:** tekshir.ah-digital.uz
+- [x] **Maxfiylik siyosati** (o'zbek va rus tilida) va Google Play uchun tayyor rasm va matnlar.
 - [ ] Google Play'ga chiqarish (AHdigital'dan keyin).
 
 ## Dadamga qanday ko'rsataman (reja)
