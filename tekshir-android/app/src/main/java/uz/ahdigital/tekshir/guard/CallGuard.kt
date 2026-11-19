@@ -29,7 +29,7 @@ import kotlin.concurrent.thread
 class CallGuard : CallScreeningService() {
     override fun onScreenCall(details: Call.Details) {
         // 1) Darhol «o'tkazib yubor» — qo'ng'iroqqa hech qachon xalaqit bermaymiz
-        respondToCall(details, CallResponse.Builder().build())
+        respondToCall(details, CallScreeningService.CallResponse.Builder().build())
         if (details.callDirection != Call.Details.DIRECTION_INCOMING) return
         val store = Store(applicationContext)
         if (!store.callGuard) return
