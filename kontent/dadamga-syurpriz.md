@@ -1,4 +1,6 @@
-# 🎁 Dadamga syurpriz — nimalar qo'shildi (hozircha SIR!)
+# 🎁 Dadamga syurpriz — nimalar qo'shildi
+
+> ✅ **2026-11-19: dadamga ko'rsatildi!** Sir ochildi 🎉
 
 > Abdulhamid dadasiga aytgan: «Tekshir bot va AHdigital ilovaga yangiliklar kiritayapman — bular sirli bo'lsin, oxirida aytaman».
 > Bu fayl — shu yangiliklar ro'yxati. Har yangi ish qo'shilganda shu yerga yoziladi. Oxirida dadamga shu ro'yxat bilan ko'rsataman.
