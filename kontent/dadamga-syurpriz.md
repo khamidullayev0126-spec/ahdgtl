@@ -49,6 +49,7 @@
 - [ ] Namuna xabar tayyor (bu haqiqiy havola emas, faqat sinov uchun):
   `Bank xodimi: kartangiz bloklandi, SMS kodni ayting https://c1ick-uz.com`
 - [ ] Dadamning telefonida Telegram ochiq, @tekshirbot_bot bor.
+- [ ] Ilovada Sozlama → Oila himoyasi → **Uzish** («Buvim» sinov ulanishi o'chsin — dadam jonli ulaydi).
 - [ ] USB debugging o'chirilgan, Auto Blocker yoqilgan (dadam xavfsizlik balini ko'rsa — 100 ga yaqin chiqsin 😄).
 
 ### Ko'rsatish tartibi
@@ -68,7 +69,7 @@
    - Botda dadamga «✅ Abdulhamid telefoni ulandi» keladi.
    - 🧪 Sinab ko'rish → **dadamning telefoniga «🚨 Oila himoyasi»** xabari keladi.
    - «Buvimning telefoniga ham o'rnatsak — unga firibgar yozsa, sizga xabar keladi.»
-6. **So'rov (1 daq).** «Google Play'ga chiqarish uchun sizning hisobingiz kerak. Shartnomalarni siz o'qib qabul qilasiz — `PLAY.md` da hammasi yozilgan.»
+6. **Yakun (1 daq).** «Google Play'ga chiqarish oyim bilan tayyorlanyapti — 12 kishi 14 kun sinashi kerak. Siz ham tanishlaringizdan Gmail yig'ib bera olasizmi?»
 
 ### Nima demaslik / ehtiyot
 - Haqiqiy firibgar havolani ochmayman — faqat namuna matn.
