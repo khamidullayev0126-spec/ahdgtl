@@ -413,6 +413,22 @@ function createBot(token, options = {}, deps = {}) {
   });
 
   // ---------- Boshqa har qanday xabar ----------
+  // ---------- Oila himoyasi (Tekshir Android ilovasi, 7-bosqich) ----------
+  // /oila — kod beradi; yaqinining telefonidagi ilova kodni kiritadi; xavf aniqlansa — shu chatga ogohlantirish.
+  // Xabarning matni, raqamlar, ilova nomlari kelmaydi va saqlanmaydi — faqat «nima turdagi xavf».
+  bot.command("oila", async ctx => {
+    if (ctx.chat.type !== "private") return ctx.reply(t(langOf(ctx), "family_private"));
+    try { db.noteSource(ctx.from.id, "oila"); } catch { /* statistika — muhim emas */ }
+    const lang = langOf(ctx);
+    const code = db.familyCode(ctx.from.id);
+    const list = db.familyList(ctx.from.id);
+    const listText = list.length ? t(lang, "family_list", { list: list.map(f => "• " + esc(f.label || t(lang, "family_default_name")) + (f.alerts ? ` — 🚨 ${f.alerts}` : "")).join("\n") }) : "";
+    await ctx.reply(t(lang, "family_intro", { code }) + listText, { parse_mode: "HTML" });
+  });
+  bot.command("oila_ochir", ctx => ctx.chat.type === "private"
+    ? ctx.reply(t(langOf(ctx), "family_removed", { n: db.familyRemoveAll(ctx.from.id) }))
+    : undefined);
+
   bot.on("message", async ctx => {
     if (isGroup(ctx)) return onGroupMessage(ctx);
     if (ctx.chat.type !== "private") return;          // kanallar va h.k. — e'tibor bermaymiz
@@ -439,6 +455,32 @@ function createBot(token, options = {}, deps = {}) {
     console.error("Bot xatosi:", err.error?.message || err.message);
     try { await err.ctx.reply(t(getLang(err.ctx.from?.id), "error")); } catch { /* javob ham yuborilmasa — jim */ }
   });
+
+  const familyLimit = createLimiter({ limit: 10, windowMs: 60 * 60 * 1000 });   // bitta telefondan soatiga 10 ta ogohlantirish
+  const KINDS = ["message", "app", "apk", "call"];
+  /** Ilova kodni yuboradi → { token } yoki null. */
+  bot.familyLink = async (code, label) => {
+    if (!/^\d{6}$/.test(String(code || ""))) return null;
+    const r = db.familyLink(code, String(label || "").replace(/[<>&]/g, "").trim());
+    if (!r) return null;
+    const lang = getLang(r.chatId) || DEFAULT_LANG;
+    const name = esc(String(label || "").trim().slice(0, 30)) || t(lang, "family_default_name");
+    try { await bot.api.sendMessage(r.chatId, t(lang, "family_linked", { name }), { parse_mode: "HTML" }); } catch (e) { console.error("Oila:", e.message); }
+    return { token: r.token };
+  };
+  /** Xavf aniqlandi → ota-onaga xabar. Natija: "ok" | "unknown" | "limit" | "bad". */
+  bot.familyAlert = async ({ token, kind, source } = {}) => {
+    if (!KINDS.includes(kind)) return "bad";
+    const f = db.familyByToken(token);
+    if (!f) return "unknown";
+    if (!familyLimit.hit(f.id).ok) return "limit";
+    const lang = getLang(f.chat_id) || DEFAULT_LANG;
+    const name = esc(f.label || t(lang, "family_default_name"));
+    const src = esc(String(source || "").replace(/[<>&]/g, "").slice(0, 30)) || "SMS";
+    await bot.api.sendMessage(f.chat_id, t(lang, "family_alert", { name, what: t(lang, "family_w_" + kind, { src }) }), { parse_mode: "HTML" });
+    db.familyAlerted(f.id);
+    return "ok";
+  };
 
   // ---------- Ilova uchun tekshiruv (10-bosqichdan keyin: AHdigital va Tekshir ilovalari) ----------
   // Kiradi: { text, file: { name, size, mime, sha256 }, lang }. Fayl o'zi kelmaydi — faqat nomi va hash'i.
@@ -596,6 +638,29 @@ async function apiCheck(bot, req, res) {
   catch (e) { console.error("API:", e.message); send(500, { error: "xato" }); }
 }
 
+// ---------- /api/family/* — Tekshir Android ilovasi (oila himoyasi) ----------
+// link: { code, label } → { token };  alert: { token, kind, source } → { ok }.  IP bo'yicha daqiqasiga 10 ta.
+const familyApiLimit = createLimiter({ limit: 10 });
+async function apiFamily(bot, req, res, action) {
+  const send = (code, obj) => { res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }); res.end(JSON.stringify(obj)); };
+  if (req.method !== "POST") return send(405, { error: "POST kerak" });
+  if (req.headers.origin) return send(403, { error: "ruxsat yo'q" });      // faqat ilovadan (brauzerdan emas)
+  const ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+  if (!familyApiLimit.hit(ip).ok) return send(429, { error: "juda tez" });
+  let body = "";
+  for await (const chunk of req) { body += chunk; if (body.length > 2048) return send(413, { error: "juda katta" }); }
+  let data;
+  try { data = JSON.parse(body || "{}"); } catch { return send(400, { error: "JSON xato" }); }
+  try {
+    if (action === "link") {
+      const r = await bot.familyLink(data.code, data.label);
+      return r ? send(200, r) : send(404, { error: "kod noto'g'ri yoki eskirgan" });
+    }
+    const r = await bot.familyAlert(data);
+    return send({ ok: 200, unknown: 404, limit: 429, bad: 400 }[r], { ok: r === "ok", result: r });
+  } catch (e) { console.error("Oila API:", e.message); send(500, { error: "xato" }); }
+}
+
 // ---------- Webhook rejimi (serverda) ----------
 // Telegram faqat maxfiy kalit (secret_token) bilan kelgan so'rovlarni qabul qilamiz — begona odam soxta xabar yubora olmaydi.
 function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), onStop = null) {
@@ -618,6 +683,8 @@ function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), on
       return res.end("Tekshir bot ishlayapti ✅");
     }
     if (req.url === "/api/check") return apiCheck(bot, req, res);
+    if (req.url === "/api/family/link") return apiFamily(bot, req, res, "link");
+    if (req.url === "/api/family/alert") return apiFamily(bot, req, res, "alert");
     if (req.method === "POST" && req.url === hookPath) return handle(req, res).catch(e => { console.error("Webhook:", e.message); if (!res.headersSent) { res.writeHead(500); res.end(); } });
     res.writeHead(404); res.end();
   });

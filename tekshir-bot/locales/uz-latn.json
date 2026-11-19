@@ -3,7 +3,7 @@
   "choose_lang": "Tilni tanlang 👇\nВыберите язык 👇",
   "lang_saved": "✅ Til saqlandi: O'zbekcha",
   "welcome": "👋 Assalomu alaykum!\n\nMen — <b>Tekshir</b> boti. Firibgarlardan himoyalanishga yordam beraman.\n\n📩 Menga yuboring yoki uzating (forward):\n🔗 shubhali havola\n💬 shubhali xabar\n📎 shubhali fayl\n📞 shubhali telefon yoki karta raqami\n\nMen bir necha soniyada aytaman: xavflimi yoki yo'q.",
-  "help": "ℹ️ <b>Qanday ishlataman?</b>\n\n1️⃣ Shubhali xabarni bosib turing\n2️⃣ «Uzatish» (Переслать) tugmasini bosing\n3️⃣ Menga yuboring\n\n📋 Buyruqlar:\n/til — tilni o'zgartirish\n/yordam — shu yordam\n/demo — namunalar: firibgarlar qanday yozadi\n/maslahat — xavfsizlik maslahati\n\n🔒 Men xabaringizni saqlamayman va havolani o'zim ochmayman.\n🤖 Murakkab xabarlarni AI ham tahlil qiladi — unga yuborishdan oldin telefon va karta raqamlari yashiriladi.",
+  "help": "ℹ️ <b>Qanday ishlataman?</b>\n\n1️⃣ Shubhali xabarni bosib turing\n2️⃣ «Uzatish» (Переслать) tugmasini bosing\n3️⃣ Menga yuboring\n\n📋 Buyruqlar:\n/til — tilni o'zgartirish\n/yordam — shu yordam\n/demo — namunalar: firibgarlar qanday yozadi\n/oila — oila himoyasi (yaqiningiz telefoni)\n/maslahat — xavfsizlik maslahati\n\n🔒 Men xabaringizni saqlamayman va havolani o'zim ochmayman.\n🤖 Murakkab xabarlarni AI ham tahlil qiladi — unga yuborishdan oldin telefon va karta raqamlari yashiriladi.",
   "soon": "⏳ Tekshirish funksiyasi tez orada qo'shiladi.\nHozircha bot sinov rejimida ishlayapti.",
   "error": "😔 Hozir tekshira olmadim. Birozdan keyin qayta urinib ko'ring.",
   "level_safe": "✅ Xavf topilmadi",
@@ -122,5 +122,16 @@
     "👵 Bu maslahatlarni ota-onangiz va buvi-bobolaringizga ham yuboring — firibgarlar ko'pincha ularni nishonga oladi."
   ],
   "pending": "⏳ <i>Google va VirusTotal'da qo'shimcha tekshirilmoqda — xabar bir necha soniyada yangilanadi…</i>",
-  "url_shortener_wait": "Bu qisqartirilgan havola — qayerga olib borishi tekshirilmoqda"
+  "url_shortener_wait": "Bu qisqartirilgan havola — qayerga olib borishi tekshirilmoqda",
+  "family_intro": "👨‍👩‍👧 <b>Oila himoyasi</b>\n\nYaqiningiz (ota-ona, bobo-buvi, farzand) telefonida firibgar xabar, xavfli ilova yoki shikoyat qilingan raqamdan qo'ng'iroq aniqlansa — sizga shu yerda xabar keladi.\n\n1️⃣ Uning telefoniga <b>Tekshir</b> ilovasini o'rnating\n2️⃣ Ilovada: Sozlama → 👨‍👩‍👧 Oila himoyasi\n3️⃣ Shu kodni kiriting: <code>{code}</code>\n\n⏱ Kod 30 daqiqa amal qiladi.\n🔒 Xabarning matni sizga ham, bizga ham yuborilmaydi — faqat «xavf aniqlandi» degan ogohlantirish.",
+  "family_list": "\n\n📱 <b>Ulangan telefonlar:</b>\n{list}\n\nHammasini uzish: /oila_ochir",
+  "family_removed": "✅ Oila himoyasi o'chirildi. Ulangan telefonlar: {n} ta uzildi.",
+  "family_private": "👨‍👩‍👧 Oila himoyasi faqat bot bilan shaxsiy chatda ishlaydi.",
+  "family_linked": "✅ <b>{name}</b> telefoni ulandi. Endi u yerda xavf aniqlansa — sizga xabar keladi.",
+  "family_alert": "🚨 <b>Oila himoyasi: {name}</b>\n\n{what}\n\n📞 Unga qo'ng'iroq qiling va ogohlantiring: hech kimga kod aytmasin, pul o'tkazmasin, havolani ochmasin.\n<i>Xabar matni maxfiylik uchun yuborilmaydi.</i>",
+  "family_w_message": "🔴 Telefoniga <b>xavfli xabar</b> keldi ({src}).",
+  "family_w_app": "🔴 Telefoniga <b>xavfli ilova</b> o'rnatildi.",
+  "family_w_apk": "🔴 <b>Xavfli APK fayl</b> ochishga urindi.",
+  "family_w_call": "📞 Unga <b>shikoyat qilingan raqamdan</b> qo'ng'iroq bo'ldi.",
+  "family_default_name": "Yaqiningiz"
 }

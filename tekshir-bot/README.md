@@ -233,3 +233,11 @@ demo/                   — zararsiz soxta APK fayllar (o'quv uchun, ichida faqa
 tests/                  — avtomatik testlar
 render.yaml             — server sozlamasi (ma'lumot uchun)
 ```
+
+
+## Oila himoyasi (Tekshir Android ilovasi bilan)
+- `/oila` — 6 raqamli kod (30 daqiqa). Yaqinining telefonidagi Tekshir ilovasida: Sozlama → Oila himoyasi → kod.
+- `/oila_ochir` — hamma ulangan telefonlarni uzish.
+- API (faqat ilovadan, brauzerdan emas): `POST /api/family/link {code,label}` → `{token}`; `POST /api/family/alert {token,kind,source}`.
+  `kind`: `message` | `app` | `apk` | `call`. Telefondan soatiga 10 tadan ko'p ogohlantirish yuborilmaydi.
+- Maxfiylik: xabar matni, raqamlar, ilova nomlari kelmaydi va saqlanmaydi. Qurilma kaliti bazada faqat SHA-256 ko'rinishida.

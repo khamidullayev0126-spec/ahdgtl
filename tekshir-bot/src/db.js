@@ -66,6 +66,21 @@ CREATE TABLE IF NOT EXISTS reports (
   UNIQUE (target_hash, reporter_id) -- bitta odam bitta raqamga faqat 1 marta shikoyat qiladi
 );
 
+-- Oila himoyasi (Tekshir Android ilovasi): yaqiningiz telefonida xavf aniqlansa — sizga Telegram'da xabar.
+-- Saqlanadi: kimga yuborish (chat_id), qurilma kaliti (faqat SHA-256), ilovada yozilgan nom ("Oyim").
+-- Xabarning matni, raqamlar, ilova nomlari SAQLANMAYDI.
+CREATE TABLE IF NOT EXISTS family (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  chat_id     INTEGER NOT NULL,
+  code        TEXT UNIQUE,              -- 6 raqamli kod (ulangach — NULL)
+  code_until  INTEGER,
+  token_hash  TEXT UNIQUE,              -- qurilma kaliti (faqat hash)
+  label       TEXT,
+  linked_at   INTEGER,
+  alerts      INTEGER NOT NULL DEFAULT 0,
+  last_alert  INTEGER
+);
+
 -- Guruhlar (8-bosqichda ishlatiladi)
 CREATE TABLE IF NOT EXISTS groups (
   chat_id  INTEGER PRIMARY KEY,
@@ -186,6 +201,39 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
     removeGroup: chatId => db.prepare("UPDATE groups SET enabled = 0 WHERE chat_id = ?").run(chatId),
     groupCounted: (chatId, warned) => db.prepare("UPDATE groups SET checks = checks + 1, warnings = warnings + ? WHERE chat_id = ?").run(warned ? 1 : 0, chatId),
 
+    // ---- Oila himoyasi ----
+    /** /oila: 6 raqamli kod (30 daqiqa amal qiladi). Eski ishlatilmagan kodlar o'chiriladi. */
+    familyCode(chatId, now = Date.now()) {
+      db.prepare("DELETE FROM family WHERE token_hash IS NULL AND (chat_id = ? OR code_until < ?)").run(chatId, now);
+      for (let i = 0; i < 20; i++) {
+        const code = String(crypto.randomInt(100000, 1000000));
+        try {
+          db.prepare("INSERT INTO family (chat_id, code, code_until) VALUES (?, ?, ?)").run(chatId, code, now + 30 * 60 * 1000);
+          return code;
+        } catch { /* kod band — boshqasini olamiz */ }
+      }
+      throw new Error("kod yaratilmadi");
+    },
+    /** Ilova kodni yuboradi → qurilma kaliti qaytadi (faqat bir marta; bazada faqat hash). */
+    familyLink(code, label, now = Date.now()) {
+      const row = db.prepare("SELECT id, chat_id FROM family WHERE code = ? AND code_until >= ? AND token_hash IS NULL").get(String(code), now);
+      if (!row) return null;
+      const token = crypto.randomBytes(24).toString("hex");
+      db.prepare("UPDATE family SET code = NULL, code_until = NULL, token_hash = ?, label = ?, linked_at = ? WHERE id = ?")
+        .run(sha(token), String(label || "").slice(0, 30) || null, now, row.id);
+      return { token, chatId: row.chat_id, id: row.id };
+    },
+    familyByToken: token => db.prepare("SELECT id, chat_id, label, alerts FROM family WHERE token_hash = ?").get(sha(String(token || ""))),
+    familyAlerted: (id, now = Date.now()) => db.prepare("UPDATE family SET alerts = alerts + 1, last_alert = ? WHERE id = ?").run(now, id),
+    familyList: chatId => db.prepare("SELECT label, linked_at, alerts FROM family WHERE chat_id = ? AND token_hash IS NOT NULL ORDER BY id").all(chatId),
+    /** Hammasini uzish. Natija — nechta ULANGAN telefon uzildi (ishlatilmagan kodlar sanalmaydi). */
+    familyRemoveAll(chatId) {
+      const n = db.prepare("SELECT COUNT(*) n FROM family WHERE chat_id = ? AND token_hash IS NOT NULL").get(chatId).n;
+      db.prepare("DELETE FROM family WHERE chat_id = ?").run(chatId);
+      return n;
+    },
+    familyUnlink: token => db.prepare("DELETE FROM family WHERE token_hash = ?").run(sha(String(token || ""))).changes,
+
     // ---- /stats uchun raqamlar ----
     stats() {
       const now = Date.now(), today = startOfDay(now), week = now - 7 * DAY;
@@ -227,6 +275,8 @@ function openDb(file = process.env.DB_PATH || DEFAULT_PATH) {
   };
   return api;
 }
+
+const sha = s => crypto.createHash("sha256").update(s).digest("hex");
 
 // Eski bazaga yangi ustunlar qo'shish (bot yangilanganda ma'lumotlar yo'qolmasin)
 function migrate(db) {
