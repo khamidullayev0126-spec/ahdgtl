@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tekshir ikonkasi: yashil-ko'k qalqon va belgi (Android Studio yaratgan fayl o'rniga).
+     Adaptive icon: 108×108, muhim qism markazdagi 66 dp doira ichida. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <group android:translateX="24" android:translateY="25" android:scaleX="0.5" android:scaleY="0.5">
+        <path android:pathData="M60,8 L100,23 L100,53 C100,80 83,98 60,108 C37,98 20,80 20,53 L20,23 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear"
+                    android:startX="20" android:startY="8" android:endX="100" android:endY="108">
+                    <item android:offset="0" android:color="#FF22C55E" />
+                    <item android:offset="1" android:color="#FF0EA5E9" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M42,60 L54,72 L78,46"
+            android:fillColor="#00000000" android:strokeColor="#FF04130A" android:strokeWidth="9"
+            android:strokeLineCap="round" android:strokeLineJoin="round" />
+    </group>
+</vector>

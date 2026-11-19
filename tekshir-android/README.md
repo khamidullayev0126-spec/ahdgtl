@@ -27,6 +27,7 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 4. Zip ichidagi `app/src/main/` dagi hamma narsani shu yerga **ko'chiring** → «Replace» (almashtirish).
    - Almashadi: `AndroidManifest.xml`, `MainActivity.kt`, `ui/theme/Color.kt`, `ui/theme/Theme.kt`
    - Qo'shiladi: `assets/`, `engine/`, `data/`, `guard/`, `ui/Screens.kt`, `ui/Strings.kt`, `res/drawable/ic_stat_shield.xml`
+   - Ikonka (almashadi): `res/drawable/ic_launcher_foreground.xml`, `ic_launcher_background.xml`, `ic_launcher_monochrome.xml`, `res/mipmap-anydpi-v26/` — yashil qalqon
    - `ui/theme/Type.kt` — Android Studio'niki qoladi.
 5. Android Studio'ni oching → yuqorida **Sync Now** chiqsa bosing → telefoningizni tanlang → **▶ Run**.
 

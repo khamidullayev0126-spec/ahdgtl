@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 13+ «mavzuli ikonkalar» uchun bir rangli qalqon (tizim o'zi bo'yaydi). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <group android:translateX="24" android:translateY="25" android:scaleX="0.5" android:scaleY="0.5">
+        <path android:pathData="M60,8 L100,23 L100,53 C100,80 83,98 60,108 C37,98 20,80 20,53 L20,23 Z"
+            android:fillColor="#00000000" android:strokeColor="#FF000000" android:strokeWidth="8" android:strokeLineJoin="round" />
+        <path android:pathData="M42,60 L54,72 L78,46"
+            android:fillColor="#00000000" android:strokeColor="#FF000000" android:strokeWidth="9"
+            android:strokeLineCap="round" android:strokeLineJoin="round" />
+    </group>
+</vector>
