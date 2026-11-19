@@ -1,6 +1,7 @@
 // Tekshir — ilova ekranlari (Jetpack Compose).
 // 1-bosqich: Himoya (bosh ekran), Tekshirish, Tarix, Maslahat, Sozlama.
-// 2-bosqich: 🔔 xabarlarni avtomatik kuzatish (Sozlama → yoqish). Qolgan modullar keyingi bosqichlarda.
+// 2-bosqich: 🔔 xabarlarni avtomatik kuzatish (Sozlama → yoqish).
+// 3-bosqich: 📲 ilovalar tekshiruvi (bosh ekran → «Yangi ilovalar»). Qolgan modullar keyingi bosqichlarda.
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package uz.ahdigital.tekshir.ui
@@ -8,6 +9,7 @@ package uz.ahdigital.tekshir.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.LinearEasing
@@ -89,6 +91,9 @@ import uz.ahdigital.tekshir.data.Tip
 import uz.ahdigital.tekshir.engine.Level
 import uz.ahdigital.tekshir.engine.Result
 import uz.ahdigital.tekshir.engine.Texts
+import uz.ahdigital.tekshir.engine.AppInfo
+import uz.ahdigital.tekshir.engine.AppVerdict
+import uz.ahdigital.tekshir.guard.AppGuard
 import uz.ahdigital.tekshir.guard.MessageGuard
 import uz.ahdigital.tekshir.ui.theme.Accent
 import uz.ahdigital.tekshir.ui.theme.Bg
@@ -125,7 +130,8 @@ fun TekshirApp(store: Store, shared: String?, resumed: Int, onSharedUsed: () -> 
     var online by remember { mutableStateOf<Online.Answer?>(null) }
     var onlineState by remember { mutableStateOf(0) }          // 0 — kerak emas, 1 — kutilmoqda, 2 — tayyor, 3 — internet yo'q
     var error by remember { mutableStateOf<String?>(null) }
-    var histTick by remember { mutableStateOf(0) }              // tarix yangilanganda ekranni qayta chizish uchun
+    var histTick by remember { mutableStateOf(0) }
+    var appsOpen by rememberSaveable { mutableStateOf(false) }   // 📲 Ilovalar tekshiruvi oynasi              // tarix yangilanganda ekranni qayta chizish uchun
     val scope = rememberCoroutineScope()
 
     fun runCheck() {
@@ -160,7 +166,7 @@ fun TekshirApp(store: Store, shared: String?, resumed: Int, onSharedUsed: () -> 
             NavigationBar(containerColor = Surface) {
                 Tab.entries.forEach { t ->
                     NavigationBarItem(
-                        selected = tab == t, onClick = { tab = t },
+                        selected = tab == t && !appsOpen, onClick = { tab = t; appsOpen = false },
                         icon = { Text(t.icon, fontSize = 20.sp) },
                         label = { Text(S.t(lang, t.key), fontSize = 11.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedTextColor = Safe, unselectedTextColor = Muted, indicatorColor = SafeBg)
@@ -170,8 +176,11 @@ fun TekshirApp(store: Store, shared: String?, resumed: Int, onSharedUsed: () -> 
         }
     ) { pad ->
         Box(Modifier.padding(pad).fillMaxSize()) {
-            when (tab) {
-                Tab.HOME -> HomeScreen(store, lang, histTick, resumed, { tab = Tab.CHECK }, { tab = Tab.SET })
+            if (appsOpen) {
+                BackHandler { appsOpen = false }
+                AppsScreen(store, lang, resumed) { appsOpen = false }
+            } else when (tab) {
+                Tab.HOME -> HomeScreen(store, lang, histTick, resumed, { tab = Tab.CHECK }, { tab = Tab.SET }, { appsOpen = true })
                 Tab.CHECK -> CheckScreen(lang, input, { input = it }, ::runCheck, result, online, onlineState, error)
                 Tab.HIST -> HistoryScreen(store, lang, histTick) { store.clearHistory(); histTick++ }
                 Tab.TIPS -> TipsScreen(store, lang)
@@ -235,10 +244,12 @@ private fun ShieldHero() {
 
 // ================= 1. Himoya (bosh ekran) =================
 @Composable
-private fun HomeScreen(store: Store, lang: String, tick: Int, resumed: Int, onCheck: () -> Unit, onGuard: () -> Unit) {
+private fun HomeScreen(store: Store, lang: String, tick: Int, resumed: Int, onCheck: () -> Unit, onGuard: () -> Unit, onApps: () -> Unit) {
     val ctx = LocalContext.current
     val hist = remember(tick) { store.history() }
-    val guardOn = remember(resumed, tick) { MessageGuard.allowed(ctx) && store.notifGuard }
+    val allowed = remember(resumed, tick) { MessageGuard.allowed(ctx) }
+    val guardOn = allowed && store.notifGuard
+    val appsOn = allowed && store.appGuard
     val (cats, tips) = store.tips
     val tip = tips[((System.currentTimeMillis() + 5 * 3600_000L) / 86_400_000L % tips.size).toInt()]
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -259,20 +270,22 @@ private fun HomeScreen(store: Store, lang: String, tick: Int, resumed: Int, onCh
         }
         Kicker(S.t(lang, "modules"))
         for ((icon, key) in listOf("🔔" to "m_notif", "📲" to "m_apps", "📁" to "m_files", "📞" to "m_calls", "👨‍👩‍👧" to "m_family", "🩺" to "m_score")) {
-            val ready = key == "m_notif"                        // tayyor modullar (2-bosqich: xabarlar)
+            val ready = key == "m_notif" || key == "m_apps"     // tayyor modullar (2–3-bosqich)
+            val active = if (key == "m_apps") appsOn else guardOn
             val rowMod = Modifier.fillMaxWidth().background(CardBg, RoundedCornerShape(16.dp))
-                .border(1.dp, if (ready && guardOn) Safe else Line, RoundedCornerShape(16.dp))
-            Row((if (ready) rowMod.clickable(onClick = onGuard) else rowMod).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                .border(1.dp, if (ready && active) Safe else Line, RoundedCornerShape(16.dp))
+            val click = if (key == "m_apps") onApps else onGuard
+            Row((if (ready) rowMod.clickable(onClick = click) else rowMod).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(icon, fontSize = 22.sp, modifier = Modifier.width(36.dp))
                 Column(Modifier.weight(1f)) {
                     Text(S.t(lang, key), color = TextMain, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                    val sub = if (ready && guardOn) S.t(lang, key + "_s") + " · ${store.warnedCount} ${S.t(lang, "g_warned")}" else S.t(lang, key + "_s")
+                    val sub = if (key == "m_notif" && guardOn) S.t(lang, key + "_s") + " · ${store.warnedCount} ${S.t(lang, "g_warned")}" else S.t(lang, key + "_s")
                     Text(sub, color = Muted, fontSize = 12.sp)
                 }
                 when {
                     !ready -> Text(S.t(lang, "soon"), color = Muted, fontSize = 11.sp,
                         modifier = Modifier.border(1.dp, Line, RoundedCornerShape(99.dp)).padding(horizontal = 8.dp, vertical = 3.dp))
-                    guardOn -> Text(S.t(lang, "on"), color = Safe, fontSize = 11.sp, fontWeight = FontWeight.Bold,
+                    active -> Text(S.t(lang, "on"), color = Safe, fontSize = 11.sp, fontWeight = FontWeight.Bold,
                         modifier = Modifier.background(SafeBg, RoundedCornerShape(99.dp)).padding(horizontal = 8.dp, vertical = 3.dp))
                     else -> Text(S.t(lang, "turn_on"), color = Bg, fontSize = 11.sp, fontWeight = FontWeight.Bold,
                         modifier = Modifier.background(Safe, RoundedCornerShape(99.dp)).padding(horizontal = 10.dp, vertical = 4.dp))
@@ -514,5 +527,76 @@ private fun GuardCard(store: Store, lang: String, resumed: Int) {
                 if (sent) Text(S.t(lang, "g_test_sent"), color = Muted, fontSize = 13.sp)
             }
         }
+    }
+}
+
+// ================= 3-bosqich: 📲 Ilovalar tekshiruvi =================
+@Composable
+private fun AppsScreen(store: Store, lang: String, resumed: Int, onBack: () -> Unit) {
+    val ctx = LocalContext.current
+    val allowed = remember(resumed) { MessageGuard.allowed(ctx) }
+    var auto by remember { mutableStateOf(store.appGuard) }
+    var scanning by remember { mutableStateOf(false) }
+    var found by remember { mutableStateOf<Pair<Int, List<Pair<AppInfo, AppVerdict>>>?>(null) }
+    val scope = rememberCoroutineScope()
+    fun scan() {
+        scanning = true
+        scope.launch {
+            found = withContext(Dispatchers.Default) { AppGuard.scanAll(ctx) }
+            scanning = false
+        }
+    }
+    // Ilova sahifasidan (masalan o'chirgandan keyin) qaytganda ro'yxat yangilansin
+    LaunchedEffect(resumed) { if (found != null) scan() }
+
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Spacer(Modifier.height(8.dp))
+                TextButton(onClick = onBack) { Text(S.t(lang, "back"), color = Accent) }
+                Text(S.t(lang, "apps_title"), color = TextMain, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
+                Text(S.t(lang, "apps_p"), color = Muted, fontSize = 14.sp)
+            }
+        }
+        item {
+            Card(border = if (allowed && auto) Safe else Line) {
+                if (allowed) Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(S.t(lang, "apps_auto"), color = TextMain, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                    Switch(checked = auto, onCheckedChange = { auto = it; store.appGuard = it },
+                        colors = SwitchDefaults.colors(checkedThumbColor = Bg, checkedTrackColor = Safe))
+                } else Text(S.t(lang, "apps_need"), color = Warn, fontSize = 13.sp)
+                Text(S.t(lang, "apps_priv"), color = Muted, fontSize = 12.sp)
+            }
+        }
+        item {
+            Button(onClick = { scan() }, enabled = !scanning, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Safe, contentColor = Bg)) {
+                Text(S.t(lang, if (scanning) "apps_scanning" else "apps_scan"), fontWeight = FontWeight.ExtraBold)
+            }
+        }
+        found?.let { (total, risky) ->
+            item {
+                if (risky.isEmpty()) Card(bg = SafeBg, border = Safe) {
+                    Text(S.t(lang, "apps_ok").replace("{n}", "$total"), color = Safe, fontWeight = FontWeight.Bold)
+                } else Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(S.t(lang, "apps_found").replace("{n}", "$total").replace("{k}", "${risky.size}"), color = TextMain, fontWeight = FontWeight.Bold)
+                    Text(S.t(lang, "apps_hint"), color = Muted, fontSize = 13.sp)
+                }
+            }
+            items(risky) { (a, v) ->
+                val lv = v.level.name.lowercase()
+                Card(Modifier.clickable { AppGuard.openAppPage(ctx, a.pkg) }, bg = levelBg(lv), border = levelColor(lv)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.size(12.dp).background(levelColor(lv), CircleShape))
+                        Spacer(Modifier.width(10.dp))
+                        Text(a.label, color = TextMain, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        Text("${v.score}", color = levelColor(lv), fontWeight = FontWeight.ExtraBold)
+                    }
+                    v.reasons.forEach { Text("• " + AppGuard.reasonText(lang, it.code, it.vars), color = TextMain, fontSize = 13.sp) }
+                    Text(S.t(lang, "apps_open"), color = Accent, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                }
+            }
+        }
+        item { Spacer(Modifier.height(16.dp)) }
     }
 }

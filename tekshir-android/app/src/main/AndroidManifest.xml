@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Tekshir manifesti. Android Studio yaratgan AndroidManifest.xml o'rniga.
      1-bosqich: INTERNET (faqat havolalarni Google/VirusTotal'da tekshirish uchun).
+     3-bosqich: QUERY_ALL_PACKAGES — o'rnatilgan ilovalarni ko'rish (xavfsizlik ilovalariga Google ruxsat beradi).
      2-bosqich: POST_NOTIFICATIONS (ogohlantirish ko'rsatish) va «Bildirishnomalarga kirish» xizmati (MessageGuard). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <application
         android:allowBackup="false"

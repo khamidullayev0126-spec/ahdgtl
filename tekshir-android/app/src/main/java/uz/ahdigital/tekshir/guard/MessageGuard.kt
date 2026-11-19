@@ -28,6 +28,10 @@ class MessageGuard : NotificationListenerService() {
     private val store by lazy { Store(applicationContext) }
     private val dedupe = Guard.Dedupe()
 
+    // 3-bosqich: xizmat ishlab turganda yangi o'rnatilgan ilovalarni ham kuzatamiz
+    override fun onListenerConnected() { AppGuard.start(applicationContext) }
+    override fun onListenerDisconnected() { AppGuard.stop(applicationContext) }
+
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         try { handle(sbn) } catch (_: Exception) { /* bitta xabardagi xato butun himoyani to'xtatmasin */ }
     }

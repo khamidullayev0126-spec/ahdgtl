@@ -29,6 +29,11 @@ class Store(private val ctx: Context) {
         get() = prefs.getBoolean("notif_guard", true)
         set(v) { prefs.edit().putBoolean("notif_guard", v).apply() }
 
+    /** 3-bosqich: yangi o'rnatilgan ilovalarni tekshirish. */
+    var appGuard: Boolean
+        get() = prefs.getBoolean("app_guard", true)
+        set(v) { prefs.edit().putBoolean("app_guard", v).apply() }
+
     /** Avtomatik ogohlantirishlar soni (bosh ekrandagi hisob uchun). */
     val warnedCount: Int get() = prefs.getInt("warned", 0)
     fun noteWarned() = prefs.edit().putInt("warned", warnedCount + 1).apply()
