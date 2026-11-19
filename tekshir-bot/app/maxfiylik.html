@@ -30,6 +30,19 @@
     <li><b>Tanlangan til</b> — javobni shu tilda qaytarish uchun.</li>
   </ul>
 
+  <h2>1a. Tekshir Android ilovasi (Google Play)</h2>
+  <p>Android ilovada tekshiruv <b>telefonning o'zida</b> bajariladi. Quyidagi imkoniyatlar faqat siz o'zingiz yoqsangiz ishlaydi va istalgan vaqt o'chiriladi:</p>
+  <ul>
+    <li><b>🔔 Xabarlarni kuzatish</b> («Bildirishnomalarga kirish» ruxsati) — SMS, Telegram, WhatsApp va boshqa ilovalar bildirishnomasidagi matn firibgarlik belgilariga <b>telefonda</b> tekshiriladi. Bu matn <b>hech qayerga yuborilmaydi</b> va saqlanmaydi; faqat xavfli bo'lsa, qisqartirilgan va raqamlari yashirilgan ko'rinishi telefondagi tarixga yoziladi.</li>
+    <li><b>📲 Ilovalar tekshiruvi</b> — telefoningizdagi ilovalar ro'yxati va ularning ruxsatlari (SMS o'qish, «Maxsus imkoniyatlar» va h.k.) xavfli ilovani topish uchun <b>telefonda</b> ko'rib chiqiladi. Ro'yxat hech qayerga yuborilmaydi.</li>
+    <li><b>📁 APK fayl</b> — fayl ichi telefonda o'qiladi. Serverga faqat faylning SHA-256 izi va hajmi yuboriladi (VirusTotal bazasida qidirish uchun) — fayl ham, uning nomi ham yuborilmaydi.</li>
+    <li><b>🔗 Havolalar</b> — «Tekshirish» oynasida havola bo'lsa, faqat havolaning o'zi serverga yuboriladi (xabarning qolgan matni emas).</li>
+    <li><b>📞 Qo'ng'iroqlarda ogohlantirish</b> (Android «spam aniqlovchi» roli) — notanish O'zbekiston raqamidan qo'ng'iroq bo'lsa, shu raqam shikoyatlar bazasi bilan solishtirish uchun serverga yuboriladi. Serverda u faqat hash ko'rinishida solishtiriladi va <b>saqlanmaydi</b>. Kontaktlaringizdagi raqamlar tekshirilmaydi. Qo'ng'iroqlar hech qachon bloklanmaydi, qo'ng'iroqlar jurnaliga ruxsat so'ralmaydi.</li>
+    <li><b>👨‍👩‍👧 Oila himoyasi</b> — siz botdan olingan kodni kiritsangiz, telefon yaqiningizning Telegram chatiga ulanadi. Xavf aniqlanganda yaqiningizga faqat <b>xavf turi</b> (xabar, ilova, APK yoki qo'ng'iroq) va manba nomi (masalan «Telegram») boradi — xabar matni, raqamlar, ilova nomlari yuborilmaydi. Serverda: yaqiningizning Telegram ID'si, siz yozgan nom (masalan «Oyim») va qurilma kalitining hash'i. «Uzish» tugmasi yoki botdagi /oila_ochir bilan o'chiriladi.</li>
+    <li><b>🩺 Xavfsizlik bali</b> — ekran qulfi, yangilanish sanasi, USB debugging va boshqalar faqat telefonda tekshiriladi.</li>
+    <li><b>Ogohlantirishlar</b> — Android bildirishnomasi sifatida ko'rsatiladi («Bildirishnoma» ruxsati).</li>
+  </ul>
+
   <h2>2. Serverda nima saqlanadi</h2>
   <ul>
     <li>Tekshiruv <b>natijasi</b>: xavf darajasi (✅/🟡/🔴), ball va sabab kodi — umumiy statistika uchun. Kim tekshirgani ilovada yozilmaydi.</li>
@@ -48,7 +61,7 @@
   <h2>5. Biz nima qilmaymiz</h2>
   <ul>
     <li>Reklama yo'q, ma'lumot sotilmaydi va reklama uchun ishlatilmaydi.</li>
-    <li>Ro'yxatdan o'tish, kontaktlar, SMS yoki joylashuvga ruxsat so'ralmaydi.</li>
+    <li>Ro'yxatdan o'tish yo'q. Kontaktlar, SMS, qo'ng'iroqlar jurnali yoki joylashuvga ruxsat so'ralmaydi. Bildirishnomalarni o'qish — faqat siz yoqsangiz va faqat telefonda.</li>
     <li>Ilova havolalarni o'zi ochmaydi va fayllarni ishga tushirmaydi.</li>
   </ul>
 
@@ -68,13 +81,24 @@
   <div class="card"><b>Коротко:</b> мы не храним текст ваших сообщений, не загружаем ваши файлы, регистрации нет. История проверок хранится только на вашем телефоне.</div>
   <h2>Что отправляется</h2>
   <p>Сообщение или ссылка отправляются на сервер только для проверки и <b>не сохраняются</b>. Файл <b>не загружается</b> — отправляются только имя, размер, тип и SHA-256 хеш.</p>
+  <h2>Android-приложение Tekshir</h2>
+  <p>Проверка выполняется <b>на телефоне</b>. Функции работают только если вы их включили:</p>
+  <ul>
+    <li><b>Контроль сообщений</b> (доступ к уведомлениям) — текст уведомлений проверяется на телефоне и <b>никуда не отправляется</b>.</li>
+    <li><b>Проверка приложений</b> — список приложений и их разрешения анализируются на телефоне и никуда не отправляются.</li>
+    <li><b>APK-файл</b> — на сервер отправляется только SHA-256 отпечаток и размер (для поиска в VirusTotal), без файла и его имени.</li>
+    <li><b>Ссылки</b> — на сервер отправляется только сама ссылка, без остального текста.</li>
+    <li><b>Звонки</b> (роль «определение спама») — незнакомый узбекский номер отправляется на сервер для сверки с базой жалоб (только в виде хеша, не сохраняется). Номера из контактов не проверяются, звонки не блокируются.</li>
+    <li><b>Защита семьи</b> — близкому в Telegram отправляется только тип опасности и источник (например «Telegram»), без текста и номеров. На сервере: Telegram ID близкого, указанное имя и хеш ключа устройства. Отключается кнопкой или командой /oila_ochir.</li>
+    <li><b>Оценка безопасности</b> — считается только на телефоне.</li>
+  </ul>
   <h2>Что хранится на сервере</h2>
   <p>В Telegram-боте — ваш Telegram ID, выбранный язык и источник (например «канал»); имя и username не хранятся. Также только результат (уровень, балл, код причины) для общей статистики, имя сайта (домен) без полного адреса и жалобы на номера — только в зашифрованном виде (хеш).</p>
   <h2>Внешние сервисы</h2>
   <p>Адрес ссылки может проверяться в Google Safe Browsing, имя сайта и хеш файла — в VirusTotal. Текст сообщения и ваши данные туда не отправляются.</p>
   <p>Если в боте включён AI-анализ (сейчас выключен), текст со скрытыми номерами отправляется в Anthropic (Claude). В приложении AI не используется.</p>
   <h2>Мы не</h2>
-  <p>показываем рекламу, продаём данные, запрашиваем доступ к контактам, SMS или геолокации, открываем ссылки и запускаем файлы.</p>
+  <p>показываем рекламу, продаём данные, запрашиваем доступ к контактам, SMS, журналу звонков или геолокации, открываем ссылки и запускаем файлы. Доступ к уведомлениям — только если вы его включили, и только на телефоне.</p>
   <h2>Контакты</h2>
   <p><a href="https://t.me/Abdulkhamid_2905">Telegram: @Abdulkhamid_2905</a> · <a href="https://www.ah-digital.uz">ah-digital.uz</a></p>
 </main>

@@ -63,6 +63,7 @@ class MessageGuard : NotificationListenerService() {
         store.noteWarned()
         val reason = r.reasons.firstOrNull { it.points > 0 }?.let { Texts.t(lang, it.code, it.vars) } ?: ""
         warn(this, r.level, app, reason, text, lang)
+        FamilyAlert.send(this, "message", r.level, app)          // 7-bosqich: yaqiniga (faqat 🔴 bo'lsa, matnsiz)
     }
 
     private fun appName(pkg: String) = try {

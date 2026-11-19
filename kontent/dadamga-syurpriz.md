@@ -34,6 +34,10 @@
 - [x] **🔔 Avtomatik himoya: xabarlarni kuzatish** — SMS, Telegram, WhatsApp'ga firibgar xabar kelishi bilan o'zi ogohlantiradi. Xabar matni telefondan chiqmaydi.
 - [x] **📲 Xavfli ilova ogohlantirishi** — Telegram'dan kelgan soxta «Click.apk» yoki «Rasmlar.apk» o'rnatilsa, darhol aytadi va o'chirish sahifasini ochadi. Telefondagi hamma ilovalarni bir tugma bilan tekshirish.
 - [x] **📁 APK faylni o'rnatishdan OLDIN tekshirish** — Telegram'da APK bosilsa «Tekshir bilan ochish»: ichida nima borligini (SMS o'qiydimi, bank nomiga o'xshaydimi) ko'rsatadi va VirusTotal bazasidan qidiradi. Fayl hech qayerga yuklanmaydi.
+- [x] **🩺 Xavfsizlik bali** — telefon qanchalik himoyalanganini 0–100 ball bilan ko'rsatadi va nimani tuzatishni aytadi.
+- [x] **📞 Shubhali qo'ng'iroq ogohlantirishi** — shikoyat qilingan raqamdan qo'ng'iroq bo'lsa, ekranda «Diqqat!» chiqadi.
+- [x] **👨‍👩‍👧 Oila himoyasi** — buvim/oyimning telefonida firibgar xabar aniqlansa, dadamga Telegram'da xabar keladi (xabar matni emas, faqat «xavf bor»). Dadamga ko'rsatishning eng zo'r joyi shu! 😄
+- [x] Google Play uchun hammasi tayyor (maxfiylik siyosati, ruxsatlar tushuntirishi) — faqat dadamning Play Console hisobi kerak.
 - [ ] Google Play'ga chiqarish (AHdigital'dan keyin).
 
 ## Dadamga qanday ko'rsataman (reja)

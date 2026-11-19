@@ -34,6 +34,24 @@ class Store(private val ctx: Context) {
         get() = prefs.getBoolean("app_guard", true)
         set(v) { prefs.edit().putBoolean("app_guard", v).apply() }
 
+    /** Google Play talabi: ruxsat so'rashdan oldin ma'lumotlar haqida aniq tushuntirish (bir marta ko'rsatiladi). */
+    var disclosed: Boolean
+        get() = prefs.getBoolean("disclosed", false)
+        set(v) { prefs.edit().putBoolean("disclosed", v).apply() }
+
+    /** 6-bosqich: qo'ng'iroqlarda ogohlantirish. */
+    var callGuard: Boolean
+        get() = prefs.getBoolean("call_guard", true)
+        set(v) { prefs.edit().putBoolean("call_guard", v).apply() }
+
+    /** 7-bosqich: oila himoyasi. token — qurilma kaliti (botdan), label — «Oyim» kabi nom. */
+    var familyToken: String?
+        get() = prefs.getString("family_token", null)
+        set(v) { prefs.edit().apply { if (v == null) remove("family_token") else putString("family_token", v) }.apply() }
+    var familyLabel: String
+        get() = prefs.getString("family_label", "") ?: ""
+        set(v) { prefs.edit().putString("family_label", v).apply() }
+
     /** Avtomatik ogohlantirishlar soni (bosh ekrandagi hisob uchun). */
     val warnedCount: Int get() = prefs.getInt("warned", 0)
     fun noteWarned() = prefs.edit().putInt("warned", warnedCount + 1).apply()
@@ -93,6 +111,30 @@ object Online {
     fun checkFile(size: Long, sha256: String, lang: String): Answer? =
         post(JSONObject().put("lang", lang).put("app", "tekshir-android").put("file", JSONObject()
             .put("name", "fayl").put("size", size).put("sha256", sha256).put("mime", "")))
+
+    /** 6-bosqich: qo'ng'iroq qilgan raqam haqida nechta shikoyat bor. Raqam serverda faqat hash ko'rinishida solishtiriladi.
+     *  Xato yoki internet yo'q — null. */
+    fun checkNumber(digits: String, lang: String): Int? = try {
+        val o = raw(API, JSONObject().put("text", "+$digits").put("lang", lang).put("app", "tekshir-android"))
+        o?.optJSONArray("numbers")?.optJSONObject(0)?.optInt("count", 0) ?: o?.let { 0 }
+    } catch (e: Exception) { null }
+
+    /** 7-bosqich: oila himoyasi. */
+    private const val FAMILY = "https://tekshir.ah-digital.uz/api/family/"
+    fun familyLink(code: String, label: String): String? =
+        raw(FAMILY + "link", JSONObject().put("code", code.trim()).put("label", label.take(30)))?.optString("token")?.takeIf { it.isNotEmpty() }
+    /** Faqat xavf TURI va manba ilova nomi yuboriladi (masalan «Telegram») — xabar matni yo'q. */
+    fun familyAlert(token: String, kind: String, source: String): Boolean =
+        raw(FAMILY + "alert", JSONObject().put("token", token).put("kind", kind).put("source", source.take(30)))?.optBoolean("ok") == true
+
+    private fun raw(url: String, json: JSONObject): JSONObject? = try {
+        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+            requestMethod = "POST"; connectTimeout = 6000; readTimeout = 12000; doOutput = true
+            setRequestProperty("Content-Type", "application/json")
+        }
+        conn.outputStream.use { it.write(json.toString().toByteArray()) }
+        if (conn.responseCode != 200) null else JSONObject(conn.inputStream.bufferedReader().use { it.readText() })
+    } catch (e: Exception) { null }
 
     private fun post(json: JSONObject): Answer? = try {
         val conn = (URL(API).openConnection() as HttpURLConnection).apply {

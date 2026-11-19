@@ -109,6 +109,7 @@ object AppGuard {
             store.addHistory(lv, "📲 " + Texts.t(store.lang, "level_$lv").replace(Regex("^[^\\p{L}]+"), ""), a.label)
             store.noteWarned()
             warn(c, a, v, store.lang)
+            FamilyAlert.send(c, "app", v.level, "")
         }
     }
     private var registered = false

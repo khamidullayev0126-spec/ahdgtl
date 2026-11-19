@@ -14,10 +14,10 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 - [x] **2-bosqich:** 🔔 Xabarlarni avtomatik kuzatish — SMS, Telegram, WhatsApp… bildirishnomasi kelishi bilan telefonda (internetsiz) tekshiradi, xavfli/shubhali bo'lsa ogohlantiradi. Xabar matni hech qayerga yuborilmaydi.
 - [x] **3-bosqich:** 📲 Ilovalar tekshiruvi — yangi ilova o'rnatilishi bilan tekshiradi (Play Market'danmi, SMS o'qiydimi, ekranni boshqaradimi, bank nomiga o'xshaydimi); «Hamma ilovalarni tekshirish» tugmasi.
 - [x] **4-bosqich:** 📁 APK faylni **o'rnatishdan oldin** tekshirish — Telegram'da APK bosilganda «Tekshir bilan ochish», «Ulashish → Tekshir» yoki «📁 APK faylni tekshirish» tugmasi. Fayl ichidagi nom, ruxsatlar o'qiladi; internetga faqat SHA-256 izi (VirusTotal).
-- [ ] 5. 🩺 Telefon xavfsizlik bali
-- [ ] 6. 📞 Qo'ng'iroqda ogohlantirish
-- [ ] 7. 👨‍👩‍👧 Oila himoyasi (Telegram bot orqali)
-- [ ] 8. Google Play'ga tayyorlash (maxfiylik siyosatiga bildirishnomalar, ilovalar ro'yxati va APK izi haqida qo'shish; QUERY_ALL_PACKAGES va bildirishnoma ruxsati uchun Play deklaratsiyasi)
+- [x] **5-bosqich:** 🩺 Xavfsizlik bali (0–100): ekran qulfi, yangilanish, Android versiyasi, USB debugging, Tekshir himoyalari, xavfli ilovalar, «Maxsus imkoniyatlar» — har biriga «Tuzatish» tugmasi.
+- [x] **6-bosqich:** 📞 Qo'ng'iroqda ogohlantirish (Android 10+, «spam aniqlovchi» roli): notanish raqam shikoyatlar bazasida bo'lsa — ogohlantirish. Qo'ng'iroq bloklanmaydi.
+- [x] **7-bosqich:** 👨‍👩‍👧 Oila himoyasi: botda /oila → 6 raqamli kod → ilovada kiritiladi; 🔴 xavf aniqlansa yaqiniga Telegram'da xabar (matnsiz).
+- [x] **8-bosqich:** Google Play'ga tayyorlash — ruxsatdan oldin tushuntirish oynasi, yangilangan maxfiylik siyosati, `PLAY.md` (imzolash, deklaratsiyalar, Data safety javoblari). Do'konga chiqarish — dadamning Play Console hisobi bilan.
 
 ## 1-bosqichni o'rnatish
 1. Android Studio → **New Project → Empty Activity**
@@ -48,6 +48,12 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 1. **Tekshirish** oynasi → **📁 APK faylni tekshirish** → Downloads'dagi istalgan `.apk` ni tanlang.
 2. Telegram'da APK faylni bosing → ro'yxatda **Tekshir** chiqsa — tanlang (o'rnatishdan oldin tekshiradi).
 3. Natijada: ilova nomi, paket, hajm, sabablar va «⏳ VirusTotal bazasida qidirilmoqda…».
+
+## 5–7-bosqichlarni sinash
+- **🩺 Xavfsizlik bali:** bosh ekran → Xavfsizlik bali. USB debugging yoqilgan bo'lsa ⚠️ chiqishi kerak (to'g'ri!).
+- **📞 Qo'ng'iroqlar:** Sozlama → Qo'ng'iroqlarda ogohlantirish → Yoqish → «Spam aniqlovchi»: Tekshir.
+- **👨‍👩‍👧 Oila:** dadangiz (yoki o'zingiz boshqa Telegram'dan) botga `/oila` → kod → ilovada Sozlama → Oila himoyasi → kod + nom → Ulash.
+  Botda «✅ … telefoni ulandi» chiqadi. Keyin 🧪 «Sinab ko'rish» — botga «🚨 Oila himoyasi» xabari keladi.
 
 ## Xavfsizlik
 - Imzolash kaliti (`.jks`/`.keystore`) GitHub'ga yuklanmaydi (`.gitignore`).
