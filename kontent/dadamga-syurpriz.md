@@ -30,6 +30,8 @@
 - [x] **70 ta maslahat**, o'zbek va rus tilida interfeys.
 - [x] **O'z manzili:** tekshir.ah-digital.uz
 - [x] **Maxfiylik siyosati** (o'zbek va rus tilida) va Google Play uchun tayyor rasm va matnlar.
+- [x] **Haqiqiy Android ilova (Kotlin)** — tekshiruv telefonning o'zida, internetsiz; Telegram bot bilan bir xil qoidalar (43 ta test).
+- [x] **🔔 Avtomatik himoya: xabarlarni kuzatish** — SMS, Telegram, WhatsApp'ga firibgar xabar kelishi bilan o'zi ogohlantiradi. Xabar matni telefondan chiqmaydi.
 - [ ] Google Play'ga chiqarish (AHdigital'dan keyin).
 
 ## Dadamga qanday ko'rsataman (reja)

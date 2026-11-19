@@ -1,10 +1,15 @@
 // Tekshir — ilova ekranlari (Jetpack Compose).
 // 1-bosqich: Himoya (bosh ekran), Tekshirish, Tarix, Maslahat, Sozlama.
-// Avtomatik himoya modullari (xabarlar, ilovalar, qo'ng'iroq…) keyingi bosqichlarda yoqiladi.
+// 2-bosqich: 🔔 xabarlarni avtomatik kuzatish (Sozlama → yoqish). Qolgan modullar keyingi bosqichlarda.
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package uz.ahdigital.tekshir.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -45,6 +50,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -74,6 +81,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.withContext
 import uz.ahdigital.tekshir.data.Online
 import uz.ahdigital.tekshir.data.Store
@@ -81,6 +89,7 @@ import uz.ahdigital.tekshir.data.Tip
 import uz.ahdigital.tekshir.engine.Level
 import uz.ahdigital.tekshir.engine.Result
 import uz.ahdigital.tekshir.engine.Texts
+import uz.ahdigital.tekshir.guard.MessageGuard
 import uz.ahdigital.tekshir.ui.theme.Accent
 import uz.ahdigital.tekshir.ui.theme.Bg
 import uz.ahdigital.tekshir.ui.theme.CardBg
@@ -108,7 +117,7 @@ private fun rank(l: String) = when (l) { "danger" -> 2; "suspicious" -> 1; else 
 
 /** Butun ilova. shared — boshqa ilovadan «Ulashish → Tekshir» bilan kelgan matn. */
 @Composable
-fun TekshirApp(store: Store, shared: String?, onSharedUsed: () -> Unit) {
+fun TekshirApp(store: Store, shared: String?, resumed: Int, onSharedUsed: () -> Unit) {
     var lang by remember { mutableStateOf(store.lang) }
     var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
     var input by rememberSaveable { mutableStateOf("") }
@@ -138,6 +147,9 @@ fun TekshirApp(store: Store, shared: String?, onSharedUsed: () -> Unit) {
         } else onlineState = 0
     }
 
+    // Ilovaga qaytganda (masalan avtomatik ogohlantirishdan keyin) tarix va hisoblar yangilansin
+    LaunchedEffect(resumed) { histTick++ }
+
     LaunchedEffect(shared) {
         if (!shared.isNullOrBlank()) { input = shared; tab = Tab.CHECK; runCheck(); onSharedUsed() }
     }
@@ -159,11 +171,11 @@ fun TekshirApp(store: Store, shared: String?, onSharedUsed: () -> Unit) {
     ) { pad ->
         Box(Modifier.padding(pad).fillMaxSize()) {
             when (tab) {
-                Tab.HOME -> HomeScreen(store, lang, histTick) { tab = Tab.CHECK }
+                Tab.HOME -> HomeScreen(store, lang, histTick, resumed, { tab = Tab.CHECK }, { tab = Tab.SET })
                 Tab.CHECK -> CheckScreen(lang, input, { input = it }, ::runCheck, result, online, onlineState, error)
                 Tab.HIST -> HistoryScreen(store, lang, histTick) { store.clearHistory(); histTick++ }
                 Tab.TIPS -> TipsScreen(store, lang)
-                Tab.SET -> SettingsScreen(lang) { lang = it; store.lang = it }
+                Tab.SET -> SettingsScreen(store, lang, resumed) { lang = it; store.lang = it }
             }
         }
     }
@@ -223,8 +235,10 @@ private fun ShieldHero() {
 
 // ================= 1. Himoya (bosh ekran) =================
 @Composable
-private fun HomeScreen(store: Store, lang: String, tick: Int, onCheck: () -> Unit) {
+private fun HomeScreen(store: Store, lang: String, tick: Int, resumed: Int, onCheck: () -> Unit, onGuard: () -> Unit) {
+    val ctx = LocalContext.current
     val hist = remember(tick) { store.history() }
+    val guardOn = remember(resumed, tick) { MessageGuard.allowed(ctx) && store.notifGuard }
     val (cats, tips) = store.tips
     val tip = tips[((System.currentTimeMillis() + 5 * 3600_000L) / 86_400_000L % tips.size).toInt()]
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -245,15 +259,24 @@ private fun HomeScreen(store: Store, lang: String, tick: Int, onCheck: () -> Uni
         }
         Kicker(S.t(lang, "modules"))
         for ((icon, key) in listOf("🔔" to "m_notif", "📲" to "m_apps", "📁" to "m_files", "📞" to "m_calls", "👨‍👩‍👧" to "m_family", "🩺" to "m_score")) {
-            Row(Modifier.fillMaxWidth().background(CardBg, RoundedCornerShape(16.dp)).border(1.dp, Line, RoundedCornerShape(16.dp)).padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically) {
+            val ready = key == "m_notif"                        // tayyor modullar (2-bosqich: xabarlar)
+            val rowMod = Modifier.fillMaxWidth().background(CardBg, RoundedCornerShape(16.dp))
+                .border(1.dp, if (ready && guardOn) Safe else Line, RoundedCornerShape(16.dp))
+            Row((if (ready) rowMod.clickable(onClick = onGuard) else rowMod).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(icon, fontSize = 22.sp, modifier = Modifier.width(36.dp))
                 Column(Modifier.weight(1f)) {
                     Text(S.t(lang, key), color = TextMain, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                    Text(S.t(lang, key + "_s"), color = Muted, fontSize = 12.sp)
+                    val sub = if (ready && guardOn) S.t(lang, key + "_s") + " · ${store.warnedCount} ${S.t(lang, "g_warned")}" else S.t(lang, key + "_s")
+                    Text(sub, color = Muted, fontSize = 12.sp)
                 }
-                Text(S.t(lang, "soon"), color = Muted, fontSize = 11.sp,
-                    modifier = Modifier.border(1.dp, Line, RoundedCornerShape(99.dp)).padding(horizontal = 8.dp, vertical = 3.dp))
+                when {
+                    !ready -> Text(S.t(lang, "soon"), color = Muted, fontSize = 11.sp,
+                        modifier = Modifier.border(1.dp, Line, RoundedCornerShape(99.dp)).padding(horizontal = 8.dp, vertical = 3.dp))
+                    guardOn -> Text(S.t(lang, "on"), color = Safe, fontSize = 11.sp, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.background(SafeBg, RoundedCornerShape(99.dp)).padding(horizontal = 8.dp, vertical = 3.dp))
+                    else -> Text(S.t(lang, "turn_on"), color = Bg, fontSize = 11.sp, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.background(Safe, RoundedCornerShape(99.dp)).padding(horizontal = 10.dp, vertical = 4.dp))
+                }
             }
         }
         Kicker(S.t(lang, "tip_day"))
@@ -418,7 +441,7 @@ private fun TipsScreen(store: Store, lang: String) {
 
 // ================= 5. Sozlamalar =================
 @Composable
-private fun SettingsScreen(lang: String, onLang: (String) -> Unit) {
+private fun SettingsScreen(store: Store, lang: String, resumed: Int, onLang: (String) -> Unit) {
     val uri = LocalUriHandler.current
     val ctx = LocalContext.current
     val version = remember { runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "" }
@@ -431,6 +454,7 @@ private fun SettingsScreen(lang: String, onLang: (String) -> Unit) {
                 FilterChip(selected = lang == "ru", onClick = { onLang("ru") }, label = { Text("Русский") })
             }
         }
+        GuardCard(store, lang, resumed)
         Card {
             Kicker(S.t(lang, "about"))
             Text(S.t(lang, "about_p"), color = TextMain, fontSize = 15.sp)
@@ -438,5 +462,57 @@ private fun SettingsScreen(lang: String, onLang: (String) -> Unit) {
         Card(Modifier.clickable { uri.openUri("https://tekshir.ah-digital.uz/maxfiylik.html") }) { Text(S.t(lang, "priv_link"), color = Accent, fontWeight = FontWeight.Bold) }
         Card(Modifier.clickable { uri.openUri("https://t.me/tekshirbot_bot?start=android") }) { Text(S.t(lang, "bot_link"), color = Accent, fontWeight = FontWeight.Bold) }
         Text("${S.t(lang, "made")} · ${S.t(lang, "version")} $version", color = Muted, fontSize = 13.sp)
+    }
+}
+
+// ================= 2-bosqich: xabarlarni kuzatish (Sozlamalardagi karta) =================
+@Composable
+private fun GuardCard(store: Store, lang: String, resumed: Int) {
+    val ctx = LocalContext.current
+    val allowed = remember(resumed) { MessageGuard.allowed(ctx) }
+    fun notifGranted() = Build.VERSION.SDK_INT < 33 ||
+        ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+    var canNotify by remember(resumed) { mutableStateOf(notifGranted()) }
+    val askNotif = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { canNotify = it }
+    var on by remember { mutableStateOf(store.notifGuard) }
+    var sent by remember { mutableStateOf(false) }
+
+    Card(border = if (allowed && on) Safe else Line) {
+        Text(S.t(lang, "g_title"), color = TextMain, fontSize = 17.sp, fontWeight = FontWeight.ExtraBold)
+        Text(S.t(lang, "g_p"), color = TextMain, fontSize = 14.sp)
+        Text(S.t(lang, "g_priv"), color = Muted, fontSize = 13.sp)
+        if (!allowed) {
+            Text(S.t(lang, "g_need"), color = Warn, fontSize = 13.sp)
+            Button(onClick = { MessageGuard.openSettings(ctx) }, modifier = Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Safe, contentColor = Bg)) {
+                Text(S.t(lang, "turn_on"), fontWeight = FontWeight.ExtraBold)
+            }
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(S.t(lang, "g_active"), color = Safe, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Text(S.t(lang, "g_pause") + " ", color = Muted, fontSize = 13.sp)
+                Switch(checked = on, onCheckedChange = { on = it; store.notifGuard = it },
+                    colors = SwitchDefaults.colors(checkedThumbColor = Bg, checkedTrackColor = Safe))
+            }
+            if (!canNotify) {
+                Text(S.t(lang, "g_notif_need"), color = Warn, fontSize = 13.sp)
+                OutlinedButton(onClick = { if (Build.VERSION.SDK_INT >= 33) askNotif.launch(Manifest.permission.POST_NOTIFICATIONS) },
+                    modifier = Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(16.dp)) {
+                    Text(S.t(lang, "g_allow_notif"), color = TextMain)
+                }
+            } else {
+                OutlinedButton(onClick = {
+                    // Sinov: firibgar SMS namunasi — haqiqiy mexanizmdan o'tadi va ogohlantirish chiqadi
+                    val sample = "Bank xodimi: kartangiz bloklandi, SMS kodni ayting https://c1ick-uz.com"
+                    val r = store.engine.check(sample)
+                    val reason = r.reasons.firstOrNull { it.points > 0 }?.let { Texts.t(lang, it.code, it.vars) } ?: ""
+                    MessageGuard.warn(ctx, r.level, "Tekshir", reason, sample, lang)
+                    sent = true
+                }, modifier = Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(16.dp)) {
+                    Text(S.t(lang, "g_test"), color = TextMain)
+                }
+                if (sent) Text(S.t(lang, "g_test_sent"), color = Muted, fontSize = 13.sp)
+            }
+        }
     }
 }

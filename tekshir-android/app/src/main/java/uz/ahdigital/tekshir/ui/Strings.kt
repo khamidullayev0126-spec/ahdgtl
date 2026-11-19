@@ -25,7 +25,21 @@ object S {
         "set_title" to "Sozlamalar", "lang" to "Til", "about" to "Tekshir haqida",
         "about_p" to "Firibgarlikka qarshi bepul ilova. Shubhali xabar, havola va fayllarni tekshiradi va sodda tilda tushuntiradi.",
         "priv_link" to "🔒 Maxfiylik siyosati", "bot_link" to "✈️ Telegram bot: @tekshirbot_bot", "made" to "AHdigital tomonidan yaratilgan",
-        "version" to "Versiya"
+        "version" to "Versiya",
+        // 2-bosqich: xabarlarni kuzatish
+        "on" to "Yoqilgan", "turn_on" to "Yoqish", "off" to "O'chirilgan",
+        "g_title" to "🔔 Xabarlarni kuzatish",
+        "g_p" to "SMS, Telegram, WhatsApp va boshqa xabarlar kelishi bilan telefonda tekshiriladi. Xavfli bo'lsa — darhol ogohlantirish chiqadi.",
+        "g_priv" to "🔒 Xabar matni telefoningizdan chiqmaydi — internetga ham, serverga ham yuborilmaydi.",
+        "g_need" to "Buning uchun Android'da «Bildirishnomalarga kirish» ruxsati kerak. «Yoqish»ni bosing → ro'yxatdan Tekshir → ruxsat bering.",
+        "g_notif_need" to "Ogohlantirish chiqishi uchun bildirishnomalarga ruxsat bering.",
+        "g_allow_notif" to "🔔 Bildirishnomaga ruxsat",
+        "g_active" to "Ruxsat berilgan ✅", "g_pause" to "Kuzatish", "g_warned" to "ogohlantirish",
+        "g_test" to "🧪 Sinab ko'rish", "g_test_sent" to "Sinov ogohlantirishi yuborildi — bildirishnomalarni qarang.",
+        "ch_danger" to "Xavfli xabarlar", "ch_susp" to "Shubhali xabarlar",
+        "w_danger" to "🔴 {app}: xavfli xabar!", "w_susp" to "🟡 {app}: shubhali xabar",
+        "w_do_danger" to "Havolani ochmang, kod aytmang, pul o'tkazmang. Batafsil — bosing.",
+        "w_do_susp" to "Ehtiyot bo'ling, avval tekshiring. Batafsil — bosing."
     )
     private val ru = mapOf(
         "tab_home" to "Защита", "tab_check" to "Проверка", "tab_hist" to "История", "tab_tips" to "Советы", "tab_set" to "Настройки",
@@ -50,7 +64,20 @@ object S {
         "set_title" to "Настройки", "lang" to "Язык", "about" to "О приложении Tekshir",
         "about_p" to "Бесплатное приложение против мошенников. Проверяет подозрительные сообщения, ссылки и файлы и объясняет простым языком.",
         "priv_link" to "🔒 Политика конфиденциальности", "bot_link" to "✈️ Telegram-бот: @tekshirbot_bot", "made" to "Создано AHdigital",
-        "version" to "Версия"
+        "version" to "Версия",
+        "on" to "Включено", "turn_on" to "Включить", "off" to "Выключено",
+        "g_title" to "🔔 Контроль сообщений",
+        "g_p" to "SMS, Telegram, WhatsApp и другие сообщения проверяются на телефоне сразу при получении. Если опасно — сразу предупреждение.",
+        "g_priv" to "🔒 Текст сообщений не покидает телефон — не отправляется ни в интернет, ни на сервер.",
+        "g_need" to "Нужно разрешение Android «Доступ к уведомлениям». Нажмите «Включить» → Tekshir в списке → разрешите.",
+        "g_notif_need" to "Разрешите уведомления, чтобы видеть предупреждения.",
+        "g_allow_notif" to "🔔 Разрешить уведомления",
+        "g_active" to "Разрешение есть ✅", "g_pause" to "Контроль", "g_warned" to "предупреждений",
+        "g_test" to "🧪 Проверить работу", "g_test_sent" to "Тестовое предупреждение отправлено — посмотрите уведомления.",
+        "ch_danger" to "Опасные сообщения", "ch_susp" to "Подозрительные сообщения",
+        "w_danger" to "🔴 {app}: опасное сообщение!", "w_susp" to "🟡 {app}: подозрительное сообщение",
+        "w_do_danger" to "Не открывайте ссылку, не называйте код, не переводите деньги. Подробнее — нажмите.",
+        "w_do_susp" to "Будьте осторожны, сначала проверьте. Подробнее — нажмите."
     )
     fun t(lang: String, key: String): String = (if (lang == "ru") ru else uz)[key] ?: uz[key] ?: key
 }

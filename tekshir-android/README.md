@@ -11,7 +11,7 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 
 ## Bosqichlar
 - [x] **1-bosqich:** dizayn, Himoya · Tekshirish (internetsiz + havolalar uchun Google/VirusTotal) · Tarix · 70 ta maslahat · Sozlama (o'zbek/rus) · «Ulashish → Tekshir»
-- [ ] 2. 🔔 Xabarlarni avtomatik kuzatish (SMS, Telegram, WhatsApp bildirishnomalari)
+- [x] **2-bosqich:** 🔔 Xabarlarni avtomatik kuzatish — SMS, Telegram, WhatsApp… bildirishnomasi kelishi bilan telefonda (internetsiz) tekshiradi, xavfli/shubhali bo'lsa ogohlantiradi. Xabar matni hech qayerga yuborilmaydi.
 - [ ] 3. 📲 Yangi o'rnatilgan ilovalarni tekshirish
 - [ ] 4. 📁 Yuklangan APK fayllar
 - [ ] 5. 🩺 Telefon xavfsizlik bali
@@ -26,9 +26,17 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 3. Finder → `AndroidStudioProjects/Tekshir/app/src/main/` papkasini oching.
 4. Zip ichidagi `app/src/main/` dagi hamma narsani shu yerga **ko'chiring** → «Replace» (almashtirish).
    - Almashadi: `AndroidManifest.xml`, `MainActivity.kt`, `ui/theme/Color.kt`, `ui/theme/Theme.kt`
-   - Qo'shiladi: `assets/`, `engine/`, `data/`, `ui/Screens.kt`, `ui/Strings.kt`
+   - Qo'shiladi: `assets/`, `engine/`, `data/`, `guard/`, `ui/Screens.kt`, `ui/Strings.kt`, `res/drawable/ic_stat_shield.xml`
    - `ui/theme/Type.kt` — Android Studio'niki qoladi.
 5. Android Studio'ni oching → yuqorida **Sync Now** chiqsa bosing → telefoningizni tanlang → **▶ Run**.
+
+## 2-bosqichni sinash (xabarlarni kuzatish)
+1. Ilovada **Sozlama → 🔔 Xabarlarni kuzatish → Yoqish** → ro'yxatdan **Tekshir** → ruxsat bering → orqaga.
+   - «Cheklangan sozlama» (Restricted setting) desa: Sozlamalar → Ilovalar → Tekshir → yuqorida **⋮** → **Cheklangan sozlamalarga ruxsat berish** → qaytadan urinib ko'ring.
+2. «Bildirishnomaga ruxsat» chiqsa — ruxsat bering.
+3. **🧪 Sinab ko'rish** → tepada 🔴 ogohlantirish chiqishi kerak → bosing → ilovada to'liq natija.
+4. Haqiqiy sinov: boshqa telefondan o'zingizga SMS yoki Telegram yuboring:
+   `Bank xodimi: kartangiz bloklandi, SMS kodni ayting https://c1ick-uz.com`
 
 ## Xavfsizlik
 - Imzolash kaliti (`.jks`/`.keystore`) GitHub'ga yuklanmaydi (`.gitignore`).

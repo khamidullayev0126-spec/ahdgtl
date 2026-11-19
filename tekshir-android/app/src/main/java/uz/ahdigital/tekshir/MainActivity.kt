@@ -16,6 +16,7 @@ import uz.ahdigital.tekshir.ui.theme.TekshirTheme
 
 class MainActivity : ComponentActivity() {
     private var shared by mutableStateOf<String?>(null)
+    private var resumed by mutableStateOf(0)      // Sozlamalardan qaytganda ruxsat holatini qayta tekshirish uchun
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,12 +25,17 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) readShare(intent)
         setContent {
             TekshirTheme {
-                TekshirApp(store, shared) { shared = null }
+                TekshirApp(store, shared, resumed) { shared = null }
             }
         }
     }
 
-    // Ilova ochiq turganida yana ulashilsa
+    override fun onResume() {
+        super.onResume()
+        resumed++
+    }
+
+    // Ilova ochiq turganida yana ulashilsa (yoki ogohlantirish bosilsa)
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         readShare(intent)
