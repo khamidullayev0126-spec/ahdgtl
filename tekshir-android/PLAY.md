@@ -47,8 +47,14 @@ Telefonda: ekran tugmasi + ovoz pasaytirish. Skrinshotlarda shaxsiy xabar va raq
 - Keyin **Production** ga ariza.
 
 ## 7. Chiqarishdan oldin tekshiruv ro'yxati
-- [ ] Telefonda hamma bosqichlar sinab ko'rildi (README → «sinash» bo'limlari)
+- [x] Telefonda hamma bosqichlar sinab ko'rildi (Galaxy A17)
 - [ ] Tushuntirish oynasi chiqadi (Sozlama → Xabarlarni kuzatish → Yoqish)
 - [ ] Maxfiylik siyosati ochiladi (Sozlama → Maxfiylik siyosati)
-- [ ] versionCode oshirildi, kalit zaxirada
+- [x] 1.0 (versionCode 1) imzolangan AAB yaratildi, kalit fleshkada zaxirada — 2026-11-19
+- [ ] Keyingi versiyalarda versionCode oshiriladi
 - [ ] Sinovdan keyin telefonda **USB debugging o'chirildi** va **Auto Blocker yoqildi**
+
+## 8. Holat (2026-11-19)
+- Birinchi Play hisobi xato bilan voyaga yetmagan akkauntda ochilgan → Google support'ga yopish va $25 qaytarish so'rovi yuborildi.
+- Yangi hisob — oyimning (hisob egasi) Google akkauntida, to'lov profili ham o'zida. To'lov eski $25 qaytgach qilinadi.
+- Hisob tasdiqlangach: Users and permissions → meni qo'shish → ilovani yuklash → 12 sinovchi × 14 kun.
