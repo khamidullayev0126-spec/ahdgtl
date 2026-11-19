@@ -741,8 +741,8 @@ private fun ScoreScreen(store: Store, lang: String, resumed: Int, onBack: () -> 
                 Row((if (action != null) mod.clickable(onClick = action) else mod).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(if (ok) "✅" else "⚠️", fontSize = 20.sp, modifier = Modifier.width(34.dp))
                     Column(Modifier.weight(1f)) {
-                        Text(S.t(lang, c.id), color = TextMain, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        if (!ok) Text(S.t(lang, c.id + "_no"), color = Muted, fontSize = 12.sp)
+                        // Muammo bo'lsa — muammoning o'zi yoziladi («USB debugging yoqilgan…»), yaxshi bo'lsa — yutuq
+                        Text(S.t(lang, if (ok) c.id else c.id + "_no"), color = TextMain, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     }
                     if (action != null) Text(S.t(lang, "s_fix"), color = Accent, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
