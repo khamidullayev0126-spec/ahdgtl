@@ -40,8 +40,41 @@
 - [x] Google Play uchun hammasi tayyor (maxfiylik siyosati, ruxsatlar tushuntirishi) — faqat dadamning Play Console hisobi kerak.
 - [ ] Google Play'ga chiqarish (AHdigital'dan keyin).
 
-## Dadamga qanday ko'rsataman (reja)
-1. Telefonda ilovani ochib, «Foydali» bo'limini ko'rsataman — dadamning o'z SMS'larini tekshirib beraman.
-2. Dadamning do'koni/ishi uchun QR kod yasab beraman (Wi-Fi yoki telefon).
-3. `/stats` ni ko'rsataman — bot qancha odamga yordam berganini.
-4. Oxirida — Tekshir ilovasi (Google Play'da chiqqach).
+## Dadamga qanday ko'rsataman (reja) — ~15 daqiqa
+
+### Oldindan tayyorlanadi (dadam yo'qligida)
+- [ ] Tekshir ilovasi **mening telefonimda** ishlayapti (Android Studio → Run), hamma bosqichlar sinab ko'rilgan.
+- [ ] Telefon to'liq zaryadlangan, internet bor, **Tarix tozalangan** (shaxsiy narsalar ko'rinmasin).
+- [ ] Botda `/stats` raqamlari yaxshi ko'rinadi (avval o'zim ochib qarayman).
+- [ ] Namuna xabar tayyor (bu haqiqiy havola emas, faqat sinov uchun):
+  `Bank xodimi: kartangiz bloklandi, SMS kodni ayting https://c1ick-uz.com`
+- [ ] Dadamning telefonida Telegram ochiq, @tekshirbot_bot bor.
+- [ ] USB debugging o'chirilgan, Auto Blocker yoqilgan (dadam xavfsizlik balini ko'rsa — 100 ga yaqin chiqsin 😄).
+
+### Ko'rsatish tartibi
+1. **Kirish (1 daq).** «Dada, eslaysizmi, yangiliklar sir dedim? Mana — 3 ta narsa tayyor.»
+2. **Bot (3 daq).** Dadamning telefonida `/stats`: nechta odam, nechta tekshiruv, qayerdan kelgani.
+   «Server siz to'lagan pulga ishlayapti — mana natijasi.»
+3. **AHdigital ilovasi → Foydali (3 daq).**
+   - Dadamning ishi uchun **QR kod** yasab beraman (Wi-Fi yoki telefon) — darhol foydasi bor.
+   - 70 ta maslahatdan bittasini o'qib beraman.
+4. **Tekshir ilovasi (5 daq)** — eng zo'r qismi:
+   - Bosh ekran: qalqon, **🩺 Xavfsizlik bali**.
+   - Namuna xabarni tekshiraman → 🔴 XAVFLI va sabablari.
+   - Sozlama → **🧪 Sinab ko'rish** → tepada ogohlantirish chiqadi («telefon o'zi ogohlantiradi»).
+5. **👨‍👩‍👧 Oila himoyasi — jonli (3 daq).** 🎯 WOW lahza:
+   - Dadam o'z telefonida botga `/oila` yozadi → kod oladi.
+   - Men kodni ilovaga kiritaman, nom: «Abdulhamid».
+   - Botda dadamga «✅ Abdulhamid telefoni ulandi» keladi.
+   - 🧪 Sinab ko'rish → **dadamning telefoniga «🚨 Oila himoyasi»** xabari keladi.
+   - «Buvimning telefoniga ham o'rnatsak — unga firibgar yozsa, sizga xabar keladi.»
+6. **So'rov (1 daq).** «Google Play'ga chiqarish uchun sizning hisobingiz kerak. Shartnomalarni siz o'qib qabul qilasiz — `PLAY.md` da hammasi yozilgan.»
+
+### Nima demaslik / ehtiyot
+- Haqiqiy firibgar havolani ochmayman — faqat namuna matn.
+- Dadamning shaxsiy SMS'larini faqat **o'zi ruxsat bersa** tekshiraman.
+- «100% himoya qiladi» demayman — «yordam beradi, lekin ehtiyot bo'lish baribir kerak».
+
+### Keyin
+- Buvim/oyimning telefoniga Tekshir (Play'da chiqqach) + oila himoyasi → dadamga ulash.
+- Kanalga «Oila himoyasi» posti (`kontent/oila-himoyasi-post.md`) — ilova chiqqan kuni.
