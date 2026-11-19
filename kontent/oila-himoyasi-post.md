@@ -2,7 +2,7 @@
 
 > ⏳ **QACHON JOYLASH:** Tekshir ilovasi Google Play'da chiqqan kuni (undan oldin emas — /oila ilovasiz ishlamaydi).
 > 🤫 Dadamga syurpriz — undan oldin kanalga qo'ymang.
-> `[HAVOLA]` o'rniga Google Play havolasini qo'ying. Rasm: ilovadagi «Oila himoyasi» skrinshoti + botdagi «🚨 Oila himoyasi» xabari (ism va raqamlarni yashiring).
+> `[HAVOLA]` o'rniga Google Play havolasini qo'ying. Rasm tayyor: `kontent/rasmlar/oila-himoyasi-post.png` (1080×1350).
 
 ---
 
