@@ -12,7 +12,7 @@
 4. Play Console → Setup → **App signing**: Google'ning imzosi yoqilgan bo'lsin (standart).
 
 ## 2. Do'kon sahifasi
-Matnlar, ikonka (512×512) va banner (1024×500): `tekshir-bot/play-store/` (README'dagi matnlar).
+Matnlar: **`tekshir-android/play-listing.md`** (yangi, Android ilova uchun). Ikonka va banner: `tekshir-bot/play-store/`.
 **Skrinshotlar — yangi, haqiqiy ilovadan oling** (Himoya, Tekshirish natijasi, Ilovalar tekshiruvi, Xavfsizlik bali, Oila himoyasi).
 Telefonda: ekran tugmasi + ovoz pasaytirish. Skrinshotlarda shaxsiy xabar va raqamlar ko'rinmasin.
 
