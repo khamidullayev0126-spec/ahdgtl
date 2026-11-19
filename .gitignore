@@ -5,6 +5,8 @@ data/
 # Tekshir botining qoidalari (JSON) GitHub'da bo'lishi SHART — server ularsiz ishga tushmaydi.
 # Baza fayli (tekshir.db) esa tekshir-bot/.gitignore orqali baribir yuklanmaydi.
 !tekshir-bot/data/
+# Tekshir Android ilovasidagi Kotlin kod papkasi (data/Store.kt) — bu ma'lumot emas, kod.
+!tekshir-android/app/src/main/java/uz/ahdigital/tekshir/data/
 .DS_Store
 kontent/video/reklama-c/ref/
 kontent/video/reklama-c/manba/kadrlar.mp4
