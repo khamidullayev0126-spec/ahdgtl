@@ -3,6 +3,8 @@
 Firibgarlikka qarshi **haqiqiy Android ilova**: tekshiruv telefonning o'zida, internetsiz bajariladi.
 Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 ta holatda botdagi natija bilan solishtiradi.
 
+> ✅ **2026-11-19:** Galaxy A17 telefonida sinab ko'rildi — tekshirish, avtomatik ogohlantirish, xavfsizlik bali, ilovalar tekshiruvi, oila himoyasi ishladi.
+
 ## Papkalar
 | Papka | Nima |
 |---|---|

@@ -43,7 +43,7 @@
 ## Dadamga qanday ko'rsataman (reja) — ~15 daqiqa
 
 ### Oldindan tayyorlanadi (dadam yo'qligida)
-- [ ] Tekshir ilovasi **mening telefonimda** ishlayapti (Android Studio → Run), hamma bosqichlar sinab ko'rilgan.
+- [x] Tekshir ilovasi **mening telefonimda** ishlayapti (Android Studio → Run), hamma bosqichlar sinab ko'rilgan. ✅ 2026-11-19
 - [ ] Telefon to'liq zaryadlangan, internet bor, **Tarix tozalangan** (shaxsiy narsalar ko'rinmasin).
 - [ ] Botda `/stats` raqamlari yaxshi ko'rinadi (avval o'zim ochib qarayman).
 - [ ] Namuna xabar tayyor (bu haqiqiy havola emas, faqat sinov uchun):
