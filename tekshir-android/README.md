@@ -12,7 +12,7 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 | `engine/` | Tekshiruv mexanizmi + testlar (kompyuterda: `cd engine && gradle test`) |
 
 ## Bosqichlar
-- [x] **1-bosqich:** dizayn, Himoya · Tekshirish (internetsiz + havolalar uchun Google/VirusTotal) · Tarix · 70 ta maslahat · Sozlama (o'zbek/rus) · «Ulashish → Tekshir»
+- [x] **1-bosqich:** dizayn, Himoya · Tekshirish (internetsiz + havolalar uchun Google/VirusTotal) · Tarix · 50 ta xavfsizlik maslahati · Sozlama (o'zbek/rus) · «Ulashish → Tekshir»
 - [x] **2-bosqich:** 🔔 Xabarlarni avtomatik kuzatish — SMS, Telegram, WhatsApp… bildirishnomasi kelishi bilan telefonda (internetsiz) tekshiradi, xavfli/shubhali bo'lsa ogohlantiradi. Xabar matni hech qayerga yuborilmaydi.
 - [x] **3-bosqich:** 📲 Ilovalar tekshiruvi — yangi ilova o'rnatilishi bilan tekshiradi (Play Market'danmi, SMS o'qiydimi, ekranni boshqaradimi, bank nomiga o'xshaydimi); «Hamma ilovalarni tekshirish» tugmasi.
 - [x] **4-bosqich:** 📁 APK faylni **o'rnatishdan oldin** tekshirish — Telegram'da APK bosilganda «Tekshir bilan ochish», «Ulashish → Tekshir» yoki «📁 APK faylni tekshirish» tugmasi. Fayl ichidagi nom, ruxsatlar o'qiladi; internetga faqat SHA-256 izi (VirusTotal).

@@ -80,7 +80,7 @@ class Store(private val ctx: Context) {
 
     fun clearHistory() = prefs.edit().remove("history").apply()
 
-    // ---------- Maslahatlar (assets/tips.json — saytdagi 70 ta maslahat) ----------
+    // ---------- Maslahatlar (assets/tips.json — 50 ta xavfsizlik maslahati, 5 yo'nalish) ----------
     val tips: Pair<List<TipCat>, List<Tip>> by lazy {
         val o = JSONObject(ctx.assets.open("tips.json").bufferedReader().use { it.readText() })
         val c = o.getJSONArray("cats"); val t = o.getJSONArray("tips")
