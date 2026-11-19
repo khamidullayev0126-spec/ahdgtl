@@ -578,8 +578,18 @@ async function main() {
     { command: "yordam", description: "Qanday ishlatish" },
     { command: "demo", description: "Namunalar: firibgarlar qanday yozadi" },
     { command: "maslahat", description: "Xavfsizlik maslahati" },
+    { command: "oila", description: "Oila himoyasi — yaqiningiz telefoni" },
     { command: "til", description: "Tilni o'zgartirish / Сменить язык" }
   ]).catch(e => console.error("Buyruqlar menyusi:", e.message));
+  // Telegram'i rus tilida bo'lganlar uchun menyu
+  bot.api.setMyCommands([
+    { command: "start", description: "Начать" },
+    { command: "yordam", description: "Как пользоваться" },
+    { command: "demo", description: "Примеры: как пишут мошенники" },
+    { command: "maslahat", description: "Совет по безопасности" },
+    { command: "oila", description: "Защита семьи — телефон близкого" },
+    { command: "til", description: "Сменить язык / Tilni o'zgartirish" }
+  ], { language_code: "ru" }).catch(e => console.error("Buyruqlar menyusi (ru):", e.message));
   // Guruhlardagi "/" menyusi
   bot.api.setMyCommands([
     { command: "tekshir", description: "Xabarga javob qilib yozing — tekshiraman" },
