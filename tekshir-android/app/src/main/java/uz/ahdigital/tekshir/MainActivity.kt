@@ -3,6 +3,8 @@
 package uz.ahdigital.tekshir
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +18,7 @@ import uz.ahdigital.tekshir.ui.theme.TekshirTheme
 
 class MainActivity : ComponentActivity() {
     private var shared by mutableStateOf<String?>(null)
+    private var sharedFile by mutableStateOf<Uri?>(null)    // 4-bosqich: tekshirish uchun kelgan APK fayl
     private var resumed by mutableStateOf(0)      // Sozlamalardan qaytganda ruxsat holatini qayta tekshirish uchun
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +28,7 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) readShare(intent)
         setContent {
             TekshirTheme {
-                TekshirApp(store, shared, resumed) { shared = null }
+                TekshirApp(store, shared, sharedFile, resumed, { shared = null }, { sharedFile = null })
             }
         }
     }
@@ -41,8 +44,18 @@ class MainActivity : ComponentActivity() {
         readShare(intent)
     }
 
+    @Suppress("DEPRECATION")
     private fun readShare(i: Intent?) {
-        if (i?.action != Intent.ACTION_SEND || i.type?.startsWith("text/") != true) return
+        if (i == null) return
+        // APK fayl: «Tekshir bilan ochish» (VIEW) yoki «Ulashish → Tekshir» (SEND + fayl)
+        if (i.action == Intent.ACTION_VIEW && i.data != null) { sharedFile = i.data; return }
+        if (i.action == Intent.ACTION_SEND && i.type?.startsWith("text/") != true) {
+            val u: Uri? = if (Build.VERSION.SDK_INT >= 33) i.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                else i.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+            if (u != null) sharedFile = u
+            return
+        }
+        if (i.action != Intent.ACTION_SEND || i.type?.startsWith("text/") != true) return
         val parts = listOfNotNull(i.getStringExtra(Intent.EXTRA_SUBJECT), i.getStringExtra(Intent.EXTRA_TEXT)).filter { it.isNotBlank() }.distinct()
         if (parts.isNotEmpty()) shared = parts.joinToString("\n")
     }

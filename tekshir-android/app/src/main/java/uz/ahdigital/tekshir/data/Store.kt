@@ -85,12 +85,21 @@ object Online {
     data class Answer(val level: String, val title: String, val reasons: List<String>)
 
     /** Tarmoqda ishlaydi — faqat fon oqimidan (Dispatchers.IO) chaqiring. Xato bo'lsa — null. */
-    fun checkLinks(urls: List<String>, lang: String): Answer? = try {
+    fun checkLinks(urls: List<String>, lang: String): Answer? =
+        post(JSONObject().put("text", urls.joinToString("\n")).put("lang", lang).put("app", "tekshir-android"))
+
+    /** 4-bosqich: APK fayl — faqat SHA-256 izi va hajmi yuboriladi (VirusTotal bazasida qidiriladi).
+     *  Fayl nomi ham, faylning o'zi ham yuborilmaydi. Nom o'rniga «fayl» — server nom bo'yicha qayta baholamasin. */
+    fun checkFile(size: Long, sha256: String, lang: String): Answer? =
+        post(JSONObject().put("lang", lang).put("app", "tekshir-android").put("file", JSONObject()
+            .put("name", "fayl").put("size", size).put("sha256", sha256).put("mime", "")))
+
+    private fun post(json: JSONObject): Answer? = try {
         val conn = (URL(API).openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"; connectTimeout = 6000; readTimeout = 12000; doOutput = true
             setRequestProperty("Content-Type", "application/json")
         }
-        val body = JSONObject().put("text", urls.joinToString("\n")).put("lang", lang).put("app", "tekshir-android").toString()
+        val body = json.toString()
         conn.outputStream.use { it.write(body.toByteArray()) }
         if (conn.responseCode != 200) null else {
             val o = JSONObject(conn.inputStream.bufferedReader().use { it.readText() })

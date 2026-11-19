@@ -46,12 +46,13 @@ object AppCheck {
     fun fromStore(a: AppInfo) = a.installer != null && a.installer in TRUSTED_STORES
 
     /** Tizim ilovalari va do'kondan o'rnatilganlar tekshirilmaydi (do'kon o'zi tekshiradi) — ortiqcha xavotir bo'lmasin. */
-    fun analyze(a: AppInfo, ownPkg: String = "uz.ahdigital.tekshir"): AppVerdict {
-        if (a.system || fromStore(a) || a.pkg == ownPkg) return AppVerdict(0, Level.SAFE, emptyList())
+    fun analyze(a: AppInfo, ownPkg: String = "uz.ahdigital.tekshir", apkFile: Boolean = false): AppVerdict {
+        if (!apkFile && (a.system || fromStore(a) || a.pkg == ownPkg)) return AppVerdict(0, Level.SAFE, emptyList())
         val r = mutableListOf<Reason>()
         fun add(code: String, p: Int, v: Map<String, String> = emptyMap()) { r += Reason(code, p, v) }
 
-        add("app_unknown_src", 30, mapOf("from" to (a.from ?: "")))
+        // O'rnatilgan ilova — «Play Market'dan emas»; hali o'rnatilmagan APK fayl — «bu APK fayl»
+        if (apkFile) add("apk_file", 30) else add("app_unknown_src", 30, mapOf("from" to (a.from ?: "")))
         val name = a.label.lowercase()
         BRANDS.firstOrNull { name.contains(it) }?.let { add("app_brand", 40, mapOf("name" to a.label)) }
             ?: LURES.firstOrNull { name.contains(it) }?.let { add("app_lure", 25, mapOf("name" to a.label)) }
@@ -65,5 +66,25 @@ object AppCheck {
 
         val score = minOf(100, r.sumOf { it.points })
         return AppVerdict(score, Engine.levelOf(score), r.sortedByDescending { it.points })
+    }
+}
+
+/** 4-bosqich: 📁 APK faylni O'RNATISHDAN OLDIN tekshirish. */
+object ApkCheck {
+    /**
+     * info — APK ichidan o'qilgan ma'lumot (o'qib bo'lmasa null), name — fayl nomi bo'yicha tekshiruv (Engine.analyzeFileName).
+     * Natija: ikkalasining sabablari birga, ball — eng kattasi (+ ikkalasi ham shubhali bo'lsa +10).
+     */
+    fun verdict(info: AppInfo?, name: Part): AppVerdict {
+        val app = info?.let { AppCheck.analyze(it, apkFile = true) }
+            ?: AppVerdict(30, Level.SUSPICIOUS, listOf(Reason("apk_unreadable", 30)))
+        // Botdagi «bu APK fayl» qoidasi (80 ball) bu yerda kerak emas — faylning ICHINI tekshiryapmiz.
+        // Fayl nomidagi boshqa hiylalar qoladi: «rasm.jpg.apk», ko'p bo'sh joy.
+        val nameReasons = name.reasons.filter { it.points > 0 && it.code != "file_apk" && it.code != "file_apk_hidden" }
+        val nameScore = minOf(100, nameReasons.sumOf { it.points })
+        val score = minOf(100, app.score + nameScore)
+        val seen = HashSet<String>()
+        val reasons = (app.reasons + nameReasons).filter { seen.add(it.code) }.sortedByDescending { it.points }
+        return AppVerdict(score, Engine.levelOf(score), reasons)
     }
 }

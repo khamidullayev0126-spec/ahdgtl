@@ -82,6 +82,7 @@ object AppGuard {
 
     /** Sabablar matni (foydalanuvchi tilida). */
     fun reasonText(lang: String, code: String, vars: Map<String, String>): String {
+        if (!code.startsWith("app_") && !code.startsWith("apk_")) return Texts.t(lang, code, vars)
         var s = S.t(lang, code)
         if (code == "app_unknown_src" && vars["from"].isNullOrEmpty()) s = S.t(lang, "app_unknown_src0")
         for ((k, v) in vars) s = s.replace("{$k}", v)

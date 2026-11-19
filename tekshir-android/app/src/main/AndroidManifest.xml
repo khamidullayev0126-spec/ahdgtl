@@ -37,6 +37,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            <!-- 4-bosqich: APK faylni o'rnatishdan oldin tekshirish.
+                 Telegram'da APK bosilganda «Tekshir bilan ochish» chiqadi; «Ulashish → Tekshir» ham ishlaydi. -->
+            <intent-filter android:label="Tekshir: o'rnatishdan oldin tekshirish">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:mimeType="application/vnd.android.package-archive" />
+            </intent-filter>
+            <intent-filter android:label="Tekshir bilan tekshirish">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/vnd.android.package-archive" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
         </activity>
 
         <!-- 2-bosqich: xabarlarni kuzatish. Foydalanuvchi o'zi Sozlamalarda ruxsat beradi. -->

@@ -64,7 +64,19 @@ object S {
         "app_notif" to "Bildirishnomalaringizni o'qiy oladi",
         "app_overlay" to "Boshqa ilovalar ustidan oyna chiqara oladi (soxta kirish oynasi)",
         "app_install" to "O'zi boshqa ilovalar o'rnata oladi",
-        "app_calls" to "Qo'ng'iroqlarni boshqara oladi"
+        "app_calls" to "Qo'ng'iroqlarni boshqara oladi",
+        // 4-bosqich: APK fayl
+        "apk_btn" to "📁 APK faylni tekshirish", "apk_reading" to "APK fayl o'qilmoqda…",
+        "apk_fail" to "Faylni o'qib bo'lmadi. U juda katta (300 MB dan ortiq) yoki buzilgan bo'lishi mumkin.",
+        "apk_file" to "Bu APK fayl — Play Market'dan emas. Firibgarlar aynan shunday fayl yuboradi",
+        "apk_unreadable" to "Fayl ichini o'qib bo'lmadi — APK emas yoki atayin buzilgan",
+        "apk_pkg" to "Paket", "apk_size" to "Hajmi",
+        "apk_online" to "⏳ VirusTotal bazasida qidirilmoqda (faqat fayl izi yuboriladi)…",
+        "apk_do_danger" to "❌ O'rnatmang! Faylni o'chiring. Agar o'rnatib qo'ygan bo'lsangiz — internetni o'chiring, ilovani o'chiring va bankka qo'ng'iroq qiling.",
+        "apk_do_susp" to "⚠️ Kim yuborganini boshqa yo'l bilan (qo'ng'iroq) aniqlang. Ilovani faqat Play Market'dan o'rnating.",
+        "apk_do_safe" to "✅ Xavfli belgi topilmadi. Baribir ilovalarni Play Market'dan o'rnatish eng xavfsiz.",
+        "apk_priv" to "🔒 Fayl telefoningizda tekshiriladi. Internetga faqat faylning izi (SHA-256) yuboriladi — fayl ham, uning nomi ham emas.",
+        "m_files_ready" to "Telegram'da APK bosilganda «Tekshir bilan ochish» — o'rnatishdan oldin tekshiradi"
     )
     private val ru = mapOf(
         "tab_home" to "Защита", "tab_check" to "Проверка", "tab_hist" to "История", "tab_tips" to "Советы", "tab_set" to "Настройки",
@@ -126,7 +138,18 @@ object S {
         "app_notif" to "Может читать ваши уведомления",
         "app_overlay" to "Может показывать окна поверх других приложений (фальшивый вход)",
         "app_install" to "Может сам устанавливать другие приложения",
-        "app_calls" to "Может управлять звонками"
+        "app_calls" to "Может управлять звонками",
+        "apk_btn" to "📁 Проверить APK-файл", "apk_reading" to "Читаем APK-файл…",
+        "apk_fail" to "Не удалось прочитать файл. Возможно, он слишком большой (более 300 МБ) или повреждён.",
+        "apk_file" to "Это APK-файл — не из Play Market. Мошенники присылают именно такие файлы",
+        "apk_unreadable" to "Не удалось прочитать содержимое — это не APK или файл намеренно повреждён",
+        "apk_pkg" to "Пакет", "apk_size" to "Размер",
+        "apk_online" to "⏳ Ищем в базе VirusTotal (отправляется только отпечаток файла)…",
+        "apk_do_danger" to "❌ Не устанавливайте! Удалите файл. Если уже установили — отключите интернет, удалите приложение и позвоните в банк.",
+        "apk_do_susp" to "⚠️ Уточните у отправителя другим способом (звонком). Устанавливайте приложения только из Play Market.",
+        "apk_do_safe" to "✅ Опасных признаков не найдено. Но безопаснее всего устанавливать приложения из Play Market.",
+        "apk_priv" to "🔒 Файл проверяется на телефоне. В интернет отправляется только отпечаток файла (SHA-256) — ни сам файл, ни его имя.",
+        "m_files_ready" to "В Telegram нажмите на APK → «Открыть в Tekshir» — проверка до установки"
     )
     fun t(lang: String, key: String): String = (if (lang == "ru") ru else uz)[key] ?: uz[key] ?: key
 }

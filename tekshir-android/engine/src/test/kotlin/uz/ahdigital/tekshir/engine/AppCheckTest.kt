@@ -42,3 +42,35 @@ class AppCheckTest {
         assertEquals(Level.SAFE, AppCheck.analyze(AppInfo("uz.ahdigital.tekshir", "Tekshir", null)).level)
     }
 }
+
+/** 4-bosqich: APK faylni o'rnatishdan oldin tekshirish. */
+class ApkCheckTest {
+    private fun res(name: String) = javaClass.classLoader.getResource(name)!!.readText()
+    private val engine = Engine(Rules(res("scam-keywords.json"), res("url-rules.json"), res("trusted-domains.json")))
+
+    @Test fun oddiyApkShubhali() {
+        val v = ApkCheck.verdict(AppInfo("org.game", "O'yin", null), engine.analyzeFileName("oyin.apk"))
+        assertEquals(Level.SUSPICIOUS, v.level)
+        assertEquals(listOf("apk_file"), v.reasons.map { it.code })
+    }
+
+    @Test fun soxtaPaymeXavfli() {
+        val info = AppInfo("a.b", "Payme", null, permissions = setOf("android.permission.RECEIVE_SMS"))
+        val v = ApkCheck.verdict(info, engine.analyzeFileName("Payme.apk"))
+        assertEquals(Level.DANGER, v.level)
+        assertEquals("app_brand", v.reasons.first().code)
+    }
+
+    @Test fun ikkitaKengaytmaXavfliroq() {
+        val plain = ApkCheck.verdict(AppInfo("a.b", "Album", null), engine.analyzeFileName("album.apk"))
+        val trick = ApkCheck.verdict(AppInfo("a.b", "Album", null), engine.analyzeFileName("rasm.jpg.apk"))
+        assertTrue(trick.score > plain.score)
+        assertTrue(trick.reasons.any { it.code == "file_double" })
+    }
+
+    @Test fun oqibBolmasa() {
+        val v = ApkCheck.verdict(null, engine.analyzeFileName("x.apk"))
+        assertEquals(Level.SUSPICIOUS, v.level)
+        assertEquals("apk_unreadable", v.reasons.first().code)
+    }
+}

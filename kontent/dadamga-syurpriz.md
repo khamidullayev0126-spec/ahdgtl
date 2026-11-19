@@ -33,6 +33,7 @@
 - [x] **Haqiqiy Android ilova (Kotlin)** — tekshiruv telefonning o'zida, internetsiz; Telegram bot bilan bir xil qoidalar (43 ta test).
 - [x] **🔔 Avtomatik himoya: xabarlarni kuzatish** — SMS, Telegram, WhatsApp'ga firibgar xabar kelishi bilan o'zi ogohlantiradi. Xabar matni telefondan chiqmaydi.
 - [x] **📲 Xavfli ilova ogohlantirishi** — Telegram'dan kelgan soxta «Click.apk» yoki «Rasmlar.apk» o'rnatilsa, darhol aytadi va o'chirish sahifasini ochadi. Telefondagi hamma ilovalarni bir tugma bilan tekshirish.
+- [x] **📁 APK faylni o'rnatishdan OLDIN tekshirish** — Telegram'da APK bosilsa «Tekshir bilan ochish»: ichida nima borligini (SMS o'qiydimi, bank nomiga o'xshaydimi) ko'rsatadi va VirusTotal bazasidan qidiradi. Fayl hech qayerga yuklanmaydi.
 - [ ] Google Play'ga chiqarish (AHdigital'dan keyin).
 
 ## Dadamga qanday ko'rsataman (reja)

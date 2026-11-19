@@ -1,12 +1,14 @@
 // Tekshir — ilova ekranlari (Jetpack Compose).
 // 1-bosqich: Himoya (bosh ekran), Tekshirish, Tarix, Maslahat, Sozlama.
 // 2-bosqich: 🔔 xabarlarni avtomatik kuzatish (Sozlama → yoqish).
-// 3-bosqich: 📲 ilovalar tekshiruvi (bosh ekran → «Yangi ilovalar»). Qolgan modullar keyingi bosqichlarda.
+// 3-bosqich: 📲 ilovalar tekshiruvi (bosh ekran → «Yangi ilovalar»).
+// 4-bosqich: 📁 APK faylni o'rnatishdan oldin tekshirish (Tekshirish oynasi, «Tekshir bilan ochish»). Qolganlari keyin.
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package uz.ahdigital.tekshir.ui
 
 import android.Manifest
+import android.net.Uri
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.BackHandler
@@ -93,6 +95,8 @@ import uz.ahdigital.tekshir.engine.Result
 import uz.ahdigital.tekshir.engine.Texts
 import uz.ahdigital.tekshir.engine.AppInfo
 import uz.ahdigital.tekshir.engine.AppVerdict
+import uz.ahdigital.tekshir.guard.ApkReport
+import uz.ahdigital.tekshir.guard.ApkScan
 import uz.ahdigital.tekshir.guard.AppGuard
 import uz.ahdigital.tekshir.guard.MessageGuard
 import uz.ahdigital.tekshir.ui.theme.Accent
@@ -122,7 +126,7 @@ private fun rank(l: String) = when (l) { "danger" -> 2; "suspicious" -> 1; else 
 
 /** Butun ilova. shared — boshqa ilovadan «Ulashish → Tekshir» bilan kelgan matn. */
 @Composable
-fun TekshirApp(store: Store, shared: String?, resumed: Int, onSharedUsed: () -> Unit) {
+fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, resumed: Int, onSharedUsed: () -> Unit, onFileUsed: () -> Unit) {
     var lang by remember { mutableStateOf(store.lang) }
     var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
     var input by rememberSaveable { mutableStateOf("") }
@@ -131,7 +135,13 @@ fun TekshirApp(store: Store, shared: String?, resumed: Int, onSharedUsed: () -> 
     var onlineState by remember { mutableStateOf(0) }          // 0 — kerak emas, 1 — kutilmoqda, 2 — tayyor, 3 — internet yo'q
     var error by remember { mutableStateOf<String?>(null) }
     var histTick by remember { mutableStateOf(0) }
-    var appsOpen by rememberSaveable { mutableStateOf(false) }   // 📲 Ilovalar tekshiruvi oynasi              // tarix yangilanganda ekranni qayta chizish uchun
+    var appsOpen by rememberSaveable { mutableStateOf(false) }   // 📲 Ilovalar tekshiruvi oynasi
+    // 4-bosqich: APK fayl tekshiruvi
+    var apk by remember { mutableStateOf<ApkReport?>(null) }
+    var apkState by remember { mutableStateOf(0) }       // 0 — yo'q, 1 — o'qilmoqda, 2 — tayyor, 3 — o'qib bo'lmadi
+    var apkOnline by remember { mutableStateOf<Online.Answer?>(null) }
+    var apkOnlineState by remember { mutableStateOf(0) }
+    val ctx = LocalContext.current              // tarix yangilanganda ekranni qayta chizish uchun
     val scope = rememberCoroutineScope()
 
     fun runCheck() {
@@ -152,6 +162,24 @@ fun TekshirApp(store: Store, shared: String?, resumed: Int, onSharedUsed: () -> 
             }
         } else onlineState = 0
     }
+
+    fun runApk(uri: Uri) {
+        tab = Tab.CHECK; appsOpen = false
+        apk = null; apkState = 1; apkOnline = null; apkOnlineState = 0
+        scope.launch {
+            val rep = withContext(Dispatchers.IO) { ApkScan.check(ctx, uri, store.engine) }
+            apk = rep; apkState = if (rep != null) 2 else 3
+            if (rep != null) {
+                val lv = rep.verdict.level.name.lowercase()
+                store.addHistory(lv, "📁 " + Texts.t(lang, "level_$lv").replace(Regex("^[^\\p{L}]+"), ""), rep.name); histTick++
+                apkOnlineState = 1
+                val a = withContext(Dispatchers.IO) { Online.checkFile(rep.size, rep.sha256, lang) }
+                apkOnline = a; apkOnlineState = if (a != null) 2 else 3
+            }
+        }
+    }
+
+    LaunchedEffect(sharedFile) { if (sharedFile != null) { runApk(sharedFile); onFileUsed() } }
 
     // Ilovaga qaytganda (masalan avtomatik ogohlantirishdan keyin) tarix va hisoblar yangilansin
     LaunchedEffect(resumed) { histTick++ }
@@ -181,7 +209,9 @@ fun TekshirApp(store: Store, shared: String?, resumed: Int, onSharedUsed: () -> 
                 AppsScreen(store, lang, resumed) { appsOpen = false }
             } else when (tab) {
                 Tab.HOME -> HomeScreen(store, lang, histTick, resumed, { tab = Tab.CHECK }, { tab = Tab.SET }, { appsOpen = true })
-                Tab.CHECK -> CheckScreen(lang, input, { input = it }, ::runCheck, result, online, onlineState, error)
+                Tab.CHECK -> CheckScreen(lang, input, { input = it }, ::runCheck, result, online, onlineState, error) {
+                    ApkSection(lang, apk, apkState, apkOnline, apkOnlineState, ::runApk)
+                }
                 Tab.HIST -> HistoryScreen(store, lang, histTick) { store.clearHistory(); histTick++ }
                 Tab.TIPS -> TipsScreen(store, lang)
                 Tab.SET -> SettingsScreen(store, lang, resumed) { lang = it; store.lang = it }
@@ -270,16 +300,20 @@ private fun HomeScreen(store: Store, lang: String, tick: Int, resumed: Int, onCh
         }
         Kicker(S.t(lang, "modules"))
         for ((icon, key) in listOf("🔔" to "m_notif", "📲" to "m_apps", "📁" to "m_files", "📞" to "m_calls", "👨‍👩‍👧" to "m_family", "🩺" to "m_score")) {
-            val ready = key == "m_notif" || key == "m_apps"     // tayyor modullar (2–3-bosqich)
-            val active = if (key == "m_apps") appsOn else guardOn
+            val ready = key == "m_notif" || key == "m_apps" || key == "m_files"   // tayyor modullar (2–4-bosqich)
+            val active = when (key) { "m_apps" -> appsOn; "m_files" -> true; else -> guardOn }
             val rowMod = Modifier.fillMaxWidth().background(CardBg, RoundedCornerShape(16.dp))
                 .border(1.dp, if (ready && active) Safe else Line, RoundedCornerShape(16.dp))
-            val click = if (key == "m_apps") onApps else onGuard
+            val click = when (key) { "m_apps" -> onApps; "m_files" -> onCheck; else -> onGuard }
             Row((if (ready) rowMod.clickable(onClick = click) else rowMod).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(icon, fontSize = 22.sp, modifier = Modifier.width(36.dp))
                 Column(Modifier.weight(1f)) {
                     Text(S.t(lang, key), color = TextMain, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                    val sub = if (key == "m_notif" && guardOn) S.t(lang, key + "_s") + " · ${store.warnedCount} ${S.t(lang, "g_warned")}" else S.t(lang, key + "_s")
+                    val sub = when {
+                        key == "m_notif" && guardOn -> S.t(lang, key + "_s") + " · ${store.warnedCount} ${S.t(lang, "g_warned")}"
+                        key == "m_files" -> S.t(lang, "m_files_ready")
+                        else -> S.t(lang, key + "_s")
+                    }
                     Text(sub, color = Muted, fontSize = 12.sp)
                 }
                 when {
@@ -319,7 +353,8 @@ private fun TipCard(tip: Tip, catName: String) {
 @Composable
 private fun CheckScreen(
     lang: String, input: String, onInput: (String) -> Unit, onCheck: () -> Unit,
-    result: Result?, online: Online.Answer?, onlineState: Int, error: String?
+    result: Result?, online: Online.Answer?, onlineState: Int, error: String?,
+    apkSection: @Composable () -> Unit = {}
 ) {
     val clip = LocalClipboardManager.current
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -343,6 +378,7 @@ private fun CheckScreen(
         if (error != null) Text(error, color = Danger, fontWeight = FontWeight.Bold)
         if (result != null) ResultCard(lang, result, online, onlineState)
         Text(S.t(lang, "privacy"), color = Muted, fontSize = 13.sp)
+        apkSection()
     }
 }
 
@@ -599,4 +635,48 @@ private fun AppsScreen(store: Store, lang: String, resumed: Int, onBack: () -> U
         }
         item { Spacer(Modifier.height(16.dp)) }
     }
+}
+
+// ================= 4-bosqich: 📁 APK faylni o'rnatishdan oldin tekshirish =================
+@Composable
+private fun ApkSection(lang: String, apk: ApkReport?, state: Int, online: Online.Answer?, onlineState: Int, onPick: (Uri) -> Unit) {
+    val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if (uri != null) onPick(uri) }
+    OutlinedButton(onClick = { pick.launch(arrayOf("application/vnd.android.package-archive", "application/octet-stream")) },
+        enabled = state != 1, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(16.dp)) {
+        Text(S.t(lang, if (state == 1) "apk_reading" else "apk_btn"), color = TextMain, fontWeight = FontWeight.Bold)
+    }
+    if (state == 3) Text(S.t(lang, "apk_fail"), color = Danger, fontWeight = FontWeight.Bold)
+    if (apk != null) {
+        val local = apk.verdict.level.name.lowercase()
+        val lv = if (online != null && rank(online.level) > rank(local)) online.level else local
+        Card(bg = levelBg(lv), border = levelColor(lv)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(48.dp).background(levelColor(lv), CircleShape), contentAlignment = Alignment.Center) {
+                    Text(when (lv) { "danger" -> "✕"; "suspicious" -> "!"; else -> "✓" }, color = Bg, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(Texts.t(lang, "level_$lv").replace(Regex("^[^\\p{L}]+"), ""), color = levelColor(lv), fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
+                    Text(apk.info?.label ?: apk.name, color = TextMain, fontWeight = FontWeight.Bold)
+                }
+            }
+            Text("📄 ${apk.name}", color = Muted, fontSize = 12.sp)
+            apk.info?.let { Text("${S.t(lang, "apk_pkg")}: ${it.pkg}", color = Muted, fontSize = 12.sp) }
+            Text("${S.t(lang, "apk_size")}: ${"%.1f".format(apk.size / 1048576.0)} MB", color = Muted, fontSize = 12.sp)
+            val reasons = apk.verdict.reasons.map { AppGuard.reasonText(lang, it.code, it.vars) }
+            val extra = online?.reasons.orEmpty().filter { it !in reasons }
+            if (reasons.isNotEmpty() || extra.isNotEmpty()) {
+                Kicker(Texts.t(lang, "why"))
+                (reasons + extra).forEach { Text("• $it", color = TextMain, fontSize = 14.sp) }
+            }
+            Kicker(Texts.t(lang, "what_to_do"))
+            Text(S.t(lang, when (lv) { "danger" -> "apk_do_danger"; "suspicious" -> "apk_do_susp"; else -> "apk_do_safe" }), color = TextMain, fontSize = 14.sp)
+            when (onlineState) {
+                1 -> Text(S.t(lang, "apk_online"), color = Muted, fontSize = 13.sp)
+                2 -> Text(S.t(lang, "online_done"), color = Muted, fontSize = 13.sp)
+                3 -> Text(S.t(lang, "online_fail"), color = Muted, fontSize = 13.sp)
+            }
+        }
+    }
+    Text(S.t(lang, "apk_priv"), color = Muted, fontSize = 12.sp)
 }
