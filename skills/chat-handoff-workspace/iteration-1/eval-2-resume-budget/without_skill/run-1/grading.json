@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "Short confirmation of understanding (no long restatement of the whole block)",
+      "passed": true,
+      "evidence": "3 sentences"
+    },
+    {
+      "text": "Does not suggest budgeting apps (YNAB, Mint, etc.)",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Does not use macros or Apps Script",
+      "passed": true,
+      "evidence": "no macros"
+    },
+    {
+      "text": "Does not re-ask questions the block already answers (currency, categories, tool choice)",
+      "passed": true,
+      "evidence": "no questions re-asked"
+    },
+    {
+      "text": "Starts NEXT STEP 1: gives a SUMIF formula for remaining = limit - spent",
+      "passed": true,
+      "evidence": "same SUMIF formula"
+    },
+    {
+      "text": "Explains the formula step by step for a non-technical user",
+      "passed": true,
+      "evidence": "explained part by part + test row + exact-name tip"
+    },
+    {
+      "text": "Does not jump ahead to steps 2-3 in full detail before step 1 is done",
+      "passed": true,
+      "evidence": "Step 2 only mentioned as next"
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  }
+}
