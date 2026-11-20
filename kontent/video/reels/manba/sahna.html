@@ -322,10 +322,22 @@ V.cta = {
   draw(el, u) { const p = back(lin(u, .05, .5)); el.firstChild.style.transform = `scale(${p})`; }
 };
 
+// --- Haqiqiy o'yin kadrlari (gorizontal telefon). sc.clip — oyin/kadr/<clip>/, sc.from — boshlang'ich kadr
+function waitImg(img, src) { if (img.dataset.src === src) return; img.dataset.src = src; img.src = src; window.__wait = img.decode().catch(() => {}); }
+V.game = {
+  init(el, sc) { el.appendChild(h(`<div style="position:absolute;left:50%;top:50%;width:932px;height:538px;margin:-269px 0 0 -466px;border-radius:44px;background:#1b1a19;padding:16px;box-shadow:0 40px 90px rgba(32,30,29,.35)"><img style="width:900px;height:506px;border-radius:28px;display:block;object-fit:cover"></div>`)); },
+  draw(el, u, t, sc) { const n = sc.n || 999, f = Math.max(0, Math.min(n - 1, Math.floor((sc.from || 0) + Math.max(0, u - .1) * 30))); waitImg(el.querySelector("img"), `oyin/kadr/${sc.clip}/${String(f).padStart(5, "0")}.jpg`); }
+};
+// --- Telefon ekrani surati (tik)
+V.shot = {
+  init(el, sc) { el.appendChild(h(`<div class="phone"><div class="screen" style="background:#0c1024"><img style="width:100%;height:100%;object-fit:cover;object-position:top"></div></div>`)); },
+  draw(el, u, t, sc) { const img = el.querySelector("img"); waitImg(img, sc.src); img.style.transform = `translateY(${-Math.min(u, 3) * 10}px)`; }
+};
+
 // ===== asosiy =====
 window.setup = function (spec, asset) {
   SPEC = spec; CT = spec.times; window.ASSET = asset;
   $("logo").src = asset.logo; $("tag").textContent = spec.tag;
 };
-window.render = function (t) { drawBg(t); headline(t); visual(t); caption(t); };
+window.render = function (t) { window.__wait = null; drawBg(t); headline(t); visual(t); caption(t); return window.__wait; };
 </script></body></html>

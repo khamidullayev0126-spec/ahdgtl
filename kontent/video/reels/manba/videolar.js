@@ -255,4 +255,39 @@ module.exports = {
       { at: 12, v: "cta", line: "🎁 Skill — Telegram kanalimda", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
     ]
   }
+  ,
+  10: {
+    tag: "O'yin", out: "10-parol-qalasi",
+    chunks: [
+      { c: "Parolingiz qanchalik kuchli?" }, { c: "Buni o'yinda tekshirib ko'ring!" },
+      { c: "Men «Parol qal'asi» degan o'yin yasadim." }, { c: "Siz qal'a qurasiz va unga parol qo'yasiz." },
+      { c: "Boshqa o'yinchilar kamon bilan harflarni otib, parolingizni topishga harakat qiladi.", s: "Boshqa o'yinchilar esa kamon bilan harflarni otib, parolingizni topishga harakat qiladi." },
+      { c: "Har bir xato — bitta jon.", t: 13.57 }, { c: "Qalqon o'qni to'sadi,", t: 15.49 }, { c: "shamol esa uni buradi.", t: 16.87 },
+      { c: "Qal'angiz omon qolsa — ball olasiz.", t: 18.46 }, { c: "Mening qal'amni buza olasizmi?", t: 20.85 },
+      { c: "O'yin havolasi Telegram kanalimda,", t: 22.63 }, { c: "havola bio'da.", t: 24.73 }
+    ],
+    heads: [
+      { at: 0, lines: [["Parolingiz", "sm"], ["kuchlimi?", "acc"]] },
+      { at: 2, lines: [["Parol", "sm"], ["qal'asi", "acc"]] },
+      { at: 3, lines: [["Qal'a", "sm"], ["quring", "acc"]] },
+      { at: 4, lines: [["Kamon bilan", "sm"], ["harf oting", "acc"]] },
+      { at: 5, lines: [["Xato =", "sm"], ["−1 jon", "acc"]] },
+      { at: 6, lines: [["Qalqon", "sm"], ["va shamol", "acc"]] },
+      { at: 8, lines: [["Omon qolsa —", "sm"], ["ball", "acc"]] },
+      { at: 9, lines: [["Qal'amni", "sm"], ["buza olasizmi?", "acc"]] },
+      { at: 11, lines: [["Havola", "sm"], ["Telegramda", "acc"]] }
+    ],
+    vis: [
+      { at: 0, v: "stamp", icon: "🔐", text: "Parolingiz kuchlimi?", bg: "#d94b3d", fs: 70 },
+      { at: 1, v: "game", clip: "urish", from: 95, n: 152 },
+      { at: 2, v: "stamp", icon: "🏰🏹", size: 200, text: "Parol qal'asi", sub: "Men yasagan o'yin 🎮" },
+      { at: 3, v: "shot", src: "oyin/ekran-qurish.png" },
+      { at: 4, v: "game", clip: "urish", from: 0, n: 152 },
+      { at: 5, v: "game", clip: "xato", from: 22, n: 84 },
+      { at: 6, v: "game", clip: "qalqon", from: 12, n: 78 },
+      { at: 8, v: "shot", src: "oyin/ekran-xabar.png" },
+      { at: 9, v: "game", clip: "qulash", from: 22, n: 121 },
+      { at: 11, v: "cta", line: "🏰 O'yin havolasi — Telegram kanalimda", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
+    ]
+  }
 };

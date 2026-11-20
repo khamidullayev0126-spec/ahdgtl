@@ -27,7 +27,8 @@ function align() {
     sil.forEach((x, j) => { const d = Math.abs((x.s + x.e) / 2 - est); if (j > used && d < bd && x.e > times[times.length - 1] + .4) { bd = d; best = j; } });
     if (best >= 0) { times.push(sil[best].e - .04); used = best; } else times.push(Math.max(est, times[times.length - 1] + .4));
   }
-  return { times: times.map(x => +x.toFixed(3)), speechEnd: s1, dur };
+  // chunk.t — qo'lda berilgan vaqt (avtomatik hizalash adashsa)
+  return { times: times.map((x, i) => +(spec.chunks[i].t ?? x).toFixed(3)), speechEnd: s1, dur };
 }
 
 (async () => {
