@@ -241,3 +241,12 @@ render.yaml             — server sozlamasi (ma'lumot uchun)
 - API (faqat ilovadan, brauzerdan emas): `POST /api/family/link {code,label}` → `{token}`; `POST /api/family/alert {token,kind,source}`.
   `kind`: `message` | `app` | `apk` | `call`. Telefondan soatiga 10 tadan ko'p ogohlantirish yuborilmaydi.
 - Maxfiylik: xabar matni, raqamlar, ilova nomlari kelmaydi va saqlanmaydi. Qurilma kaliti bazada faqat SHA-256 ko'rinishida.
+
+## 🏰 «Parol qal'asi» o'yini
+
+Manzil: `<server>/qala` (masalan https://tekshir.ah-digital.uz/qala). API: `POST /api/qala/*`.
+
+- O'yinchi faqat **username** bilan kiradi (takrorlanmaydi, katta-kichik harf farqsiz). Kirish tokeni bazada faqat SHA-256 ko'rinishida.
+- Qal'a paroli bazada **AES-256-GCM bilan shifrlangan**. Kalit: `QALA_KEY` (bo'lmasa `HASH_SALT`'dan olinadi) — Render → Environment'da turadi, GitHub'da emas.
+- Har bir belgi **serverda** tekshiriladi; parol brauzerga faqat hujum tugagach yuboriladi.
+- O'yin jadvallari (`qala_*`) asosiy bazada — Telegram zaxirasiga ham tushadi.

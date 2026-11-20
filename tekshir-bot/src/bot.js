@@ -19,6 +19,7 @@ const { buildReply, buildGroupReply, esc } = require("./reply");
 const { createLimiter } = require("./ratelimit");
 const { openDb, toCsv, DEFAULT_PATH } = require("./db");
 const { restore, createBackup } = require("./backup");
+const { createQala, createQalaHttp } = require("./qala");
 const { isAdmin, adminIds, formatStats } = require("./admin");
 const cache = require("./cache");
 const { extractNumbers, reportPoints } = require("./checkers/numbers");
@@ -680,6 +681,9 @@ function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), on
   const hookPath = "/telegram/" + secret.slice(0, 16);
   // Tekshiruv 25 soniyadan oshsa ham Telegram'ga "qabul qildim" deymiz — aks holda u xabarni qayta yuboradi
   const handle = webhookCallback(bot, "http", { secretToken: secret, onTimeout: "return", timeoutMilliseconds: 25000 });
+  // «Parol qal'asi» o'yini: sahifa /qala, API /api/qala/* (jadvallar shu bazada — zaxiraga ham tushadi)
+  const qalaApi = createQalaHttp(createQala(db.raw), createLimiter);
+  const QALA_HTML = path.join(__dirname, "..", "qala", "index.html");
   const server = http.createServer((req, res) => {
     // Google Play (TWA): ilova shu sayt egasiniki ekanini tasdiqlash. Render → Environment: ANDROID_PACKAGE, ANDROID_SHA256
     if (req.method === "GET" && req.url === "/.well-known/assetlinks.json") {
@@ -687,6 +691,11 @@ function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), on
       res.writeHead(pkg && sha ? 200 : 404, { "Content-Type": "application/json" });
       return res.end(JSON.stringify(pkg && sha ? [{ relation: ["delegate_permission/common.handle_all_urls"], target: { namespace: "android_app", package_name: pkg, sha256_cert_fingerprints: sha.split(",").map(x => x.trim()) } }] : []));
     }
+    if (req.method === "GET" && /^\/qala\/?(\?.*)?$/.test(req.url) && fs.existsSync(QALA_HTML)) {
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer" });
+      return fs.createReadStream(QALA_HTML).pipe(res);
+    }
+    if (req.url.startsWith("/api/qala/")) return qalaApi(req, res, req.url.slice(10).split("?")[0]);
     if (req.method === "GET" && serveApp(req, res)) return;
     if (req.method === "GET" && req.url === "/health") {
       res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
