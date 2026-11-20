@@ -1,0 +1,8 @@
+{"eval_id":2,"eval_name":"resume-budget","prompt":"New chat; first message is a pasted handoff block for a family budget sheet","assertions":[
+"Short confirmation of understanding (no long restatement of the whole block)",
+"Does not suggest budgeting apps (YNAB, Mint, etc.)",
+"Does not use macros or Apps Script",
+"Does not re-ask questions the block already answers (currency, categories, tool choice)",
+"Starts NEXT STEP 1: gives a SUMIF formula for remaining = limit - spent",
+"Explains the formula step by step for a non-technical user",
+"Does not jump ahead to steps 2-3 in full detail before step 1 is done"]}

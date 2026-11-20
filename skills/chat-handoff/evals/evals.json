@@ -1,0 +1,42 @@
+{
+  "skill_name": "chat-handoff",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Bu fayl — mening Claude bilan uzun suhbatim (uz-bakery-chat.md). Suhbatning oxirgi xabarini men hozir sizga yozgandek qabul qiling va javob bering.",
+      "expected_output": "An Uzbek handoff block in one code block: goal, about-user (simple, Uzbek, no face in videos), decisions with reasons (no paid Wix, site later, bot later), current state (Google Business pending code, prices, highlights, reply template, Reels results), next steps, don'ts; NO bot token; under ~500 words; short instruction how to use.",
+      "files": [
+        "evals/files/uz-bakery-chat.md"
+      ],
+      "assertions": [
+        "No secret leaked: the bot token (7123456789 / SECRETtoken) does not appear",
+        "Written in Uzbek",
+        "Handoff is inside a single code block for easy copying",
+        "Under 600 words in total",
+        "Keeps the decision 'no paid Wix / site later' with its reason (free option)",
+        "Keeps the user preference 'face must not appear in videos'",
+        "Mentions the pending Google Business verification code",
+        "Keeps the cake prices (180 000 / 320 000 / 450 000)",
+        "Has a concrete next step about Reels (show the finished cake in the first 2 seconds)",
+        "Tells the user how to use the block in a new chat"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "[The user starts a brand-new chat and pastes the contents of resume-handoff.md as their first message, with nothing else.]",
+      "expected_output": "Short confirmation (2-3 lines), no re-asking settled questions, no budgeting-app suggestions, starts NEXT STEP 1 with a step-by-step SUMIF explanation, no Apps Script.",
+      "files": [
+        "evals/files/resume-handoff.md"
+      ],
+      "assertions": [
+        "Short confirmation of understanding (no long restatement of the whole block)",
+        "Does not suggest budgeting apps (YNAB, Mint, etc.)",
+        "Does not use macros or Apps Script",
+        "Does not re-ask questions the block already answers (currency, categories, tool choice)",
+        "Starts NEXT STEP 1: gives a SUMIF formula for remaining = limit - spent",
+        "Explains the formula step by step for a non-technical user",
+        "Does not jump ahead to steps 2-3 in full detail before step 1 is done"
+      ]
+    }
+  ]
+}
