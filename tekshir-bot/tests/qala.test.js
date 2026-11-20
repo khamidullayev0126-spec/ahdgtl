@@ -57,7 +57,7 @@ test("hujum: to'g'ri/xato, maslahatlar 3-6-9, g'alaba va ballar", () => {
   assert.ok(r.hit); assert.deepStrictEqual(r.positions, [7, 9]); assert.strictEqual(r.password, undefined);
   assert.strictEqual(q.guess(b, s.id, "A").reason, "used");
   for (const ch of "ZXJ") r = q.guess(b, s.id, ch);
-  assert.strictEqual(r.lives, 7); assert.strictEqual(r.hint.n, 1); assert.match(r.hint.text, /1 ta raqam/);
+  assert.strictEqual(r.lives, 7); assert.strictEqual(r.hint.n, 1); assert.match(r.hint.text, /1 ta raqam/); assert.strictEqual(r.hint.digits, 1);
   // sahifa yangilansa — hujum davom etadi (yangisi ochilmaydi)
   const again = q.startAttack(b, "ega_1");
   assert.strictEqual(again.id, s.id); assert.strictEqual(again.lives, 7);

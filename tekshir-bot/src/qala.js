@@ -87,6 +87,13 @@ function hintText(n, pw) {
   if (n === 2) return `${cnt(LETTERS)} ta harf, ${cnt(SYMBOLS)} ta belgi (!@#…)`;
   return "Sehrli o'q: bitta belgi ochildi ✨";
 }
+// Maslahat raqamlari — brauzer o'zi tanlangan tilda (uz/ru) matn yasaydi
+function hintData(n, pw) {
+  const cnt = set => [...pw].filter(c => set.includes(c)).length;
+  if (n === 1) return { digits: cnt(DIGITS) };
+  if (n === 2) return { letters: cnt(LETTERS), symbols: cnt(SYMBOLS) };
+  return {};
+}
 const positions = (pw, ch) => [...pw].map((c, i) => c === ch ? i : -1).filter(i => i >= 0);
 function slotsOf(pw, opened) { return [...pw].map(c => opened.includes(c) ? c : null); }
 const isWon = (pw, opened) => [...pw].every(c => opened.includes(c));
@@ -248,7 +255,7 @@ function createQala(db, { key } = {}) {
       if (a.lives <= 0) { a.state = "lost"; finish(a, c, false); }
       else if (a.lost % 3 === 0) {
         const n = a.lost / 3;
-        res.hint = { n, text: hintText(n, pw) };
+        res.hint = { n, text: hintText(n, pw), ...hintData(n, pw) };
         if (n === 3) res.hint.reveal = reveal(a, c, pw);
       }
     }

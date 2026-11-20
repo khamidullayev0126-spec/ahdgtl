@@ -113,6 +113,8 @@ input:focus{border-color:var(--gold)}
 .ev .ic{font-size:24px}
 .code{font-family:ui-monospace,Menlo,monospace;font-size:26px;letter-spacing:3px;text-align:center;background:#0d1228;border:2px dashed var(--gold);border-radius:12px;padding:14px;margin:10px 0;user-select:text;-webkit-user-select:text}
 .linkbtn{background:none;color:var(--blue);text-decoration:underline;padding:0;margin-top:10px;font-size:14px}
+.page{padding-bottom:72px}
+.langbtn{position:fixed;right:14px;bottom:14px;z-index:15;background:#ffffff1f;border:1px solid #ffffff33;padding:9px 14px;border-radius:999px;font-weight:800;font-size:14px;backdrop-filter:blur(6px)}
 </style>
 </head>
 <body>
@@ -122,34 +124,34 @@ input:focus{border-color:var(--gold)}
   <div class="inner lbox">
     <div class="brand">
       <div class="logo">🏰🏹</div>
-      <h1>Parol <b>qal'asi</b></h1>
-      <p style="opacity:.8;margin:0 0 10px">Qal'angni qur — boshqalarnikini buz!</p>
-      <div class="chips" style="justify-content:center"><span class="chip">🏰 O'z qal'ang</span><span class="chip">⚔️ Boshqalarga hujum</span><span class="chip">🛡 Qalqon</span><span class="chip">🌬 Shamol</span><span class="chip">🎈 Bonuslar</span></div>
+      <h1 data-i18n>Parol <b>qal'asi</b></h1>
+      <p style="opacity:.8;margin:0 0 10px" data-i18n>Qal'angni qur — boshqalarnikini buz!</p>
+      <div class="chips" style="justify-content:center"><span class="chip" data-i18n>🏰 O'z qal'ang</span><span class="chip" data-i18n>⚔️ Boshqalarga hujum</span><span class="chip" data-i18n>🛡 Qalqon</span><span class="chip" data-i18n>🌬 Shamol</span><span class="chip" data-i18n>🎈 Bonuslar</span></div>
     </div>
     <div class="card">
       <div id="onlineBox">
-        <label for="uname">Username tanlang</label>
-        <input id="uname" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="masalan: kamonchi_07">
+        <label for="uname" data-i18n>Username tanlang</label>
+        <input id="uname" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="masalan: kamonchi_07" data-ph="masalan: kamonchi_07">
         <div id="ustatus" class="status"></div>
         <div id="usugg" class="chips"></div>
-        <button id="enter" class="big" disabled>O'yinga kirish ▶</button>
-        <p class="muted" style="margin:10px 0 0">Username shu qurilmada eslab qolinadi. Parol kerak emas.</p>
-        <button class="linkbtn" id="toRecover">🔑 Avval o'ynaganmisiz? Tiklash kodi bilan kirish</button>
+        <button id="enter" class="big" disabled data-i18n>O'yinga kirish ▶</button>
+        <p class="muted" style="margin:10px 0 0" data-i18n>Username shu qurilmada eslab qolinadi. Parol kerak emas.</p>
+        <button class="linkbtn" id="toRecover" data-i18n>🔑 Avval o'ynaganmisiz? Tiklash kodi bilan kirish</button>
       </div>
       <div id="recoverBox" hidden>
-        <b>🔑 Tiklash kodi bilan kirish</b>
+        <b data-i18n>🔑 Tiklash kodi bilan kirish</b>
         <input id="rName" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="username">
         <input id="rCode" maxlength="14" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX" style="font-family:ui-monospace,monospace;letter-spacing:2px;text-transform:uppercase">
         <div id="rStatus" class="status"></div>
-        <button id="rGo" class="big">Kirish ▶</button>
-        <button class="linkbtn" id="toJoin">← Yangi username bilan kirish</button>
+        <button id="rGo" class="big" data-i18n>Kirish ▶</button>
+        <button class="linkbtn" id="toJoin" data-i18n>← Yangi username bilan kirish</button>
       </div>
       <div id="offlineBox" hidden>
-        <b>📴 Onlayn o'yin faqat saytda ishlaydi</b>
-        <p class="muted">Bu fayl kompyuterdan ochilgan. Boshqa o'yinchilar bilan o'ynash uchun o'yinni sayt orqali oching (…/qala). Hozircha kompyuter bilan mashq qilishingiz mumkin.</p>
+        <b data-i18n>📴 Onlayn o'yin faqat saytda ishlaydi</b>
+        <p class="muted" data-i18n>Bu fayl kompyuterdan ochilgan. Boshqa o'yinchilar bilan o'ynash uchun o'yinni sayt orqali oching (…/qala). Hozircha kompyuter bilan mashq qilishingiz mumkin.</p>
       </div>
-      <button id="practiceBtn0" class="big ghost">🎯 Mashq (kompyuter qal'alari)</button>
-      <div class="how">
+      <button id="practiceBtn0" class="big ghost" data-i18n>🎯 Mashq (kompyuter qal'alari)</button>
+      <div class="how" data-i18n>
         1️⃣ Pastdan <b>belgi tanlang</b> (A–Z, 0–9, !@#…)<br>
         2️⃣ Ekranni bosib <b>orqaga torting</b> va qo'yib yuboring 🏹<br>
         3️⃣ Qal'aga tegsa — belgi tekshiriladi. Xato = −1 ❤️
@@ -166,46 +168,46 @@ input:focus{border-color:var(--gold)}
       <div class="pts"><span id="mAtk">⚔️ 0</span><span id="mDef">🛡 0</span><span id="mWins">🏆 0</span></div>
     </div>
     <div class="tools">
-      <button id="tTop">🏆 Reyting</button>
-      <button id="tEv">🔔 Xabarlar<span class="badge" id="evBadge" hidden>0</span></button>
-      <button id="tRec">🔑 Tiklash kodi</button>
-      <button id="tInv">📣 Do'stni chaqirish</button>
+      <button id="tTop" data-i18n>🏆 Reyting</button>
+      <button id="tEv"><span data-i18n>🔔 Xabarlar</span><span class="badge" id="evBadge" hidden>0</span></button>
+      <button id="tRec" data-i18n>🔑 Tiklash kodi</button>
+      <button id="tInv" data-i18n>📣 Do'stni chaqirish</button>
     </div>
-    <div class="banner" id="recBanner" hidden><span style="flex:1">🔑 <b>Tiklash kodini oling!</b> Brauzer tozalansa yoki boshqa telefondan kirsangiz — shu kod kerak bo'ladi.</span><button id="recBannerBtn">Olish</button></div>
+    <div class="banner" id="recBanner" hidden><span style="flex:1" data-i18n>🔑 <b>Tiklash kodini oling!</b> Brauzer tozalansa yoki boshqa telefondan kirsangiz — shu kod kerak bo'ladi.</span><button id="recBannerBtn" data-i18n>Olish</button></div>
     <div class="grid2">
       <div class="card">
-        <h2>🏰 Mening qal'am</h2>
+        <h2 data-i18n>🏰 Mening qal'am</h2>
         <div id="myCastle"></div>
       </div>
       <div class="card">
-        <div class="row"><h2 style="margin:0">⚔️ Hujum qilish</h2><button class="btn2" id="refresh">🔄</button></div>
+        <div class="row"><h2 style="margin:0" data-i18n>⚔️ Hujum qilish</h2><button class="btn2" id="refresh">🔄</button></div>
         <div class="list" id="castles"></div>
       </div>
     </div>
-    <button id="practiceBtn" class="big ghost" style="margin-top:14px">🎯 Mashq (kompyuter qal'alari)</button>
+    <button id="practiceBtn" class="big ghost" style="margin-top:14px" data-i18n>🎯 Mashq (kompyuter qal'alari)</button>
   </div>
 </section>
 
 <!-- ============ QAL'A QURISH ============ -->
 <section id="build" class="page" hidden>
   <div class="inner" style="max-width:520px">
-    <div class="row" style="margin-bottom:12px"><h2 style="margin:0">🏰 Qal'a qurish</h2><button class="btn2" id="buildBack">← Orqaga</button></div>
-    <div class="warn">⚠️ <b>Faqat o'yin uchun parol o'ylab toping!</b><br>Telegram, Gmail, Instagram yoki boshqa haqiqiy parolingizni <b>HECH QACHON</b> yozmang. Boshqa o'yinchilar bu parolni topishga harakat qiladi.</div>
+    <div class="row" style="margin-bottom:12px"><h2 style="margin:0" data-i18n>🏰 Qal'a qurish</h2><button class="btn2" id="buildBack" data-i18n>← Orqaga</button></div>
+    <div class="warn" data-i18n>⚠️ <b>Faqat o'yin uchun parol o'ylab toping!</b><br>Telegram, Gmail, Instagram yoki boshqa haqiqiy parolingizni <b>HECH QACHON</b> yozmang. Boshqa o'yinchilar bu parolni topishga harakat qiladi.</div>
     <div class="card">
-      <label for="pwIn">Qal'a paroli (8–16 belgi)</label>
+      <label for="pwIn" data-i18n>Qal'a paroli (8–16 belgi)</label>
       <input id="pwIn" class="pwin" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="QALA#2026">
       <div class="row" style="margin-top:8px"><span class="muted" id="pwCount">0 / 16</span><span class="muted" id="pwStrTxt"></span></div>
       <div class="meter"><i id="pwBar" style="width:0"></i></div>
       <ul class="rules" id="pwRules">
-        <li data-r="len">8–16 ta belgi</li>
-        <li data-r="uniq">Kamida 6 xil belgi (takrorlanmasin)</li>
-        <li data-r="dig">Raqam bor (0–9) — tavsiya</li>
-        <li data-r="sym">Belgi bor (! @ # $ …) — tavsiya</li>
-        <li data-r="name">Ichida username'ingiz yo'q</li>
+        <li data-i18n data-r="len">8–16 ta belgi</li>
+        <li data-i18n data-r="uniq">Kamida 6 xil belgi (takrorlanmasin)</li>
+        <li data-i18n data-r="dig">Raqam bor (0–9) — tavsiya</li>
+        <li data-i18n data-r="sym">Belgi bor (! @ # $ …) — tavsiya</li>
+        <li data-i18n data-r="name">Ichida username'ingiz yo'q</li>
       </ul>
       <div id="pwStatus" class="status"></div>
-      <button id="pwSave" class="big" disabled>🏰 Qal'ani qurish</button>
-      <p class="muted" style="margin:10px 0 0">💡 Bu o'yinda eng qiyin parol — <b>xilma-xil</b> belgilardan iborat bo'lgani. «QALAQALA1» oson, «Q7#W2$ZX9!» qiyin. Parolni eslab qolishingiz shart emas.</p>
+      <button id="pwSave" class="big" disabled data-i18n>🏰 Qal'ani qurish</button>
+      <p class="muted" style="margin:10px 0 0" data-i18n>💡 Bu o'yinda eng qiyin parol — <b>xilma-xil</b> belgilardan iborat bo'lgani. «QALAQALA1» oson, «Q7#W2$ZX9!» qiyin. Parolni eslab qolishingiz shart emas.</p>
     </div>
   </div>
 </section>
@@ -214,9 +216,9 @@ input:focus{border-color:var(--gold)}
 
 <div id="rotate" hidden>
   <div class="ph">📱</div>
-  <b style="font-size:20px">Telefonni yotqizing</b>
-  <div style="opacity:.8">O'yin gorizontal ekranda qulayroq</div>
-  <button id="rotateSkip">Baribir davom etish</button>
+  <b style="font-size:20px" data-i18n>Telefonni yotqizing</b>
+  <div style="opacity:.8" data-i18n>O'yin gorizontal ekranda qulayroq</div>
+  <button id="rotateSkip" data-i18n>Baribir davom etish</button>
 </div>
 
 <div class="modal" id="modal" hidden>
@@ -226,8 +228,8 @@ input:focus{border-color:var(--gold)}
     <div id="mText" style="opacity:.85"></div>
     <div class="pw" id="mPw"></div>
     <div class="rows" id="mRows"></div>
-    <button class="big ghost" id="mShare" style="margin-top:10px">📤 Natijani ulashish</button>
-    <div class="btns"><button class="big ghost" id="mMenu">☰ Menyu</button><button class="big" id="mNext"></button></div>
+    <button class="big ghost" id="mShare" style="margin-top:10px" data-i18n>📤 Natijani ulashish</button>
+    <div class="btns"><button class="big ghost" id="mMenu" data-i18n>☰ Menyu</button><button class="big" id="mNext"></button></div>
   </div>
 </div>
 <div class="sheet" id="sheet" hidden>
@@ -238,6 +240,7 @@ input:focus{border-color:var(--gold)}
   </div>
 </div>
 <div class="net" id="net" hidden></div>
+<button id="langBtn" class="langbtn" hidden>🌐 Русский</button>
 
 <script>
 "use strict";
@@ -249,6 +252,204 @@ const store = {
   del(k){ try{ localStorage.removeItem(k); }catch(e){} }
 };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+/* ================= Til (uz / ru) ================= */
+// Kalit — o'zbekcha matnning o'zi. Rus tarjimasi RU lug'atida ({x} — o'zgaruvchilar).
+let LANG = store.get("pq_lang", /^ru/i.test(navigator.language || "") ? "ru" : "uz");
+const RU = {
+  "Parol qal'asi": "Крепость паролей",
+  "Qaytadan kiring (akkauntga boshqa qurilmadan kirilgan bo'lishi mumkin)": "Войдите снова (возможно, в аккаунт вошли с другого устройства)",
+  "Parolda {d} ta raqam bor": "Цифр в пароле: {d}",
+  "masalan: kamonchi_07": "например: strelok_07",
+  "⭐ Ball": "⭐ Очки",
+  "Parolda raqam yo'q": "В пароле нет цифр",
+  "{l} ta harf, {s} ta belgi (!@#…)": "Букв: {l}, символов (!@#…): {s}",
+  "Sehrli o'q: bitta belgi ochildi ✨": "Волшебная стрела: один символ открыт ✨",
+  "⏳ Tekshirilmoqda…": "⏳ Проверяем…",
+  "✅ «{v}» bo'sh!": "✅ «{v}» свободен!",
+  "❌ «{v}» band. Boshqasini tanlang:": "❌ «{v}» занят. Выберите другой:",
+  "Sizda hali qal'a yo'q. Qal'a qursangiz, boshqalar unga hujum qiladi. Qal'angiz omon qolsa — 🛡 ball olasiz!": "У вас ещё нет крепости. Постройте её — и другие будут её штурмовать. Устоит — получите 🛡 очки!",
+  "🏰 Qal'a qurish": "🏰 Построить крепость",
+  "🔑 Parol: <b>{n}</b> ta belgi": "🔑 Пароль: <b>{n}</b> символов",
+  "🏹 hujum": "🏹 атак",
+  "🛡 omon qoldi": "🛡 устояла",
+  "💥 quladi": "💥 пала",
+  "🔁 Parolni almashtirish (yangi qal'a)": "🔁 Сменить пароль (новая крепость)",
+  "⏳ Yuklanmoqda…": "⏳ Загрузка…",
+  "Hali hech kim ball olmagan. Birinchi bo'ling! 🚀": "Пока никто не набрал очков. Будьте первым! 🚀",
+  "Sizning o'rningiz: <b>#{r}</b> · {s} ball": "Ваше место: <b>#{r}</b> · {s} очков",
+  "Siz hali reytingda yo'qsiz — qal'a buzing yoki qal'angizni himoya qiling!": "Вас пока нет в рейтинге — взломайте крепость или защитите свою!",
+  "hozirgina": "только что",
+  "{n} daqiqa oldin": "{n} мин. назад",
+  "{n} soat oldin": "{n} ч. назад",
+  "{n} kun oldin": "{n} дн. назад",
+  "qal'angizga hujum qildi — <b class='ok'>qal'a omon qoldi!</b> +{p} ball": "атаковал вашу крепость — <b class='ok'>крепость устояла!</b> +{p} очков",
+  "qal'angizni <b class='bad'>buzdi</b>. Kuchliroq parol bilan yangi qal'a quring!": "<b class='bad'>взломал</b> вашу крепость. Постройте новую с паролем посильнее!",
+  "Hozircha xabar yo'q. Qal'angizga hujum bo'lsa — shu yerda ko'rinadi.": "Пока сообщений нет. Если вашу крепость атакуют — это появится здесь.",
+  "Bu kod bilan <b>boshqa telefon yoki kompyuterdan</b> akkauntingizga kira olasiz. Brauzer tozalanib ketsa ham kerak bo'ladi.": "С этим кодом можно войти в аккаунт <b>с другого телефона или компьютера</b>. Пригодится и если очистится браузер.",
+  "⚠️ Kodni <b>hech kimga bermang</b> — u bilan akkauntingizga kirish mumkin. Yangi kod yaratsangiz, eskisi ishlamay qoladi.": "⚠️ <b>Никому не давайте</b> этот код — с ним можно войти в ваш аккаунт. Если создадите новый код, старый перестанет работать.",
+  "🔁 Yangi kod yaratish": "🔁 Создать новый код",
+  "🔑 Kod yaratish": "🔑 Создать код",
+  "Yangi kod yaratilsa, eski kod ishlamay qoladi. Davom etasizmi?": "Если создать новый код, старый перестанет работать. Продолжить?",
+  "📸 Skrinshot qiling yoki daftaringizga yozib qo'ying. Username:": "📸 Сделайте скриншот или запишите в тетрадь. Username:",
+  "📋 Nusxa olish": "📋 Скопировать",
+  "✅ Nusxa olindi": "✅ Скопировано",
+  "Hozircha boshqa qal'alar yo'q.<br>Do'stlaringizni chaqiring! 📣": "Других крепостей пока нет.<br>Позовите друзей! 📣",
+  "✅ Buzdingiz": "✅ Взломана",
+  "🛡 Omon qoldi": "🛡 Устояла",
+  "▶ Davom": "▶ Продолжить",
+  "⚔️ Hujum": "⚔️ Атака",
+  "{n} belgi": "{n} симв.",
+  "ℹ️ Faqat A–Z, 0–9 va ! @ # $ % & * ? _ - . ishlatiladi": "ℹ️ Можно только A–Z, 0–9 и ! @ # $ % & * ? _ - .",
+  "💪 Kuchli": "💪 Сильный",
+  "🙂 O'rtacha": "🙂 Средний",
+  "😟 Zaif": "😟 Слабый",
+  "Havola nusxalandi — do'stingizga yuboring 📋": "Ссылка скопирована — отправьте другу 📋",
+  "Nusxa oling:": "Скопируйте:",
+  "Mening qal'amni buzib ko'r! 🏰🏹 Username'im: {u}. Parol {n} ta belgi — uddalaysanmi?": "Попробуй взломать мою крепость! 🏰🏹 Мой username: {u}. Пароль из {n} символов — справишься?",
+  "Parol qal'asi — kamon bilan parol topish o'yini! 🏰🏹 Qal'angni qur, boshqalarnikini buz:": "Крепость паролей — игра, где пароль угадывают с помощью лука! 🏰🏹 Построй свою крепость, взламывай чужие:",
+  "🎯 Mashq · {l}-daraja: {c}": "🎯 Тренировка · уровень {l}: {c}",
+  "Parol {n} ta belgi. Belgi tanlang 👇": "Пароль из {n} символов. Выберите символ 👇",
+  "{o} qal'asi": "Крепость {o}",
+  "⚔️ Hujum: {o} qal'asi": "⚔️ Атака: крепость {o}",
+  "Davom etamiz! {n} ta jon qoldi": "Продолжаем! Осталось жизней: {n}",
+  "Parol {n} ta belgi. Omad! 🍀": "Пароль из {n} символов. Удачи! 🍀",
+  "Avval pastdan belgi tanlang 👇": "Сначала выберите символ внизу 👇",
+  "Kuchliroq torting! 💪": "Натяните сильнее! 💪",
+  "Avval belgi tanlang 👇": "Сначала выберите символ 👇",
+  "Menyuga qaytasizmi? Hujum saqlanadi — keyin «Davom» bilan qaytasiz.": "Вернуться в меню? Атака сохранится — потом вернётесь через «Продолжить».",
+  "Mashqni tugatib, chiqasizmi?": "Закончить тренировку и выйти?",
+  "🛡 To'sildi!": "🛡 Заблокировано!",
+  "Tegmadi": "Мимо",
+  "🎯 +50 AYNAN!": "🎯 +50 В ЯБЛОЧКО!",
+  "📶 qayta oting": "📶 стреляйте снова",
+  "🔥 Olovli o'q ×3!": "🔥 Огненная стрела ×3!",
+  "«{c}» yo'q ❌": "«{c}» нет ❌",
+  "💡 Maslahat {n}/3: {t}": "💡 Подсказка {n}/3: {t}",
+  "+ball oldi": "+получил очки",
+  "{o} qal'asi quladi!": "Крепость {o} пала!",
+  "Qal'a quladi!": "Крепость пала!",
+  "Qal'a omon qoldi": "Крепость устояла",
+  "Parol buzildi:": "Пароль взломан:",
+  ". Parol mana bu edi:": ". Пароль был такой:",
+  "⚔️ Boshqa qal'a": "⚔️ Другая крепость",
+  "{n}-darajaga ▶": "На уровень {n} ▶",
+  "Boshidan ▶": "Сначала ▶",
+  "Men {o} qal'asini {n} ta jon bilan buzdim! 🏹💥 Parol: {p}. Sen ham urinib ko'r:": "Я взломал крепость {o}, осталось {n} жизней! 🏹💥 Пароль: {p}. Попробуй и ты:",
+  "{o} qal'asi juda mustahkam ekan 🛡 Sen buza olasanmi?": "Крепость {o} оказалась очень прочной 🛡 А ты сможешь взломать?",
+  "Parol qal'asi'da {l}-darajaga yetdim, {s} ball! 🏰🏹 Sen-chi?": "В «Крепости паролей» я дошёл до уровня {l}, {s} очков! 🏰🏹 А ты?",
+  "Uchib ketdi 💨": "Улетела 💨",
+  "🎯 Mashq": "🎯 Тренировка",
+  "👇 Belgi tanlang, keyin ekranni tortib oting": "👇 Выберите символ, затем натяните лук на экране",
+  "1️⃣ Pastdan istalgan belgini tanlang 👇": "1️⃣ Выберите любой символ внизу 👇",
+  "2️⃣ Ekranni bosing, orqaga torting va qo'yib yuboring 🏹": "2️⃣ Нажмите на экран, потяните назад и отпустите 🏹",
+  "Parol <b>qal'asi</b>": "Крепость <b>паролей</b>",
+  "Qal'angni qur — boshqalarnikini buz!": "Построй крепость — взламывай чужие!",
+  "🏰 O'z qal'ang": "🏰 Своя крепость",
+  "⚔️ Boshqalarga hujum": "⚔️ Атакуй других",
+  "🛡 Qalqon": "🛡 Щит",
+  "🌬 Shamol": "🌬 Ветер",
+  "🎈 Bonuslar": "🎈 Бонусы",
+  "Username tanlang": "Выберите username",
+  "O'yinga kirish ▶": "Войти в игру ▶",
+  "Username shu qurilmada eslab qolinadi. Parol kerak emas.": "Username запомнится на этом устройстве. Пароль не нужен.",
+  "🔑 Avval o'ynaganmisiz? Tiklash kodi bilan kirish": "🔑 Уже играли? Войти по коду восстановления",
+  "🔑 Tiklash kodi bilan kirish": "🔑 Вход по коду восстановления",
+  "Kirish ▶": "Войти ▶",
+  "← Yangi username bilan kirish": "← Войти с новым username",
+  "📴 Onlayn o'yin faqat saytda ishlaydi": "📴 Онлайн-игра работает только на сайте",
+  "Bu fayl kompyuterdan ochilgan. Boshqa o'yinchilar bilan o'ynash uchun o'yinni sayt orqali oching (…/qala). Hozircha kompyuter bilan mashq qilishingiz mumkin.": "Файл открыт с компьютера. Чтобы играть с другими, откройте игру через сайт (…/qala). Пока можно потренироваться с компьютером.",
+  "🎯 Mashq (kompyuter qal'alari)": "🎯 Тренировка (крепости компьютера)",
+  "1️⃣ Pastdan <b>belgi tanlang</b> (A–Z, 0–9, !@#…)<br> 2️⃣ Ekranni bosib <b>orqaga torting</b> va qo'yib yuboring 🏹<br> 3️⃣ Qal'aga tegsa — belgi tekshiriladi. Xato = −1 ❤️": "1️⃣ Внизу <b>выберите символ</b> (A–Z, 0–9, !@#…)<br> 2️⃣ Нажмите на экран, <b>потяните назад</b> и отпустите 🏹<br> 3️⃣ Попали в крепость — символ проверяется. Ошибка = −1 ❤️",
+  "🏆 Reyting": "🏆 Рейтинг",
+  "🔔 Xabarlar": "🔔 Сообщения",
+  "🔑 Tiklash kodi": "🔑 Код восстановления",
+  "📣 Do'stni chaqirish": "📣 Позвать друга",
+  "🔑 <b>Tiklash kodini oling!</b> Brauzer tozalansa yoki boshqa telefondan kirsangiz — shu kod kerak bo'ladi.": "🔑 <b>Получите код восстановления!</b> Он понадобится, если очистится браузер или вы зайдёте с другого телефона.",
+  "Olish": "Получить",
+  "🏰 Mening qal'am": "🏰 Моя крепость",
+  "⚔️ Hujum qilish": "⚔️ Атаковать",
+  "← Orqaga": "← Назад",
+  "⚠️ <b>Faqat o'yin uchun parol o'ylab toping!</b><br>Telegram, Gmail, Instagram yoki boshqa haqiqiy parolingizni <b>HECH QACHON</b> yozmang. Boshqa o'yinchilar bu parolni topishga harakat qiladi.": "⚠️ <b>Придумайте пароль только для игры!</b><br><b>НИКОГДА</b> не пишите свой настоящий пароль от Telegram, Gmail, Instagram и т.д. Другие игроки будут пытаться его угадать.",
+  "Qal'a paroli (8–16 belgi)": "Пароль крепости (8–16 символов)",
+  "8–16 ta belgi": "8–16 символов",
+  "Kamida 6 xil belgi (takrorlanmasin)": "Минимум 6 разных символов (без повторов)",
+  "Raqam bor (0–9) — tavsiya": "Есть цифра (0–9) — желательно",
+  "Belgi bor (! @ # $ …) — tavsiya": "Есть символ (! @ # $ …) — желательно",
+  "Ichida username'ingiz yo'q": "Нет вашего username",
+  "🏰 Qal'ani qurish": "🏰 Построить крепость",
+  "💡 Bu o'yinda eng qiyin parol — <b>xilma-xil</b> belgilardan iborat bo'lgani. «QALAQALA1» oson, «Q7#W2$ZX9!» qiyin. Parolni eslab qolishingiz shart emas.": "💡 В этой игре самый сложный пароль — из <b>разных</b> символов. «QALAQALA1» — лёгкий, «Q7#W2$ZX9!» — сложный. Запоминать пароль не нужно.",
+  "Telefonni yotqizing": "Поверните телефон",
+  "O'yin gorizontal ekranda qulayroq": "Игра удобнее на горизонтальном экране",
+  "Baribir davom etish": "Всё равно продолжить",
+  "📤 Natijani ulashish": "📤 Поделиться результатом",
+  "☰ Menyu": "☰ Меню",
+  "3–15 belgi: faqat harf, raqam va _": "3–15 символов: только буквы, цифры и _",
+  "Bu username band": "Этот username занят",
+  "Juda tez! Biroz kuting": "Слишком быстро! Подождите немного",
+  "Parol juda qisqa (kamida 8)": "Пароль слишком короткий (минимум 8)",
+  "Parol juda uzun (ko'pi bilan 16)": "Пароль слишком длинный (максимум 16)",
+  "Faqat A–Z, 0–9 va ! @ # $ % & * ? _ - .": "Только A–Z, 0–9 и ! @ # $ % & * ? _ - .",
+  "Kamida 6 xil belgi kerak": "Нужно минимум 6 разных символов",
+  "Parolda username'ingiz bo'lmasin": "В пароле не должно быть вашего username",
+  "Bu qal'a endi yo'q": "Этой крепости больше нет",
+  "O'z qal'angizga hujum qilolmaysiz": "Нельзя атаковать свою крепость",
+  "Qal'a egasi parolni almashtirdi — hujum bekor": "Владелец сменил пароль — атака отменена",
+  "Hujum tugagan": "Атака завершена",
+  "Bu bonus limiti tugadi": "Лимит этого бонуса исчерпан",
+  "Username yoki kod noto'g'ri": "Неверный username или код",
+  "Bu belgi otilgan": "Этим символом уже стреляли",
+  "Serverda xato": "Ошибка сервера",
+  "Qaytadan kiring": "Войдите снова",
+  "Internet yo'q — qayta urinib ko'ring": "Нет интернета — попробуйте ещё раз",
+  "Xato": "Ошибка",
+  "+1 jon": "+1 жизнь",
+  "Lupa: bitta belgi ochildi": "Лупа: один символ открыт",
+  "+15 soniya": "+15 секунд",
+  "+40 ball": "+40 очков",
+  "Olovli o'q: keyingi to'g'ri zarba ×3": "Огненная стрела: следующее попадание ×3",
+  "Oltin qal'a": "Золотая крепость",
+  "Burgut uyasi": "Гнездо беркута",
+  "Samarqand darvozasi": "Самаркандские ворота",
+  "Toshkent minorasi": "Ташкентская башня",
+  "Kamon ustasi": "Мастер лука",
+  "Tog' cho'qqisi": "Горная вершина",
+  "Sher yuragi": "Львиное сердце",
+  "Yulduz qo'rg'oni": "Звёздная твердыня",
+  "Daryo bo'yi": "У реки",
+  "Shamol minorasi": "Башня ветров",
+  "Kumush darvoza": "Серебряные ворота",
+  "Temur qal'asi": "Крепость Тимура",
+  "Ko'k gumbaz": "Голубой купол",
+  "Lochin qo'rg'oni": "Твердыня сокола",
+  "Umumiy": "Общий",
+  "⚔️ Hujumchilar": "⚔️ Атакующие",
+  "🛡 Himoyachilar": "🛡 Защитники",
+  "Jonlar tugadi": "Жизни закончились",
+  "Vaqt tugadi": "Время вышло",
+  "❤️ Qolgan jonlar": "❤️ Осталось жизней",
+  "⚔️ Hujum balli": "⚔️ Очки атаки",
+  "⭐ O'yin balli": "⭐ Игровые очки",
+  "⏱ Qolgan vaqt": "⏱ Оставшееся время",
+  "⭐ Jami ball": "⭐ Всего очков",
+  "🏆 Rekord": "🏆 Рекорд",
+  "🎯 Aniqlik": "🎯 Точность",
+  "🛡 Qal'a egasi": "🛡 Владелец крепости",
+  "📈 Daraja": "📈 Уровень"
+  };
+const MISS = new Set();
+function L(s, v){
+  let r = s;
+  if (LANG === "ru"){ if (RU[s] != null) r = RU[s]; else MISS.add(s); }
+  if (v) for (const k in v) r = r.split("{" + k + "}").join(v[k]);
+  return r;
+}
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.title = L("Parol qal'asi");
+  document.querySelectorAll("[data-i18n]").forEach(el => { if (el.dataset.uz == null) el.dataset.uz = el.innerHTML.trim().replace(/\s+/g, " "); el.innerHTML = L(el.dataset.uz); });
+  document.querySelectorAll("[data-ph]").forEach(el => { el.placeholder = L(el.dataset.ph); });
+  const lb = document.getElementById("langBtn"); if (lb) lb.textContent = LANG === "ru" ? "🌐 O'zbekcha" : "🌐 Русский";
+}
 const ONLINE = location.protocol === "http:" || location.protocol === "https:";
 const REASONS = {
   format:"3–15 belgi: faqat harf, raqam va _", taken:"Bu username band", slow:"Juda tez! Biroz kuting",
@@ -257,9 +458,9 @@ const REASONS = {
   self:"O'z qal'angizga hujum qilolmaysiz", no_attack:"Qal'a egasi parolni almashtirdi — hujum bekor", over:"Hujum tugagan",
   limit:"Bu bonus limiti tugadi", recover:"Username yoki kod noto'g'ri", used:"Bu belgi otilgan", server:"Serverda xato", auth:"Qaytadan kiring", net:"Internet yo'q — qayta urinib ko'ring"
 };
-const why = r => REASONS[r && r.reason] || "Xato";
+const why = r => L(REASONS[r && r.reason] || "Xato");
 function showNet(msg){ const n = $("net"); n.textContent = "📶 " + msg; n.hidden = false; clearTimeout(showNet.t); showNet.t = setTimeout(() => n.hidden = true, 2500); }
-function show(id){ ["login","menu","build","wrap"].forEach(s => $(s).hidden = s !== id); fit(); }
+function show(id){ ["login","menu","build","wrap"].forEach(s => $(s).hidden = s !== id); $("langBtn").hidden = !(id === "login" || id === "menu"); fit(); }
 
 /* ================= Server bilan aloqa ================= */
 let TOKEN = store.get("pq_token", ""), ME = null;
@@ -267,7 +468,7 @@ async function api(action, data = {}){
   try{
     const r = await fetch("/api/qala/" + action, { method:"POST", headers:{ "content-type":"application/json" }, body:JSON.stringify({ token:TOKEN, ...data }) });
     const j = await r.json().catch(() => ({ ok:false, reason:"server" }));
-    if (r.status === 401){ store.del("pq_token"); TOKEN = ""; $("sheet").hidden = true; show("login"); showNet("Qaytadan kiring (akkauntga boshqa qurilmadan kirilgan bo'lishi mumkin)"); }
+    if (r.status === 401){ store.del("pq_token"); TOKEN = ""; $("sheet").hidden = true; show("login"); showNet(L("Qaytadan kiring (akkauntga boshqa qurilmadan kirilgan bo'lishi mumkin)")); }
     return j;
   }catch(e){ return { ok:false, reason:"net" }; }
 }
@@ -282,11 +483,17 @@ function strength(pw){
   return Math.min(100, u.size*6 + (has(DIGITS) ? 10 : 0) + (has(SYMBOLS) ? 15 : 0) + Math.max(0, pw.length - 8)*2);
 }
 const stars = s => "⭐".repeat(Math.max(1, Math.ceil(s/20)));
-function hintText(n, pw){
+function hintData(n, pw){
   const cnt = set => [...pw].filter(c => set.includes(c)).length;
-  if (n === 1){ const d = cnt(DIGITS); return d ? `Parolda ${d} ta raqam bor` : "Parolda raqam yo'q"; }
-  if (n === 2) return `${cnt(LETTERS)} ta harf, ${cnt(SYMBOLS)} ta belgi (!@#…)`;
-  return "Sehrli o'q: bitta belgi ochildi ✨";
+  if (n === 1) return { digits:cnt(DIGITS) };
+  if (n === 2) return { letters:cnt(LETTERS), symbols:cnt(SYMBOLS) };
+  return {};
+}
+function fmtHint(h){
+  if (h.digits != null) return h.digits ? L("Parolda {d} ta raqam bor", { d:h.digits }) : L("Parolda raqam yo'q");
+  if (h.letters != null) return L("{l} ta harf, {s} ta belgi (!@#…)", { l:h.letters, s:h.symbols });
+  if (h.n === 3) return L("Sehrli o'q: bitta belgi ochildi ✨");
+  return h.text || "";
 }
 
 /* ================= Kirish ================= */
@@ -296,8 +503,8 @@ function checkName(){
   const v = uname.value.trim(); usugg.innerHTML = ""; enterBtn.disabled = true; ustatus.className = "status";
   clearTimeout(nameTimer);
   if (!v){ ustatus.textContent = ""; return; }
-  if (!/^[A-Za-z0-9_]{3,15}$/.test(v)){ ustatus.textContent = REASONS.format; ustatus.classList.add("bad"); return; }
-  ustatus.textContent = "⏳ Tekshirilmoqda…";
+  if (!/^[A-Za-z0-9_]{3,15}$/.test(v)){ ustatus.textContent = L(REASONS.format); ustatus.classList.add("bad"); return; }
+  ustatus.textContent = L("⏳ Tekshirilmoqda…");
   const seq = ++nameSeq;
   nameTimer = setTimeout(async () => {
     const r = await api("name", { name:v });
@@ -307,8 +514,8 @@ function checkName(){
 }
 function showNameResult(v, r){
   usugg.innerHTML = ""; ustatus.className = "status";
-  if (r.ok){ ustatus.textContent = "✅ «" + v + "» bo'sh!"; ustatus.classList.add("ok"); enterBtn.disabled = false; return; }
-  ustatus.textContent = r.reason === "taken" ? "❌ «" + v + "» band. Boshqasini tanlang:" : "❌ " + why(r);
+  if (r.ok){ ustatus.textContent = L("✅ «{v}» bo'sh!", { v }); ustatus.classList.add("ok"); enterBtn.disabled = false; return; }
+  ustatus.textContent = r.reason === "taken" ? L("❌ «{v}» band. Boshqasini tanlang:", { v }) : "❌ " + why(r);
   ustatus.classList.add("bad");
   (r.suggest || []).forEach(s => { const b = document.createElement("button"); b.textContent = s; b.onclick = () => { uname.value = s; checkName(); }; usugg.appendChild(b); });
 }
@@ -327,18 +534,18 @@ async function join(){
 async function openMenu(){
   show("menu");
   const r = await api("me");
-  if (!r.ok){ if (r.reason === "net") showNet(REASONS.net); return; }
+  if (!r.ok){ if (r.reason === "net") showNet(why({ reason:"net" })); return; }
   ME = r;
   $("mName").textContent = "👤 " + r.name;
   $("mAtk").textContent = "⚔️ " + r.atk_score; $("mDef").textContent = "🛡 " + r.def_score; $("mWins").textContent = "🏆 " + r.wins;
   const c = r.castle, box = $("myCastle");
   if (!c){
-    box.innerHTML = `<p style="margin:0 0 6px">Sizda hali qal'a yo'q. Qal'a qursangiz, boshqalar unga hujum qiladi. Qal'angiz omon qolsa — 🛡 ball olasiz!</p><button class="big" id="toBuild">🏰 Qal'a qurish</button>`;
+    box.innerHTML = `<p style="margin:0 0 6px">${L("Sizda hali qal'a yo'q. Qal'a qursangiz, boshqalar unga hujum qiladi. Qal'angiz omon qolsa — 🛡 ball olasiz!")}</p><button class="big" id="toBuild">${L("🏰 Qal'a qurish")}</button>`;
   } else {
-    box.innerHTML = `<div class="row"><span>🔑 Parol: <b>${c.len}</b> ta belgi</span><span>${stars(c.strength)}</span></div>
+    box.innerHTML = `<div class="row"><span>${L("🔑 Parol: <b>{n}</b> ta belgi", { n:c.len })}</span><span>${stars(c.strength)}</span></div>
       <div class="meter"><i style="width:${c.strength}%;background:${barColor(c.strength)}"></i></div>
-      <div class="stats"><div><b>${c.attacks}</b>🏹 hujum</div><div><b>${c.holds}</b>🛡 omon qoldi</div><div><b>${c.falls}</b>💥 quladi</div></div>
-      <button class="btn2" id="toBuild" style="width:100%">🔁 Parolni almashtirish (yangi qal'a)</button>`;
+      <div class="stats"><div><b>${c.attacks}</b>${L("🏹 hujum")}</div><div><b>${c.holds}</b>${L("🛡 omon qoldi")}</div><div><b>${c.falls}</b>${L("💥 quladi")}</div></div>
+      <button class="btn2" id="toBuild" style="width:100%">${L("🔁 Parolni almashtirish (yangi qal'a)")}</button>`;
   }
   $("toBuild").onclick = openBuild;
   $("evBadge").hidden = !r.unread; $("evBadge").textContent = r.unread > 9 ? "9+" : r.unread;
@@ -347,49 +554,49 @@ async function openMenu(){
 }
 
 /* ================= 3-bosqich: reyting, xabarlar, tiklash kodi ================= */
-function openSheet(title){ $("shTitle").textContent = title; $("shHead").innerHTML = ""; $("shBody").innerHTML = `<div class="empty">⏳ Yuklanmoqda…</div>`; $("sheet").hidden = false; }
+function openSheet(title){ $("shTitle").textContent = L(title); $("shHead").innerHTML = ""; $("shBody").innerHTML = `<div class="empty">${L("⏳ Yuklanmoqda…")}</div>`; $("sheet").hidden = false; }
 $("shClose").onclick = () => { $("sheet").hidden = true; };
 $("sheet").addEventListener("click", e => { if (e.target.id === "sheet") $("sheet").hidden = true; });
 
 async function openTop(kind = "total"){
   openSheet("🏆 Reyting");
   const tabs = [["total","Umumiy"],["atk","⚔️ Hujumchilar"],["def","🛡 Himoyachilar"]];
-  $("shHead").innerHTML = `<div class="tabs">${tabs.map(([k,t]) => `<button data-k="${k}" class="${k === kind ? "on" : ""}">${t}</button>`).join("")}</div>`;
+  $("shHead").innerHTML = `<div class="tabs">${tabs.map(([k,t]) => `<button data-k="${k}" class="${k === kind ? "on" : ""}">${L(t)}</button>`).join("")}</div>`;
   $("shHead").querySelectorAll("button").forEach(b => b.onclick = () => openTop(b.dataset.k));
   const r = await api("top", { kind });
   if (!r.ok){ $("shBody").innerHTML = `<div class="empty">${esc(why(r))}</div>`; return; }
   const medal = i => ["🥇","🥈","🥉"][i] || (i + 1);
   const rows = r.top.map((x, i) => `<div class="lb ${x.name === r.me.name ? "me" : ""}"><span class="rk">${medal(i)}</span><span class="nm">${esc(x.name)}</span><span class="muted">🏆${x.wins}</span><span class="sc">${x.score}</span></div>`).join("");
-  $("shBody").innerHTML = (rows || `<div class="empty">Hali hech kim ball olmagan. Birinchi bo'ling! 🚀</div>`)
-    + `<div class="myrank">${r.me.rank ? `Sizning o'rningiz: <b>#${r.me.rank}</b> · ${r.me.score} ball` : "Siz hali reytingda yo'qsiz — qal'a buzing yoki qal'angizni himoya qiling!"}</div>`;
+  $("shBody").innerHTML = (rows || `<div class="empty">${L("Hali hech kim ball olmagan. Birinchi bo'ling! 🚀")}</div>`)
+    + `<div class="myrank">${r.me.rank ? L("Sizning o'rningiz: <b>#{r}</b> · {s} ball", { r:r.me.rank, s:r.me.score }) : L("Siz hali reytingda yo'qsiz — qal'a buzing yoki qal'angizni himoya qiling!")}</div>`;
 }
-const ago = t => { const m = Math.floor((Date.now() - t)/60000); return m < 1 ? "hozirgina" : m < 60 ? m + " daqiqa oldin" : m < 1440 ? Math.floor(m/60) + " soat oldin" : Math.floor(m/1440) + " kun oldin"; };
+const ago = t => { const m = Math.floor((Date.now() - t)/60000); return m < 1 ? L("hozirgina") : m < 60 ? L("{n} daqiqa oldin", { n:m }) : m < 1440 ? L("{n} soat oldin", { n:Math.floor(m/60) }) : L("{n} kun oldin", { n:Math.floor(m/1440) }); };
 async function openEvents(){
   openSheet("🔔 Xabarlar");
   const r = await api("events");
   if (!r.ok){ $("shBody").innerHTML = `<div class="empty">${esc(why(r))}</div>`; return; }
   $("evBadge").hidden = true;
   $("shBody").innerHTML = r.events.length ? r.events.map(e => e.kind === "held"
-      ? `<div class="ev ${e.seen ? "" : "new"}"><span class="ic">🛡</span><div><b>${esc(e.actor)}</b> qal'angizga hujum qildi — <b class="ok">qal'a omon qoldi!</b> +${e.points} ball<div class="muted">${ago(e.created_at)}</div></div></div>`
-      : `<div class="ev ${e.seen ? "" : "new"}"><span class="ic">💥</span><div><b>${esc(e.actor)}</b> qal'angizni <b class="bad">buzdi</b>. Kuchliroq parol bilan yangi qal'a quring!<div class="muted">${ago(e.created_at)}</div></div></div>`).join("")
-    : `<div class="empty">Hozircha xabar yo'q. Qal'angizga hujum bo'lsa — shu yerda ko'rinadi.</div>`;
+      ? `<div class="ev ${e.seen ? "" : "new"}"><span class="ic">🛡</span><div><b>${esc(e.actor)}</b> ${L("qal'angizga hujum qildi — <b class='ok'>qal'a omon qoldi!</b> +{p} ball", { p:e.points })}<div class="muted">${ago(e.created_at)}</div></div></div>`
+      : `<div class="ev ${e.seen ? "" : "new"}"><span class="ic">💥</span><div><b>${esc(e.actor)}</b> ${L("qal'angizni <b class='bad'>buzdi</b>. Kuchliroq parol bilan yangi qal'a quring!")}<div class="muted">${ago(e.created_at)}</div></div></div>`).join("")
+    : `<div class="empty">${L("Hozircha xabar yo'q. Qal'angizga hujum bo'lsa — shu yerda ko'rinadi.")}</div>`;
 }
 function openRecovery(){
   openSheet("🔑 Tiklash kodi");
-  $("shBody").innerHTML = `<p style="margin-top:0">Bu kod bilan <b>boshqa telefon yoki kompyuterdan</b> akkauntingizga kira olasiz. Brauzer tozalanib ketsa ham kerak bo'ladi.</p>
-    <div class="warn" style="margin:0">⚠️ Kodni <b>hech kimga bermang</b> — u bilan akkauntingizga kirish mumkin. Yangi kod yaratsangiz, eskisi ishlamay qoladi.</div>
-    <div id="recOut"></div><button class="big" id="recMake">${ME && ME.has_recovery ? "🔁 Yangi kod yaratish" : "🔑 Kod yaratish"}</button>`;
+  $("shBody").innerHTML = `<p style="margin-top:0">${L("Bu kod bilan <b>boshqa telefon yoki kompyuterdan</b> akkauntingizga kira olasiz. Brauzer tozalanib ketsa ham kerak bo'ladi.")}</p>
+    <div class="warn" style="margin:0">${L("⚠️ Kodni <b>hech kimga bermang</b> — u bilan akkauntingizga kirish mumkin. Yangi kod yaratsangiz, eskisi ishlamay qoladi.")}</div>
+    <div id="recOut"></div><button class="big" id="recMake">${ME && ME.has_recovery ? L("🔁 Yangi kod yaratish") : L("🔑 Kod yaratish")}</button>`;
   $("recMake").onclick = async () => {
-    if (ME && ME.has_recovery && !confirm("Yangi kod yaratilsa, eski kod ishlamay qoladi. Davom etasizmi?")) return;
+    if (ME && ME.has_recovery && !confirm(L("Yangi kod yaratilsa, eski kod ishlamay qoladi. Davom etasizmi?"))) return;
     $("recMake").disabled = true;
     const r = await api("recovery");
     if (!r.ok){ $("recOut").innerHTML = `<div class="status bad">❌ ${esc(why(r))}</div>`; $("recMake").disabled = false; return; }
     if (ME) ME.has_recovery = true; $("recBanner").hidden = true;
     $("recOut").innerHTML = `<div class="code" id="recCode">${esc(r.code)}</div>
-      <p class="muted" style="text-align:center;margin:0">📸 Skrinshot qiling yoki daftaringizga yozib qo'ying. Username: <b>${esc(ME ? ME.name : "")}</b></p>
-      <button class="btn2" id="recCopy" style="width:100%;margin-top:10px">📋 Nusxa olish</button>`;
+      <p class="muted" style="text-align:center;margin:0">${L("📸 Skrinshot qiling yoki daftaringizga yozib qo'ying. Username:")} <b>${esc(ME ? ME.name : "")}</b></p>
+      <button class="btn2" id="recCopy" style="width:100%;margin-top:10px">${L("📋 Nusxa olish")}</button>`;
     $("recMake").hidden = true;
-    $("recCopy").onclick = () => { try{ navigator.clipboard.writeText(r.code); $("recCopy").textContent = "✅ Nusxa olindi"; }catch(e){} };
+    $("recCopy").onclick = () => { try{ navigator.clipboard.writeText(r.code); $("recCopy").textContent = L("✅ Nusxa olindi"); }catch(e){} };
   };
 }
 $("tTop").onclick = () => openTop();
@@ -409,16 +616,16 @@ $("rGo").onclick = async () => {
   openMenu();
 };
 async function loadCastles(){
-  const box = $("castles"); box.innerHTML = `<div class="empty">⏳ Yuklanmoqda…</div>`;
+  const box = $("castles"); box.innerHTML = `<div class="empty">${L("⏳ Yuklanmoqda…")}</div>`;
   const r = await api("list");
   if (!r.ok){ box.innerHTML = `<div class="empty">${esc(why(r))}</div>`; return; }
-  if (!r.castles.length){ box.innerHTML = `<div class="empty">Hozircha boshqa qal'alar yo'q.<br>Do'stlaringizni chaqiring! 📣</div>`; return; }
+  if (!r.castles.length){ box.innerHTML = `<div class="empty">${L("Hozircha boshqa qal'alar yo'q.<br>Do'stlaringizni chaqiring! 📣")}</div>`; return; }
   box.innerHTML = "";
   r.castles.forEach(c => {
     const d = document.createElement("div"); d.className = "item";
-    const btn = c.my === "won" ? `<button disabled>✅ Buzdingiz</button>` : c.my === "lost" ? `<button disabled>🛡 Omon qoldi</button>`
-      : c.my === "play" ? `<button class="cont">▶ Davom</button>` : `<button>⚔️ Hujum</button>`;
-    d.innerHTML = `<div style="font-size:26px">🏰</div><div class="nm"><b>${esc(c.owner)}</b><span class="muted">${c.len} belgi · ${stars(c.strength)} · 💥${c.falls} 🛡${c.holds}</span></div>${btn}`;
+    const btn = c.my === "won" ? `<button disabled>${L("✅ Buzdingiz")}</button>` : c.my === "lost" ? `<button disabled>${L("🛡 Omon qoldi")}</button>`
+      : c.my === "play" ? `<button class="cont">${L("▶ Davom")}</button>` : `<button>${L("⚔️ Hujum")}</button>`;
+    d.innerHTML = `<div style="font-size:26px">🏰</div><div class="nm"><b>${esc(c.owner)}</b><span class="muted">${L("{n} belgi", { n:c.len })} · ${stars(c.strength)} · 💥${c.falls} 🛡${c.holds}</span></div>${btn}`;
     const b = d.querySelector("button:not([disabled])");
     if (b) b.onclick = () => startOnline(c.owner);
     box.appendChild(d);
@@ -434,7 +641,7 @@ function openBuild(){ show("build"); pwIn.value = ""; checkPw(); setTimeout(() =
 $("buildBack").onclick = openMenu;
 pwIn.addEventListener("input", () => {
   const raw = pwIn.value, clean = raw.toUpperCase().replace(/[^A-Z0-9!@#$%&*?_\-.]/g, "");
-  if (clean !== raw.toUpperCase()){ $("pwStatus").textContent = "ℹ️ Faqat A–Z, 0–9 va ! @ # $ % & * ? _ - . ishlatiladi"; $("pwStatus").className = "status"; }
+  if (clean !== raw.toUpperCase()){ $("pwStatus").textContent = L("ℹ️ Faqat A–Z, 0–9 va ! @ # $ % & * ? _ - . ishlatiladi"); $("pwStatus").className = "status"; }
   else $("pwStatus").textContent = "";
   pwIn.value = clean; checkPw();
 });
@@ -442,7 +649,7 @@ function checkPw(){
   const pw = pwIn.value, s = strength(pw), u = new Set(pw).size, name = ME ? ME.name.toUpperCase() : "";
   $("pwCount").textContent = pw.length + " / 16";
   $("pwBar").style.width = (pw ? s : 0) + "%"; $("pwBar").style.background = barColor(s);
-  $("pwStrTxt").textContent = pw ? (s >= 70 ? "💪 Kuchli" : s >= 45 ? "🙂 O'rtacha" : "😟 Zaif") + " " + stars(s) : "";
+  $("pwStrTxt").textContent = pw ? (s >= 70 ? L("💪 Kuchli") : s >= 45 ? L("🙂 O'rtacha") : L("😟 Zaif")) + " " + stars(s) : "";
   const rules = { len: pw.length >= 8 && pw.length <= 16, uniq: u >= 6, dig: [...pw].some(c => DIGITS.includes(c)),
     sym: [...pw].some(c => SYMBOLS.includes(c)), name: !!pw && !(name && pw.includes(name)) };
   document.querySelectorAll("#pwRules li").forEach(li => { li.className = !pw ? "" : rules[li.dataset.r] ? "y" : (li.dataset.r === "dig" || li.dataset.r === "sym") ? "" : "n"; });
@@ -501,14 +708,14 @@ let vib = store.get("pq_vib", true);
 function buzz(p){ if (vib && navigator.vibrate) try{ navigator.vibrate(p); }catch(e){} }
 const GAME_URL = ONLINE ? location.origin + "/qala" : "https://tekshir.ah-digital.uz/qala";
 async function share(text){
-  const data = { title:"Parol qal'asi", text, url:GAME_URL };
+  const data = { title:L("Parol qal'asi"), text, url:GAME_URL };
   try{ if (navigator.share){ await navigator.share(data); return; } }catch(e){ if (e && e.name === "AbortError") return; }
-  try{ await navigator.clipboard.writeText(text + " " + GAME_URL); showNet("Havola nusxalandi — do'stingizga yuboring 📋"); }
-  catch(e){ prompt("Nusxa oling:", text + " " + GAME_URL); }
+  try{ await navigator.clipboard.writeText(text + " " + GAME_URL); showNet(L("Havola nusxalandi — do'stingizga yuboring 📋")); }
+  catch(e){ prompt(L("Nusxa oling:"), text + " " + GAME_URL); }
 }
 $("tInv").onclick = () => share(ME && ME.castle
-  ? `Mening qal'amni buzib ko'r! 🏰🏹 Username'im: ${ME.name}. Parol ${ME.castle.len} ta belgi — uddalaysanmi?`
-  : "Parol qal'asi — kamon bilan parol topish o'yini! 🏰🏹 Qal'angni qur, boshqalarnikini buz:");
+  ? L("Mening qal'amni buzib ko'r! 🏰🏹 Username'im: {u}. Parol {n} ta belgi — uddalaysanmi?", { u:ME.name, n:ME.castle.len })
+  : L("Parol qal'asi — kamon bilan parol topish o'yini! 🏰🏹 Qal'angni qur, boshqalarnikini buz:"));
 
 /* ================= Sahna o'lchami ================= */
 const W = 960, H = 540, GAME_H = 448;
@@ -570,7 +777,7 @@ function localEngine(pw){
       if (used.includes(ch)) return { ok:false, reason:"used" };
       used += ch; const res = { ch, hit:pw.includes(ch), positions:pos(ch), hint:null };
       if (res.hit){ opened += ch; if (won()) state = "won"; }
-      else { lives--; lost++; if (lives <= 0) state = "lost"; else if (lost % 3 === 0){ const n = lost/3; res.hint = { n, text:hintText(n, pw) }; if (n === 3) res.hint.reveal = reveal(); } }
+      else { lives--; lost++; if (lives <= 0) state = "lost"; else if (lost % 3 === 0){ const n = lost/3; res.hint = { n, ...hintData(n, pw) }; if (n === 3) res.hint.reveal = reveal(); } }
       return { ...view(), ...res };
     },
     async power(kind){
@@ -639,21 +846,21 @@ function startPractice(level, fresh){
   let i; do { i = Math.floor(Math.random()*CASTLES.length); } while (i === G.last);
   G.last = i;
   const [cname, pw] = CASTLES[i], eng = localEngine(pw);
-  G.mode = "practice"; G.engine = eng; G.cname = cname;
+  G.mode = "practice"; G.engine = eng; G.cname = L(cname);
   eng.start().then(r => {
     resetRound(level, r);
-    toast(`🎯 Mashq · ${level}-daraja: ${cname}`, "#ffc94a", 2.6);
-    toast(`Parol ${r.len} ta belgi. Belgi tanlang 👇`, "#ffffff", 2.6);
+    toast(L("🎯 Mashq · {l}-daraja: {c}", { l:level, c:L(cname) }), "#ffc94a", 2.6);
+    toast(L("Parol {n} ta belgi. Belgi tanlang 👇", { n:r.len }), "#ffffff", 2.6);
   });
 }
 async function startOnline(owner){
   const r = await api("attack", { owner });
   if (!r.ok){ showNet(why(r)); loadCastles(); return; }
-  G.mode = "online"; G.engine = onlineEngine(r.id); G.owner = owner; G.cname = owner + " qal'asi";
+  G.mode = "online"; G.engine = onlineEngine(r.id); G.owner = owner; G.cname = L("{o} qal'asi", { o:owner });
   G.score = 0; G.shots = 0; G.hits = 0;
   resetRound(1 + Math.floor(r.strength / 25), r);
-  toast(`⚔️ Hujum: ${owner} qal'asi`, "#ffc94a", 2.6);
-  toast(r.used ? `Davom etamiz! ${r.lives} ta jon qoldi` : `Parol ${r.len} ta belgi. Omad! 🍀`, "#ffffff", 2.6);
+  toast(L("⚔️ Hujum: {o} qal'asi", { o:owner }), "#ffc94a", 2.6);
+  toast(r.used ? L("Davom etamiz! {n} ta jon qoldi", { n:r.lives }) : L("Parol {n} ta belgi. Omad! 🍀", { n:r.len }), "#ffffff", 2.6);
 }
 function newWind(){ const m = Math.min(0.4 + G.level*0.45, 3); G.wind = +(Math.random()*2*m - m).toFixed(1); }
 
@@ -681,7 +888,7 @@ cv.addEventListener("pointerdown", e => {
   if (p.x > W - 92 && p.x <= W - 50 && p.y < 40 && navigator.vibrate){ vib = !vib; store.set("pq_vib", vib); buzz(30); return; }
   if (p.x < 60 && p.y < 40){ askQuit(); return; }
   if (G.arrow || G.pending) return;
-  if (!G.sel){ toast("Avval pastdan belgi tanlang 👇", "#ff9d5d", 1.6); G.keyFlash = 1; return; }
+  if (!G.sel){ toast(L("Avval pastdan belgi tanlang 👇"), "#ff9d5d", 1.6); G.keyFlash = 1; return; }
   cv.setPointerCapture(e.pointerId);
   Object.assign(G.aim, { on:true, sx:p.x, sy:p.y, x:p.x, y:p.y });
   sfx.draw();
@@ -690,7 +897,7 @@ cv.addEventListener("pointermove", e => { if (!G.aim.on) return; const p = toGam
 cv.addEventListener("pointerup", () => {
   if (!G.aim.on) return;
   G.aim.on = false;
-  if (G.aim.power < 0.12){ toast("Kuchliroq torting! 💪", "#fff", 1.2); return; }
+  if (G.aim.power < 0.12){ toast(L("Kuchliroq torting! 💪"), "#fff", 1.2); return; }
   fire();
 });
 function updateAim(){
@@ -707,12 +914,12 @@ addEventListener("keydown", e => {
   if (e.key === "ArrowDown"){ G.aim.angle = Math.min(0.35, G.aim.angle + .03); e.preventDefault(); }
   if (e.key === "ArrowRight"){ G.aim.power = Math.min(1, G.aim.power + .02); e.preventDefault(); }
   if (e.key === "ArrowLeft"){ G.aim.power = Math.max(.15, G.aim.power - .02); e.preventDefault(); }
-  if ((e.key === " " || e.key === "Enter") && !G.arrow && !G.pending){ e.preventDefault(); if (G.sel) fire(); else toast("Avval belgi tanlang 👇", "#ff9d5d", 1.4); }
+  if ((e.key === " " || e.key === "Enter") && !G.arrow && !G.pending){ e.preventDefault(); if (G.sel) fire(); else toast(L("Avval belgi tanlang 👇"), "#ff9d5d", 1.4); }
 });
 function selectChar(ch){ if (G.used.has(ch) || G.arrow || G.pending) return; G.sel = ch; sfx.pick(); }
 function askQuit(){
-  if (G.mode === "online"){ if (confirm("Menyuga qaytasizmi? Hujum saqlanadi — keyin «Davom» bilan qaytasiz.")) openMenuFromGame(); }
-  else if (confirm("Mashqni tugatib, chiqasizmi?")) openMenuFromGame();
+  if (G.mode === "online"){ if (confirm(L("Menyuga qaytasizmi? Hujum saqlanadi — keyin «Davom» bilan qaytasiz."))) openMenuFromGame(); }
+  else if (confirm(L("Mashqni tugatib, chiqasizmi?"))) openMenuFromGame();
 }
 function openMenuFromGame(){ G.state = "menu"; $("modal").hidden = true; TOKEN && ONLINE ? openMenu() : show("login"); }
 
@@ -728,13 +935,13 @@ function landArrow(kind, x, y){
   const ang = Math.atan2(a.vy, a.vx);
   if (kind === "shield"){
     G.stuck.push({ x, y, a:ang, ch:a.ch, onShield:true, dy:y - G.shieldY });
-    G.combo = 0; sfx.shield(); buzz(15); burst(x, y, ["#9fd8ff","#ffffff","#5aa9ff"], 14, 160); floatText(x, y - 20, "🛡 To'sildi!", "#9fd8ff");
+    G.combo = 0; sfx.shield(); buzz(15); burst(x, y, ["#9fd8ff","#ffffff","#5aa9ff"], 14, 160); floatText(x, y - 20, L("🛡 To'sildi!"), "#9fd8ff");
   } else if (kind === "ground"){
     G.stuck.push({ x, y, a:ang, ch:a.ch }); sfx.thud(); G.combo = 0;
-    burst(x, y, ["#6b4a2b","#3f7a45"], 8, 90); floatText(x, y - 20, "Tegmadi", "#ffffffaa");
+    burst(x, y, ["#6b4a2b","#3f7a45"], 8, 90); floatText(x, y - 20, L("Tegmadi"), "#ffffffaa");
   } else {
     G.stuck.push({ x, y, a:ang, ch:a.ch, castle:true });
-    if (kind === "bull"){ G.score += 50; sfx.bull(); floatText(x - 30, y + 30, "🎯 +50 AYNAN!", "#ffc94a"); burst(x, y, ["#ffc94a","#fff","#ff5d5d"], 24, 260); }
+    if (kind === "bull"){ G.score += 50; sfx.bull(); floatText(x - 30, y + 30, L("🎯 +50 AYNAN!"), "#ffc94a"); burst(x, y, ["#ffc94a","#fff","#ff5d5d"], 24, 260); }
     testChar(a.ch, x, y, a.fire);
   }
   if (G.state === "play") newWind();
@@ -745,7 +952,7 @@ async function testChar(ch, x, y, fire){
   G.pending = false;
   if (G.state !== "play") return;
   if (!r.ok){
-    if (r.reason === "net"){ showNet(REASONS.net); floatText(x, y - 40, "📶 qayta oting", "#fff"); return; }
+    if (r.reason === "net"){ showNet(why({ reason:"net" })); floatText(x, y - 40, L("📶 qayta oting"), "#fff"); return; }
     if (r.reason === "over" || r.reason === "no_attack"){ toast(why(r), "#ff9d5d", 3); setTimeout(openMenuFromGame, 1500); return; }
     if (r.reason === "used"){ G.used.add(ch); G.sel = null; return; }
     toast(why(r), "#ff9d5d", 2); return;
@@ -759,12 +966,12 @@ async function testChar(ch, x, y, fire){
     G.score += pts; if (fire) G.fire = false;
     sfx.hit(); buzz(25); burst(x, y, ["#ffe7a3","#ffc94a","#ffffff"], 20, 240); floatText(x, y - 10, "+" + pts, "#ffc94a");
     if (G.combo === 3) toast("🔥 COMBO ×2!", "#ffc94a", 1.6);
-    if (fire) toast("🔥 Olovli o'q ×3!", "#ff9d5d", 1.6);
+    if (fire) toast(L("🔥 Olovli o'q ×3!"), "#ff9d5d", 1.6);
   } else {
     G.combo = 0; G.shake = .4; G.flash = .35; sfx.miss(); buzz([50, 40, 50]);
-    burst(x, y, ["#888","#555","#aaa"], 12, 160); floatText(x - 40, y - 45, `«${ch}» yo'q ❌`, "#ff8080");
+    burst(x, y, ["#888","#555","#aaa"], 12, 160); floatText(x - 40, y - 45, L("«{c}» yo'q ❌", { c:ch }), "#ff8080");
     if (r.hint){
-      G.hint = r.hint.text; toast(`💡 Maslahat ${r.hint.n}/3: ${r.hint.text}`, "#ffe08a", 3.2); sfx.hint();
+      G.hint = fmtHint(r.hint); toast(L("💡 Maslahat {n}/3: {t}", { n:r.hint.n, t:G.hint }), "#ffe08a", 3.2); sfx.hint();
       if (r.hint.reveal) revealFx(r.hint.reveal);
     }
   }
@@ -791,7 +998,7 @@ async function grant(p, x, y){
     const r = await G.engine.power(p.id);
     if (G.state !== "play") return;
     if (!r.ok){ toast(`${p.icon} ${why(r)}`, "#ff9d5d", 1.8); return; }
-    applyState(r); sfx.power(); toast(`${p.icon} ${p.text}`, p.c, 2);
+    applyState(r); sfx.power(); toast(`${p.icon} ${L(p.text)}`, p.c, 2);
     if (r.reveal) revealFx(r.reveal);
     if (r.state === "won") win();
     return;
@@ -800,7 +1007,7 @@ async function grant(p, x, y){
   if (p.id === "time") G.time = Math.min(G.timeMax + 30, G.time + 15);
   if (p.id === "coin") G.score += 40;
   if (p.id === "fire") G.fire = true;
-  toast(`${p.icon} ${p.text}`, p.c, 2);
+  toast(`${p.icon} ${L(p.text)}`, p.c, 2);
 }
 
 /* ================= G'alaba / mag'lubiyat ================= */
@@ -822,26 +1029,26 @@ async function lose(reason){
   const best = Math.max(store.get("pq_best", 0), G.score); store.set("pq_best", best);
   const acc = G.shots ? Math.round(G.hits / G.shots * 100) : 0;
   const rows = G.mode === "online"
-    ? [["🎯 Aniqlik", acc + "%"], ["⭐ O'yin balli", G.score], ["🛡 Qal'a egasi", "+ball oldi"]]
+    ? [["🎯 Aniqlik", acc + "%"], ["⭐ O'yin balli", G.score], ["🛡 Qal'a egasi", L("+ball oldi")]]
     : [["📈 Daraja", G.level], ["🎯 Aniqlik", acc + "%"], ["⭐ Ball", G.score], ["🏆 Rekord", best]];
   setTimeout(() => showModal(false, rows, reason), 900);
 }
 function showModal(won, rows, reason){
   $("mIcon").textContent = won ? "🏆" : "🛡️";
-  $("mTitle").textContent = won ? (G.mode === "online" ? `${G.owner} qal'asi quladi!` : "Qal'a quladi!") : "Qal'a omon qoldi";
-  $("mText").textContent = won ? "Parol buzildi:" : (reason + ". Parol mana bu edi:");
+  $("mTitle").textContent = won ? (G.mode === "online" ? L("{o} qal'asi quladi!", { o:G.owner }) : L("Qal'a quladi!")) : L("Qal'a omon qoldi");
+  $("mText").textContent = won ? L("Parol buzildi:") : (L(reason) + L(". Parol mana bu edi:"));
   $("mPw").textContent = G.password || "—";
-  $("mRows").innerHTML = rows.map(([a,b]) => `<div><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join("");
+  $("mRows").innerHTML = rows.map(([a,b]) => `<div><span>${esc(L(a))}</span><b>${esc(b)}</b></div>`).join("");
   if (G.mode === "online"){
-    $("mNext").textContent = "⚔️ Boshqa qal'a"; $("mNext").onclick = openMenuFromGame;
+    $("mNext").textContent = L("⚔️ Boshqa qal'a"); $("mNext").onclick = openMenuFromGame;
   } else {
-    $("mNext").textContent = won ? `${G.level + 1}-darajaga ▶` : "Boshidan ▶";
+    $("mNext").textContent = won ? L("{n}-darajaga ▶", { n:G.level + 1 }) : L("Boshidan ▶");
     $("mNext").onclick = () => { $("modal").hidden = true; won ? startPractice(G.level + 1) : startPractice(1, true); };
   }
   $("mMenu").onclick = openMenuFromGame;
   $("mShare").onclick = () => share(G.mode === "online"
-    ? (won ? `Men ${G.owner} qal'asini ${G.lives} ta jon bilan buzdim! 🏹💥 Parol: ${G.password}. Sen ham urinib ko'r:` : `${G.owner} qal'asi juda mustahkam ekan 🛡 Sen buza olasanmi?`)
-    : `Parol qal'asi'da ${G.level}-darajaga yetdim, ${G.score} ball! 🏰🏹 Sen-chi?`);
+    ? (won ? L("Men {o} qal'asini {n} ta jon bilan buzdim! 🏹💥 Parol: {p}. Sen ham urinib ko'r:", { o:G.owner, n:G.lives, p:G.password }) : L("{o} qal'asi juda mustahkam ekan 🛡 Sen buza olasanmi?", { o:G.owner }))
+    : L("Parol qal'asi'da {l}-darajaga yetdim, {s} ball! 🏰🏹 Sen-chi?", { l:G.level, s:G.score }));
   $("modal").hidden = false;
 }
 
@@ -880,7 +1087,7 @@ function update(dt){
       const inTower = TOWERS.some(t => a.x >= t.x && a.x <= t.x + t.w && a.y >= t.y && a.y <= t.y + t.h);
       if (inWall || inTower) return landArrow("castle", a.x, a.y);
       if (a.y >= groundY(a.x)) return landArrow("ground", a.x, groundY(a.x));
-      if (a.x > W + 40 || a.x < -40 || a.y > H){ G.arrow = null; G.combo = 0; floatText(Math.min(W - 60, Math.max(60, a.x)), 200, "Uchib ketdi 💨", "#fff"); newWind(); return; }
+      if (a.x > W + 40 || a.x < -40 || a.y > H){ G.arrow = null; G.combo = 0; floatText(Math.min(W - 60, Math.max(60, a.x)), 200, L("Uchib ketdi 💨"), "#fff"); newWind(); return; }
     }
   }
 }
@@ -1025,7 +1232,7 @@ function drawAimGuide(){
 function drawHUD(){
   ctx.fillStyle = "#0c102499"; ctx.fillRect(0, 0, W, 40);
   text("☰", 22, 20, 20, "#f4f1ea");
-  text(G.mode === "online" ? "⚔️ " + G.owner : "🎯 Mashq", 48, 20, 14, "#f4f1ea", "left", 800);
+  text(G.mode === "online" ? "⚔️ " + G.owner : L("🎯 Mashq"), 48, 20, 14, "#f4f1ea", "left", 800);
   for (let i = 0; i < 10; i++){ ctx.globalAlpha = i < G.lives ? 1 : .2; text("❤️", 210 + i*19, 21, 15, "#fff"); }
   ctx.globalAlpha = 1;
   text(`📈 ${G.level}`, 418, 20, 16, "#9fd8ff");
@@ -1092,7 +1299,7 @@ function draw(){
   drawHUD(); drawKeys();
   if (G.tut && G.state === "play" && !G.arrow) drawTutorial();
   else if (!G.sel && !G.arrow && !G.pending && G.state === "play" && !G.aim.on){
-    ctx.globalAlpha = .6 + .4*(.5 + .5*Math.sin(G.t*4)); text("👇 Belgi tanlang, keyin ekranni tortib oting", W/2 - 120, GAME_H - 14, 14, "#ffe08a"); ctx.globalAlpha = 1;
+    ctx.globalAlpha = .6 + .4*(.5 + .5*Math.sin(G.t*4)); text(L("👇 Belgi tanlang, keyin ekranni tortib oting"), W/2 - 120, GAME_H - 14, 14, "#ffe08a"); ctx.globalAlpha = 1;
   }
 }
 
@@ -1104,7 +1311,7 @@ function bubble(msg, x, y){
 function drawTutorial(){
   if (!G.sel){
     G.keyFlash = Math.max(G.keyFlash, .35 + .35*Math.sin(G.t*5));
-    bubble("1️⃣ Pastdan istalgan belgini tanlang 👇", W/2, GAME_H - 30);
+    bubble(L("1️⃣ Pastdan istalgan belgini tanlang 👇"), W/2, GAME_H - 30);
     return;
   }
   if (G.aim.on) return;
@@ -1120,7 +1327,7 @@ function drawTutorial(){
   ctx.globalAlpha = cyc > .85 ? 1 - (cyc - .85)/.15 : 1;
   text("👆", hx + 8, hy + 22, 44, "#fff");
   ctx.globalAlpha = 1;
-  bubble("2️⃣ Ekranni bosing, orqaga torting va qo'yib yuboring 🏹", W/2 - 90, 200);
+  bubble(L("2️⃣ Ekranni bosing, orqaga torting va qo'yib yuboring 🏹"), W/2 - 90, 200);
 }
 
 /* ================= Asosiy sikl ================= */
@@ -1133,6 +1340,12 @@ function loop(now){
 requestAnimationFrame(loop);
 
 /* ================= Boshlash ================= */
+applyLang();
+$("langBtn").onclick = () => {
+  LANG = LANG === "ru" ? "uz" : "ru"; store.set("pq_lang", LANG); applyLang();
+  if (!$("menu").hidden) openMenu();
+  else if (!$("login").hidden && uname.value.trim()) checkName();
+};
 if (!ONLINE){ $("onlineBox").hidden = true; $("offlineBox").hidden = false; show("login"); }
 else if (TOKEN) openMenu();
 else { show("login"); const n = store.get("pq_name", ""); if (n){ uname.value = n; checkName(); } }

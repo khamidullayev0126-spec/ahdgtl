@@ -13,4 +13,5 @@ Faylni kompyuterdan ochsangiz — faqat «Mashq» rejimi ishlaydi (onlayn o'yin 
 2. ✅ Server: username (takrorlanmaydi), o'z qal'asi (8–16 belgi), boshqalarga hujum
 3. ✅ Reyting jadvali, bildirishnomalar, tiklash kodi (boshqa qurilmadan kirish)
 4. ✅ Silliqlash: o'rgatuvchi qo'l, titrash, ulashish, qal'a ranglari, 4 xil osmon, telefon ekraniga o'rnatish (PWA)
-5. ⬜ Kotlin ilova
+5. ✅ Rus tili (o'zbek/rus, brauzer tiliga qarab avtomatik + 🌐 tugma)
+6. ⬜ Kotlin ilova
