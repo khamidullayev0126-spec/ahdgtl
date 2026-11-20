@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="uz"><head><meta charset="utf-8">
+<style>
+:root{--bg:#f6efe4;--ink:#26283a;--acc:#c67139;--acc2:#e0708a;--card:#fff;--muted:#7a7468}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
+#bg{position:absolute;inset:0;background:radial-gradient(circle at 85% 10%,#ffd9c2 0,transparent 40%),radial-gradient(circle at 5% 95%,#d9ead0 0,transparent 35%),var(--bg)}
+#grid{position:absolute;inset:0;background-image:linear-gradient(#26283a08 1px,transparent 1px),linear-gradient(90deg,#26283a08 1px,transparent 1px);background-size:60px 60px}
+#top{position:absolute;left:56px;top:40px;display:flex;align-items:center;gap:18px;z-index:5}
+#top .brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:30px}
+#top .brand i{width:46px;height:46px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:22px}
+#chap{background:var(--ink);color:#fff;font-weight:800;font-size:22px;padding:8px 18px;border-radius:999px}
+#stage{position:absolute;left:0;right:0;top:110px;height:770px;z-index:3}
+#sub{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);max-width:1560px;background:#26283aee;color:#fff;font-weight:700;font-size:38px;line-height:1.3;padding:16px 34px;border-radius:20px;text-align:center;z-index:6}
+.scene{position:absolute;inset:0}
+.card{background:var(--card);border-radius:28px;box-shadow:0 24px 60px #26283a1f}
+/* brauzer */
+.browser{position:absolute;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 30px 80px #26283a33}
+.browser .bar{height:52px;background:#ece7df;display:flex;align-items:center;gap:10px;padding:0 20px}
+.browser .bar i{width:14px;height:14px;border-radius:50%}
+.browser .url{margin-left:18px;flex:1;background:#fff;border-radius:999px;height:32px;display:flex;align-items:center;padding:0 18px;font-size:18px;color:#666}
+.browser .view{position:absolute;left:0;right:0;top:52px;bottom:0;overflow:hidden;background:#fff}
+.browser .view img{position:absolute;left:0;top:0;width:100%}
+/* chat */
+.chat{position:absolute;left:260px;right:260px;top:20px;bottom:40px;background:#fbfaf7;border-radius:28px;box-shadow:0 30px 80px #26283a26;overflow:hidden}
+.chat .head{height:64px;display:flex;align-items:center;gap:12px;padding:0 28px;border-bottom:1px solid #eee;font-weight:800;font-size:22px}
+.chat .head b{width:36px;height:36px;border-radius:10px;background:#d97757;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
+.chat .tag{margin-left:auto;background:var(--acc);color:#fff;border-radius:999px;padding:6px 16px;font-size:18px}
+.chat .body{padding:26px 34px;display:flex;flex-direction:column;gap:20px}
+.msg.user{align-self:flex-end;max-width:88%;background:#efe9df;border-radius:22px 22px 6px 22px;padding:18px 24px;font-size:23px;line-height:1.45;white-space:pre-wrap}
+.msg.bot{align-self:flex-start;max-width:80%;font-size:24px;line-height:1.45;display:flex;gap:14px;align-items:flex-start}
+.msg.bot b{flex:none;width:36px;height:36px;border-radius:10px;background:#d97757;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
+.caret{display:inline-block;width:3px;height:26px;background:var(--ink);vertical-align:-4px;margin-left:2px}
+/* telefon */
+.phone{position:absolute;width:420px;height:760px;border-radius:56px;background:#1b1a19;padding:14px;box-shadow:0 30px 80px #26283a40}
+.phone .scr{width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative;background:#fff}
+.phone .scr img{position:absolute;left:0;top:0;width:100%}
+.big{font-weight:900;letter-spacing:-1px}
+.pill{display:inline-block;background:var(--acc);color:#fff;font-weight:800;border-radius:999px;padding:8px 22px}
+.ring{position:absolute;border:6px solid #e53935;border-radius:999px;box-shadow:0 0 0 8px #e5393533}
+.cursor{position:absolute;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:40px solid #26283a;transform:rotate(-25deg);filter:drop-shadow(0 4px 6px #0005)}
+</style></head>
+<body>
+<div id="bg"></div><div id="grid"></div>
+<div id="top"><div class="brand"><i>AH</i>AHdigital</div><div id="chap"></div></div>
+<div id="stage"></div>
+<div id="sub"></div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const cl = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lin = (t, a, b) => cl((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const h = s => { const d = document.createElement("div"); d.innerHTML = s.trim(); return d.firstChild; };
+let SPEC, T, IMG = {};
+
+const S = {};   // sahna turlari: init(el, sc) → draw(el, u, d, sc)
+
+S.hook = {
+  init(el) {
+    el.appendChild(h(`<div style="position:absolute;left:110px;top:150px;width:700px">
+      <div class="big" style="font-size:112px;line-height:1">3 ta<br><span style="color:var(--acc)">buyruq</span></div>
+      <div class="big" style="font-size:64px;margin-top:26px">0 qator kod 🤯</div>
+      <div style="margin-top:30px;font-size:30px;color:var(--muted)">Claude bilan sayt — boshidan oxirigacha</div></div>`));
+    el.appendChild(browser("v2", 900, 40, 900, 640, "namuna sayt"));
+  },
+  draw(el, u, d) { scrollImg(el, "v2", eio(lin(u, .8, d - .3)) * 0.85); }
+};
+S.need = {
+  init(el) {
+    const items = [["💻", "Kompyuter yoki telefon", "har qanday"], ["✳️", "claude.ai sayti", "bepul versiyasi ham yetadi"], ["🎯", "Aniq maqsad", "nima xohlayotganingizni bilish"]];
+    el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:40px;text-align:center" class="big"><span style="font-size:64px">Nima kerak?</span></div>`));
+    items.forEach(([ic, a, b], i) => el.appendChild(h(`<div class="card it" style="position:absolute;top:220px;left:${180 + i * 540}px;width:480px;height:400px;padding:44px;text-align:center">
+      <div style="font-size:120px">${ic}</div><div class="big" style="font-size:40px;margin-top:20px">${a}</div><div style="font-size:28px;color:var(--muted);margin-top:12px">${b}</div></div>`)));
+  },
+  draw(el, u) { el.querySelectorAll(".it").forEach((c, i) => { const a = [.2, 2.6, 6.2][i], p = back(lin(u, a, a + .5)); c.style.opacity = cl(p * 1.4); c.style.transform = `translateY(${(1 - p) * 60}px) scale(${.9 + .1 * p})`; }); }
+};
+S.project = {
+  init(el) {
+    el.appendChild(h(`<div class="card" style="position:absolute;left:260px;right:260px;top:60px;height:600px;padding:60px;display:flex;gap:60px;align-items:center">
+      <div style="font-size:220px">🎂</div>
+      <div><div class="pill" style="font-size:24px">Bugungi loyiha</div>
+      <div class="big" style="font-size:96px;margin-top:20px;color:var(--acc2)">Shirin Tortlar</div>
+      <div style="font-size:34px;margin-top:18px;line-height:1.4">Uyda tort pishiradigan biznes<br><span style="color:var(--muted)">(o'ylab topilgan — namuna)</span></div>
+      <div style="font-size:30px;margin-top:26px">✂️ sartarosh · ☕ kafe · 🧵 tikuvchi — istalgan biznesga</div></div></div>`));
+  },
+  draw(el, u) { const p = back(lin(u, 0, .6)); el.firstChild.style.transform = `scale(${.85 + .15 * p})`; el.firstChild.style.opacity = cl(p * 1.5); }
+};
+S.chat = {
+  init(el, sc) {
+    el.appendChild(h(`<div class="chat"><div class="head"><b>✳</b>Claude<span class="tag">${sc.tag || ""}</span></div><div class="body">
+      <div class="msg user"><span class="tx"></span><span class="caret"></span></div>
+      <div class="msg bot" style="opacity:0"><b>✳</b><div>${sc.reply}</div></div></div></div>`));
+  },
+  draw(el, u, d, sc) {
+    const txt = sc.prompt, speed = sc.cps || 40, n = Math.min(txt.length, Math.floor(Math.max(0, u - .4) * speed));
+    el.querySelector(".tx").textContent = txt.slice(0, n);
+    el.querySelector(".caret").style.opacity = n < txt.length && Math.floor(u * 3) % 2 === 0 ? 1 : n < txt.length ? .3 : 0;
+    const ra = sc.replyAt ?? (txt.length / speed + 1);
+    const bot = el.querySelector(".msg.bot"), p = eo(lin(u, ra, ra + .4));
+    bot.style.opacity = p; bot.style.transform = `translateY(${(1 - p) * 20}px)`;
+  }
+};
+S.browser = {
+  init(el, sc) {
+    el.appendChild(browser(sc.img, 260, 10, 1400, 740, sc.url || "namuna sayt"));
+    if (sc.ring) { const r = sc.ring; el.querySelector(".view").appendChild(h(`<div class="ring" style="left:${r[0]}px;top:${r[1]}px;width:${r[2]}px;height:${r[3]}px;opacity:0"></div>`)); }
+    if (sc.label) el.appendChild(h(`<div class="pill" style="position:absolute;right:290px;top:8px;font-size:24px;z-index:2">${sc.label}</div>`));
+  },
+  draw(el, u, d, sc) {
+    const [a, b] = sc.scroll || [0, 0], s0 = sc.scrollFrom || .6;
+    scrollImg(el, sc.img, a + (b - a) * eio(lin(u, s0, d - .4)));
+    const r = el.querySelector(".ring"); if (r) { const p = back(lin(u, sc.ringAt || 0, (sc.ringAt || 0) + .5)); r.style.opacity = cl(p * 1.5); r.style.transform = `scale(${.6 + .4 * p})`; }
+  }
+};
+S.hover = {
+  init(el) {
+    const b = browser("v2-nohover", 260, 10, 1400, 740, "namuna sayt");
+    const v = b.querySelector(".view"); const img2 = document.createElement("img"); img2.src = IMG["v2-hover"]; img2.className = "hv"; img2.style.opacity = 0; v.appendChild(img2);
+    v.appendChild(h(`<div class="cursor"></div>`)); el.appendChild(b);
+    el.appendChild(h(`<div class="pill" style="position:absolute;right:290px;top:8px;font-size:24px;z-index:2">3-buyruq: kartochka kattalashadi</div>`));
+  },
+  draw(el, u) {
+    const c = el.querySelector(".cursor"), k = eio(lin(u, .3, 1.6));
+    c.style.left = (1100 - 420 * k) + "px"; c.style.top = (600 - 260 * k) + "px";
+    el.querySelector(".hv").style.opacity = lin(u, 1.5, 1.9);
+  }
+};
+S.phone = {
+  init(el) {
+    el.appendChild(h(`<div class="phone" style="left:300px;top:0"><div class="scr"><img src="${IMG.mob}"></div></div>`));
+    el.appendChild(h(`<div style="position:absolute;left:860px;top:180px;width:820px">
+      <div class="big" style="font-size:80px;line-height:1.05">📱 Telefonda<br>ham chiroyli</div>
+      <div style="font-size:34px;margin-top:26px;color:var(--muted);line-height:1.4">Ko'pchilik saytni telefondan ochadi — shuning uchun albatta tekshiring</div>
+      <div class="pill ok" style="font-size:32px;margin-top:34px;background:#3f8f5a;opacity:0">✅ Hamma narsa joyida</div></div>`));
+  },
+  draw(el, u, d) {
+    const img = el.querySelector(".scr img"); const H = img.naturalHeight / img.naturalWidth * 392;
+    img.style.transform = `translateY(${-eio(lin(u, .6, d - .5)) * (H - 732)}px)`;
+    const ok = el.querySelector(".ok"), p = back(lin(u, d - 2.2, d - 1.7)); ok.style.opacity = cl(p * 1.4); ok.style.transform = `scale(${.7 + .3 * p})`;
+  }
+};
+S.publish = {
+  init(el) {
+    el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:20px;text-align:center" class="big"><span style="font-size:60px">Internetga chiqarish — <span style="color:#3f8f5a">bepul</span></span></div>`));
+    el.appendChild(h(`<div class="card c1" style="position:absolute;left:200px;top:150px;width:720px;height:440px;padding:46px">
+      <div class="pill" style="font-size:24px">1-yo'l · eng oson</div><div class="big" style="font-size:52px;margin-top:22px">Claude'da «Publish»</div>
+      <div style="font-size:30px;margin-top:20px;line-height:1.5">Bir bosish → havola tayyor 🔗<br>Havolani istalgan odamga yuborasiz</div></div>`));
+    el.appendChild(h(`<div class="card c2" style="position:absolute;left:1000px;top:150px;width:720px;height:440px;padding:46px">
+      <div class="pill" style="font-size:24px;background:#3a7bd5">2-yo'l</div><div class="big" style="font-size:52px;margin-top:22px">Netlify Drop</div>
+      <div style="font-size:30px;margin-top:20px;line-height:1.5">HTML faylni yuklab oling 📄<br>app.netlify.com/drop ga sudrab tashlang</div></div>`));
+    el.appendChild(h(`<div class="kid" style="position:absolute;left:50%;top:640px;transform:translateX(-50%);background:#fff3d6;border:2px solid #f2b33d;border-radius:18px;padding:16px 30px;font-size:30px;font-weight:700;white-space:nowrap;opacity:0">👨‍👩‍👦 18 yoshgacha bo'lsangiz — akkauntni ota-onangiz bilan oching</div>`));
+  },
+  draw(el, u, d, sc) {
+    const k1 = back(lin(u, sc.first || 1.6, (sc.first || 1.6) + .5)), k2 = back(lin(u, sc.second || 7, (sc.second || 7) + .5)), k3 = eo(lin(u, sc.kid || 12, (sc.kid || 12) + .4));
+    const c1 = el.querySelector(".c1"), c2 = el.querySelector(".c2");
+    c1.style.opacity = cl(k1 * 1.4); c1.style.transform = `translateY(${(1 - k1) * 50}px)`;
+    c2.style.opacity = cl(k2 * 1.4); c2.style.transform = `translateY(${(1 - k2) * 50}px)`;
+    el.querySelector(".kid").style.opacity = k3;
+  }
+};
+S.honest = {
+  init(el) {
+    el.appendChild(h(`<div style="position:absolute;left:0;right:0;top:20px;text-align:center" class="big"><span style="font-size:60px">Rostini aytsam 🤝</span></div>`));
+    el.appendChild(h(`<div class="card c1" style="position:absolute;left:200px;top:140px;width:720px;height:480px;padding:46px;border-top:10px solid #3f8f5a">
+      <div class="big" style="font-size:46px;color:#3f8f5a">✅ Tez bo'ladi</div><div style="font-size:32px;margin-top:24px;line-height:1.7">Bitta sahifali sayt-vizitka<br>Kafe, do'kon, usta uchun<br>Portfolio sahifasi</div></div>`));
+    el.appendChild(h(`<div class="card c2" style="position:absolute;left:1000px;top:140px;width:720px;height:480px;padding:46px;border-top:10px solid #e0a03a">
+      <div class="big" style="font-size:46px;color:#c27a0e">⏳ Ko'proq vaqt kerak</div><div style="font-size:32px;margin-top:24px;line-height:1.7">Onlayn to'lov<br>Ro'yxatdan o'tish<br>Ma'lumotlar bazasi</div></div>`));
+    el.appendChild(h(`<div class="lesson" style="position:absolute;left:50%;top:650px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:18px;padding:16px 34px;font-size:32px;font-weight:800;white-space:nowrap;opacity:0">💡 Claude kuchli — lekin aniq vazifa berishni siz bilishingiz kerak</div>`));
+  },
+  draw(el, u, d, sc) {
+    const k1 = back(lin(u, .3, .8)), k2 = back(lin(u, sc.second || 4, (sc.second || 4) + .5));
+    const c1 = el.querySelector(".c1"), c2 = el.querySelector(".c2");
+    c1.style.opacity = cl(k1 * 1.4); c1.style.transform = `translateY(${(1 - k1) * 50}px)`;
+    c2.style.opacity = cl(k2 * 1.4); c2.style.transform = `translateY(${(1 - k2) * 50}px)`;
+    el.querySelector(".lesson").style.opacity = eo(lin(u, sc.lesson || 9, (sc.lesson || 9) + .4));
+  }
+};
+S.cta = {
+  init(el) {
+    el.appendChild(h(`<div class="card" style="position:absolute;left:360px;right:360px;top:40px;height:620px;padding:60px;text-align:center">
+      <div style="font-size:110px">📥</div><div class="big" style="font-size:56px;margin-top:10px">Uchala buyruq — Telegram kanalimda</div>
+      <div style="margin:34px auto 0;display:inline-block;background:var(--acc);color:#fff;border-radius:999px;padding:22px 60px;font-weight:900;font-size:60px">@ahdigital_01</div>
+      <div style="font-size:34px;margin-top:34px;color:var(--muted)">Keyingi video: saytga <b style="color:var(--ink)">o'z domeningizni</b> ulaymiz 🌐</div></div>`));
+  },
+  draw(el, u) { const p = back(lin(u, 0, .6)); el.firstChild.style.transform = `scale(${.85 + .15 * p})`; el.firstChild.style.opacity = cl(p * 1.5); }
+};
+
+function browser(img, x, y, w, hh, url) {
+  const b = h(`<div class="browser" style="left:${x}px;top:${y}px;width:${w}px;height:${hh}px"><div class="bar"><i style="background:#ff5f56"></i><i style="background:#ffbd2e"></i><i style="background:#27c93f"></i><div class="url">🔒 ${url}</div></div><div class="view"><img class="main" src="${IMG[img]}"></div></div>`);
+  b.dataset.img = img; return b;
+}
+// p: 0..1 — rasmning qancha qismi pastga surilgan
+function scrollImg(el, name, p) {
+  const b = el.querySelector(".browser"); if (!b) return;
+  const img = b.querySelector("img.main"), v = b.querySelector(".view");
+  const H = img.naturalHeight / img.naturalWidth * v.clientWidth, max = Math.max(0, H - v.clientHeight);
+  const y = -max * cl(p);
+  img.style.transform = `translateY(${y}px)`;
+  v.querySelectorAll(".ring").forEach(r => r.style.marginTop = y + "px");
+}
+
+let cur = -1, curEl = null;
+function sceneAt(t) { let i = -1; SPEC.scenes.forEach((s, k) => { if (t >= T[s.at] - .15) i = k; }); return i; }
+window.setup = async function (spec, imgs) {
+  SPEC = spec; T = spec.times; IMG = imgs;
+  await Promise.all(Object.values(imgs).map(src => { const im = new Image(); im.src = src; return im.decode().catch(() => {}); }));
+};
+window.render = function (t) {
+  const i = sceneAt(t);
+  if (i !== cur) {
+    cur = i; $("stage").innerHTML = "";
+    curEl = document.createElement("div"); curEl.className = "scene"; $("stage").appendChild(curEl);
+    if (i >= 0) S[SPEC.scenes[i].type].init(curEl, SPEC.scenes[i]);
+  }
+  if (i < 0) return;
+  const sc = SPEC.scenes[i], s0 = T[sc.at] - .15, next = SPEC.scenes[i + 1], s1 = next ? T[next.at] - .15 : SPEC.end;
+  const u = t - s0, d = s1 - s0;
+  const inP = eo(lin(u, 0, .35)), outP = eio(lin(t, s1 - .3, s1));
+  curEl.style.opacity = inP * (1 - outP); curEl.style.transform = `translateY(${(1 - inP) * 40 - outP * 30}px)`;
+  S[sc.type].draw(curEl, u, d, sc);
+  $("chap").textContent = sc.ch || "";
+  // subtitr
+  let ci = 0; T.forEach((x, k) => { if (t >= x - .05) ci = k; });
+  const sub = $("sub"), txt = SPEC.chunks[ci], endT = ci + 1 < T.length ? T[ci + 1] : SPEC.speechEnd + .3;
+  sub.textContent = txt; sub.style.opacity = t > SPEC.speechEnd + .4 ? 0 : 1;
+};
+</script></body></html>
