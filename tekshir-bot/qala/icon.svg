@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2347"/><stop offset="1" stop-color="#5b4a7a"/></linearGradient></defs>
+  <rect width="512" height="512" rx="112" fill="url(#s)"/>
+  <circle cx="380" cy="120" r="44" fill="#fff6d6"/>
+  <g fill="#8b8fa3">
+    <rect x="120" y="230" width="272" height="190"/>
+    <rect x="96" y="170" width="72" height="250"/><rect x="344" y="170" width="72" height="250"/>
+    <rect x="96" y="148" width="18" height="22"/><rect x="123" y="148" width="18" height="22"/><rect x="150" y="148" width="18" height="22"/>
+    <rect x="344" y="148" width="18" height="22"/><rect x="371" y="148" width="18" height="22"/><rect x="398" y="148" width="18" height="22"/>
+  </g>
+  <path d="M220 420v-60a36 36 0 0 1 72 0v60z" fill="#4a2f1f"/>
+  <rect x="170" y="262" width="44" height="44" rx="8" fill="#ffe7a3"/><rect x="234" y="262" width="44" height="44" rx="8" fill="#3d4157"/><rect x="298" y="262" width="44" height="44" rx="8" fill="#ffe7a3"/>
+  <text x="192" y="294" font-family="Arial,sans-serif" font-weight="900" font-size="30" text-anchor="middle" fill="#3a2600">Q</text>
+  <text x="320" y="294" font-family="Arial,sans-serif" font-weight="900" font-size="30" text-anchor="middle" fill="#3a2600">7</text>
+  <g transform="rotate(-35 256 256)"><rect x="40" y="250" width="260" height="10" fill="#c9a46a"/><path d="M300 238l36 17-36 17z" fill="#e9e4d8"/><path d="M40 255l-22-16h22l14 16-14 16H18z" fill="#ff5d5d"/></g>
+</svg>

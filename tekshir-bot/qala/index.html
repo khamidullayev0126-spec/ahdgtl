@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#1b2347">
 <title>Parol qal'asi</title>
+<link rel="manifest" href="/qala/manifest.webmanifest">
+<link rel="icon" href="/qala/icon.svg" type="image/svg+xml">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Qal'angni qur — boshqalarnikini buz! Kamon bilan parol topish o'yini.">
 <style>
 :root{--gold:#ffc94a;--red:#ff5d5d;--green:#4ad48a;--blue:#7ad0ff;--ink:#f4f1ea;--panel:#141a33ee;--bg:#0c1024}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -165,6 +169,7 @@ input:focus{border-color:var(--gold)}
       <button id="tTop">🏆 Reyting</button>
       <button id="tEv">🔔 Xabarlar<span class="badge" id="evBadge" hidden>0</span></button>
       <button id="tRec">🔑 Tiklash kodi</button>
+      <button id="tInv">📣 Do'stni chaqirish</button>
     </div>
     <div class="banner" id="recBanner" hidden><span style="flex:1">🔑 <b>Tiklash kodini oling!</b> Brauzer tozalansa yoki boshqa telefondan kirsangiz — shu kod kerak bo'ladi.</span><button id="recBannerBtn">Olish</button></div>
     <div class="grid2">
@@ -221,6 +226,7 @@ input:focus{border-color:var(--gold)}
     <div id="mText" style="opacity:.85"></div>
     <div class="pw" id="mPw"></div>
     <div class="rows" id="mRows"></div>
+    <button class="big ghost" id="mShare" style="margin-top:10px">📤 Natijani ulashish</button>
     <div class="btns"><button class="big ghost" id="mMenu">☰ Menyu</button><button class="big" id="mNext"></button></div>
   </div>
 </div>
@@ -490,6 +496,20 @@ const sfx = {
   tick(){ tone(1000,.04,"square",.04); }
 };
 
+/* ================= Titrash va ulashish ================= */
+let vib = store.get("pq_vib", true);
+function buzz(p){ if (vib && navigator.vibrate) try{ navigator.vibrate(p); }catch(e){} }
+const GAME_URL = ONLINE ? location.origin + "/qala" : "https://tekshir.ah-digital.uz/qala";
+async function share(text){
+  const data = { title:"Parol qal'asi", text, url:GAME_URL };
+  try{ if (navigator.share){ await navigator.share(data); return; } }catch(e){ if (e && e.name === "AbortError") return; }
+  try{ await navigator.clipboard.writeText(text + " " + GAME_URL); showNet("Havola nusxalandi — do'stingizga yuboring 📋"); }
+  catch(e){ prompt("Nusxa oling:", text + " " + GAME_URL); }
+}
+$("tInv").onclick = () => share(ME && ME.castle
+  ? `Mening qal'amni buzib ko'r! 🏰🏹 Username'im: ${ME.name}. Parol ${ME.castle.len} ta belgi — uddalaysanmi?`
+  : "Parol qal'asi — kamon bilan parol topish o'yini! 🏰🏹 Qal'angni qur, boshqalarnikini buz:");
+
 /* ================= Sahna o'lchami ================= */
 const W = 960, H = 540, GAME_H = 448;
 const cv = $("cv"), ctx = cv.getContext("2d");
@@ -500,6 +520,7 @@ function fit(){
   cv.style.width = W*K + "px"; cv.style.height = H*K + "px";
   cv.width = Math.round(W*K*dpr); cv.height = Math.round(H*K*dpr);
   ctx.setTransform(K*dpr, 0, 0, K*dpr, 0, 0);
+  BG.key = "";                                  // o'lcham o'zgardi — fonni qayta chizamiz
   const portrait = innerHeight > innerWidth && matchMedia("(pointer:coarse)").matches;
   $("rotate").hidden = !(portrait && !G.rotateSkip && !$("wrap").hidden);
 }
@@ -591,11 +612,14 @@ const G = {
   arrow:null, stuck:[], parts:[], floats:[], toasts:[], balloons:[], clouds:[],
   aim:{ on:false, sx:0, sy:0, x:0, y:0, angle:-0.75, power:0.8 },
   shieldY:285, shieldT:0, shake:0, flash:0, fall:0, last:-1,
-  hint:"", nextBalloon:4, t:0, lastTick:0, keyFlash:0, shots:0, hits:0
+  hint:"", nextBalloon:4, t:0, lastTick:0, keyFlash:0, shots:0, hits:0,
+  tut: !store.get("pq_tut", false), hue:210
 };
+function hueOf(s){ let h = 0; for (const c of String(s)) h = (h*31 + c.charCodeAt(0)) % 360; return h; }
 for (let i = 0; i < 6; i++) G.clouds.push({ x:Math.random()*W, y:30 + Math.random()*120, s:.6 + Math.random()*.8 });
 
 function resetRound(level, r){
+  G.hue = hueOf(G.cname);
   Object.assign(G, { level, len:r.len, password:"", combo:0, sel:null, fire:false, pending:false,
     timeMax: Math.max(60, 100 - level*5), state:"play", arrow:null, stuck:[], balloons:[], fall:0, nextBalloon:3, hint:"" });
   G.time = G.timeMax;
@@ -653,7 +677,8 @@ cv.addEventListener("pointerdown", e => {
     if (k) selectChar(k.ch);
     return;
   }
-  if (p.x > W - 54 && p.y < 40){ muted = !muted; store.set("pq_mute", muted); return; }
+  if (p.x > W - 50 && p.y < 40){ muted = !muted; store.set("pq_mute", muted); return; }
+  if (p.x > W - 92 && p.x <= W - 50 && p.y < 40 && navigator.vibrate){ vib = !vib; store.set("pq_vib", vib); buzz(30); return; }
   if (p.x < 60 && p.y < 40){ askQuit(); return; }
   if (G.arrow || G.pending) return;
   if (!G.sel){ toast("Avval pastdan belgi tanlang 👇", "#ff9d5d", 1.6); G.keyFlash = 1; return; }
@@ -695,14 +720,15 @@ function openMenuFromGame(){ G.state = "menu"; $("modal").hidden = true; TOKEN &
 function fire(){
   const v = MAXV * G.aim.power, a = G.aim.angle;
   G.arrow = { x:BOW.x + Math.cos(a)*30, y:BOW.y + Math.sin(a)*30, vx:Math.cos(a)*v, vy:Math.sin(a)*v, ch:G.sel, fire:G.fire };
-  G.shots++; sfx.twang();
+  G.shots++; sfx.twang(); buzz(12);
+  if (G.tut){ G.tut = false; store.set("pq_tut", true); }
 }
 function landArrow(kind, x, y){
   const a = G.arrow; G.arrow = null;
   const ang = Math.atan2(a.vy, a.vx);
   if (kind === "shield"){
     G.stuck.push({ x, y, a:ang, ch:a.ch, onShield:true, dy:y - G.shieldY });
-    G.combo = 0; sfx.shield(); burst(x, y, ["#9fd8ff","#ffffff","#5aa9ff"], 14, 160); floatText(x, y - 20, "🛡 To'sildi!", "#9fd8ff");
+    G.combo = 0; sfx.shield(); buzz(15); burst(x, y, ["#9fd8ff","#ffffff","#5aa9ff"], 14, 160); floatText(x, y - 20, "🛡 To'sildi!", "#9fd8ff");
   } else if (kind === "ground"){
     G.stuck.push({ x, y, a:ang, ch:a.ch }); sfx.thud(); G.combo = 0;
     burst(x, y, ["#6b4a2b","#3f7a45"], 8, 90); floatText(x, y - 20, "Tegmadi", "#ffffffaa");
@@ -731,11 +757,11 @@ async function testChar(ch, x, y, fire){
     const mult = (G.combo >= 3 ? 2 : 1) * (fire ? 3 : 1);
     const pts = 10 * r.positions.length * mult * G.level;
     G.score += pts; if (fire) G.fire = false;
-    sfx.hit(); burst(x, y, ["#ffe7a3","#ffc94a","#ffffff"], 20, 240); floatText(x, y - 10, "+" + pts, "#ffc94a");
+    sfx.hit(); buzz(25); burst(x, y, ["#ffe7a3","#ffc94a","#ffffff"], 20, 240); floatText(x, y - 10, "+" + pts, "#ffc94a");
     if (G.combo === 3) toast("🔥 COMBO ×2!", "#ffc94a", 1.6);
     if (fire) toast("🔥 Olovli o'q ×3!", "#ff9d5d", 1.6);
   } else {
-    G.combo = 0; G.shake = .4; G.flash = .35; sfx.miss();
+    G.combo = 0; G.shake = .4; G.flash = .35; sfx.miss(); buzz([50, 40, 50]);
     burst(x, y, ["#888","#555","#aaa"], 12, 160); floatText(x - 40, y - 45, `«${ch}» yo'q ❌`, "#ff8080");
     if (r.hint){
       G.hint = r.hint.text; toast(`💡 Maslahat ${r.hint.n}/3: ${r.hint.text}`, "#ffe08a", 3.2); sfx.hint();
@@ -782,7 +808,7 @@ function win(){
   if (G.state !== "play") return;
   G.state = "won"; G.fall = .001; G.sel = null; G.arrow = null;
   const lifeB = G.lives*20*G.level, timeB = Math.ceil(G.time)*2;
-  G.score += lifeB + timeB; sfx.win();
+  G.score += lifeB + timeB; sfx.win(); buzz([60, 40, 60, 40, 160]);
   const best = Math.max(store.get("pq_best", 0), G.score); store.set("pq_best", best);
   const rows = G.mode === "online"
     ? [["❤️ Qolgan jonlar", G.lives], ["⚔️ Hujum balli", "+" + (50 + G.lives*10)], ["⭐ O'yin balli", G.score]]
@@ -791,7 +817,7 @@ function win(){
 }
 async function lose(reason){
   if (G.state !== "play") return;
-  G.state = "lost"; G.sel = null; G.arrow = null; sfx.lose();
+  G.state = "lost"; G.sel = null; G.arrow = null; sfx.lose(); buzz(300);
   if (!G.password){ const r = await G.engine.giveup(); if (r && r.password) G.password = r.password; }
   const best = Math.max(store.get("pq_best", 0), G.score); store.set("pq_best", best);
   const acc = G.shots ? Math.round(G.hits / G.shots * 100) : 0;
@@ -813,6 +839,9 @@ function showModal(won, rows, reason){
     $("mNext").onclick = () => { $("modal").hidden = true; won ? startPractice(G.level + 1) : startPractice(1, true); };
   }
   $("mMenu").onclick = openMenuFromGame;
+  $("mShare").onclick = () => share(G.mode === "online"
+    ? (won ? `Men ${G.owner} qal'asini ${G.lives} ta jon bilan buzdim! 🏹💥 Parol: ${G.password}. Sen ham urinib ko'r:` : `${G.owner} qal'asi juda mustahkam ekan 🛡 Sen buza olasanmi?`)
+    : `Parol qal'asi'da ${G.level}-darajaga yetdim, ${G.score} ball! 🏰🏹 Sen-chi?`);
   $("modal").hidden = false;
 }
 
@@ -865,19 +894,37 @@ function stonePos(i){
   const sz = 30, gap = 4, totalW = inRow*sz + (inRow - 1)*gap;
   return { x: CASTLE.x + CASTLE.w/2 - totalW/2 + col*(sz + gap) + sz/2, y: 212 + row*(sz + 8), sz };
 }
+// Osmon: har darajada boshqa vaqt — tun, shom, tong, kunduz. Fon bir marta chiziladi (telefonda tezroq).
+const SKIES = [
+  { top:"#1b2347", mid:"#4a3f7a", bot:"#c4708a", m1:"#2a2a55", m2:"#33336a", sun:"#fff6d6", stars:true },
+  { top:"#2b1d4a", mid:"#b8566b", bot:"#ffb36b", m1:"#5a3352", m2:"#7a4058", sun:"#ffd27a", stars:false },
+  { top:"#123a5a", mid:"#3f8fa8", bot:"#bfe6d8", m1:"#2a5a6a", m2:"#367080", sun:"#fffbe6", stars:false },
+  { top:"#2a6fd1", mid:"#7cc3f0", bot:"#d8f1ff", m1:"#5a7fb0", m2:"#6f95c4", sun:"#fff3b0", stars:false }
+];
+const BG = { cv:document.createElement("canvas"), key:"" };
+function buildBg(sky){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2), c = BG.cv;
+  c.width = Math.round(W*K*dpr); c.height = Math.round(GAME_H*K*dpr);
+  const b = c.getContext("2d"); b.setTransform(K*dpr, 0, 0, K*dpr, 0, 0);
+  const g = b.createLinearGradient(0, 0, 0, GAME_H);
+  g.addColorStop(0, sky.top); g.addColorStop(.6, sky.mid); g.addColorStop(1, sky.bot);
+  b.fillStyle = g; b.fillRect(0, 0, W, GAME_H);
+  b.fillStyle = sky.sun; b.shadowColor = sky.sun; b.shadowBlur = 30;
+  b.beginPath(); b.arc(470, 70, 26, 0, Math.PI*2); b.fill(); b.shadowBlur = 0;
+  b.fillStyle = sky.m1; b.beginPath(); b.moveTo(0, 360);
+  [[90,250],[180,320],[300,220],[420,330],[520,260],[640,330],[760,240],[880,320],[960,270],[960,420],[0,420]].forEach(p => b.lineTo(p[0], p[1])); b.fill();
+  b.fillStyle = sky.m2; b.beginPath(); b.moveTo(0, 390);
+  [[150,320],[260,370],[380,300],[500,380],[620,320],[760,380],[960,330],[960,420],[0,420]].forEach(p => b.lineTo(p[0], p[1])); b.fill();
+}
 function drawSky(){
-  const g = ctx.createLinearGradient(0, 0, 0, GAME_H);
-  g.addColorStop(0, "#1b2347"); g.addColorStop(.6, "#4a3f7a"); g.addColorStop(1, "#c4708a");
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, GAME_H);
-  ctx.fillStyle = "#fff6d6"; ctx.shadowColor = "#fff6d6"; ctx.shadowBlur = 30;
-  ctx.beginPath(); ctx.arc(470, 70, 26, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0;
-  ctx.fillStyle = "#ffffff88";
-  for (let i = 0; i < 40; i++){ ctx.globalAlpha = .3 + .3*Math.sin(G.t*2 + i); ctx.fillRect((i*97) % W, (i*53) % 160, 2, 2); }
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = "#2a2a55"; ctx.beginPath(); ctx.moveTo(0, 360);
-  [[90,250],[180,320],[300,220],[420,330],[520,260],[640,330],[760,240],[880,320],[960,270],[960,420],[0,420]].forEach(p => ctx.lineTo(p[0], p[1])); ctx.fill();
-  ctx.fillStyle = "#33336a"; ctx.beginPath(); ctx.moveTo(0, 390);
-  [[150,320],[260,370],[380,300],[500,380],[620,320],[760,380],[960,330],[960,420],[0,420]].forEach(p => ctx.lineTo(p[0], p[1])); ctx.fill();
+  const si = (G.level - 1) % SKIES.length, sky = SKIES[si], key = si + ":" + K;
+  if (BG.key !== key){ buildBg(sky); BG.key = key; }
+  ctx.drawImage(BG.cv, 0, 0, W, GAME_H);
+  if (sky.stars){
+    ctx.fillStyle = "#ffffff88";
+    for (let i = 0; i < 40; i++){ ctx.globalAlpha = .3 + .3*Math.sin(G.t*2 + i); ctx.fillRect((i*97) % W, (i*53) % 160, 2, 2); }
+    ctx.globalAlpha = 1;
+  }
   G.clouds.forEach(c => { ctx.fillStyle = "#ffffff22"; ctx.beginPath(); ctx.ellipse(c.x, c.y, 40*c.s, 14*c.s, 0, 0, Math.PI*2); ctx.ellipse(c.x + 24*c.s, c.y - 8*c.s, 26*c.s, 14*c.s, 0, 0, Math.PI*2); ctx.fill(); });
 }
 function drawGround(){
@@ -891,7 +938,7 @@ function drawGround(){
 function drawCastle(){
   ctx.save();
   if (G.fall){ const f = Math.min(G.fall, 2); ctx.translate(795, 420); ctx.rotate(f*0.05); ctx.translate(-795, -420 + f*f*60); ctx.globalAlpha = Math.max(0, 1 - f/2); }
-  const stone = "#8b8fa3", dark = "#5f6378";
+  const stone = `hsl(${G.hue},14%,60%)`, dark = `hsl(${G.hue},16%,42%)`;
   ctx.fillStyle = stone; ctx.fillRect(CASTLE.x, CASTLE.top, CASTLE.w, CASTLE.ground - CASTLE.top);
   ctx.fillStyle = "#0000001a"; for (let y = CASTLE.top + 18; y < CASTLE.ground; y += 22) ctx.fillRect(CASTLE.x, y, CASTLE.w, 2);
   ctx.fillStyle = stone; for (let x = CASTLE.x; x < CASTLE.x + CASTLE.w; x += 22) ctx.fillRect(x, CASTLE.top - 14, 14, 14);
@@ -901,7 +948,7 @@ function drawCastle(){
     ctx.fillStyle = "#1b2347"; rr(t.x + t.w/2 - 7, t.y + 40, 14, 22, 7); ctx.fill();
     const fx = t.x + t.w/2, fy = t.y - 50, dir = G.wind >= 0 ? 1 : -1;
     ctx.fillStyle = "#ddd"; ctx.fillRect(fx - 1, fy, 3, 40);
-    ctx.fillStyle = "#ff5d5d"; ctx.beginPath(); ctx.moveTo(fx + 1, fy);
+    ctx.fillStyle = `hsl(${G.hue},75%,62%)`; ctx.beginPath(); ctx.moveTo(fx + 1, fy);
     const wv = Math.sin(G.t*6)*4, len = 18 + Math.abs(G.wind)*4;
     ctx.lineTo(fx + dir*len, fy + 6 + wv); ctx.lineTo(fx + 1, fy + 14); ctx.fill();
   });
@@ -989,6 +1036,7 @@ function drawHUD(){
   text(`🌬 ${arr} ${Math.abs(w).toFixed(1)}`, 712, 20, 16, Math.abs(w) > 1.5 ? "#ffb35d" : "#f4f1ea");
   if (G.fire) text("🔥", 800, 20, 18, "#fff");
   text(muted ? "🔇" : "🔊", W - 28, 20, 18, "#fff");
+  if (navigator.vibrate){ ctx.globalAlpha = vib ? 1 : .35; text("📳", W - 70, 20, 17, "#fff"); ctx.globalAlpha = 1; }
   if (G.hint){ ctx.font = "700 13px system-ui,sans-serif"; const hw = ctx.measureText("💡 " + G.hint).width + 22; ctx.fillStyle = "#3a2f0acc"; rr(12, 48, hw, 26, 8); ctx.fill(); text("💡 " + G.hint, 22, 61, 13, "#ffe08a", "left", 700); }
   G.toasts.forEach((t, i) => {
     const a = Math.min(1, t.t*5, (t.life - t.t)*3);
@@ -1042,9 +1090,37 @@ function draw(){
   if (G.flash > 0){ ctx.fillStyle = "#ff3030"; ctx.globalAlpha = G.flash*.5; ctx.fillRect(0, 0, W, GAME_H); ctx.globalAlpha = 1; }
   ctx.restore();
   drawHUD(); drawKeys();
-  if (!G.sel && !G.arrow && !G.pending && G.state === "play" && !G.aim.on){
+  if (G.tut && G.state === "play" && !G.arrow) drawTutorial();
+  else if (!G.sel && !G.arrow && !G.pending && G.state === "play" && !G.aim.on){
     ctx.globalAlpha = .6 + .4*(.5 + .5*Math.sin(G.t*4)); text("👇 Belgi tanlang, keyin ekranni tortib oting", W/2 - 120, GAME_H - 14, 14, "#ffe08a"); ctx.globalAlpha = 1;
   }
+}
+
+function bubble(msg, x, y){
+  ctx.font = "800 17px system-ui,sans-serif"; const w = ctx.measureText(msg).width + 28;
+  ctx.fillStyle = "#ffc94a"; rr(x - w/2, y - 18, w, 36, 12); ctx.fill();
+  text(msg, x, y, 17, "#2a1d00");
+}
+function drawTutorial(){
+  if (!G.sel){
+    G.keyFlash = Math.max(G.keyFlash, .35 + .35*Math.sin(G.t*5));
+    bubble("1️⃣ Pastdan istalgan belgini tanlang 👇", W/2, GAME_H - 30);
+    return;
+  }
+  if (G.aim.on) return;
+  // qo'l: bosadi → orqaga tortadi → qo'yib yuboradi
+  const cyc = (G.t % 2.2) / 2.2, sx = 330, sy = 250;
+  const pull = cyc < .15 ? 0 : cyc < .7 ? (cyc - .15)/.55 : 1;
+  const hx = sx - 110*pull*Math.cos(-.75), hy = sy - 110*pull*Math.sin(-.75);
+  if (cyc > .15 && cyc < .75){
+    ctx.strokeStyle = "#ffffff99"; ctx.setLineDash([6, 6]); ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(hx, hy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = "#ffffff55"; ctx.beginPath(); ctx.arc(sx, sy, 14, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = cyc > .85 ? 1 - (cyc - .85)/.15 : 1;
+  text("👆", hx + 8, hy + 22, 44, "#fff");
+  ctx.globalAlpha = 1;
+  bubble("2️⃣ Ekranni bosing, orqaga torting va qo'yib yuboring 🏹", W/2 - 90, 200);
 }
 
 /* ================= Asosiy sikl ================= */

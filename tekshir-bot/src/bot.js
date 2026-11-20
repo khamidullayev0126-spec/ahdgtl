@@ -695,6 +695,11 @@ function startWebhook(bot, db, base, port = Number(process.env.PORT || 3000), on
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer" });
       return fs.createReadStream(QALA_HTML).pipe(res);
     }
+    const qf = { "/qala/icon.svg": "image/svg+xml", "/qala/manifest.webmanifest": "application/manifest+json" }[req.url];
+    if (req.method === "GET" && qf) {
+      res.writeHead(200, { "Content-Type": qf, "Cache-Control": "public, max-age=86400", "X-Content-Type-Options": "nosniff" });
+      return fs.createReadStream(path.join(__dirname, "..", req.url.slice(1))).pipe(res);
+    }
     if (req.url.startsWith("/api/qala/")) return qalaApi(req, res, req.url.slice(10).split("?")[0]);
     if (req.method === "GET" && serveApp(req, res)) return;
     if (req.method === "GET" && req.url === "/health") {

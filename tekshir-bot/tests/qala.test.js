@@ -118,6 +118,10 @@ test("HTTP: /qala sahifasi, API token talab qiladi, begona sayt bloklanadi", asy
     const me = await (await post("me", { token: j.token })).json();
     assert.strictEqual(me.castle.len, 9);
     assert.strictEqual((await post("nope", {})).status, 404);
+    const man = await fetch(base + "/qala/manifest.webmanifest");
+    assert.strictEqual(man.status, 200); assert.strictEqual((await man.json()).start_url, "/qala");
+    assert.match(await (await fetch(base + "/qala/icon.svg")).text(), /<svg/);
+    assert.strictEqual((await fetch(base + "/qala/../src/qala.js")).status, 404);
   } finally { server.close(); }
 });
 

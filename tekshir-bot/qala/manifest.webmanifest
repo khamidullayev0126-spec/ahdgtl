@@ -1,0 +1,13 @@
+{
+  "name": "Parol qal'asi",
+  "short_name": "Parol qal'asi",
+  "description": "Qal'angni qur — boshqalarnikini buz! Kamon bilan parol topish o'yini.",
+  "start_url": "/qala",
+  "scope": "/qala",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0c1024",
+  "theme_color": "#1b2347",
+  "lang": "uz",
+  "icons": [{ "src": "/qala/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
