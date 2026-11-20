@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shirin Tortlar — uyda pishirilgan mazali tortlar</title>
+<style>
+  :root{--pink:#8fb8f0;--pink-d:#2f6fd6;--cream:#f4f8ff;--choc:#1d3a66;--ink:#3a2a24;--card:#ffffff}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.55}
+  section{padding:56px 20px}
+  .wrap{max-width:1040px;margin:0 auto}
+  h2{font-size:34px;margin:0 0 26px;text-align:center;color:var(--choc)}
+  /* Bosh qism */
+  .hero{background:linear-gradient(160deg,#dbe8ff,#f4f8ff 70%);text-align:center;padding:80px 20px 70px}
+  .hero .logo{font-size:64px}
+  .hero h1{font-size:52px;margin:8px 0;color:var(--choc)}
+  .hero p{font-size:22px;margin:0 0 26px}
+  .btn{display:inline-block;background:var(--pink-d);color:#fff;text-decoration:none;font-weight:900;font-size:24px;padding:20px 44px;border-radius:999px;box-shadow:0 10px 24px #2f6fd655;transition:transform .2s}
+  .btn:hover{transform:translateY(-3px)}
+  /* Tortlar */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+  .cake{background:var(--card);border-radius:24px;padding:22px;box-shadow:0 8px 24px #5b3a2914;transition:transform .25s,box-shadow .25s}
+  .cake:hover{transform:scale(1.05);box-shadow:0 16px 36px #5b3a2926}
+  .cake .pic{height:130px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:64px;margin-bottom:14px}
+  .cake h3{margin:0 0 4px;font-size:22px}
+  .cake p{margin:0 0 12px;font-size:16px;opacity:.8}
+  .price{font-weight:900;font-size:20px;color:var(--pink-d)}
+  /* Qadamlar */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;counter-reset:s}
+  .step{background:#fff;border-radius:24px;padding:24px;text-align:center}
+  .step .n{width:56px;height:56px;border-radius:50%;background:var(--pink);color:#fff;font-weight:900;font-size:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+  /* Sharhlar */
+  .reviews{background:#e6efff}
+  .rev{background:#fff;border-radius:24px;padding:22px}
+  .rev .stars{color:#f2b33d}
+  .rev b{display:block;margin-top:8px}
+  /* Aloqa */
+  .contact{text-align:center}
+  .contact .info{font-size:22px;margin-bottom:22px}
+  .promo{background:linear-gradient(90deg,#2f6fd6,#5aa0f2);color:#fff;text-align:center;font-size:26px;font-weight:800;padding:26px 20px}
+  footer{text-align:center;padding:24px;font-size:14px;opacity:.6}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="logo">🎂</div>
+  <h1>Shirin Tortlar</h1>
+  <p>Uyda, mehr bilan pishirilgan mazali tortlar</p>
+  <a class="btn" href="https://t.me/">✈️ Buyurtma berish</a>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>Tortlarimiz</h2>
+    <div class="grid">
+      <div class="cake"><div class="pic" style="background:#ffe1e8">🍓</div><h3>Qulupnayli tort</h3><p>Yangi qulupnay va yengil krem</p><div class="price">180 000 so'm</div></div>
+      <div class="cake"><div class="pic" style="background:#f3e3d3">🍫</div><h3>Shokoladli tort</h3><p>Uch qavat shokolad, ganash qoplamasi</p><div class="price">220 000 so'm</div></div>
+      <div class="cake"><div class="pic" style="background:#fff1c9">🍯</div><h3>Medovik</h3><p>Asalli qatlamlar, smetanali krem</p><div class="price">160 000 so'm</div></div>
+      <div class="cake"><div class="pic" style="background:#e4f1e4">🍰</div><h3>Napoleon</h3><p>Yupqa qatlamlar, vanilli krem</p><div class="price">170 000 so'm</div></div>
+      <div class="cake"><div class="pic" style="background:#fde2d2">🥕</div><h3>Sabzili tort</h3><p>Yong'oq va dolchinli, pishloqli krem</p><div class="price">190 000 so'm</div></div>
+      <div class="cake"><div class="pic" style="background:#e9e2f6">🎉</div><h3>Tug'ilgan kun torti</h3><p>Ismingiz yozilgan, istalgan rangda</p><div class="price">250 000 so'm</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Qanday buyurtma beriladi?</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><b>Tortni tanlang</b><p>Yuqoridagi ro'yxatdan yoki o'z g'oyangizni ayting</p></div>
+      <div class="step"><div class="n">2</div><b>Bizga yozing</b><p>Telegram yoki telefon orqali sana va manzilni ayting</p></div>
+      <div class="step"><div class="n">3</div><b>Tortni oling</b><p>Belgilangan kunda yangi pishirilgan tort tayyor!</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="reviews">
+  <div class="wrap">
+    <h2>Mijozlar fikri</h2>
+    <div class="grid">
+      <div class="rev"><div class="stars">★★★★★</div>Medovik juda mazali chiqdi, mehmonlar retseptini so'rashdi!<b>— Nilufar</b></div>
+      <div class="rev"><div class="stars">★★★★★</div>Qizimning tug'ilgan kuniga tort buyurtma qildik, juda chiroyli edi.<b>— Jasur</b></div>
+      <div class="rev"><div class="stars">★★★★★</div>Vaqtida tayyor bo'ldi, narxi ham hamyonbop.<b>— Madina</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="aloqa">
+  <div class="wrap">
+    <h2>Aloqa</h2>
+    <div class="info">📞 +998 90 000 00 00<br>🕘 Har kuni 9:00 – 20:00</div>
+    <a class="btn" href="https://t.me/">Telegram orqali yozish</a>
+  </div>
+</section>
+
+<div class="promo">🎁 Bugungi taklif: barcha tortlarga <b>10% chegirma!</b></div>
+<footer>© Shirin Tortlar · namuna sayt</footer>
+</body>
+</html>
