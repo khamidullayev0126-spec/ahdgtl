@@ -120,3 +120,54 @@ test("HTTP: /qala sahifasi, API token talab qiladi, begona sayt bloklanadi", asy
     assert.strictEqual((await post("nope", {})).status, 404);
   } finally { server.close(); }
 });
+
+// ---------- 3-bosqich ----------
+function battle(q, owner, attacker, win) {
+  const s = q.startAttack(attacker, owner.name);
+  const pw = "OLTIN@QALA7";
+  if (win) for (const ch of new Set(pw)) q.guess(attacker, s.id, ch);
+  else for (const ch of "BCDEFGHJKM") q.guess(attacker, s.id, ch);
+}
+test("reyting: umumiy/hujum/himoya, o'z o'rnim; 0 ballilar ko'rinmaydi", () => {
+  const q = fresh();
+  const A = q.auth(q.join("ega_1").token), B = q.auth(q.join("hujumchi").token), C = q.auth(q.join("yangi_c").token);
+  q.setCastle(A, "OLTIN@QALA7");
+  battle(q, A, B, true);
+  const t = q.top(B, "atk");
+  assert.strictEqual(t.top[0].name, "hujumchi"); assert.strictEqual(t.me.rank, 1);
+  assert.strictEqual(q.top(C).me.rank, null, "0 ball — o'rin yo'q");
+  assert.ok(!q.top(C).top.some(r => r.name === "yangi_c"));
+  q.setCastle(A, "OLTIN@QALA7");                       // yangi qal'a
+  battle(q, A, C, false);                              // C yutqazdi — A himoya balli oladi
+  const d = q.top(A, "def");
+  assert.strictEqual(d.top[0].name, "ega_1"); assert.strictEqual(d.me.rank, 1);
+  assert.strictEqual(q.top(A, "nonsense").kind, "total");
+});
+
+test("bildirishnomalar: qal'a egasiga keladi, o'qilgach unread 0", () => {
+  const q = fresh();
+  const A = q.auth(q.join("ega_1").token), B = q.auth(q.join("hujumchi").token);
+  q.setCastle(A, "OLTIN@QALA7");
+  battle(q, A, B, false);
+  assert.strictEqual(q.me(A).unread, 1);
+  const ev = q.events(A);
+  assert.strictEqual(ev[0].kind, "held"); assert.strictEqual(ev[0].actor, "hujumchi"); assert.ok(ev[0].points > 0);
+  assert.strictEqual(q.me(A).unread, 0);
+  assert.strictEqual(q.me(B).unread, 0);
+});
+
+test("tiklash kodi: yangi qurilmada kirish, eski kod/token bekor, noto'g'ri kod rad etiladi", () => {
+  const q = fresh();
+  const j = q.join("ega_1"), A = q.auth(j.token);
+  assert.strictEqual(q.recover("ega_1", "AAAA-BBBB-CCCC").reason, "recover");     // kod hali yo'q
+  const r1 = q.newRecovery(A);
+  assert.match(r1.code, /^[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/);
+  assert.strictEqual(q.me(A).has_recovery, true);
+  const r2 = q.newRecovery(A);
+  assert.strictEqual(q.recover("ega_1", r1.code).ok, false, "eski kod ishlamasin");
+  const ok = q.recover("EGA_1", r2.code.toLowerCase().replace(/-/g, " "));      // katta-kichik, bo'sh joy — farqi yo'q
+  assert.ok(ok.ok); assert.strictEqual(ok.name, "ega_1");
+  assert.strictEqual(q.auth(j.token), null, "eski qurilma chiqariladi");
+  assert.ok(q.auth(ok.token));
+  assert.strictEqual(q.recover("nobody", r2.code).reason, "recover");
+});

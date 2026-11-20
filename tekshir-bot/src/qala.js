@@ -53,6 +53,17 @@ CREATE TABLE IF NOT EXISTS qala_attacks (
   updated_at  INTEGER NOT NULL,
   UNIQUE (attacker_id, owner_id, ver)
 );
+-- Bildirishnomalar: «kimdir qal'angizga hujum qildi» (3-bosqich)
+CREATE TABLE IF NOT EXISTS qala_events (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_id   INTEGER NOT NULL,
+  kind        TEXT NOT NULL,          -- held | fell
+  actor       TEXT NOT NULL,          -- hujumchining username'i
+  points      INTEGER NOT NULL DEFAULT 0,
+  seen        INTEGER NOT NULL DEFAULT 0,
+  created_at  INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS qala_events_p ON qala_events(player_id, id);
 `;
 
 // ---------- Sof funksiyalar (testlanadi) ----------
@@ -82,6 +93,9 @@ const isWon = (pw, opened) => [...pw].every(c => opened.includes(c));
 
 function createQala(db, { key } = {}) {
   db.exec(SCHEMA);
+  // Eski bazalarga yangi ustun: tiklash kodi (hash)
+  if (!db.prepare("PRAGMA table_info(qala_players)").all().some(c => c.name === "recovery_hash"))
+    db.exec("ALTER TABLE qala_players ADD COLUMN recovery_hash TEXT");
   const secret = key || process.env.QALA_KEY || ("qala:" + (process.env.HASH_SALT || process.env.BOT_TOKEN || "dev"));
   const K = crypto.createHash("sha256").update(secret).digest();
   const enc = pw => { const iv = crypto.randomBytes(12), c = crypto.createCipheriv("aes-256-gcm", K, iv); const ct = Buffer.concat([c.update(pw, "utf8"), c.final()]); return [iv, c.getAuthTag(), ct].map(b => b.toString("base64")).join("."); };
@@ -111,8 +125,24 @@ function createQala(db, { key } = {}) {
     atkWin:  db.prepare("UPDATE qala_players SET atk_score = atk_score + ?, wins = wins + 1 WHERE id = ?"),
     atkLose: db.prepare("UPDATE qala_players SET losses = losses + 1 WHERE id = ?"),
     defWin:  db.prepare("UPDATE qala_players SET def_score = def_score + ? WHERE id = ?"),
-    top:     db.prepare("SELECT name, atk_score, def_score, wins, (atk_score + def_score) total FROM qala_players ORDER BY total DESC, wins DESC LIMIT 20")
+    addEv:   db.prepare("INSERT INTO qala_events (player_id, kind, actor, points, created_at) VALUES (?, ?, ?, ?, ?)"),
+    events:  db.prepare("SELECT id, kind, actor, points, seen, created_at FROM qala_events WHERE player_id = ? ORDER BY id DESC LIMIT 30"),
+    unread:  db.prepare("SELECT COUNT(*) n FROM qala_events WHERE player_id = ? AND seen = 0"),
+    seenEv:  db.prepare("UPDATE qala_events SET seen = 1 WHERE player_id = ? AND seen = 0"),
+    trimEv:  db.prepare("DELETE FROM qala_events WHERE player_id = ? AND id NOT IN (SELECT id FROM qala_events WHERE player_id = ? ORDER BY id DESC LIMIT 50)"),
+    setRec:  db.prepare("UPDATE qala_players SET recovery_hash = ? WHERE id = ?"),
+    nameRow: db.prepare("SELECT * FROM qala_players WHERE name = ?"),
+    setTok:  db.prepare("UPDATE qala_players SET token_hash = ?, last_seen = ? WHERE id = ?")
   };
+  // Reyting: umumiy / hujumchilar / himoyachilar. Faqat kamida bitta o'yin o'ynaganlar.
+  const SCORE = { total: "(atk_score + def_score)", atk: "atk_score", def: "def_score" };
+  const topQ = {}, rankQ = {};
+  for (const [k, expr] of Object.entries(SCORE)) {
+    topQ[k] = db.prepare(`SELECT name, atk_score, def_score, wins, ${expr} score FROM qala_players WHERE ${expr} > 0 ORDER BY score DESC, wins DESC, id ASC LIMIT 20`);
+    rankQ[k] = db.prepare(`SELECT COUNT(*) + 1 r FROM qala_players WHERE ${expr} > (SELECT ${expr} FROM qala_players WHERE id = @id)
+                            OR (${expr} = (SELECT ${expr} FROM qala_players WHERE id = @id) AND (wins > (SELECT wins FROM qala_players WHERE id = @id)
+                                OR (wins = (SELECT wins FROM qala_players WHERE id = @id) AND id < @id)))`);
+  }
 
   function nameFree(name) {
     if (!nameOk(name)) return { ok: false, reason: "format" };
@@ -144,7 +174,8 @@ function createQala(db, { key } = {}) {
   function castleInfo(c) { return c ? { len: c.len, strength: c.strength, attacks: c.attacks, falls: c.falls, holds: c.holds } : null; }
   function me(p) {
     p = q.byId.get(p.id);
-    return { name: p.name, atk_score: p.atk_score, def_score: p.def_score, wins: p.wins, losses: p.losses, castle: castleInfo(q.castle.get(p.id)) };
+    return { name: p.name, atk_score: p.atk_score, def_score: p.def_score, wins: p.wins, losses: p.losses, castle: castleInfo(q.castle.get(p.id)),
+      unread: q.unread.get(p.id).n, has_recovery: !!p.recovery_hash };
   }
   function setCastle(p, pw, now = Date.now()) {
     pw = typeof pw === "string" ? pw.toUpperCase() : pw;
@@ -189,8 +220,14 @@ function createQala(db, { key } = {}) {
     return { a, c, pw: dec(c.enc) };
   }
   function finish(a, c, won) {
-    if (won) { q.cFell.run(a.owner_id); q.atkWin.run(50 + a.lives * 10, a.attacker_id); }
-    else { q.cHeld.run(a.owner_id); q.atkLose.run(a.attacker_id); q.defWin.run(30 + Math.round(c.strength / 5), a.owner_id); }
+    const actor = q.byId.get(a.attacker_id).name, now = Date.now();
+    if (won) { q.cFell.run(a.owner_id); q.atkWin.run(50 + a.lives * 10, a.attacker_id); q.addEv.run(a.owner_id, "fell", actor, 0, now); }
+    else {
+      const pts = 30 + Math.round(c.strength / 5);
+      q.cHeld.run(a.owner_id); q.atkLose.run(a.attacker_id); q.defWin.run(pts, a.owner_id);
+      q.addEv.run(a.owner_id, "held", actor, pts, now);
+    }
+    q.trimEv.run(a.owner_id, a.owner_id);
   }
   function save(a, now) { q.saveAtk.run({ ...a, now }); }
 
@@ -249,9 +286,39 @@ function createQala(db, { key } = {}) {
     if (a.state === "play") { a.state = "lost"; finish(a, c, false); save(a, now); }
     return { ok: true, ...view(a, pw) };
   }
-  const top = () => q.top.all();
+  function top(p, kind = "total") {
+    if (!SCORE[kind]) kind = "total";
+    const rows = topQ[kind].all();
+    const meRow = q.byId.get(p.id), myScore = kind === "atk" ? meRow.atk_score : kind === "def" ? meRow.def_score : meRow.atk_score + meRow.def_score;
+    return { kind, top: rows, me: { name: meRow.name, score: myScore, rank: myScore > 0 ? rankQ[kind].get({ id: p.id }).r : null } };
+  }
+  function events(p) {
+    const list = q.events.all(p.id);
+    q.seenEv.run(p.id);
+    return list;
+  }
+  // Tiklash kodi: boshqa qurilmada yoki brauzer tozalanganda kirish uchun. Bazada faqat hash.
+  // Yangisini yaratsangiz — eskisi ishlamay qoladi.
+  const REC_ABC = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";          // adashtiradigan 0/O, 1/I yo'q
+  function newRecovery(p) {
+    let code = "";
+    for (let i = 0; i < 12; i++) code += REC_ABC[crypto.randomInt(REC_ABC.length)];
+    code = code.match(/.{4}/g).join("-");
+    q.setRec.run(sha("rec:" + code), p.id);
+    return { ok: true, code };
+  }
+  function recover(name, code, now = Date.now()) {
+    const p = typeof name === "string" && q.nameRow.get(name);
+    const clean = String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (!p || !p.recovery_hash || clean.length !== 12) return { ok: false, reason: "recover" };
+    const given = Buffer.from(sha("rec:" + clean.match(/.{4}/g).join("-"))), real = Buffer.from(p.recovery_hash);
+    if (given.length !== real.length || !crypto.timingSafeEqual(given, real)) return { ok: false, reason: "recover" };
+    const token = crypto.randomBytes(24).toString("hex");
+    q.setTok.run(sha(token), now, p.id);            // eski qurilmadagi kirish bekor bo'ladi
+    return { ok: true, token, name: p.name };
+  }
 
-  return { nameFree, join, auth, me, setCastle, list, startAttack, guess, power, giveUp, top };
+  return { nameFree, join, auth, me, setCastle, list, startAttack, guess, power, giveUp, top, events, newRecovery, recover };
 }
 
 // ---------- HTTP ----------
@@ -268,9 +335,12 @@ function createQalaHttp(qala, createLimiter) {
     guess:  (d, ip, p) => qala.guess(p, d.id, d.ch),
     power:  (d, ip, p) => qala.power(p, d.id, d.kind),
     giveup: (d, ip, p) => qala.giveUp(p, d.id),
-    top:    () => ({ ok: true, top: qala.top() })
+    top:    (d, ip, p) => ({ ok: true, ...qala.top(p, d.kind) }),
+    events: (d, ip, p) => ({ ok: true, events: qala.events(p) }),
+    recovery: (d, ip, p) => qala.newRecovery(p),
+    recover: (d, ip) => joinLim.hit(ip).ok ? qala.recover(String(d.name || ""), d.code) : { ok: false, reason: "slow" }
   };
-  const PUBLIC = ["name", "join", "top"];
+  const PUBLIC = ["name", "join", "recover"];
   return async function handle(req, res, action) {
     const send = (code, obj) => { res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }); res.end(JSON.stringify(obj)); };
     if (req.method !== "POST") return send(405, { ok: false, reason: "post" });

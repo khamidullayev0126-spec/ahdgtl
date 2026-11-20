@@ -85,6 +85,30 @@ input:focus{border-color:var(--gold)}
 .btns{display:flex;gap:10px} .btns .big{flex:1}
 .ghost{background:#ffffff1a!important;color:var(--ink)!important;box-shadow:none!important}
 .net{position:fixed;left:50%;top:10px;transform:translateX(-50%);background:#5a1f1f;padding:8px 14px;border-radius:999px;font-size:14px;z-index:40}
+/* 3-bosqich: asboblar, varaq (sheet), reyting */
+.tools{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tools button{flex:1;min-width:110px;padding:12px;border-radius:14px;font-weight:800;background:#ffffff14;position:relative}
+.badge{position:absolute;top:-6px;right:-4px;background:var(--red);color:#fff;border-radius:999px;font-size:12px;min-width:20px;height:20px;line-height:20px;padding:0 6px}
+.banner{display:flex;gap:10px;align-items:center;background:#3a2f0a;border:1px solid #ffc94a66;border-radius:14px;padding:10px 12px;margin-bottom:14px;font-size:14px}
+.banner button{background:var(--gold);color:#2a1d00;padding:8px 12px;border-radius:10px;font-weight:800;white-space:nowrap}
+.sheet{position:fixed;inset:0;background:#000a;z-index:25;display:flex;align-items:center;justify-content:center;padding:12px}
+.sheet .card{width:100%;max-width:520px;max-height:92vh;display:flex;flex-direction:column}
+.sheet .body{overflow:auto;margin-top:8px}
+.tabs{display:flex;gap:6px;margin-top:4px}
+.tabs button{flex:1;padding:9px;border-radius:10px;background:#ffffff14;font-weight:800;font-size:14px}
+.tabs button.on{background:var(--gold);color:#2a1d00}
+.lb{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px}
+.lb:nth-child(odd){background:#ffffff0a}
+.lb.me{background:#ffc94a2e;outline:1px solid #ffc94a88}
+.lb .rk{width:34px;text-align:center;font-weight:900}
+.lb .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.lb .sc{font-weight:900;color:var(--gold)}
+.myrank{margin-top:10px;text-align:center;font-weight:800;background:#ffffff0d;border-radius:12px;padding:10px}
+.ev{display:flex;gap:10px;padding:10px;border-radius:10px;align-items:flex-start}
+.ev.new{background:#ffc94a1f}
+.ev .ic{font-size:24px}
+.code{font-family:ui-monospace,Menlo,monospace;font-size:26px;letter-spacing:3px;text-align:center;background:#0d1228;border:2px dashed var(--gold);border-radius:12px;padding:14px;margin:10px 0;user-select:text;-webkit-user-select:text}
+.linkbtn{background:none;color:var(--blue);text-decoration:underline;padding:0;margin-top:10px;font-size:14px}
 </style>
 </head>
 <body>
@@ -106,6 +130,15 @@ input:focus{border-color:var(--gold)}
         <div id="usugg" class="chips"></div>
         <button id="enter" class="big" disabled>O'yinga kirish ▶</button>
         <p class="muted" style="margin:10px 0 0">Username shu qurilmada eslab qolinadi. Parol kerak emas.</p>
+        <button class="linkbtn" id="toRecover">🔑 Avval o'ynaganmisiz? Tiklash kodi bilan kirish</button>
+      </div>
+      <div id="recoverBox" hidden>
+        <b>🔑 Tiklash kodi bilan kirish</b>
+        <input id="rName" maxlength="15" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="username">
+        <input id="rCode" maxlength="14" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX" style="font-family:ui-monospace,monospace;letter-spacing:2px;text-transform:uppercase">
+        <div id="rStatus" class="status"></div>
+        <button id="rGo" class="big">Kirish ▶</button>
+        <button class="linkbtn" id="toJoin">← Yangi username bilan kirish</button>
       </div>
       <div id="offlineBox" hidden>
         <b>📴 Onlayn o'yin faqat saytda ishlaydi</b>
@@ -128,6 +161,12 @@ input:focus{border-color:var(--gold)}
       <div class="who" id="mName">👤</div>
       <div class="pts"><span id="mAtk">⚔️ 0</span><span id="mDef">🛡 0</span><span id="mWins">🏆 0</span></div>
     </div>
+    <div class="tools">
+      <button id="tTop">🏆 Reyting</button>
+      <button id="tEv">🔔 Xabarlar<span class="badge" id="evBadge" hidden>0</span></button>
+      <button id="tRec">🔑 Tiklash kodi</button>
+    </div>
+    <div class="banner" id="recBanner" hidden><span style="flex:1">🔑 <b>Tiklash kodini oling!</b> Brauzer tozalansa yoki boshqa telefondan kirsangiz — shu kod kerak bo'ladi.</span><button id="recBannerBtn">Olish</button></div>
     <div class="grid2">
       <div class="card">
         <h2>🏰 Mening qal'am</h2>
@@ -185,6 +224,13 @@ input:focus{border-color:var(--gold)}
     <div class="btns"><button class="big ghost" id="mMenu">☰ Menyu</button><button class="big" id="mNext"></button></div>
   </div>
 </div>
+<div class="sheet" id="sheet" hidden>
+  <div class="card">
+    <div class="row"><h2 style="margin:0" id="shTitle"></h2><button class="btn2" id="shClose">✕</button></div>
+    <div id="shHead"></div>
+    <div class="body" id="shBody"></div>
+  </div>
+</div>
 <div class="net" id="net" hidden></div>
 
 <script>
@@ -203,7 +249,7 @@ const REASONS = {
   short:"Parol juda qisqa (kamida 8)", long:"Parol juda uzun (ko'pi bilan 16)", chars:"Faqat A–Z, 0–9 va ! @ # $ % & * ? _ - .",
   same:"Kamida 6 xil belgi kerak", name:"Parolda username'ingiz bo'lmasin", no_castle:"Bu qal'a endi yo'q",
   self:"O'z qal'angizga hujum qilolmaysiz", no_attack:"Qal'a egasi parolni almashtirdi — hujum bekor", over:"Hujum tugagan",
-  limit:"Bu bonus limiti tugadi", used:"Bu belgi otilgan", server:"Serverda xato", auth:"Qaytadan kiring", net:"Internet yo'q — qayta urinib ko'ring"
+  limit:"Bu bonus limiti tugadi", recover:"Username yoki kod noto'g'ri", used:"Bu belgi otilgan", server:"Serverda xato", auth:"Qaytadan kiring", net:"Internet yo'q — qayta urinib ko'ring"
 };
 const why = r => REASONS[r && r.reason] || "Xato";
 function showNet(msg){ const n = $("net"); n.textContent = "📶 " + msg; n.hidden = false; clearTimeout(showNet.t); showNet.t = setTimeout(() => n.hidden = true, 2500); }
@@ -215,7 +261,7 @@ async function api(action, data = {}){
   try{
     const r = await fetch("/api/qala/" + action, { method:"POST", headers:{ "content-type":"application/json" }, body:JSON.stringify({ token:TOKEN, ...data }) });
     const j = await r.json().catch(() => ({ ok:false, reason:"server" }));
-    if (r.status === 401){ store.del("pq_token"); TOKEN = ""; show("login"); }
+    if (r.status === 401){ store.del("pq_token"); TOKEN = ""; $("sheet").hidden = true; show("login"); showNet("Qaytadan kiring (akkauntga boshqa qurilmadan kirilgan bo'lishi mumkin)"); }
     return j;
   }catch(e){ return { ok:false, reason:"net" }; }
 }
@@ -289,8 +335,73 @@ async function openMenu(){
       <button class="btn2" id="toBuild" style="width:100%">🔁 Parolni almashtirish (yangi qal'a)</button>`;
   }
   $("toBuild").onclick = openBuild;
+  $("evBadge").hidden = !r.unread; $("evBadge").textContent = r.unread > 9 ? "9+" : r.unread;
+  $("recBanner").hidden = !!r.has_recovery;
   loadCastles();
 }
+
+/* ================= 3-bosqich: reyting, xabarlar, tiklash kodi ================= */
+function openSheet(title){ $("shTitle").textContent = title; $("shHead").innerHTML = ""; $("shBody").innerHTML = `<div class="empty">⏳ Yuklanmoqda…</div>`; $("sheet").hidden = false; }
+$("shClose").onclick = () => { $("sheet").hidden = true; };
+$("sheet").addEventListener("click", e => { if (e.target.id === "sheet") $("sheet").hidden = true; });
+
+async function openTop(kind = "total"){
+  openSheet("🏆 Reyting");
+  const tabs = [["total","Umumiy"],["atk","⚔️ Hujumchilar"],["def","🛡 Himoyachilar"]];
+  $("shHead").innerHTML = `<div class="tabs">${tabs.map(([k,t]) => `<button data-k="${k}" class="${k === kind ? "on" : ""}">${t}</button>`).join("")}</div>`;
+  $("shHead").querySelectorAll("button").forEach(b => b.onclick = () => openTop(b.dataset.k));
+  const r = await api("top", { kind });
+  if (!r.ok){ $("shBody").innerHTML = `<div class="empty">${esc(why(r))}</div>`; return; }
+  const medal = i => ["🥇","🥈","🥉"][i] || (i + 1);
+  const rows = r.top.map((x, i) => `<div class="lb ${x.name === r.me.name ? "me" : ""}"><span class="rk">${medal(i)}</span><span class="nm">${esc(x.name)}</span><span class="muted">🏆${x.wins}</span><span class="sc">${x.score}</span></div>`).join("");
+  $("shBody").innerHTML = (rows || `<div class="empty">Hali hech kim ball olmagan. Birinchi bo'ling! 🚀</div>`)
+    + `<div class="myrank">${r.me.rank ? `Sizning o'rningiz: <b>#${r.me.rank}</b> · ${r.me.score} ball` : "Siz hali reytingda yo'qsiz — qal'a buzing yoki qal'angizni himoya qiling!"}</div>`;
+}
+const ago = t => { const m = Math.floor((Date.now() - t)/60000); return m < 1 ? "hozirgina" : m < 60 ? m + " daqiqa oldin" : m < 1440 ? Math.floor(m/60) + " soat oldin" : Math.floor(m/1440) + " kun oldin"; };
+async function openEvents(){
+  openSheet("🔔 Xabarlar");
+  const r = await api("events");
+  if (!r.ok){ $("shBody").innerHTML = `<div class="empty">${esc(why(r))}</div>`; return; }
+  $("evBadge").hidden = true;
+  $("shBody").innerHTML = r.events.length ? r.events.map(e => e.kind === "held"
+      ? `<div class="ev ${e.seen ? "" : "new"}"><span class="ic">🛡</span><div><b>${esc(e.actor)}</b> qal'angizga hujum qildi — <b class="ok">qal'a omon qoldi!</b> +${e.points} ball<div class="muted">${ago(e.created_at)}</div></div></div>`
+      : `<div class="ev ${e.seen ? "" : "new"}"><span class="ic">💥</span><div><b>${esc(e.actor)}</b> qal'angizni <b class="bad">buzdi</b>. Kuchliroq parol bilan yangi qal'a quring!<div class="muted">${ago(e.created_at)}</div></div></div>`).join("")
+    : `<div class="empty">Hozircha xabar yo'q. Qal'angizga hujum bo'lsa — shu yerda ko'rinadi.</div>`;
+}
+function openRecovery(){
+  openSheet("🔑 Tiklash kodi");
+  $("shBody").innerHTML = `<p style="margin-top:0">Bu kod bilan <b>boshqa telefon yoki kompyuterdan</b> akkauntingizga kira olasiz. Brauzer tozalanib ketsa ham kerak bo'ladi.</p>
+    <div class="warn" style="margin:0">⚠️ Kodni <b>hech kimga bermang</b> — u bilan akkauntingizga kirish mumkin. Yangi kod yaratsangiz, eskisi ishlamay qoladi.</div>
+    <div id="recOut"></div><button class="big" id="recMake">${ME && ME.has_recovery ? "🔁 Yangi kod yaratish" : "🔑 Kod yaratish"}</button>`;
+  $("recMake").onclick = async () => {
+    if (ME && ME.has_recovery && !confirm("Yangi kod yaratilsa, eski kod ishlamay qoladi. Davom etasizmi?")) return;
+    $("recMake").disabled = true;
+    const r = await api("recovery");
+    if (!r.ok){ $("recOut").innerHTML = `<div class="status bad">❌ ${esc(why(r))}</div>`; $("recMake").disabled = false; return; }
+    if (ME) ME.has_recovery = true; $("recBanner").hidden = true;
+    $("recOut").innerHTML = `<div class="code" id="recCode">${esc(r.code)}</div>
+      <p class="muted" style="text-align:center;margin:0">📸 Skrinshot qiling yoki daftaringizga yozib qo'ying. Username: <b>${esc(ME ? ME.name : "")}</b></p>
+      <button class="btn2" id="recCopy" style="width:100%;margin-top:10px">📋 Nusxa olish</button>`;
+    $("recMake").hidden = true;
+    $("recCopy").onclick = () => { try{ navigator.clipboard.writeText(r.code); $("recCopy").textContent = "✅ Nusxa olindi"; }catch(e){} };
+  };
+}
+$("tTop").onclick = () => openTop();
+$("tEv").onclick = openEvents;
+$("tRec").onclick = $("recBannerBtn").onclick = openRecovery;
+
+/* Kirish: tiklash kodi bilan */
+$("toRecover").onclick = () => { $("onlineBox").hidden = true; $("recoverBox").hidden = false; $("rName").value = uname.value.trim(); $("rName").focus(); };
+$("toJoin").onclick = () => { $("recoverBox").hidden = true; $("onlineBox").hidden = false; };
+$("rGo").onclick = async () => {
+  $("rGo").disabled = true; $("rStatus").textContent = "⏳"; $("rStatus").className = "status";
+  const r = await api("recover", { name:$("rName").value.trim(), code:$("rCode").value });
+  $("rGo").disabled = false;
+  if (!r.ok){ $("rStatus").textContent = "❌ " + why(r); $("rStatus").className = "status bad"; return; }
+  TOKEN = r.token; store.set("pq_token", TOKEN); store.set("pq_name", r.name);
+  $("rCode").value = ""; $("recoverBox").hidden = true; $("onlineBox").hidden = false;
+  openMenu();
+};
 async function loadCastles(){
   const box = $("castles"); box.innerHTML = `<div class="empty">⏳ Yuklanmoqda…</div>`;
   const r = await api("list");

@@ -250,3 +250,4 @@ Manzil: `<server>/qala` (masalan https://tekshir.ah-digital.uz/qala). API: `POST
 - Qal'a paroli bazada **AES-256-GCM bilan shifrlangan**. Kalit: `QALA_KEY` (bo'lmasa `HASH_SALT`'dan olinadi) — Render → Environment'da turadi, GitHub'da emas.
 - Har bir belgi **serverda** tekshiriladi; parol brauzerga faqat hujum tugagach yuboriladi.
 - O'yin jadvallari (`qala_*`) asosiy bazada — Telegram zaxirasiga ham tushadi.
+- 3-bosqich: reyting (`/api/qala/top`), bildirishnomalar (`events`), tiklash kodi (`recovery` / `recover`). Tiklash kodi bazada faqat hash; yangi kod eskisini bekor qiladi; kod bilan kirilganda eski qurilma chiqariladi.

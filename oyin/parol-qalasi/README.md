@@ -11,5 +11,5 @@ Faylni kompyuterdan ochsangiz — faqat «Mashq» rejimi ishlaydi (onlayn o'yin 
 ## Bosqichlar
 1. ✅ Kamon o'yini: tortib otish, qalqon, shamol, bonus sharlar, vaqt, darajalar
 2. ✅ Server: username (takrorlanmaydi), o'z qal'asi (8–16 belgi), boshqalarga hujum
-3. ⬜ Reyting jadvali va bildirishnomalar
+3. ✅ Reyting jadvali, bildirishnomalar, tiklash kodi (boshqa qurilmadan kirish)
 4. ⬜ Silliqlash, keyin Kotlin ilova
