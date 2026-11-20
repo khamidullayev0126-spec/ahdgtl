@@ -292,13 +292,13 @@ V.tg = {
     const sms = sc.mode === "sms";
     el.appendChild(h(`<div class="phone"><div class="screen" style="background:${sms ? "#f2f2f7" : "#0e1621"};font-family:Inter;display:flex;flex-direction:column">
       <div style="padding:46px 24px 14px;display:flex;align-items:center;gap:16px;background:${sms ? "#f9f9fb" : "#17212b"};border-bottom:1px solid ${sms ? "#ddd" : "#24303c"}">
-        <div style="width:62px;height:62px;border-radius:50%;background:${sms ? "#8e8e93" : "#2fa36b"};display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff">${sms ? "🏦" : "🛡"}</div>
-        <div><div style="font-weight:700;font-size:28px;color:${sms ? "#111" : "#fff"}">${sms ? "BANK-INFO" : "Tekshir Bot"}</div><div style="font-size:21px;color:${sms ? "#8e8e93" : "#6d7f8f"}">${sms ? "SMS" : "bot"}</div></div></div>
+        <div style="width:62px;height:62px;border-radius:50%;background:${sms ? "#8e8e93" : (sc.abg || "#2fa36b")};display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff">${sms ? "🏦" : (sc.avatar || "🛡")}</div>
+        <div><div style="font-weight:700;font-size:28px;color:${sms ? "#111" : "#fff"}">${sms ? "BANK-INFO" : (sc.name || "Tekshir Bot")}</div><div style="font-size:21px;color:${sms ? "#8e8e93" : "#6d7f8f"}">${sms ? "SMS" : (sc.sub || "bot")}</div></div></div>
       <div id="tgb" style="flex:1;padding:18px 14px;display:flex;flex-direction:column;gap:12px"></div></div></div>`));
     const box = el.querySelector("#tgb");
-    box.appendChild(h(`<div id="tgm" style="${sms ? "align-self:flex-start;background:#e5e5ea;color:#111;border-radius:26px 26px 26px 8px" : "align-self:flex-end;background:#2b5278;color:#fff;border-radius:26px 26px 8px 26px"};max-width:90%;padding:14px 18px;font-size:22px;line-height:1.32">${sms ? "" : `<div style="font-size:19px;color:#8fc3ff;margin-bottom:6px">↪ Uzatilgan xabar</div>`}${sc.msg}</div>`));
+    box.appendChild(h(`<div id="tgm" style="${sms ? "align-self:flex-start;background:#e5e5ea;color:#111;border-radius:26px 26px 26px 8px" : "align-self:flex-end;background:#2b5278;color:#fff;border-radius:26px 26px 8px 26px"};max-width:90%;padding:14px 18px;font-size:22px;line-height:1.32">${sms || sc.plain ? "" : `<div style="font-size:19px;color:#8fc3ff;margin-bottom:6px">↪ Uzatilgan xabar</div>`}${sc.msg}</div>`));
     if (!sms) {
-      box.appendChild(h(`<div id="tgt" style="align-self:flex-start;color:#6d7f8f;font-size:22px;padding-left:8px">Tekshir yozmoqda…</div>`));
+      box.appendChild(h(`<div id="tgt" style="align-self:flex-start;color:#6d7f8f;font-size:22px;padding-left:8px">${sc.typing || "Tekshir yozmoqda…"}</div>`));
       box.appendChild(h(`<div id="tgr" style="align-self:flex-start;background:#182533;border:1px solid #2b3a48;color:#fff;border-radius:26px 26px 26px 8px;max-width:94%;padding:14px 18px;font-size:21px;line-height:1.36">${sc.reply}</div>`));
     }
   },

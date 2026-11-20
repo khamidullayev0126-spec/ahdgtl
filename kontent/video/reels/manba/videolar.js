@@ -215,4 +215,44 @@ module.exports = {
       { at: 12, v: "cta", line: "📌 Bot havolasi — Telegram kanalimda", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
     ]
   }
+  ,
+  9: {
+    tag: "Claude skill", out: "9-claude-handoff",
+    chunks: [
+      { c: "Claude'da limit juda tez tugayaptimi?" }, { c: "Sababi oddiy:" },
+      { c: "Claude har bir xabarda butun suhbatni boshidan qayta o'qiydi." },
+      { c: "Suhbat qancha uzun bo'lsa, limit shuncha tez tugaydi." },
+      { c: "Yangi chat ochsangiz-chi?" }, { c: "Unda hamma narsa unutiladi." },
+      { c: "Shuning uchun Claude uchun skill yasadim —" }, { c: "Handoff." },
+      { c: "«Yangi chatga o'tamiz» deb yozasiz —" }, { c: "Claude butun ishni qisqa xulosaga yig'adi." },
+      { c: "Uni yangi chatga qo'yasiz," }, { c: "Claude hech narsani unutmasdan davom etadi." },
+      { c: "Skill bepul." }, { c: "U Telegram kanalimda," }, { c: "havola bio'da." }
+    ],
+    heads: [
+      { at: 0, lines: [["Limit", "sm"], ["tugadi?", "acc"]] },
+      { at: 1, lines: [["Sababi", "sm"], ["oddiy", "acc"]] },
+      { at: 4, lines: [["Yangi", "sm"], ["chat?", "acc"]] },
+      { at: 6, lines: [["Men skill", "sm"], ["yasadim", "acc"]] },
+      { at: 8, lines: [["Bitta", "sm"], ["buyruq", "acc"]] },
+      { at: 10, lines: [["Hech narsa", "sm"], ["unutilmaydi", "acc"]] },
+      { at: 12, lines: [["Bepul", "sm"], ["skill", "acc"]] }
+    ],
+    vis: [
+      { at: 0, v: "stamp", icon: "⛔", text: "Limit 100%", bg: "#d94b3d", fs: 90 },
+      { at: 2, v: "tg", mode: "bot", plain: true, name: "Claude", avatar: "✳️", abg: "#c96442", sub: "147-xabar · uzun suhbat", typing: "Claude o'ylamoqda…", replyAt: 3,
+        msg: "Kafe sayti uchun menyu sahifasini davom ettiraylik",
+        reply: "<div class='ln'>♻️ Butun suhbatni boshidan qayta o'qiyapman…</div><div class='ln' style='color:#9fb0c0'>146 ta xabar · 95 000 token</div><div class='ln' style='font-weight:900;color:#ff6b5e;margin-top:8px'>⚠️ Limit 92% ishlatildi</div>" },
+      { at: 4, v: "tg", mode: "bot", plain: true, name: "Claude", avatar: "✳️", abg: "#c96442", sub: "yangi chat", typing: "Claude o'ylamoqda…", replyAt: 5,
+        msg: "Davom etamiz! Menyu sahifasi qayerda qolgan edi?",
+        reply: "<div class='ln'>Kechirasiz, qaysi loyiha haqida? 🤔</div><div class='ln' style='color:#9fb0c0'>Oldingi suhbatni ko'ra olmayman.</div>" },
+      { at: 6, v: "stamp", icon: "🎁", text: "HANDOFF", sub: "Claude uchun skill" },
+      { at: 8, v: "tg", mode: "bot", plain: true, name: "Claude", avatar: "✳️", abg: "#c96442", sub: "eski chat", typing: "Claude xulosa yozmoqda…", replyAt: 9,
+        msg: "yangi chatga o'tamiz",
+        reply: "<div class='ln' style='font-family:monospace;font-weight:900;color:#ffd7b5'>HANDOFF — Kafe sayti</div><div class='ln'>🎯 Maqsad: kafe uchun sayt</div><div class='ln'>✅ Qarorlar: bepul hosting, o'zbekcha</div><div class='ln'>📍 Tayyor: bosh sahifa, aloqa</div><div class='ln'>➡️ Keyingi qadam: menyu sahifasi</div><div class='ln' style='color:#9fb0c0;margin-top:6px'>📋 Nusxalab, yangi chatga qo'ying</div>" },
+      { at: 10, v: "tg", mode: "bot", plain: true, name: "Claude", avatar: "✳️", abg: "#c96442", sub: "yangi chat", typing: "Claude o'ylamoqda…", replyAt: 11,
+        msg: "<span style='font-family:monospace'>HANDOFF — Kafe sayti<br>🎯 kafe uchun sayt · ➡️ menyu sahifasi</span>",
+        reply: "<div class='ln' style='font-weight:900;color:#5fd38d'>✅ Tushundim!</div><div class='ln'>Kafe sayti, bosh sahifa tayyor.</div><div class='ln'>Menyu sahifasidan davom etamiz 👇</div>" },
+      { at: 12, v: "cta", line: "🎁 Skill — Telegram kanalimda", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
+    ]
+  }
 };
