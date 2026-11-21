@@ -27,6 +27,13 @@ function addPeriod(iso, period) {
   return d.toISOString();
 }
 
+const MONTHS = {
+  uz: ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentyabr", "oktyabr", "noyabr", "dekabr"],
+  ru: ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"],
+  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+};
+const monthName = (m, lang = "uz") => { const [y, mm] = m.split("-"); return `${y} ${MONTHS[lang] ? MONTHS[lang][Number(mm) - 1] : mm}`; };
+const shiftMonth = (m, d) => { const [y, mm] = m.split("-").map(Number); const t = new Date(Date.UTC(y, mm - 1 + d, 1)); return t.toISOString().slice(0, 7); };
 function createTeams({ store, services, readOrders, publicUrl = () => "" }) {
   const teamServices = services.filter(s => s.perSeat).map(s => s.id);
   const users = () => store.get("foydalanuvchilar", {});
@@ -97,13 +104,6 @@ function createTeams({ store, services, readOrders, publicUrl = () => "" }) {
   }
 
   // ---------- Oylik hisobot ----------
-  const MONTHS = {
-    uz: ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentyabr", "oktyabr", "noyabr", "dekabr"],
-    ru: ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"],
-    en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-  };
-  const monthName = (m, lang = "uz") => { const [y, mm] = m.split("-"); return `${y} ${MONTHS[lang] ? MONTHS[lang][Number(mm) - 1] : mm}`; };
-  const shiftMonth = (m, d) => { const [y, mm] = m.split("-").map(Number); const t = new Date(Date.UTC(y, mm - 1 + d, 1)); return t.toISOString().slice(0, 7); };
   // Jamoa amal qilgan oylar (eng yangisi birinchi)
   function monthsOf(team, now = Date.now()) {
     const first = monthKey(team.startedAt), cur = monthKey(now);
@@ -178,6 +178,31 @@ function createTeams({ store, services, readOrders, publicUrl = () => "" }) {
       const r = report(t, month, orders);
       const lang = ["uz", "ru", "en"].includes(order.lang) ? order.lang : "uz";
       try { await send(order, { [lang]: reportText(r, lang, `${publicUrl()}/kabinet.html`) }); n++; } catch {}
+    }
+    return n;
+  }
+
+  // Tugashiga 3 kun qolganda egasiga bir marta eslatma (uzaytirilgan bo'lsa — yo'q)
+  async function remind(send, now = Date.now()) {
+    const teams = sync();
+    const orders = readOrders();
+    let n = 0;
+    for (const t of teams) {
+      const left = new Date(t.expiresAt).getTime() - now;
+      if (t.remindedAt || left <= 0 || left > 3 * 864e5 || new Date(t.startedAt).getTime() > now) continue;
+      if (teams.some(x => x !== t && x.ownerId === t.ownerId && x.startedAt >= t.expiresAt)) continue;
+      const order = orders.find(o => o.code === t.id);
+      if (!order) continue;
+      t.remindedAt = new Date(now).toISOString();
+      writeTeams(teams);
+      const lang = ["uz", "ru", "en"].includes(order.lang) ? order.lang : "uz";
+      const d = Math.ceil(left / 864e5), url = publicUrl() ? `${publicUrl()}/index.html?xizmat=${t.serviceId}#buyurtma` : "";
+      const text = {
+        uz: `⏰ Jamoa obunangiz ${d} kundan keyin tugaydi. Uzaytirsangiz, a'zolar va hajm saqlanadi.${url ? `\nUzaytirish: ${url}` : ""}`,
+        ru: `⏰ Командная подписка закончится через ${d} дн. Продлите — участники и объём сохранятся.${url ? `\nПродлить: ${url}` : ""}`,
+        en: `⏰ Your team plan ends in ${d} day(s). Renew to keep your members and allowance.${url ? `\nRenew: ${url}` : ""}`
+      }[lang];
+      try { await send(order, { [lang]: text }); n++; } catch {}
     }
     return n;
   }
@@ -281,7 +306,7 @@ function createTeams({ store, services, readOrders, publicUrl = () => "" }) {
     });
   }
 
-  return { mount, teamOf, forOrder, usage, sync, report, reportText, sendMonthly, monthsOf, TEAM_SERVICES, TEAM_PLANS: teamServices };
+  return { mount, teamOf, forOrder, usage, sync, report, reportText, sendMonthly, remind, monthsOf, TEAM_SERVICES, TEAM_PLANS: teamServices };
 }
 
-module.exports = { createTeams, limitsFor, monthKey, TEAM_SERVICES };
+module.exports = { createTeams, limitsFor, monthKey, addPeriod, monthName, shiftMonth, MONTHS, ACTIVE_STATUSES, TEAM_SERVICES };

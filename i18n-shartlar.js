@@ -178,4 +178,6 @@ window.I18N_EXTRA = Object.assign(window.I18N_EXTRA || {}, {
   "Hozircha bir vaqtda faqat 1 ta jamoa qabul qilinadi.": ["Пока одновременно принимается только 1 команда.", "For now, only 1 team is accepted at a time."],
   "Oylik obunada birinchi 3 kun, yillik obunada birinchi 7 kun ichida hali birorta ish topshirilmagan bo'lsa, to'lov to'liq qaytariladi.": ["Если в первые 3 дня (месячная) или 7 дней (годовая) ещё не сдано ни одной работы — оплата возвращается полностью.", "If no work has been delivered within the first 3 days (monthly) or 7 days (yearly), the payment is fully refunded."],
   "Xodimni jamoadan chiqarish narxni kamaytirmaydi: narx obuna olingan kishi soniga qarab hisoblanadi.": ["Удаление сотрудника не уменьшает цену: она считается по числу человек в оформленной подписке.", "Removing a member doesn't lower the price: it's based on the number of members the plan was bought for."],
+  "Obuna kabineti: limit hisoblagichi, obuna hisobidan buyurtma va oylik hisobot.": ["Кабинет подписки: счётчик лимитов, заказ по подписке и ежемесячный отчёт.", "Plan dashboard: usage counter, ordering on the plan and a monthly report."],
+  "Obuna tugashiga 3 kun qolganda Telegram'da eslatma boradi.": ["За 3 дня до окончания подписки приходит напоминание в Telegram.", "You get a Telegram reminder 3 days before the plan ends."],
 });

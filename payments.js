@@ -29,7 +29,7 @@ function createPayments({ store, readOrders, writeOrders, services, publicUrl = 
     const s = services.find(x => x.id === order.serviceId);
     const split = !s || s.group === "once";
     const price = Number(order.price) || 0;
-    if (order.teamId && price === 0) return [];   // jamoa obunasi hisobidan — to'lov yo'q
+    if ((order.teamId || order.planId) && price === 0) return [];   // jamoa yoki Pro/Max obunasi hisobidan — to'lov yo'q
     if (!split) return [{ n: 1, amount: price }];
     const first = Math.ceil(price / 2);
     return [{ n: 1, amount: first }, { n: 2, amount: price - first }];

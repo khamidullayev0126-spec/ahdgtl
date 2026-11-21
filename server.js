@@ -16,6 +16,7 @@ const { indexWithJsonLd } = require("./seo");
 const { createTz } = require("./tz");
 const { createKp } = require("./kp");
 const { createTeams } = require("./team");
+const { createPlans } = require("./plans");
 
 const app = express();
 app.disable("x-powered-by");   // server turini oshkor qilmaymiz
@@ -66,6 +67,7 @@ const writeOrders = orders => store.set("orders", orders);
 // TZ (texnik topshiriq): agent tuzadi, mijoz /tz/<id> sahifasida tasdiqlaydi — tz.js
 const tz = createTz({ store, services: SERVICES, notifyOwner: text => bot && bot.sendOwner(text) });
 const teams = createTeams({ store, services: SERVICES, readOrders: () => readOrders(), publicUrl: () => (process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || "").replace(/\/$/, "") });   // jamoa obunasi — team.js
+const plans = createPlans({ store, services: SERVICES, readOrders: () => readOrders(), publicUrl: () => (process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || "").replace(/\/$/, "") });   // Pro/Max kabineti — plans.js
 const kp = createKp({ store, services: SERVICES, notifyOwner: text => bot && bot.sendOwner(text) });   // tijoriy taklif — kp.js
 const bot = createBot({
   tz, kp,
@@ -93,6 +95,15 @@ const payments = createPayments({
       ru: `💳 Оплата получена: ${fmtSum(part.amount)} сум (${method}). Спасибо!${left ? `\nОставшиеся ${fmtSum(left.amount)} сум — после готовности работы.` : "\nЗаказ полностью оплачен ✅"}`,
       en: `💳 Payment received: ${fmtSum(part.amount)} UZS (${method}). Thank you!${left ? `\nThe remaining ${fmtSum(left.amount)} UZS is due when the work is ready.` : "\nThe order is fully paid ✅"}`
     });
+    // Pro/Max to'landi — obuna kabineti ochiladi
+    if (plans.PLANS.includes(order.serviceId)) {
+      plans.sync();
+      bot.notifyCustomer(order, {
+        uz: "🎉 Tabriklayman! Obunangiz faol. Saytda kabinetga kiring — u yerda limitlaringiz va «obuna hisobidan» buyurtma tugmasi bor.",
+        ru: "🎉 Поздравляю! Подписка активна. Зайдите в кабинет на сайте — там ваши лимиты и кнопка «заказ по подписке».",
+        en: "🎉 Congratulations! Your plan is active. Open your dashboard on the site to see your limits and order on the plan."
+      });
+    }
     // Jamoa obunasi to'landi — jamoa ochiladi, egasiga taklif qilish yo'lini aytamiz
     if (teams.TEAM_PLANS.includes(order.serviceId)) {
       teams.sync();
@@ -191,7 +202,7 @@ const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, publi
   orderExtra: o => ({ due: PAY_ON() ? payments.dueOf(o) : null, paid: (o.paid && Object.keys(o.paid).length) || 0, parts: payments.partsOf(o).length }), botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
 tz.mount(app, { rateLimit });
 kp.mount(app, { rateLimit });   // mijoz kirmasdan ochadi — shuning uchun kirish tekshiruvidan oldin
-if (auth) { auth.install(app); app.use(auth.gate); teams.mount(app); }
+if (auth) { auth.install(app); app.use(auth.gate); teams.mount(app); plans.mount(app); }
 else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
 
 // Bosh sahifa: Google uchun JSON-LD (xizmatlar, narxlar, savol-javoblar) server o'zi qo'shadi — seo.js
@@ -275,9 +286,15 @@ app.post("/api/orders", rateLimit, async (req, res) => {
   if (service.perSeat && !req.user) {
     return res.status(401).json({ error: "Jamoa obunasini olish uchun avval kiring (Telegram, Google yoki email) — siz jamoa egasi bo'lasiz.", login: true });
   }
+  // Pro/Max obunachisi: "Obuna hisobidan" — limit ichida bepul
+  let planPick = null;
+  if (req.body.plan === true || req.body.plan === "1" || req.body.plan === "on") {
+    planPick = plans.forOrder(req.user, service);
+    if (planPick.error) return res.status(planPick.status).json({ error: planPick.error, login: planPick.status === 401 || undefined });
+  }
   // Jamoa a'zosi: "Jamoa obunasi hisobidan" — limit ichida bepul (katta sayt — chegirma bilan)
   let teamPick = null;
-  if (req.body.team === true || req.body.team === "1" || req.body.team === "on") {
+  if (!planPick && (req.body.team === true || req.body.team === "1" || req.body.team === "on")) {
     teamPick = teams.forOrder(req.user, service);
     if (teamPick.error) return res.status(teamPick.status).json({ error: teamPick.error, login: teamPick.status === 401 || undefined });
   }
@@ -302,10 +319,11 @@ app.post("/api/orders", rateLimit, async (req, res) => {
     name,
     contact,
     serviceId,
-    serviceName: seats ? `${service.name} · ${seats} kishi` : teamPick ? `${service.name} · Jamoa` : service.name,
-    price: seats ? service.price * seats : teamPick ? teamPick.price : service.price,
+    serviceName: seats ? `${service.name} · ${seats} kishi` : planPick ? `${service.name} · ${SERVICES.find(x => x.id === planPick.sub.serviceId).name}` : teamPick ? `${service.name} · Jamoa` : service.name,
+    price: seats ? service.price * seats : planPick ? 0 : teamPick ? teamPick.price : service.price,
     seats,
     teamId: teamPick ? teamPick.team.id : undefined,
+    planId: planPick ? planPick.sub.id : undefined,
     message,
     status: "yangi",
     tgUserId: req.user ? req.user.id : undefined,
@@ -482,9 +500,10 @@ store.init().catch(err => { console.error("❌", err.message); process.exit(1); 
     res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"));
   });
   if (!process.env.AHD_TEST) { setTimeout(runBackups, 60_000); setInterval(runBackups, 24 * 3600_000).unref(); }
-  // Jamoa obunasi: har oy 1-sanada egasiga o'tgan oy hisoboti (soatda bir tekshiradi, bir oy — bir marta)
+  // Obunalar: har oy 1-sanada o'tgan oy hisoboti va tugashdan 3 kun oldin eslatma (soatda bir tekshiradi, har biri bir marta)
   if (!process.env.AHD_TEST && bot) {
-    const monthly = () => teams.sendMonthly((order, texts) => bot.notifyCustomer(order, texts)).catch(err => console.error("Jamoa hisoboti:", err.message));
+    const send = (order, texts) => bot.notifyCustomer(order, texts);
+    const monthly = () => Promise.all([teams.sendMonthly(send), plans.sendMonthly(send), teams.remind(send), plans.remind(send)]).catch(err => console.error("Obuna hisoboti/eslatma:", err.message));
     setTimeout(monthly, 90_000); setInterval(monthly, 3600_000).unref();
   }
 }));

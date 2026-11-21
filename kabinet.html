@@ -61,6 +61,17 @@
     .saved { margin: 0; font-weight: 700; color: var(--accent-ink); }
     #report-box { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid rgba(0,0,0,.08); padding-top: 12px; }
     #report-box[hidden] { display: none; }
+    .welcome { position: relative; overflow: hidden; background: var(--btn-bg, var(--accent)); color: var(--on-accent, #fff8f2); border-radius: 24px; padding: var(--s4) var(--s6); display: flex; flex-direction: column; gap: 8px; }
+    .welcome h2 { margin: 0; font-size: clamp(24px, 5vw, 34px); line-height: 1.1; }
+    .welcome p { margin: 0; opacity: .95; }
+    .welcome .btn { align-self: flex-start; background: #fff8f2; color: var(--accent-ink); }
+    .confetti { position: absolute; inset: 0; pointer-events: none; }
+    .confetti i { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; opacity: .9; animation: fall 2.6s ease-in forwards; }
+    @keyframes fall { to { transform: translateY(260px) rotate(540deg); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .confetti { display: none; } }
+    .plan-badge { display: inline-block; margin-left: 8px; vertical-align: middle; font: 800 12px Figtree, system-ui, sans-serif; letter-spacing: .08em; padding: 3px 8px; border-radius: 999px; background: var(--accent); color: #fff8f2; }
+    .plan-badge.max { background: #201e1d; color: #f5ead8; }
+    .warn-box { background: #fdebd3; color: #6b3a10; border-radius: 14px; padding: 10px 14px; font-weight: 600; }
     [hidden] { display: none !important; }
   </style>
   <script src="i18n.js"></script>
@@ -101,11 +112,41 @@
       <p class="muted" style="font-size:13px">Kirish bilan quyidagilarga rozilik bildirasiz: <a href="maxfiylik.html">Maxfiylik siyosati</a> · <a href="shartlar.html">Xizmat shartlari</a></p>
     </section>
 
+    <section class="welcome" id="welcome" hidden>
+      <div class="confetti" id="confetti" aria-hidden="true"></div>
+      <h2 id="welcome-title" data-no-i18n></h2>
+      <p id="welcome-text" data-no-i18n></p>
+      <button class="btn" id="welcome-ok" type="button">Boshladik!</button>
+    </section>
+
     <section id="profile" hidden>
       <div class="card">
         <div class="who" id="who"></div>
         <button class="btn btn-secondary" id="logout" type="button" style="align-self:flex-start">Chiqish</button>
       </div>
+    <section class="card team-card" id="plan" hidden style="margin-top: var(--s4)">
+      <div class="head">
+        <div><h2 id="plan-title" data-no-i18n></h2><p class="muted" id="plan-sub" data-no-i18n></p></div>
+        <span class="badge" id="plan-state"></span>
+      </div>
+      <p class="warn-box" id="plan-warn" hidden data-no-i18n></p>
+      <div class="meter" id="p-items"></div>
+      <div class="meter" id="p-big"></div>
+      <p class="muted" style="font-size:14px" id="p-note" data-no-i18n></p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap">
+        <a class="btn btn-primary" id="plan-order" href="index.html?obuna=1#buyurtma">Obuna hisobidan buyurtma</a>
+        <a class="btn btn-secondary" id="plan-renew" hidden>Obunani uzaytirish</a>
+      </div>
+      <div id="plan-report" hidden style="display:flex; flex-direction:column; gap:10px; border-top:1px solid rgba(0,0,0,.08); padding-top:12px">
+        <div class="head" style="align-items:center">
+          <h3>Oylik hisobot</h3>
+          <select id="plan-month" class="month-pick" aria-label="Oy" data-no-i18n></select>
+        </div>
+        <div class="stats-grid" id="plan-stats"></div>
+        <p class="saved" id="plan-value" data-no-i18n></p>
+        <p class="muted" style="font-size:13px">Har oy 1-sanada o'tgan oy hisoboti Telegram'ga ham yuboriladi.</p>
+      </div>
+    </section>
       <div class="card" style="margin-top: var(--s4)">
         <h2 style="font-size:24px; margin:0">Buyurtmalarim</h2>
         <ul class="orders" id="orders"></ul>
@@ -298,8 +339,8 @@ async function api(url, body) {
   return j;
 }
 function meter(box, label, u) {
-  const pct = u.limit ? Math.min(100, Math.round(u.used / u.limit * 100)) : 0;
-  const bar = el("div", { className: "bar" + (u.used >= u.limit ? " full" : "") }, el("i", { style: `width:${pct}%` }));
+  const pct = u.inf ? Math.min(100, u.used * 3) : u.limit ? Math.min(100, Math.round(u.used / u.limit * 100)) : 0;
+  const bar = el("div", { className: "bar" + (!u.inf && u.used >= u.limit ? " full" : "") }, el("i", { style: `width:${pct}%` }));
   box.replaceChildren(el("div", { className: "row" }, el("span", { textContent: label }), el("b", { textContent: `${u.used} / ${u.limit}` })), bar);
 }
 function teamErr(e) { $("team-err").textContent = e.message; $("team-err").hidden = false; }
@@ -397,6 +438,74 @@ $("join-btn").addEventListener("click", async () => {
   $("join-btn").disabled = false;
 });
 
+// ---------- Pro / Max obunasi ----------
+const PLAN_TXT = {
+  uz: { hi: n => `Tabriklayman${n ? ", " + n : ""}! 🎉`, got: k => `${k} obunangiz faol. Endi buyurtmalarni shu yerdan, obuna hisobidan berasiz — limitlar va hisobot ham shu yerda.`,
+        title: k => `${k} obunam`, sub: (d, n) => `${d} gacha · ${n} kun qoldi`, soon: n => `Obuna ${n} kundan keyin tugaydi. Uzaytirsangiz, yangi muddat eskisining davomidan boshlanadi.`,
+        over: "Obuna muddati tugagan. Uzaytirsangiz, yana obuna hisobidan buyurtma bera olasiz.", inf: "cheksiz",
+        bigM: "Katta sayt (bu oy)", bigT: "Katta sayt (butun obuna davomida)", note: (o, l) => `Hajm har oy 1-sanada yangilanadi. Bir vaqtda ${l} tagacha buyurtma ustida ishlanadi — hozir faol: ${o}. Vizitka va menyu saytlar obunaga kiradi.`, val: (v) => `Bu oy olgan ishlaringizning oddiy narxi: ${v} so'm` },
+  ru: { hi: n => `Поздравляю${n ? ", " + n : ""}! 🎉`, got: k => `Ваша подписка ${k} активна. Теперь заказывайте здесь, за счёт подписки — лимиты и отчёт тоже тут.`,
+        title: k => `Моя подписка ${k}`, sub: (d, n) => `до ${d} · осталось ${n} дн.`, soon: n => `Подписка закончится через ${n} дн. Продлите — новый срок начнётся с конца текущего.`,
+        over: "Срок подписки истёк. Продлите, чтобы снова заказывать по подписке.", inf: "без лимита",
+        bigM: "Большой сайт (в этом месяце)", bigT: "Большой сайт (за весь срок)", note: (o, l) => `Объём обновляется 1-го числа. Одновременно в работе до ${l} заказов — сейчас: ${o}. Сайты-визитки и меню входят в подписку.`, val: (v) => `Обычная цена работ за этот месяц: ${v} сум` },
+  en: { hi: n => `Congratulations${n ? ", " + n : ""}! 🎉`, got: k => `Your ${k} plan is active. Order right here on the plan — your limits and report live here too.`,
+        title: k => `My ${k} plan`, sub: (d, n) => `until ${d} · ${n} days left`, soon: n => `Your plan ends in ${n} days. Renew and the new term starts when this one ends.`,
+        over: "Your plan has expired. Renew to order on the plan again.", inf: "unlimited",
+        bigM: "Full website (this month)", bigT: "Full websites (whole term)", note: (o, l) => `The allowance resets on the 1st. Up to ${l} orders are worked on at once — active now: ${o}. Business card and menu sites are included.`, val: (v) => `Regular price of this month's work: ${v} UZS` }
+};
+const PT = PLAN_TXT[LANG] || PLAN_TXT.uz;
+function confetti() {
+  const box = $("confetti"), colors = ["#ffc6a5", "#fff8f2", "#ccdbb2", "#f5ead8", "#ffd36e"];
+  box.replaceChildren(...Array.from({ length: 36 }, (_, i) => el("i", { style: `left:${(i * 37) % 100}%;background:${colors[i % colors.length]};animation-delay:${(i % 9) * 0.12}s` })));
+}
+async function loadPlan() {
+  const { plan: p } = await api("/api/plan").catch(() => ({}));
+  $("plan").hidden = !p;
+  if (!p) return;
+  // Ism yonida PRO / MAX belgisi
+  const b = document.querySelector("#who b");
+  if (b && p.active && !b.querySelector(".plan-badge")) b.append(el("span", { className: "plan-badge " + p.kind, textContent: p.kind.toUpperCase() }));
+  // Tabrik — faqat bir marta
+  if (p.welcome) {
+    $("welcome-title").textContent = PT.hi(p.firstName);
+    $("welcome-text").textContent = PT.got(p.name);
+    $("welcome").hidden = false;
+    confetti();
+  }
+  $("plan-title").textContent = PT.title(p.name);
+  $("plan-sub").textContent = PT.sub(day(p.expiresAt), p.daysLeft);
+  $("plan-state").textContent = T(p.active ? "Faol" : "Tugagan");
+  $("plan-state").className = "badge" + (p.active ? "" : " off");
+  const soon = p.active && p.daysLeft <= 3;
+  $("plan-warn").hidden = !(soon || !p.active);
+  $("plan-warn").textContent = p.active ? PT.soon(p.daysLeft) : PT.over;
+  $("plan-order").hidden = !p.active;
+  $("plan-renew").hidden = !(soon || !p.active || p.daysLeft <= 7);
+  $("plan-renew").href = `index.html?xizmat=${p.kind}#buyurtma`;
+  const it = p.usage.items;
+  meter($("p-items"), T("Video, slayd va post"), it.limit === null ? { used: it.used, limit: 0, inf: true } : it);
+  if (it.limit === null) $("p-items").querySelector("b").textContent = `${it.used} · ${PT.inf}`;
+  meter($("p-big"), p.usage.big.per === "month" ? PT.bigM : PT.bigT, p.usage.big);
+  $("p-note").textContent = PT.note(p.usage.open.used, p.usage.open.limit);
+  loadPlanReport();
+}
+$("welcome-ok").addEventListener("click", async () => {
+  $("welcome").hidden = true;
+  await fetch("/api/plan/welcomed", { method: "POST" }).catch(() => {});
+});
+async function loadPlanReport(month) {
+  let j;
+  try { j = await api("/api/plan/report" + (month ? "?month=" + month : "")); } catch { $("plan-report").hidden = true; return; }
+  const r = j.report;
+  $("plan-report").hidden = !r;
+  if (!r) return;
+  $("plan-month").replaceChildren(...j.months.map(m => el("option", { value: m, textContent: monthLabel(m), selected: m === r.month })));
+  const cell = (n, label) => el("div", {}, el("b", { textContent: n }), el("span", { textContent: T(label) }));
+  $("plan-stats").replaceChildren(cell(r.total, "Jami buyurtma"), cell(r.done, "Bajarildi"), cell(r.inWork, "Jarayonda"), cell(r.waiting, "Navbatda"));
+  $("plan-value").textContent = r.total ? PT.val(fmt(r.value)) : T("Bu oy obuna hisobidan buyurtma bo'lmadi.");
+}
+$("plan-month").addEventListener("change", e => loadPlanReport(e.target.value));
+
 async function load() {
   const r = await fetch("/api/me");
   if (r.ok && safeNext && !JOIN) return location.replace(safeNext);
@@ -407,12 +516,13 @@ async function load() {
   }
   showProfile(await r.json());
   if (JOIN) showJoin();
+  loadPlan();
   loadTeam();
 }
 
 $("logout").addEventListener("click", async () => {
   await fetch("/api/auth/logout", { method: "POST" });
-  $("team").hidden = true; $("join").hidden = true;
+  $("team").hidden = true; $("join").hidden = true; $("plan").hidden = true; $("welcome").hidden = true;
   showLogin();
 });
 

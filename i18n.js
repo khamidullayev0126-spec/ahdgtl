@@ -113,6 +113,12 @@
     "1 oylik obuna": ["Подписка на 1 месяц", "1-month plan"],
     "1 yillik obuna": ["Подписка на 1 год", "1-year plan"],
     // Jamoa obunasi
+    "Pro obuna hisobidan": ["За счёт подписки Pro", "On the Pro plan"], "Max obuna hisobidan": ["За счёт подписки Max", "On the Max plan"],
+    "obuna davomidagi limit tugadi": ["лимит на весь срок исчерпан", "the limit for the whole term is used up"],
+    "Faol": ["Активна", "Active"], "Tugagan": ["Истекла", "Expired"],
+    "Boshladik!": ["Начинаем!", "Let's go!"],
+    "Obuna hisobidan buyurtma": ["Заказать по подписке", "Order on the plan"],
+    "Bu oy obuna hisobidan buyurtma bo'lmadi.": ["В этом месяце заказов по подписке не было.", "No orders on the plan this month."],
     "Oylik hisobot": ["Ежемесячный отчёт", "Monthly report"],
     "Jami buyurtma": ["Всего заказов", "Total orders"],
     "Navbatda": ["В очереди", "Queued"],
@@ -508,6 +514,7 @@
       const per = PERIOD[m[2]] ? PERIOD[m[2]][idx] : m[2];
       return (m[1] ? num(m[1]) + " " : "") + (lang === "ru" ? "сум / " : "UZS / ") + per;
     }
+    if ((m = s.match(/^bepul · obuna davomida qoldi: (\d+) ta$/))) return lang === "ru" ? `бесплатно · осталось на весь срок: ${m[1]}` : `free · ${m[1]} left for the term`;
     if ((m = s.match(/^bepul · bu oy qoldi: (\d+) ta$/))) return lang === "ru" ? `бесплатно · осталось в этом месяце: ${m[1]}` : `free · ${m[1]} left this month`;
     if ((m = s.match(/^Shu havolani xodimlaringizga yuboring\. Bo'sh joy: (\d+) ta\.$/))) return lang === "ru" ? `Отправьте эту ссылку сотрудникам. Свободных мест: ${m[1]}.` : `Send this link to your team. Free seats: ${m[1]}.`;
     if ((m = s.match(/^[Kk]amida (\d+) kishi$/))) return lang === "ru" ? (s[0] === "K" ? "Минимум " : "минимум ") + `${m[1]} чел.` : (s[0] === "K" ? "Minimum " : "minimum ") + `${m[1]} members`;
