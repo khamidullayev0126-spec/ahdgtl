@@ -72,3 +72,28 @@ Menga marketing, dizayn va biznes bo'yicha jamoadoshlar kerak. Keling, oilalarim
 | Team? | Me (product & code) and Afruz (co-founder, AHdigital). This weekend I'm looking for marketing, design and business. |
 
 > Raqam bilmasangiz — o'ylab topmang: «Aniq bilmayman, tekshirib aytaman» deyish hakamlarda ishonch uyg'otadi.
+
+---
+
+## 4. Savol-javob mashqi (21-noyabr) — yodlash uchun eng yaxshi javoblar
+
+> Formula: **«Yaxshi savol» → fakt → isbot (raqam) → shaxsiy sabab.** Raqobatchini yomonlamang. «100% xavfsiz» demang.
+
+**1. What is Tekshir, and who is it for?**
+"Tekshir is a free app and Telegram bot that checks suspicious messages, links and files for scams — built for parents and grandparents who aren't tech-savvy, and it alerts their family on Telegram when a scam reaches them."
+
+**2. Why not Kaspersky or Truecaller?**
+"They're great global tools, but they're not built for Uzbekistan. Tekshir explains every risk in simple Uzbek and Russian, and it knows local scams — fake Click and Payme sites, 'photos.apk' files, 'vote for me' links. Last week alone it caught 8 such scams. And no one else has our family alert. Plus it's free and works right inside Telegram."
+
+**3. Isn't reading messages a privacy risk? Why trust a teenager's app?**
+"Great question — that's exactly why I designed it this way. The checks run on the phone itself: the message text never leaves the device, it even works with the internet off. The family alert only says 'a scam was detected', never the message. Every permission is optional and explained first. And honestly — I built it for my own parents and grandmother first."
+
+**4. How will you make money?**
+"Protection for individuals stays free. We'll earn from those who protect others: first, paid protection for large Telegram groups — I'll start testing it with group admins in the next 1–4 months. Later, a family plan and an anti-scam API for banks. Our costs are tiny — about 7 dollars a month — so Tekshir can survive long enough to find what works."
+
+**5. How will you get 10,000 users?**
+"Step by step, through three channels. Content: one of my videos got 1,550 views in 6 hours. The product spreads itself: every young user connects their parents and grandparents, every Telegram group shows the bot to hundreds of people. And schools and parents' meetings. For me the goal isn't money first — it's that no grandmother loses her savings to a fake SMS."
+
+**6. You're a student — why you?**
+"Because I've already done it while being a student: after school I built a 24/7 Telegram bot, a native Android app in Kotlin, a website and an online game — with 141 automated tests. I work about two hours every day after classes and more on weekends. And I'm not alone: my co-founder Afruz handles sales, my parents support me, and this weekend I'm looking for teammates."
+*(Raqamlarni o'zingizdagi haqiqiyga moslang.)*
