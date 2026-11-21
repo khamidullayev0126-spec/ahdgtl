@@ -44,7 +44,7 @@ test("portfolio ishlari (works.js): har birida rasm/havola bor va matnlari tarji
     for (const k of ["title", "desc", "status", "linkText"]) assert.ok(dict[w[k]], `"${w.slug}" ${k} tarjimasi yo'q`);
     assert.ok(w.cat.every(c => ["sayt", "dizayn", "video", "ai"].includes(c)), `"${w.slug}" noto'g'ri turkum`);
     if (w.image) assert.ok(fs.existsSync(path.join(ROOT, w.image)), `"${w.slug}" rasmi topilmadi: ${w.image}`);
-    if (w.link && !w.link.startsWith("#")) assert.ok(fs.existsSync(path.join(ROOT, w.link.split("#")[0])), `"${w.slug}" havolasi topilmadi: ${w.link}`);
+    if (w.link && !w.link.startsWith("#") && !/^https?:/.test(w.link)) assert.ok(fs.existsSync(path.join(ROOT, w.link.split("#")[0])), `"${w.slug}" havolasi topilmadi: ${w.link}`);
   }
 });
 

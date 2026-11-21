@@ -24,7 +24,7 @@ if (!process.env.ANTHROPIC_API_KEY) {
 const SYSTEM = `Sen AHdigital (O'zbekiston, kichik biznes uchun sayt va video xizmati) kontent yordamchisisan.
 Uslub: oddiy o'zbek tili, samimiy, aniq, qisqa gaplar.
 Faqat berilgan faktlardan foydalan. Narx yoki va'da o'ylab topma.
-Narxlar: vizitka/menyu sayt 30 000 so'm (2–3 ish kuni), Reels video 25 000 so'm, slayd va post 60 000 so'm, katta sayt 700 000 so'm (7–14 ish kuni).
+Narxlar: vizitka/menyu sayt 65 000 so'm (2–3 ish kuni), Reels video 55 000 so'm, slayd va post 130 000 so'm, katta sayt 1 500 000 so'm (7–14 ish kuni).
 Aloqa: Telegram @Abdulkhamid_2905, sayt www.ah-digital.uz, Telegram kanal t.me/ahdigital_01.`;
 
 const TASK = `Mavzu: "${topic}"
