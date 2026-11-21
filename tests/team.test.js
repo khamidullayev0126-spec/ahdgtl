@@ -13,10 +13,10 @@ const order = (body) => fetch(base + "/api/orders", {
 });
 
 test("jamoa: 3 kishidan kam yoki kishi soni yo'q bo'lsa rad etiladi", async () => {
-  for (const seats of [undefined, 51]) {
+  for (const seats of [undefined, 6]) {
     const r = await order({ serviceId: "jamoa", seats });
     assert.equal(r.status, 400, `seats=${seats}`);
-    assert.match((await r.json()).error, /3 tadan 50 tagacha/);
+    assert.match((await r.json()).error, /3 tadan 5 tagacha/);
   }
 });
 
@@ -32,8 +32,8 @@ test("jamoa: narx kishi soniga ko'paytiriladi, obuna bir martada to'lanadi", asy
   // oddiy xizmatga kishi soni yuborilsa — e'tiborga olinmaydi
   const me = await (await fetch(base + "/api/me", { headers: { cookie: customer } })).json();
   const by = name => me.orders.find(o => o.serviceName === name);
-  assert.equal(by("Jamoa · 4 kishi").price, 7200000);
+  assert.equal(by("Jamoa · 4 kishi").price, 5600000);
   assert.equal(by("Jamoa · 4 kishi").seats, 4);
   assert.equal(by("Jamoa · 4 kishi").parts, 1);
-  assert.equal(by("Jamoa (yillik) · 3 kishi").price, 37500000);
+  assert.equal(by("Jamoa (yillik) · 3 kishi").price, 29400000);
 });

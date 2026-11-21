@@ -24,12 +24,12 @@ const SERVICES = [
     desc: "Butun yil davomida cheksiz video, slayd va postlar — bir vaqtda 2 tagacha buyurtma.",
     features: ["Cheksiz video, slayd va postlar", "Vizitka va menyu saytlar", "Yiliga 2 tagacha katta sayt", "Butun yil davomida"] },
   // Jamoa obunasi: narx HAR BIR XODIM uchun (perSeat), kamida minSeats kishi. "jamoa-yil" — shu kartaning yillik varianti (alohida karta bo'lib chiqmaydi).
-  { id: "jamoa", time: "1–14 ish kuni (ish turiga qarab)", result: "Butun jamoangiz uchun kontent va sayt ishlari bitta kabinetda", group: "plan", kicker: "Jamoa obunasi", name: "Jamoa", price: 1800000, period: "oy", perSeat: true, minSeats: 3, maxSeats: 50,
-    desc: "Kompaniyangiz uchun bitta obuna: har bir xodim o'zi buyurtma beradi, hammasi bitta jamoa kabinetida.",
-    features: ["Har bir xodimga Pro hajmi", "Jamoa kabineti: hamma buyurtmalar bir joyda", "Har bir xodim o'zi buyurtma beradi", "Oylik hisobot", "Kamida 3 kishi"] },
-  { id: "jamoa-yil", variantOf: "jamoa", time: "1–14 ish kuni (ish turiga qarab)", result: "Butun yil jamoangiz uchun kontent va sayt ishlari bitta kabinetda", group: "plan", kicker: "Jamoa obunasi", name: "Jamoa (yillik)", price: 12500000, period: "yil", perSeat: true, minSeats: 3, maxSeats: 50,
-    desc: "Yillik to'lovda har bir xodim uchun ~42% tejaysiz.",
-    features: ["Har bir xodimga Pro hajmi", "Jamoa kabineti: hamma buyurtmalar bir joyda", "Har bir xodim o'zi buyurtma beradi", "Oylik hisobot", "Kamida 3 kishi"] },
+  { id: "jamoa", time: "1–14 ish kuni (ish turiga qarab)", result: "Butun jamoangiz uchun kontent va sayt ishlari bitta kabinetda", group: "plan", kicker: "Jamoa obunasi", name: "Jamoa", price: 1400000, period: "oy", perSeat: true, minSeats: 3, maxSeats: 5,
+    desc: "Kompaniyangiz uchun bitta obuna: ishlar butun jamoaga umumiy, har bir xodim o'zi buyurtma beradi. Hozir faqat 1 ta jamoa uchun joy bor.",
+    features: ["Jamoaga oyiga 18 tagacha video, slayd va post (har qo'shimcha xodimga +4)", "1 ta vizitka yoki menyu sayt (5 kishida 2 ta)", "Katta sayt — 30% chegirma bilan", "Jamoa kabineti: hamma buyurtmalar bir joyda", "Har bir xodim o'zi buyurtma beradi", "Oylik hisobot", "3 tadan 5 kishigacha"] },
+  { id: "jamoa-yil", variantOf: "jamoa", time: "1–14 ish kuni (ish turiga qarab)", result: "Butun yil jamoangiz uchun kontent va sayt ishlari bitta kabinetda", group: "plan", kicker: "Jamoa obunasi", name: "Jamoa (yillik)", price: 9800000, period: "yil", perSeat: true, minSeats: 3, maxSeats: 5,
+    desc: "Yillik to'lovda har bir xodim uchun ~42% tejaysiz. Hajm har oy uchun bir xil. Hozir faqat 1 ta jamoa uchun joy bor.",
+    features: ["Jamoaga oyiga 18 tagacha video, slayd va post (har qo'shimcha xodimga +4)", "1 ta vizitka yoki menyu sayt (5 kishida 2 ta)", "Katta sayt — 30% chegirma bilan", "Jamoa kabineti: hamma buyurtmalar bir joyda", "Har bir xodim o'zi buyurtma beradi", "Oylik hisobot", "3 tadan 5 kishigacha"] },
   { id: "legends", time: "1 oy, 12 ta dars", result: "AI vositalari bilan mustaqil ishlay olasiz", group: "course", kicker: "O'quv kursi", name: "AI LEGENDS", price: 500000, period: "oy", legend: true, hidden: true,   // hozircha saytda ko'rsatilmaydi — qaytarish uchun shu qatorni o'chiring
     soon: "Darslar hali boshlanmagan — hozir oldindan yozilish ochiq. Boshlanish sanasini Telegram kanalda e'lon qilaman.", cta: "Oldindan yozilish",
     desc: "AI bilan ishlashni shaxsan o'zim o'rgataman — amaliy darslar va qo'llab-quvvatlash.",
