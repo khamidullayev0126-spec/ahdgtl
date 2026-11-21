@@ -1,6 +1,24 @@
 # Telegram post — Jamoa obunasi va obunachilar kabineti (21-noyabr)
 
-Rasm sifatida kabinetning skrinshotini qo'shsangiz bo'ladi (sinov akkauntidan, shaxsiy ma'lumotlarsiz).
+Rasm: `kontent/rasmlar/jamoa-obunasi-post.png` (1080×1350 — TG va Instagram uchun)
+Reels: `kontent/video/reels/11-jamoa-obunasi-ovozsiz.mp4` (hozircha ovozsiz, subtitrlar bilan — Instagram kutubxonasidan musiqa qo'shing).
+Skrinshotlardagi ismlar (Jasur, Ali, Dilnoza) — to'qima, sinov akkauntlari.
+
+## Instagram caption (Reels)
+Kompaniyangizda kontent bilan bir nechta odam shug'ullanadimi? 👥
+
+Endi bitta obuna — butun jamoa uchun:
+✅ Har bir xodim o'zi buyurtma beradi
+✅ Jamoa kabineti — hammasi bir joyda
+✅ Har oy Telegram'ga hisobot
+✅ Katta saytga 30% chegirma
+
+⚠️ Hozircha faqat 1 ta jamoa uchun joy bor.
+📌 Batafsil — Telegram kanalimda, havola bio'da.
+
+#AHdigital #biznes #kontent #smm #sayt #uzbekistan
+
+## Telegram post
 
 ---
 

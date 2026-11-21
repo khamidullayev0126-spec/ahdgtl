@@ -31,8 +31,19 @@ function align() {
   return { times: times.map((x, i) => +(spec.chunks[i].t ?? x).toFixed(3)), speechEnd: s1, dur };
 }
 
+// Ovoz fayli yo'q bo'lsa — ovozsiz rejim: subtitr vaqtlari matn uzunligidan (o'qish tezligi), ovoz o'rniga jimlik.
+// Keyin ovoz/<raqam>.mp3 qo'yilsa, oddiy rejimda qayta render qilinadi.
+const SILENT = !fs.existsSync(voice);
+function silentTimes() {
+  const CPS = 13, GAP = 0.35;                    // soniyasiga ~13 belgi o'qiladi + bo'laklar orasida pauza
+  const times = []; let t = 0.4;
+  for (const c of spec.chunks) { times.push(+t.toFixed(3)); t += Math.max(1.3, (c.s || c.c).length / CPS) + GAP; }
+  return { times, speechEnd: t, dur: t + 0.3 };
+}
+
 (async () => {
-  const a = align();
+  const a = SILENT ? silentTimes() : align();
+  if (SILENT) console.log("🔇 Ovoz fayli yo'q — ovozsiz versiya (subtitrlar bilan)");
   const end = a.dur + 1.2;                       // oxirida 1.2 s final kadr
   const full = { ...spec, times: a.times, speechEnd: a.speechEnd, end };
   console.log(`🎬 ${num}: ovoz ${a.dur.toFixed(1)} s, bo'laklar:`, a.times.map(x => x.toFixed(2)).join(" "));
@@ -59,12 +70,13 @@ function align() {
     sfxIn.push("-f", "lavfi", "-i", `anoisesrc=d=0.28:c=pink:a=0.5,highpass=f=900,lowpass=f=5000,afade=t=in:d=0.12,afade=t=out:st=0.12:d=0.16,volume=0.12`);
     filt.push(`[${i + 1}:a]adelay=${Math.max(0, Math.round((c - .2) * 1000))}|${Math.max(0, Math.round((c - .2) * 1000))}[s${i}]`);
   });
-  const name = path.join(OUT, (scale < 1 ? "korish-" : "") + spec.out + ".mp4");
+  const name = path.join(OUT, (scale < 1 ? "korish-" : "") + spec.out + (SILENT ? "-ovozsiz" : "") + ".mp4");
+  const voiceIn = SILENT ? ["-f", "lavfi", "-t", String(a.dur), "-i", "anullsrc=r=44100:cl=stereo"] : ["-i", voice];
   const video = path.join(dir, "v.mp4");
   execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-framerate", String(fps), "-i", path.join(dir, "%05d.jpg"), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", scale < 1 ? "28" : "18", video]);
   const mix = `[0:a]apad=pad_dur=1.5,volume=1.0[vo];${filt.join(";")};[vo]${cues.map((_, i) => `[s${i}]`).join("")}amix=inputs=${cues.length + 1}:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9[a]`;
-  execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", voice, ...sfxIn, "-i", video, "-filter_complex", mix, "-map", `${cues.length + 1}:v`, "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-t", String(end), "-movflags", "+faststart", name]);
+  execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...voiceIn, ...sfxIn, "-i", video, "-filter_complex", mix, "-map", `${cues.length + 1}:v`, "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-t", String(end), "-movflags", "+faststart", name]);
   fs.rmSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(__dirname, `vaqtlar-${num}.json`), JSON.stringify(a.times));
+  if (!SILENT) fs.writeFileSync(path.join(__dirname, `vaqtlar-${num}.json`), JSON.stringify(a.times));
   console.log(`✅ ${path.basename(name)} (${n} kadr)`);
 })();

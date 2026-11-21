@@ -290,4 +290,46 @@ module.exports = {
       { at: 11, v: "cta", line: "🏰 O'yin havolasi — Telegram kanalimda", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
     ]
   }
+  ,
+  11: {
+    tag: "Yangilik", out: "11-jamoa-obunasi",
+    chunks: [
+      { c: "Kompaniyangizda kontent bilan bir nechta odam shug'ullanadimi?" },
+      { c: "Har biri alohida yozadi, alohida to'laydi — tartib yo'q." },
+      { c: "Shuning uchun saytimga yangi narsa qo'shdim —" },
+      { c: "Jamoa obunasi." },
+      { c: "Bitta obuna — butun jamoa uchun, uch kishidan besh kishigacha." },
+      { c: "Har bir xodim saytdan o'zi buyurtma beradi." },
+      { c: "Kim nima buyurtma bergani, bu oy qancha ishlatilgani — hammasi jamoa kabinetida." },
+      { c: "Xodim qo'shish uchun bitta havola yuborasiz, xolos." },
+      { c: "Har oy boshida esa hisobot Telegram'ga keladi." },
+      { c: "Hozircha faqat bitta jamoa uchun joy bor." },
+      { c: "Batafsil — Telegram kanalimda," }, { c: "havola bio'da." }
+    ],
+    heads: [
+      { at: 0, lines: [["Bir nechta", "sm"], ["xodim?", "acc"]] },
+      { at: 1, lines: [["Har biri", "sm"], ["alohida", "acc"]] },
+      { at: 2, lines: [["Yangilik", "sm"], ["AHdigital'da", "acc"]] },
+      { at: 3, lines: [["Jamoa", "sm"], ["obunasi", "acc"]] },
+      { at: 4, lines: [["3–5", "sm"], ["kishi", "acc"]] },
+      { at: 5, lines: [["Har kim", "sm"], ["o'zi buyurtma", "acc"]] },
+      { at: 6, lines: [["Jamoa", "sm"], ["kabineti", "acc"]] },
+      { at: 7, lines: [["Bitta", "sm"], ["havola", "acc"]] },
+      { at: 8, lines: [["Oylik", "sm"], ["hisobot", "acc"]] },
+      { at: 9, lines: [["Faqat", "sm"], ["1 ta joy", "acc"]] },
+      { at: 10, lines: [["Batafsil", "sm"], ["Telegramda", "acc"]] }
+    ],
+    vis: [
+      { at: 0, v: "stamp", icon: "👥", text: "Bir nechta xodim?", fs: 54 },
+      { at: 1, v: "stamp", icon: "😵‍💫", text: "Tartib yo'q", bg: "#d94b3d", fs: 80 },
+      { at: 2, v: "stamp", icon: "🎁", text: "Yangilik", sub: "ah-digital.uz" },
+      { at: 3, v: "shot", src: "jamoa/1-karta.png" },
+      { at: 5, v: "shot", src: "jamoa/5-forma.png" },
+      { at: 6, v: "shot", src: "jamoa/2-kabinet.png" },
+      { at: 7, v: "shot", src: "jamoa/3-azolar.png" },
+      { at: 8, v: "shot", src: "jamoa/4-hisobot.png" },
+      { at: 9, v: "stamp", icon: "⚠️", text: "Faqat 1 ta joy", bg: "#d94b3d", fs: 58 },
+      { at: 10, v: "cta", line: "👥 Jamoa obunasi — batafsil", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
+    ]
+  }
 };
