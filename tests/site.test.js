@@ -97,7 +97,7 @@ test("xizmatlar ro'yxati: yashirilganlari chiqmaydi, narxlari musbat son", async
   assert.equal(list.length, all.filter(s => !s.hidden).length);
   assert.ok(!list.some(s => s.hidden), "yashirilgan xizmat API'da chiqmasin");
   // bosh sahifa va ilovadagi "N xil xizmat" soni haqiqiy ro'yxatga mos
-  assert.match(await (await fetch(base + "/")).text(), new RegExp("<strong>" + list.length + "</strong> xil xizmat"));
+  assert.match(await (await fetch(base + "/")).text(), new RegExp("<strong>" + list.filter(s => !s.variantOf).length + "</strong> xil xizmat"));
   for (const s of list) assert.ok(Number.isInteger(s.price) && s.price > 0, `${s.id} narxi noto'g'ri`);
 });
 

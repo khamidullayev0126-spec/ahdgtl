@@ -112,6 +112,23 @@
     "Sayt": ["Сайт", "Website"],
     "1 oylik obuna": ["Подписка на 1 месяц", "1-month plan"],
     "1 yillik obuna": ["Подписка на 1 год", "1-year plan"],
+    // Jamoa obunasi
+    "Jamoa obunasi": ["Командная подписка", "Team plan"],
+    "Jamoa": ["Команда", "Team"], "Jamoa (yillik)": ["Команда (годовая)", "Team (yearly)"],
+    "Oylik": ["Помесячно", "Monthly"], "Yillik": ["Годовая", "Yearly"],
+    "Kishi soni:": ["Кол-во человек:", "Seats:"], "Kishi soni": ["Кол-во человек", "Seats"],
+    "har bir xodim uchun": ["за каждого сотрудника", "per team member"],
+    "Jami": ["Итого", "Total"],
+    "Jamoadagi kishilar soni": ["Сколько человек в команде", "Number of team members"],
+    "Kamaytirish": ["Уменьшить", "Decrease"], "Ko'paytirish": ["Увеличить", "Increase"],
+    "Butun jamoangiz uchun kontent va sayt ishlari bitta kabinetda": ["Контент и сайты для всей команды — в одном кабинете", "Content and website work for your whole team in one dashboard"],
+    "Butun yil jamoangiz uchun kontent va sayt ishlari bitta kabinetda": ["Контент и сайты для всей команды на весь год — в одном кабинете", "A full year of content and website work for your whole team in one dashboard"],
+    "Kompaniyangiz uchun bitta obuna: har bir xodim o'zi buyurtma beradi, hammasi bitta jamoa kabinetida.": ["Одна подписка на компанию: каждый сотрудник заказывает сам, всё — в общем командном кабинете.", "One plan for your company: every team member orders on their own, and it all lives in one team dashboard."],
+    "Yillik to'lovda har bir xodim uchun ~42% tejaysiz.": ["При годовой оплате экономия ~42% на каждого сотрудника.", "Pay yearly and save ~42% per team member."],
+    "Har bir xodimga Pro hajmi": ["Каждому сотруднику — объём Pro", "Pro-level volume for every member"],
+    "Jamoa kabineti: hamma buyurtmalar bir joyda": ["Командный кабинет: все заказы в одном месте", "Team dashboard: all orders in one place"],
+    "Har bir xodim o'zi buyurtma beradi": ["Каждый сотрудник заказывает сам", "Every member places their own orders"],
+    "Oylik hisobot": ["Ежемесячный отчёт", "Monthly report"],
     "Mashhur": ["Популярно", "Popular"],
     "Tanlash": ["Выбрать", "Choose"],
     "Tez orada": ["Скоро", "Coming soon"],
@@ -445,6 +462,8 @@
       const per = PERIOD[m[2]] ? PERIOD[m[2]][idx] : m[2];
       return (m[1] ? num(m[1]) + " " : "") + (lang === "ru" ? "сум / " : "UZS / ") + per;
     }
+    if ((m = s.match(/^[Kk]amida (\d+) kishi$/))) return lang === "ru" ? (s[0] === "K" ? "Минимум " : "минимум ") + `${m[1]} чел.` : (s[0] === "K" ? "Minimum " : "minimum ") + `${m[1]} members`;
+    if ((m = s.match(/^(\d+) kishi$/))) return lang === "ru" ? `${m[1]} чел.` : `${m[1]} ${m[1] === "1" ? "member" : "members"}`;
     if ((m = s.match(/^([\d ]*\d) so'mdan$/))) return lang === "ru" ? `от ${m[1]} сум` : `from ${num(m[1])} UZS`;
     if ((m = s.match(/^([\d ]*\d) so'm$/))) return `${num(m[1])} ${lang === "ru" ? "сум" : "UZS"}`;
     if ((m = s.match(/^([\d ]*\d) so'm \/ oy$/))) return `${num(m[1])} ${lang === "ru" ? "сум / мес" : "UZS / month"}`;

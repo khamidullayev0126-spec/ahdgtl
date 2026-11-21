@@ -112,7 +112,7 @@ function createAuth({ botToken, store, readOrders, botUsername, publicDir, order
         const c = String(o.contact || "").trim().toLowerCase();
         return String(o.tgUserId) === String(user.id) || String(o.tgChatId) === String(user.id) || (uname && c === uname) || (email && c === email);
       })
-      .map(o => ({ code: o.code, serviceName: o.serviceName, price: o.price, status: o.status, createdAt: o.createdAt, ...orderExtra(o) }));
+      .map(o => ({ code: o.code, serviceName: o.serviceName, price: o.price, seats: o.seats, status: o.status, createdAt: o.createdAt, ...orderExtra(o) }));
   }
 
   function install(app) {

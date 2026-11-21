@@ -351,3 +351,19 @@ img, video, svg, iframe { max-width: 100%; }
 /* "Tez orada" — hali boshlanmagan xizmat (AI LEGENDS) */
 .tag-soon { background: #f6c453; color: #201e1d; font-weight: 700; }
 .card .card-soon { flex: 0; font-size: 14px; font-weight: 600; line-height: 1.45; padding: 10px 14px; border-radius: 14px; background: rgba(246, 196, 83, .16); border: 1px solid rgba(246, 196, 83, .55); }
+
+/* Jamoa obunasi kartasi: oylik/yillik tugmasi, kishi soni, jami narx */
+.team { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 6px; }
+.team-toggle { display: inline-flex; align-self: flex-start; background: var(--bg); border: 1px solid rgba(0,0,0,.12); border-radius: 999px; padding: 3px; }
+.team-toggle .seg { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.team-toggle .seg.on { background: var(--accent); color: #fff; }
+.team-per { margin: 0; font-size: 13px; color: var(--muted); }
+.team-seats { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.team-seats .lbl { margin-right: auto; }
+.team-seats .step { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(0,0,0,.18); background: var(--bg); color: var(--text); font-size: 18px; line-height: 1; cursor: pointer; }
+.team-seats .step:disabled { opacity: .4; cursor: not-allowed; }
+.team-seats .n { min-width: 2ch; text-align: center; font-size: 18px; font-variant-numeric: tabular-nums; }
+.team-total { margin: 0; font-weight: 700; color: var(--accent-ink); }
+.seats-total { margin: 6px 0 0; font-weight: 700; color: var(--accent-ink); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .team-total, :root:not([data-theme="light"]) .seats-total { color: var(--accent); } }
+:root[data-theme="dark"] .team-total, :root[data-theme="dark"] .seats-total { color: var(--accent); }

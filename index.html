@@ -54,7 +54,7 @@
         <a href="portfolio.html" class="btn btn-secondary">Portfolioni ko'rish</a>
       </div>
       <ul class="hero-facts">
-        <li><strong>6</strong> xil xizmat</li>
+        <li><strong>7</strong> xil xizmat</li>
         <li><strong>30 000</strong> so'mdan boshlab</li>
         <li><strong>O'zbek</strong> tilida yordam</li>
       </ul>
@@ -223,6 +223,11 @@
           <select class="input" id="serviceId" name="serviceId" required>
             <option value="">Xizmatni tanlang</option>
           </select>
+        </div>
+        <div class="field" id="seats-field" hidden>
+          <label for="seats">Jamoadagi kishilar soni</label>
+          <input class="input" id="seats" name="seats" type="number" min="3" max="50" value="3" inputmode="numeric" disabled>
+          <p class="seats-total" id="seats-total" role="status"></p>
         </div>
         <div class="field">
           <label for="message">Izoh (ixtiyoriy)</label>

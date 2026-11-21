@@ -259,6 +259,14 @@ app.post("/api/orders", rateLimit, async (req, res) => {
   if (message.length > 1000) {
     return res.status(400).json({ error: "Izoh 1000 ta belgidan oshmasin." });
   }
+  // Jamoa obunasi: narx = har xodim narxi × kishi soni (kamida minSeats)
+  let seats;
+  if (service.perSeat) {
+    seats = Math.round(Number(req.body.seats));
+    if (!Number.isFinite(seats) || seats < service.minSeats || seats > service.maxSeats) {
+      return res.status(400).json({ error: `Jamoada ${service.minSeats} tadan ${service.maxSeats} tagacha kishi bo'lishi mumkin.` });
+    }
+  }
 
   if (!req.user) {
     const now = Date.now();
@@ -274,8 +282,9 @@ app.post("/api/orders", rateLimit, async (req, res) => {
     name,
     contact,
     serviceId,
-    serviceName: service.name,
-    price: service.price,
+    serviceName: seats ? `${service.name} · ${seats} kishi` : service.name,
+    price: seats ? service.price * seats : service.price,
+    seats,
     message,
     status: "yangi",
     tgUserId: req.user ? req.user.id : undefined,
