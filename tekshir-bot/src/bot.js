@@ -20,6 +20,7 @@ const { createLimiter } = require("./ratelimit");
 const { openDb, toCsv, DEFAULT_PATH } = require("./db");
 const { restore, createBackup } = require("./backup");
 const { createQala, createQalaHttp } = require("./qala");
+const { createTips } = require("./tips");
 const { isAdmin, adminIds, formatStats } = require("./admin");
 const cache = require("./cache");
 const { extractNumbers, reportPoints } = require("./checkers/numbers");
@@ -39,6 +40,7 @@ function langKeyboard() {
 function createBot(token, options = {}, deps = {}) {
   const bot = new Bot(token, options);
   const db = deps.db || openDb(":memory:");
+  const tips = createTips(db.raw);
   // Foydalanuvchi tili endi BAZADA saqlanadi — bot qayta ishga tushsa ham eslab qoladi
   const getLang = id => db.getLang(id);
   // Faylni Telegram serveridan XOTIRAGA yuklaymiz (diskka yozilmaydi, ishga tushirilmaydi) — faqat hash uchun
@@ -413,6 +415,48 @@ function createBot(token, options = {}, deps = {}) {
     await ctx.editMessageText(v.text, { reply_markup: v.reply_markup }).catch(() => {});
   });
 
+  // ---------- Kunlik maslahatlar (har kuni 10:00 da, takrorlanmaydi) ----------
+  const TIPMSG = {
+    off: { "uz-latn": "🔕 Kunlik maslahatlar o'chirildi. Qayta yoqish: /maslahat_yoq", "uz-cyrl": "🔕 Кунлик маслаҳатлар ўчирилди. Қайта ёқиш: /maslahat_yoq", ru: "🔕 Ежедневные советы отключены. Включить снова: /maslahat_yoq" },
+    on: { "uz-latn": "🔔 Kunlik maslahatlar yoqildi! Har kuni soat 10:00 da bitta yangi maslahat keladi.", "uz-cyrl": "🔔 Кунлик маслаҳатлар ёқилди! Ҳар куни соат 10:00 да битта янги маслаҳат келади.", ru: "🔔 Ежедневные советы включены! Каждый день в 10:00 — один новый совет." },
+    onBtn: { "uz-latn": "🔔 Qayta yoqish", "uz-cyrl": "🔔 Қайта ёқиш", ru: "🔔 Включить снова" }
+  };
+  const tm = (k, lang) => TIPMSG[k][lang] || TIPMSG[k]["uz-latn"];
+  bot.command("maslahat_ochir", ctx => { if (ctx.chat.type !== "private") return; tips.setEnabled(ctx.from.id, false); return ctx.reply(tm("off", langOf(ctx))); });
+  bot.command("maslahat_yoq", ctx => { if (ctx.chat.type !== "private") return; tips.setEnabled(ctx.from.id, true); return ctx.reply(tm("on", langOf(ctx))); });
+  bot.callbackQuery(/^tipsub:(on|off)$/, async ctx => {
+    const on = ctx.match[1] === "on", lang = cbLang(ctx) || DEFAULT_LANG;
+    tips.setEnabled(ctx.from.id, on);
+    await ctx.answerCallbackQuery({ text: tm(on ? "on" : "off", lang).slice(0, 190) });
+    await ctx.editMessageReplyMarkup({ reply_markup: on ? { inline_keyboard: [[{ text: tips.format({ uz_t: "", uz_x: "" }, lang).off, callback_data: "tipsub:off" }]] }
+      : new InlineKeyboard().text(tm("onBtn", lang), "tipsub:on") }).catch(() => {});
+  });
+  // Admin: /maslahat_qosh 🔐 Sarlavha | Matn  [|| Ruscha sarlavha | Ruscha matn]
+  bot.command("maslahat_qosh", ctx => {
+    if (ctx.chat.type !== "private" || !isAdmin(ctx.from.id)) return;
+    const raw = String(ctx.match || "").trim();
+    const [uz, ru] = raw.split("||").map(x => x && x.trim());
+    const [t1, x1] = (uz || "").split("|").map(x => x && x.trim());
+    if (!t1 || !x1) return ctx.reply("Format:\n/maslahat_qosh 🔐 Sarlavha | Matn\nIxtiyoriy ruscha: … || Заголовок | Текст");
+    const m = t1.match(/^(\p{Extended_Pictographic}\uFE0F?)\s*(.*)$/u);
+    const [r1, r2] = (ru || "").split("|").map(x => x && x.trim());
+    const r = tips.add({ icon: m ? m[1] : "💡", uz_t: m ? m[2] : t1, uz_x: x1, ru_t: r1 || null, ru_x: r2 || null, src: "admin" });
+    if (!r.ok) return ctx.reply(r.reason === "dup" ? `⚠️ Bunga o'xshash maslahat bor: «${r.like.uz_t}»` : "⚠️ Sarlavha 4–80, matn 15–400 belgi bo'lsin.");
+    const st = tips.stats();
+    return ctx.reply(`✅ Qo'shildi! Jami faol maslahatlar: ${st.active}`);
+  });
+  bot.command("maslahat_stat", ctx => {
+    if (ctx.chat.type !== "private" || !isAdmin(ctx.from.id)) return;
+    const st = tips.stats();
+    return ctx.reply(`💡 Maslahatlar\nFaol: ${st.active} · Tasdiq kutmoqda: ${st.pending}\nYuborilgan: ${st.sent} · O'chirganlar: ${st.off}`);
+  });
+  bot.callbackQuery(/^tip(ok|no):([\w-]+)$/, async ctx => {
+    if (!isAdmin(ctx.from.id)) return ctx.answerCallbackQuery();
+    const t = ctx.match[1] === "ok" ? tips.approve(ctx.match[2]) : tips.reject(ctx.match[2]);
+    await ctx.answerCallbackQuery({ text: t ? (ctx.match[1] === "ok" ? "✅ Qo'shildi" : "❌ Rad etildi") : "Allaqachon ko'rib chiqilgan" });
+    await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } }).catch(() => {});
+  });
+
   // ---------- Boshqa har qanday xabar ----------
   // ---------- Oila himoyasi (Tekshir Android ilovasi, 7-bosqich) ----------
   // /oila — kod beradi; yaqinining telefonidagi ilova kodni kiritadi; xavf aniqlansa — shu chatga ogohlantirish.
@@ -460,6 +504,7 @@ function createBot(token, options = {}, deps = {}) {
   const familyLimit = createLimiter({ limit: 10, windowMs: 60 * 60 * 1000 });   // bitta telefondan soatiga 10 ta ogohlantirish
   const KINDS = ["message", "app", "apk", "call"];
   /** Ilova kodni yuboradi → { token } yoki null. */
+  bot.tips = tips;
   bot.familyLink = async (code, label) => {
     if (!/^\d{6}$/.test(String(code || ""))) return null;
     const r = db.familyLink(code, String(label || "").replace(/[<>&]/g, "").trim());
@@ -596,6 +641,15 @@ async function main() {
     { command: "tekshir", description: "Xabarga javob qilib yozing — tekshiraman" },
     { command: "sozlama", description: "Guruh sozlamalari (adminlar)" }
   ], { scope: { type: "all_group_chats" } }).catch(e => console.error("Guruh menyusi:", e.message));
+  // Kunlik maslahatlar: har 5 daqiqada tekshiramiz, soat 10:00 dan keyin bugun olmaganlarga yuboramiz
+  const tipsAi = (() => { const key = process.env.AI_API_KEY || process.env.ANTHROPIC_API_KEY; if (!key) return null; const A = require("@anthropic-ai/sdk"); return new (A.default || A)({ apiKey: key, timeout: 30000, maxRetries: 1 }); })();
+  let tipsBusy = false;
+  const tipsTick = async () => {
+    if (tipsBusy) return; tipsBusy = true;
+    try { const r = await bot.tips.runDaily({ api: bot.api, admins: adminIds(), ai: tipsAi, model: process.env.AI_TIPS_MODEL || "claude-haiku-5-5" }); if (r.sent || r.off || r.empty) console.log("💡 Kunlik maslahat:", JSON.stringify(r)); }
+    catch (e) { console.error("💡 Kunlik maslahat xatosi:", e.message); } finally { tipsBusy = false; }
+  };
+  setTimeout(tipsTick, 60 * 1000).unref(); setInterval(tipsTick, 5 * 60 * 1000).unref();
   // Long polling: bot o'zi Telegram'dan yangi xabarlarni so'rab turadi (kompyuterda ishlatish uchun qulay)
   // Serverda (Render) — WEBHOOK: Telegram xabarlarni o'zi bizning manzilga yuboradi.
   // Kompyuterda — LONG POLLING: bot o'zi Telegram'dan so'rab turadi.

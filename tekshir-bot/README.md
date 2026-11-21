@@ -251,3 +251,13 @@ Manzil: `<server>/qala` (masalan https://tekshir.ah-digital.uz/qala). API: `POST
 - Har bir belgi **serverda** tekshiriladi; parol brauzerga faqat hujum tugagach yuboriladi.
 - O'yin jadvallari (`qala_*`) asosiy bazada — Telegram zaxirasiga ham tushadi.
 - 3-bosqich: reyting (`/api/qala/top`), bildirishnomalar (`events`), tiklash kodi (`recovery` / `recover`). Tiklash kodi bazada faqat hash; yangi kod eskisini bekor qiladi; kod bilan kirilganda eski qurilma chiqariladi.
+
+## 💡 Kunlik maslahatlar
+
+Har kuni **soat 10:00 da (Toshkent)** botdan foydalanganlarning har biriga bitta xavfsizlik maslahati yuboriladi (`src/tips.js`).
+
+- **Takrorlanmaydi:** kimga qaysi maslahat yuborilgani bazada saqlanadi (`tip_sent`).
+- **Asos:** 50 ta maslahat (`src/tips-base.json`, o'zbekcha + ruscha; kirillcha avtomatik o'giriladi).
+- **Yangilanadi:** admin `/maslahat_qosh 🔐 Sarlavha | Matn [|| Заголовок | Текст]` bilan qo'shadi. AI kaliti bo'lsa (`AI_API_KEY`), har kuni bitta yangi maslahat **taklif** qilinadi — u faqat admin «✅ Qo'shish» bosgach yuboriladi. O'xshash maslahat qo'shilmaydi.
+- **O'chirish:** har maslahat ostidagi «🔕» tugmasi yoki `/maslahat_ochir` (qayta yoqish: `/maslahat_yoq`). Botni bloklaganlarga yuborilmaydi.
+- Admin: `/maslahat_stat`. Vaqtni o'zgartirish: `TIPS_HOUR=10`. AI modeli: `AI_TIPS_MODEL` (standart `claude-haiku-5-5`).

@@ -1,0 +1,652 @@
+[
+ {
+  "id": "b00",
+  "cat": "firibgarlik",
+  "icon": "🔐",
+  "uz": {
+   "t": "SMS kodni hech kimga aytmang",
+   "x": "Bank xodimi, operator yoki Click ham uni hech qachon so'ramaydi. SMS kod — sizning imzoingiz: uni aytsangiz, to'lovga o'zingiz ruxsat berasiz."
+  },
+  "ru": {
+   "t": "Никому не сообщайте SMS-код",
+   "x": "Сотрудник банка, оператор или Click никогда его не спрашивают. SMS-код — ваша подпись: назвав его, вы сами разрешаете платёж."
+  }
+ },
+ {
+  "id": "b01",
+  "cat": "firibgarlik",
+  "icon": "📞",
+  "uz": {
+   "t": "«Bankdan qo'ng'iroq qilyapmiz»",
+   "x": "Go'shakni qo'ying va kartangiz orqasidagi raqamga o'zingiz qo'ng'iroq qiling. Firibgar ismingizni va kartaning oxirgi raqamlarini bilishi mumkin — bu ishonch uchun emas."
+  },
+  "ru": {
+   "t": "«Вам звонят из банка»",
+   "x": "Положите трубку и сами позвоните по номеру на обороте карты. Мошенник может знать ваше имя и последние цифры карты — это не повод доверять."
+  }
+ },
+ {
+  "id": "b02",
+  "cat": "firibgarlik",
+  "icon": "🔗",
+  "uz": {
+   "t": "Manzilni harfma-harf o'qing",
+   "x": "click.uz va c1ick-uz.com — butunlay boshqa saytlar. To'lovni havola orqali emas, rasmiy ilova orqali qiling."
+  },
+  "ru": {
+   "t": "Читайте адрес по буквам",
+   "x": "click.uz и c1ick-uz.com — совершенно разные сайты. Платите не по ссылке, а через официальное приложение."
+  }
+ },
+ {
+  "id": "b03",
+  "cat": "firibgarlik",
+  "icon": "🎁",
+  "uz": {
+   "t": "«Siz yutdingiz!» — aldov",
+   "x": "Qatnashmagan tanlovda yutib bo'lmaydi. «Yutuqni olish uchun avval to'lang» deyilsa — bu doim firibgarlik."
+  },
+  "ru": {
+   "t": "«Вы выиграли!» — обман",
+   "x": "Нельзя выиграть в конкурсе, в котором вы не участвовали. Если просят «сначала заплатить за приз» — это всегда мошенничество."
+  }
+ },
+ {
+  "id": "b04",
+  "cat": "firibgarlik",
+  "icon": "📦",
+  "uz": {
+   "t": "Posilka uchun «bojxona to'lovi»",
+   "x": "Trek-raqamni rasmiy pochta saytida o'zingiz tekshiring — SMS'dagi havoladan emas. Kichik summa so'rashadi, lekin karta ma'lumoti o'g'irlanadi."
+  },
+  "ru": {
+   "t": "«Таможенный сбор» за посылку",
+   "x": "Проверяйте трек-номер сами на официальном сайте почты, а не по ссылке из SMS. Просят мелкую сумму, а крадут данные карты."
+  }
+ },
+ {
+  "id": "b05",
+  "cat": "firibgarlik",
+  "icon": "📎",
+  "uz": {
+   "t": "«Rasmlar.apk» — bu rasm emas",
+   "x": "Nomi .apk bilan tugasa — bu Android ilova. O'rnatsangiz, u SMS'laringizni o'qiydi. «Hujjat.jpg.apk» ham baribir ilova."
+  },
+  "ru": {
+   "t": "«Фото.apk» — это не фото",
+   "x": "Если имя заканчивается на .apk — это Android-приложение. Установив его, вы дадите ему читать ваши SMS. «Документ.jpg.apk» — тоже приложение."
+  }
+ },
+ {
+  "id": "b06",
+  "cat": "firibgarlik",
+  "icon": "🗳",
+  "uz": {
+   "t": "«Ovoz bering» havolasi",
+   "x": "Tanishingizdan kelsa ham ehtiyot bo'ling — uning akkaunti o'g'irlangan bo'lishi mumkin. Telegram kodi so'ralsa — hech qayerga yozmang."
+  },
+  "ru": {
+   "t": "Ссылка «Проголосуйте»",
+   "x": "Будьте осторожны, даже если она от знакомого — его аккаунт могли взломать. Если просят код Telegram — никуда его не вводите."
+  }
+ },
+ {
+  "id": "b07",
+  "cat": "firibgarlik",
+  "icon": "💸",
+  "uz": {
+   "t": "Oson daromad va'dasi",
+   "x": "«Like bosib pul ishlang», «1 haftada 2 baravar». Avval kichik pul berib ishontirishadi, keyin katta summa bilan yo'qolishadi."
+  },
+  "ru": {
+   "t": "Обещание лёгкого заработка",
+   "x": "«Зарабатывайте на лайках», «удвоим за неделю». Сначала платят немного для доверия, потом исчезают с крупной суммой."
+  }
+ },
+ {
+  "id": "b08",
+  "cat": "firibgarlik",
+  "icon": "🧳",
+  "uz": {
+   "t": "Ish uchun oldindan to'lov",
+   "x": "«Forma, hujjat yoki o'qish uchun avval to'lang» degan ish taklifi — aldov. Haqiqiy ish beruvchi sizdan pul so'ramaydi."
+  },
+  "ru": {
+   "t": "Предоплата за работу",
+   "x": "Предложение работы с условием «сначала оплатите форму, документы или обучение» — обман. Настоящий работодатель денег не просит."
+  }
+ },
+ {
+  "id": "b09",
+  "cat": "firibgarlik",
+  "icon": "⏰",
+  "uz": {
+   "t": "Shoshiltirishsa — to'xtang",
+   "x": "«1 soat ichida», «hozir bloklanadi» — firibgarlarning asosiy usuli. Qo'rqqan odam tekshirmaydi. Haqiqiy bank sizni shoshiltirmaydi."
+  },
+  "ru": {
+   "t": "Торопят — остановитесь",
+   "x": "«В течение часа», «сейчас заблокируют» — главный приём мошенников. Испуганный человек не проверяет. Настоящий банк не торопит."
+  }
+ },
+ {
+  "id": "b10",
+  "cat": "parol",
+  "icon": "🛡",
+  "uz": {
+   "t": "Telegram'da ikki bosqichli himoya",
+   "x": "Sozlamalar → Maxfiylik va xavfsizlik → Ikki bosqichli tasdiqlash. SMS kodni bilib olishsa ham, parolsiz akkauntga kira olishmaydi."
+  },
+  "ru": {
+   "t": "Двухэтапная защита в Telegram",
+   "x": "Настройки → Конфиденциальность → Облачный пароль. Даже узнав SMS-код, без пароля в аккаунт не войти."
+  }
+ },
+ {
+  "id": "b11",
+  "cat": "parol",
+  "icon": "🔑",
+  "uz": {
+   "t": "Har saytga boshqa parol",
+   "x": "Bitta parol hamma joyda bo'lsa, bitta sayt buzilganda hammasi ochiladi. Hech bo'lmasa pochta, bank va Telegram uchun alohida parol qo'ying."
+  },
+  "ru": {
+   "t": "Разные пароли для разных сайтов",
+   "x": "Если один пароль везде, взлом одного сайта открывает всё. Хотя бы для почты, банка и Telegram придумайте отдельные пароли."
+  }
+ },
+ {
+  "id": "b12",
+  "cat": "parol",
+  "icon": "📏",
+  "uz": {
+   "t": "Uzun parol — kuchli parol",
+   "x": "Uchta tasodifiy so'zdan iborat uzun ibora («olma-poyezd-bulut-7») qisqa «Abc123!» dan ancha kuchli va eslab qolish oson."
+  },
+  "ru": {
+   "t": "Длинный пароль — сильный пароль",
+   "x": "Длинная фраза из трёх случайных слов («яблоко-поезд-облако-7») намного надёжнее короткого «Abc123!» и легко запоминается."
+  }
+ },
+ {
+  "id": "b13",
+  "cat": "parol",
+  "icon": "🧠",
+  "uz": {
+   "t": "Parol menejeridan foydalaning",
+   "x": "Telefon va brauzerdagi parol saqlagich (Google Password Manager, iCloud Keychain) har sayt uchun kuchli parol yaratadi va o'zi eslab qoladi."
+  },
+  "ru": {
+   "t": "Пользуйтесь менеджером паролей",
+   "x": "Встроенный менеджер паролей (Google, iCloud Keychain) создаст надёжный пароль для каждого сайта и сам его запомнит."
+  }
+ },
+ {
+  "id": "b14",
+  "cat": "parol",
+  "icon": "📧",
+  "uz": {
+   "t": "Pochtangiz — asosiy kalit",
+   "x": "Boshqa akkauntlar parolini pochta orqali tiklashadi. Shuning uchun Gmail'ga eng kuchli parol va ikki bosqichli himoya qo'ying."
+  },
+  "ru": {
+   "t": "Почта — главный ключ",
+   "x": "Пароли от других аккаунтов восстанавливают через почту. Поставьте на Gmail самый сильный пароль и двухэтапную защиту."
+  }
+ },
+ {
+  "id": "b15",
+  "cat": "parol",
+  "icon": "💻",
+  "uz": {
+   "t": "Faol seanslarni tekshiring",
+   "x": "Telegram: Sozlamalar → Qurilmalar. Tanimagan qurilma bo'lsa — «Boshqa seanslarni tugatish». Google akkauntida ham shunday bo'lim bor."
+  },
+  "ru": {
+   "t": "Проверьте активные сеансы",
+   "x": "Telegram: Настройки → Устройства. Незнакомое устройство — «Завершить другие сеансы». В аккаунте Google есть такой же раздел."
+  }
+ },
+ {
+  "id": "b16",
+  "cat": "parol",
+  "icon": "🚫",
+  "uz": {
+   "t": "Parolni xabarda yubormang",
+   "x": "Parol, PIN yoki kartaning orqasidagi 3 raqamni (CVV) chatga, SMS'ga yoki ovozli xabarga yozmang — hatto yaqinlaringizga ham."
+  },
+  "ru": {
+   "t": "Не отправляйте пароли в сообщениях",
+   "x": "Пароль, PIN или три цифры на обороте карты (CVV) не пишите в чат, SMS или голосовое — даже близким."
+  }
+ },
+ {
+  "id": "b17",
+  "cat": "parol",
+  "icon": "🎂",
+  "uz": {
+   "t": "Tug'ilgan sana — parol emas",
+   "x": "Tug'ilgan sana, telefon raqam, ism — boshqalar bilishi yoki topishi oson. Bunday parolni birinchi navbatda sinab ko'rishadi."
+  },
+  "ru": {
+   "t": "Дата рождения — не пароль",
+   "x": "Дату рождения, номер телефона, имя легко узнать или подобрать. Такие пароли пробуют в первую очередь."
+  }
+ },
+ {
+  "id": "b18",
+  "cat": "parol",
+  "icon": "🔔",
+  "uz": {
+   "t": "Kirish xabarnomalarini yoqing",
+   "x": "Yangi qurilmadan kirilganda Telegram va Google xabar beradi. Siz kirmagan bo'lsangiz — darhol parolni almashtiring."
+  },
+  "ru": {
+   "t": "Включите уведомления о входе",
+   "x": "Telegram и Google сообщают о входе с нового устройства. Если это были не вы — сразу смените пароль."
+  }
+ },
+ {
+  "id": "b19",
+  "cat": "parol",
+  "icon": "🧾",
+  "uz": {
+   "t": "Zaxira kodlarini saqlang",
+   "x": "Ikki bosqichli himoya yoqilganda Google zaxira kodlar beradi. Ularni qog'ozga yozib, xavfsiz joyda saqlang — telefon yo'qolsa kerak bo'ladi."
+  },
+  "ru": {
+   "t": "Сохраните резервные коды",
+   "x": "При включении двухэтапной защиты Google выдаёт резервные коды. Запишите их на бумаге и храните в надёжном месте."
+  }
+ },
+ {
+  "id": "b20",
+  "cat": "telefon",
+  "icon": "🔄",
+  "uz": {
+   "t": "Telefonni yangilab turing",
+   "x": "Yangilanishlar xavfsizlik teshiklarini yopadi. Sozlamalar → Tizim yangilanishi. Ilovalarni ham Play Market'da yangilang."
+  },
+  "ru": {
+   "t": "Обновляйте телефон",
+   "x": "Обновления закрывают дыры в безопасности. Настройки → Обновление системы. Приложения тоже обновляйте в Play Маркете."
+  }
+ },
+ {
+  "id": "b21",
+  "cat": "telefon",
+  "icon": "🏪",
+  "uz": {
+   "t": "Ilovalar — faqat rasmiy do'kondan",
+   "x": "Google Play yoki App Store. Telegram kanal yoki saytdan yuklangan ilova tekshirilmagan bo'ladi."
+  },
+  "ru": {
+   "t": "Приложения — только из официального магазина",
+   "x": "Google Play или App Store. Приложение из Telegram-канала или с сайта никто не проверял."
+  }
+ },
+ {
+  "id": "b22",
+  "cat": "telefon",
+  "icon": "🔍",
+  "uz": {
+   "t": "Ilova ruxsatlarini tekshiring",
+   "x": "Fonar ilovasiga SMS va kontaktlarga ruxsat nimaga kerak? Sozlamalar → Ilovalar → Ruxsatlar — keraksizlarini o'chiring."
+  },
+  "ru": {
+   "t": "Проверьте разрешения приложений",
+   "x": "Зачем фонарику доступ к SMS и контактам? Настройки → Приложения → Разрешения — отключите лишнее."
+  }
+ },
+ {
+  "id": "b23",
+  "cat": "telefon",
+  "icon": "📶",
+  "uz": {
+   "t": "Ochiq Wi-Fi'da bank ishlarini qilmang",
+   "x": "Kafe yoki aeroportdagi parolsiz Wi-Fi'da bank ilovasiga kirmang. Mobil internet xavfsizroq."
+  },
+  "ru": {
+   "t": "Не платите через открытый Wi-Fi",
+   "x": "Не заходите в банковское приложение через Wi-Fi без пароля в кафе или аэропорту. Мобильный интернет безопаснее."
+  }
+ },
+ {
+  "id": "b24",
+  "cat": "telefon",
+  "icon": "🔒",
+  "uz": {
+   "t": "Ekran qulfini qo'ying",
+   "x": "PIN, barmoq izi yoki yuz bilan. Telefon yo'qolsa ham, ichidagi xabar va bank ilovalari himoyalangan bo'ladi."
+  },
+  "ru": {
+   "t": "Поставьте блокировку экрана",
+   "x": "PIN, отпечаток или лицо. Даже если телефон потеряется, сообщения и банковские приложения будут защищены."
+  }
+ },
+ {
+  "id": "b25",
+  "cat": "telefon",
+  "icon": "📍",
+  "uz": {
+   "t": "Yo'qolgan telefonni topish",
+   "x": "Android: «Find My Device» (Qurilmani topish) yoqilgan bo'lsin. U orqali telefonni topish, qulflash yoki o'chirish mumkin."
+  },
+  "ru": {
+   "t": "Поиск потерянного телефона",
+   "x": "Android: включите «Найти устройство» (Find My Device). Через него можно найти, заблокировать или стереть телефон."
+  }
+ },
+ {
+  "id": "b26",
+  "cat": "telefon",
+  "icon": "☁️",
+  "uz": {
+   "t": "Rasmlarning zaxira nusxasi",
+   "x": "Google Photos yoki iCloud'da zaxira yoqilsa, telefon buzilsa ham rasmlar yo'qolmaydi."
+  },
+  "ru": {
+   "t": "Резервная копия фотографий",
+   "x": "Включите резервное копирование в Google Фото или iCloud — фото не пропадут, даже если телефон сломается."
+  }
+ },
+ {
+  "id": "b27",
+  "cat": "telefon",
+  "icon": "📩",
+  "uz": {
+   "t": "Notanish raqamdan havola",
+   "x": "Bankdan kelgandek SMS'dagi havolani bosmang. Bankingiz haqiqatan yozgan bo'lsa — rasmiy ilovada ham xabar bo'ladi."
+  },
+  "ru": {
+   "t": "Ссылка с незнакомого номера",
+   "x": "Не нажимайте ссылку в SMS «от банка». Если банк действительно писал — сообщение будет и в официальном приложении."
+  }
+ },
+ {
+  "id": "b28",
+  "cat": "telefon",
+  "icon": "🛡",
+  "uz": {
+   "t": "Samsung'da Auto Blocker'ni yoqing",
+   "x": "Sozlamalar → Xavfsizlik va maxfiylik → Auto Blocker. Yoqilsa, Play Market'dan tashqaridagi APK o'rnatilmaydi va USB orqali telefonga buyruq yuborib bo'lmaydi."
+  },
+  "ru": {
+   "t": "Samsung: включите Auto Blocker",
+   "x": "Настройки → Безопасность и конфиденциальность → Auto Blocker. APK не из Play Маркета не установятся, а команды через USB будут заблокированы."
+  }
+ },
+ {
+  "id": "b29",
+  "cat": "telefon",
+  "icon": "🚫",
+  "uz": {
+   "t": "«Noma'lum ilovalar»ni yoping",
+   "x": "Sozlamalar → Ilovalar → Maxsus ruxsatlar → Noma'lum ilovalarni o'rnatish — Telegram va brauzer uchun «Ruxsat berilmagan» bo'lsin. Shunda kelgan APK'ni bosib yuborsangiz ham o'rnatilmaydi. Play Market → Play Protect ham yoniq bo'lsin."
+  },
+  "ru": {
+   "t": "Закройте «Неизвестные приложения»",
+   "x": "Настройки → Приложения → Специальный доступ → Установка неизвестных приложений — для Telegram и браузера «Запрещено». Тогда APK не установится, даже если нажать случайно. И пусть Play Защита будет включена."
+  }
+ },
+ {
+  "id": "b30",
+  "cat": "oila",
+  "icon": "🗣",
+  "uz": {
+   "t": "Bolalar bilan gaplashing",
+   "x": "Onlayn biror narsa qo'rqitsa yoki g'alati bo'lsa, ota-onasiga aytishi mumkinligini bolaga ayting — urishmasligingizni ham."
+  },
+  "ru": {
+   "t": "Разговаривайте с детьми",
+   "x": "Скажите ребёнку, что о страшном или странном в интернете можно рассказать родителям — и что ругать не будете."
+  }
+ },
+ {
+  "id": "b31",
+  "cat": "oila",
+  "icon": "👤",
+  "uz": {
+   "t": "Notanish odamga shaxsiy ma'lumot yo'q",
+   "x": "Manzil, maktab, telefon raqam va rasmlarni notanish odamlarga yubormaslikni bolaga tushuntiring."
+  },
+  "ru": {
+   "t": "Никаких личных данных незнакомцам",
+   "x": "Объясните ребёнку: адрес, школу, номер телефона и фото незнакомым людям не отправляют."
+  }
+ },
+ {
+  "id": "b32",
+  "cat": "oila",
+  "icon": "🎮",
+  "uz": {
+   "t": "O'yin ichidagi xaridlar",
+   "x": "Bolalar telefonida Google Play'da xarid uchun parol so'ralishini yoqing: Play Market → Sozlamalar → Autentifikatsiya."
+  },
+  "ru": {
+   "t": "Покупки внутри игр",
+   "x": "Включите запрос пароля для покупок в Google Play на телефоне ребёнка: Play Маркет → Настройки → Аутентификация."
+  }
+ },
+ {
+  "id": "b33",
+  "cat": "oila",
+  "icon": "👨‍👩‍👧",
+  "uz": {
+   "t": "Google Family Link",
+   "x": "Bolaning telefonida ilovalar, ekran vaqti va yuklab olishlarni ota-ona boshqaradi. Bepul."
+  },
+  "ru": {
+   "t": "Google Family Link",
+   "x": "Родители управляют приложениями, экранным временем и загрузками на телефоне ребёнка. Бесплатно."
+  }
+ },
+ {
+  "id": "b34",
+  "cat": "oila",
+  "icon": "📸",
+  "uz": {
+   "t": "Bolaning rasmini o'ylab joylang",
+   "x": "Maktab formasi, uy manzili ko'rinadigan rasmlarni ochiq sahifaga qo'ymang. Yopiq oila guruhi xavfsizroq."
+  },
+  "ru": {
+   "t": "Публикуйте фото ребёнка обдуманно",
+   "x": "Не выкладывайте в открытый доступ фото, где видны школьная форма или адрес дома. Закрытая семейная группа безопаснее."
+  }
+ },
+ {
+  "id": "b35",
+  "cat": "oila",
+  "icon": "👵",
+  "uz": {
+   "t": "Kattalarga firibgarlikni tushuntiring",
+   "x": "Ota-ona va buvi-bobolarga «bank SMS kod so'ramaydi» degan bitta qoidani eslatib turing. Bu maslahatlarni ularga ulashing."
+  },
+  "ru": {
+   "t": "Объясните старшим про мошенников",
+   "x": "Напоминайте родителям, бабушкам и дедушкам одно правило: «банк не спрашивает SMS-код». Делитесь с ними этими советами."
+  }
+ },
+ {
+  "id": "b36",
+  "cat": "oila",
+  "icon": "🔑",
+  "uz": {
+   "t": "Oila uchun «maxfiy so'z»",
+   "x": "Kimdir qarindosh nomidan yangi raqamdan pul so'rasa, faqat oilangiz biladigan so'zni so'rang. Firibgar uni bilmaydi."
+  },
+  "ru": {
+   "t": "«Секретное слово» для семьи",
+   "x": "Если кто-то от имени родственника просит деньги с нового номера — спросите слово, которое знает только ваша семья. Мошенник его не знает."
+  }
+ },
+ {
+  "id": "b37",
+  "cat": "oila",
+  "icon": "⏱",
+  "uz": {
+   "t": "Ekran vaqtiga chegara",
+   "x": "Telefonda «Digital Wellbeing» (Raqamli farovonlik) bo'limida ilovalar uchun kunlik vaqt chegarasi qo'yish mumkin."
+  },
+  "ru": {
+   "t": "Ограничьте экранное время",
+   "x": "В разделе «Цифровое благополучие» можно поставить дневной лимит времени для приложений."
+  }
+ },
+ {
+  "id": "b38",
+  "cat": "oila",
+  "icon": "🎥",
+  "uz": {
+   "t": "Videochatda notanishlar",
+   "x": "Bolaga tanimagan odam bilan videoqo'ng'iroq qilmaslik va kamerani yoqmaslikni tushuntiring."
+  },
+  "ru": {
+   "t": "Незнакомцы в видеочате",
+   "x": "Объясните ребёнку: не созваниваться по видео с незнакомыми и не включать камеру."
+  }
+ },
+ {
+  "id": "b39",
+  "cat": "oila",
+  "icon": "🤝",
+  "uz": {
+   "t": "Birga o'rganing",
+   "x": "Yangi ilovani bola bilan birga o'rnating va sozlamalarini birga ko'ring — bu taqiqlashdan ko'ra yaxshiroq ishlaydi."
+  },
+  "ru": {
+   "t": "Учитесь вместе",
+   "x": "Устанавливайте новое приложение вместе с ребёнком и вместе смотрите настройки — это работает лучше запретов."
+  }
+ },
+ {
+  "id": "b40",
+  "cat": "tolov",
+  "icon": "💳",
+  "uz": {
+   "t": "Karta orqasidagi 3 raqam — sir",
+   "x": "Kartaning orqasidagi CVV kodi va amal qilish muddatini hech kimga yubormang. Sizga pul o'tkazish uchun faqat karta raqami yetarli — boshqa hech narsa kerak emas."
+  },
+  "ru": {
+   "t": "Три цифры на обороте карты — секрет",
+   "x": "CVV-код и срок действия карты никому не отправляйте. Чтобы перевести вам деньги, достаточно номера карты — больше ничего не нужно."
+  }
+ },
+ {
+  "id": "b41",
+  "cat": "tolov",
+  "icon": "📲",
+  "uz": {
+   "t": "SMS-xabarnomani yoqing",
+   "x": "Har bir to'lov haqida SMS kelsin. Siz qilmagan yechim ko'rsangiz — darhol bankka qo'ng'iroq qiling va kartani bloklang."
+  },
+  "ru": {
+   "t": "Включите SMS-уведомления",
+   "x": "Пусть о каждом платеже приходит SMS. Увидели списание, которое не делали, — сразу звоните в банк и блокируйте карту."
+  }
+ },
+ {
+  "id": "b42",
+  "cat": "tolov",
+  "icon": "🧊",
+  "uz": {
+   "t": "Shubha bo'lsa — kartani bloklang",
+   "x": "Bank ilovasida «Bloklash» tugmasi bor. Kartani vaqtincha bloklab, keyin ochsa bo'ladi. Pul ketgandan keyin emas, oldin harakat qiling."
+  },
+  "ru": {
+   "t": "Сомневаетесь — заблокируйте карту",
+   "x": "В банковском приложении есть кнопка «Заблокировать». Карту можно временно заблокировать и потом разблокировать. Действуйте до того, как ушли деньги."
+  }
+ },
+ {
+  "id": "b43",
+  "cat": "tolov",
+  "icon": "📉",
+  "uz": {
+   "t": "To'lov limitini qo'ying",
+   "x": "Bank ilovasida internetdagi to'lovlar va kunlik yechim uchun limitni kamaytiring. Firibgar kartaga kirsa ham, ko'p pul ololmaydi."
+  },
+  "ru": {
+   "t": "Поставьте лимиты на платежи",
+   "x": "Уменьшите в приложении банка лимит на интернет-платежи и снятие за день. Даже получив доступ к карте, мошенник не украдёт много."
+  }
+ },
+ {
+  "id": "b44",
+  "cat": "tolov",
+  "icon": "🌐",
+  "uz": {
+   "t": "Internet uchun alohida karta",
+   "x": "Onlayn xaridlar uchun kichik balansli alohida karta oching. Asosiy pulingiz boshqa kartada xavfsiz turadi."
+  },
+  "ru": {
+   "t": "Отдельная карта для интернета",
+   "x": "Для онлайн-покупок заведите отдельную карту с небольшим балансом. Основные деньги будут в безопасности на другой карте."
+  }
+ },
+ {
+  "id": "b45",
+  "cat": "tolov",
+  "icon": "🧾",
+  "uz": {
+   "t": "O'tkazishdan oldin ismni tekshiring",
+   "x": "Click yoki Payme'da karta raqamini yozganda qabul qiluvchining ismi chiqadi. Ism siz kutgan odamniki bo'lmasa — to'xtang."
+  },
+  "ru": {
+   "t": "Проверьте имя перед переводом",
+   "x": "В Click или Payme при вводе номера карты показывается имя получателя. Если имя не того человека — остановитесь."
+  }
+ },
+ {
+  "id": "b46",
+  "cat": "tolov",
+  "icon": "🔁",
+  "uz": {
+   "t": "«Xato o'tkazib yubordim, qaytaring»",
+   "x": "Kartangizga notanish pul tushib, «qaytarib yuboring» deyishsa — o'zingiz o'tkazmang. Bankka murojaat qiling: bu aldov bo'lishi mumkin."
+  },
+  "ru": {
+   "t": "«Ошибся переводом, верните»",
+   "x": "Если на карту пришли незнакомые деньги и просят «вернуть» — не переводите сами. Обратитесь в банк: это может быть обман."
+  }
+ },
+ {
+  "id": "b47",
+  "cat": "tolov",
+  "icon": "🔗",
+  "uz": {
+   "t": "Karta ma'lumoti — faqat rasmiy ilovada",
+   "x": "«Pulni olish uchun havolaga kiring» — OLX va e'lonlardagi mashhur aldov. Pul OLISH uchun hech qachon karta ma'lumoti yoki SMS kod kerak emas."
+  },
+  "ru": {
+   "t": "Данные карты — только в официальном приложении",
+   "x": "«Чтобы получить деньги, перейдите по ссылке» — известный обман на OLX и сайтах объявлений. Для ПОЛУЧЕНИЯ денег не нужны ни данные карты, ни SMS-код."
+  }
+ },
+ {
+  "id": "b48",
+  "cat": "tolov",
+  "icon": "🏧",
+  "uz": {
+   "t": "Bankomatda ehtiyot bo'ling",
+   "x": "PIN kodni kiritganda qo'lingiz bilan yoping. Karta teshigi yoki klaviatura g'alati ko'rinsa — u bankomatdan foydalanmang."
+  },
+  "ru": {
+   "t": "Осторожно у банкомата",
+   "x": "Прикрывайте рукой ввод PIN-кода. Если щель для карты или клавиатура выглядят странно — не пользуйтесь этим банкоматом."
+  }
+ },
+ {
+  "id": "b49",
+  "cat": "tolov",
+  "icon": "🤖",
+  "uz": {
+   "t": "AI chatga karta va parol yozmang",
+   "x": "Karta raqami, parol, pasport ma'lumotini hech qanday chatga — AI'ga ham — yozmang. Bunday ma'lumot faqat rasmiy ilovada kiritiladi."
+  },
+  "ru": {
+   "t": "Не пишите карту и пароль в AI-чат",
+   "x": "Номер карты, пароль, паспортные данные не пишите ни в какой чат — и AI тоже. Такие данные вводят только в официальном приложении."
+  }
+ }
+]
