@@ -5,7 +5,7 @@
 // time — muddat (shartlar.html bilan bir xil bo'lsin!), result — mijoz nima oladi, sample — namuna havolasi
 
 const SERVICES = [
-  { id: "video", time: "1–2 ish kuni", result: "Joylashga tayyor reels yoki reklama videosi", sample: "index.html#ishlar", sampleText: "Videolarni ko'rish", group: "once", kicker: "Bir martalik", name: "Claude Video", price: 55000, period: "video",
+  { id: "video", time: "1–2 ish kuni", result: "Joylashga tayyor reels yoki reklama videosi", sample: "index.html#ishlar", sampleText: "Videolarni ko'rish", group: "once", kicker: "Bir martalik", name: "Claude Video", price: 30000, period: "video",
     desc: "Claude yordamida tayyorlangan bitta sifatli video — reklama, reels yoki tushuntirish uchun.",
     features: ["Reklama, reels yoki tushuntirish videosi", "Ssenariy va matn AI yordamida", "Telegram orqali topshiriladi"] },
   { id: "vizitka", time: "2–3 ish kuni", result: "Telefonda chiroyli ochiladigan, mijoz bir bosishda qo'ng'iroq qiladigan sayt", sample: "index.html#sinov", sampleText: "Hoziroq sinab ko'rish", group: "once", kicker: "Bir martalik · Sayt", name: "Vizitka va Menyu sayt", price: 65000, period: "sayt",

@@ -201,7 +201,7 @@
     "AI tezligi": ["Скорость AI", "AI speed"],
     "Claude bilan ishlaganim uchun kontent va saytlar odatdagidan ancha tez tayyor bo'ladi.": ["Благодаря Claude контент и сайты готовы гораздо быстрее обычного.", "Because I work with Claude, content and sites are ready much faster than usual."],
     "Hamyonbop narx": ["Доступная цена", "Affordable"],
-    "Bitta video 55 000 so'm, vizitka sayt 65 000 so'm. Ko'p buyurtma uchun obuna foydaliroq.": ["Одно видео — 55 000 сум, сайт-визитка — 65 000 сум. Для частых заказов выгоднее подписка.", "One video is 55,000 UZS, a business card site is 65,000 UZS. A subscription pays off for frequent orders."],
+    "Bitta video 30 000 so'm, vizitka sayt 65 000 so'm. Ko'p buyurtma uchun obuna foydaliroq.": ["Одно видео — 30 000 сум, сайт-визитка — 65 000 сум. Для частых заказов выгоднее подписка.", "One video is 30,000 UZS, a business card site is 65,000 UZS. A subscription pays off for frequent orders."],
     "Telefonga moslashgan": ["Удобно на телефоне", "Mobile-friendly"],
     "Har bir sayt telefonda ham, kompyuterda ham chiroyli ko'rinadi.": ["Каждый сайт красиво выглядит и на телефоне, и на компьютере.", "Every site looks great on both phones and computers."],
     "O'zbek tilida": ["На узбекском", "In Uzbek"],
@@ -426,7 +426,7 @@
   if (window.I18N_EXTRA) Object.assign(D, window.I18N_EXTRA);
   const PERIOD = { video: ["видео", "video"], sayt: ["сайт", "site"], buyurtma: ["заказ", "order"], oy: ["мес", "month"], yil: ["год", "year"] };
   const META = {
-    "Claude yordamida video, slayd, postlar va saytlar — 55 000 so'mdan. Vizitka, menyu va katta saytlar. AI LEGENDS kursi.": ["Видео, слайды, посты и сайты с помощью Claude — от 55 000 сум. Сайты-визитки, меню и большие сайты. Курс AI LEGENDS.", "Videos, slides, posts and websites made with Claude — from 55,000 UZS. Business card, menu and full websites. AI LEGENDS course."]
+    "Claude yordamida video, slayd, postlar va saytlar — 30 000 so'mdan. Vizitka, menyu va katta saytlar. AI LEGENDS kursi.": ["Видео, слайды, посты и сайты с помощью Claude — от 30 000 сум. Сайты-визитки, меню и большие сайты. Курс AI LEGENDS.", "Videos, slides, posts and websites made with Claude — from 30,000 UZS. Business card, menu and full websites. AI LEGENDS course."]
   };
 
   const idx = lang === "ru" ? 0 : 1;
