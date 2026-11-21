@@ -320,7 +320,7 @@ module.exports = {
       { at: 10, lines: [["Batafsil", "sm"], ["Telegramda", "acc"]] }
     ],
     vis: [
-      { at: 0, v: "stamp", icon: "👥", text: "Bir nechta xodim?", fs: 54 },
+      { at: 0, v: "stamp", icon: "👥", text: "Bir&nbsp;nechta&nbsp;xodim?", fs: 60 },
       { at: 1, v: "stamp", icon: "😵‍💫", text: "Tartib yo'q", bg: "#d94b3d", fs: 80 },
       { at: 2, v: "stamp", icon: "🎁", text: "Yangilik", sub: "ah-digital.uz" },
       { at: 3, v: "shot", src: "jamoa/1-karta.png" },
@@ -328,7 +328,7 @@ module.exports = {
       { at: 6, v: "shot", src: "jamoa/2-kabinet.png" },
       { at: 7, v: "shot", src: "jamoa/3-azolar.png" },
       { at: 8, v: "shot", src: "jamoa/4-hisobot.png" },
-      { at: 9, v: "stamp", icon: "⚠️", text: "Faqat 1 ta joy", bg: "#d94b3d", fs: 58 },
+      { at: 9, v: "stamp", icon: "⚠️", text: "Faqat&nbsp;1&nbsp;ta&nbsp;joy", bg: "#d94b3d", fs: 64 },
       { at: 10, v: "cta", line: "👥 Jamoa obunasi — batafsil", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
     ]
   }
