@@ -37,6 +37,22 @@
     .st.bekor { background: #eee; color: #645c50; }
     .err { color: #9b2c1f; font-weight: 600; }
     .muted { color: var(--muted); margin: 0; }
+    .team-card .head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s3); flex-wrap: wrap; }
+    .team-card h2 { font-size: 24px; margin: 0; }
+    .badge { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); }
+    .badge.off { background: #f6dcd6; color: #8a2a1c; }
+    .meter { display: flex; flex-direction: column; gap: 6px; }
+    .meter .row { display: flex; justify-content: space-between; font-size: 15px; gap: 8px; }
+    .bar { height: 10px; border-radius: 999px; background: var(--bg); overflow: hidden; }
+    .bar i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+    .bar.full i { background: #b4432f; }
+    .members { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .members li { background: var(--bg); border-radius: 14px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .members small { color: var(--muted); display: block; }
+    .invite { display: flex; gap: 8px; flex-wrap: wrap; }
+    .invite input { flex: 1 1 220px; min-width: 0; height: 44px; padding: 0 14px; border-radius: 14px; border: 1px solid var(--divider, #d6c4a6); background: #fffaf3; font: 14px Figtree, system-ui, sans-serif; color: var(--text); }
+    .btn-sm { height: 40px; padding: 0 14px; font-size: 14px; }
+    .team-card h3 { font-size: 17px; margin: 6px 0 0; }
     [hidden] { display: none !important; }
   </style>
   <script src="i18n.js"></script>
@@ -88,6 +104,45 @@
         <p class="muted" id="no-orders" hidden>Hozircha buyurtma yo'q. Buyurtma berganda Telegram username'ingizni yozing yoki bot tugmasini bosing — shunda bu yerda ko'rinadi.</p>
         <a href="index.html#buyurtma" class="btn btn-primary" style="align-self:flex-start">Yangi buyurtma</a>
       </div>
+    </section>
+
+    <section class="card" id="join" hidden>
+      <h2 style="font-size:24px; margin:0">Jamoaga taklif</h2>
+      <p id="join-text" style="margin:0"></p>
+      <button class="btn btn-primary" id="join-btn" type="button" style="align-self:flex-start">Jamoaga qo'shilish</button>
+      <p class="err" id="join-err" role="alert" hidden></p>
+    </section>
+
+    <section class="card team-card" id="team" hidden>
+      <div class="head">
+        <div><h2>Jamoam</h2><p class="muted" id="team-sub" data-no-i18n></p></div>
+        <span class="badge" id="team-badge"></span>
+      </div>
+      <p class="err" id="team-expired" hidden>Jamoa obunasining muddati tugagan. Jamoa hisobidan buyurtma berib bo'lmaydi.</p>
+      <div class="meter" id="m-items"></div>
+      <div class="meter" id="m-sites"></div>
+      <p class="muted" style="font-size:14px">Hajm har oy 1-sanada yangilanadi. Katta sayt — 30% chegirma bilan.</p>
+      <a class="btn btn-primary" id="team-order" href="index.html?jamoa=1#buyurtma" style="align-self:flex-start">Jamoa hisobidan buyurtma</a>
+      <a class="btn btn-secondary" id="team-renew" href="index.html?xizmat=jamoa#buyurtma" style="align-self:flex-start" hidden>Obunani uzaytirish</a>
+
+      <h3>A'zolar <span class="muted" id="team-count"></span></h3>
+      <ul class="members" id="members"></ul>
+
+      <div id="invite-box" hidden>
+        <h3>Taklif havolasi</h3>
+        <p class="muted" style="font-size:14px; margin:4px 0 8px">Shu havolani xodimlaringizga yuboring. Ular kirib, jamoaga qo'shiladi.</p>
+        <div class="invite">
+          <input id="invite" readonly aria-label="Taklif havolasi">
+          <button class="btn btn-primary btn-sm" id="copy" type="button">Nusxalash</button>
+          <a class="btn btn-secondary btn-sm" id="share-tg" target="_blank" rel="noopener">Telegram'da yuborish</a>
+        </div>
+        <button class="linkbtn" id="reset-invite" type="button" style="margin-top:8px; font-size:14px">Yangi havola yaratish (eskisi ishlamay qoladi)</button>
+      </div>
+
+      <h3>Bu oy jamoa buyurtmalari</h3>
+      <ul class="orders" id="team-orders"></ul>
+      <p class="muted" id="no-team-orders" hidden>Bu oy hali jamoa buyurtmasi yo'q.</p>
+      <p class="err" id="team-err" role="alert" hidden></p>
     </section>
 
     <p class="muted" id="loading">Yuklanmoqda…</p>
@@ -184,7 +239,7 @@ async function signIn(url, body) {
   $("login-err").hidden = true;
   const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   // Kirish muvaffaqiyatli — kelgan sahifasiga, bo'lmasa bosh sahifaga qaytaramiz
-  if (r.ok) return location.replace(safeNext || "/");
+  if (r.ok) return location.replace(JOIN ? location.href : safeNext || "/");
   const { error } = await r.json().catch(() => ({}));
   $("login-err").textContent = error || "Kirib bo'lmadi. Qayta urinib ko'ring.";
   $("login-err").hidden = false;
@@ -203,14 +258,117 @@ const next = params.get("next");
 }
 const safeNext = next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/kabinet") ? next : "";
 
+
+// ---------- Jamoa ----------
+const JOIN = params.get("jamoa");
+const LOC = { uz: "uz-UZ", ru: "ru-RU", en: "en-GB" }[document.documentElement.lang] || "uz-UZ";
+const T = x => (window.T ? window.T(x) : x);
+const UZ_MONTHS = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentyabr", "oktyabr", "noyabr", "dekabr"];
+const day = iso => { const d = new Date(iso); return LOC === "uz-UZ" ? `${d.getFullYear()}-yil ${d.getDate()}-${UZ_MONTHS[d.getMonth()]}` : d.toLocaleDateString(LOC, { day: "numeric", month: "long", year: "numeric" }); };
+const LANG = document.documentElement.lang;
+const SUB = {
+  uz: (p, n, d) => `${p === "yil" ? "Yillik" : "Oylik"} obuna · ${n} kishi · ${d} gacha`,
+  ru: (p, n, d) => `${p === "yil" ? "Годовая" : "Месячная"} подписка · ${n} чел. · до ${d}`,
+  en: (p, n, d) => `${p === "yil" ? "Yearly" : "Monthly"} plan · ${n} members · until ${d}`
+};
+const YOU = { uz: "siz", ru: "вы", en: "you" };
+async function api(url, body) {
+  const r = await fetch(url, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || "Xatolik yuz berdi.");
+  return j;
+}
+function meter(box, label, u) {
+  const pct = u.limit ? Math.min(100, Math.round(u.used / u.limit * 100)) : 0;
+  const bar = el("div", { className: "bar" + (u.used >= u.limit ? " full" : "") }, el("i", { style: `width:${pct}%` }));
+  box.replaceChildren(el("div", { className: "row" }, el("span", { textContent: label }), el("b", { textContent: `${u.used} / ${u.limit}` })), bar);
+}
+function teamErr(e) { $("team-err").textContent = e.message; $("team-err").hidden = false; }
+
+async function loadTeam() {
+  const { team: t } = await api("/api/team").catch(() => ({}));
+  $("team").hidden = !t;
+  if (!t) return;
+  $("team-err").hidden = true;
+  $("team-sub").textContent = (SUB[LANG] || SUB.uz)(t.period, t.seats, day(t.expiresAt));
+  $("team-badge").textContent = t.owner ? "Siz — jamoa egasi" : "Siz — jamoa a'zosi";
+  $("team-badge").className = "badge" + (t.active ? "" : " off");
+  $("team-expired").hidden = t.active;
+  $("team-order").hidden = !t.active;
+  $("team-renew").hidden = !t.owner || (t.active && new Date(t.expiresAt) - Date.now() > 7 * 864e5);
+  meter($("m-items"), "Video, slayd va post", t.usage.items);
+  meter($("m-sites"), "Vizitka yoki menyu sayt", t.usage.sites);
+  $("team-count").textContent = `(${t.members.length} / ${t.seats})`;
+  $("members").replaceChildren(...t.members.map(m => {
+    const right = m.owner ? el("span", { className: "badge", textContent: "Ega" })
+      : t.owner ? el("button", { className: "linkbtn", type: "button", textContent: "Chiqarish", onclick: async () => {
+          if (!confirm(T("Jamoadan chiqarilsinmi?") + "\n" + m.name)) return;
+          try { await api("/api/team/remove", { userId: m.id }); loadTeam(); } catch (e) { teamErr(e); } } })
+      : m.me ? el("button", { className: "linkbtn", type: "button", textContent: "Jamoadan chiqish", onclick: async () => {
+          if (!confirm(T("Jamoadan chiqasizmi?"))) return;
+          try { await api("/api/team/remove", {}); loadTeam(); } catch (e) { teamErr(e); } } }) : "";
+    return el("li", {}, el("div", {}, el("b", { textContent: m.name + (m.me ? ` (${YOU[LANG] || YOU.uz})` : "") }), el("small", { textContent: m.username ? "@" + m.username : m.email || "" })), right);
+  }));
+  $("invite-box").hidden = !t.owner || !t.active;
+  if (t.owner && t.invite) {
+    $("invite").value = t.invite;
+    $("share-tg").href = "https://t.me/share/url?url=" + encodeURIComponent(t.invite) + "&text=" + encodeURIComponent("AHdigital jamoamizga qo'shiling:");
+    $("invite-box").querySelector(".muted").textContent = t.members.length >= t.seats
+      ? "Jamoada bo'sh joy yo'q. Yangi odam qo'shish uchun avval kimnidir chiqaring."
+      : `Shu havolani xodimlaringizga yuboring. Bo'sh joy: ${t.seats - t.members.length} ta.`;
+  }
+  $("no-team-orders").hidden = t.orders.length > 0;
+  $("team-orders").replaceChildren(...t.orders.map(o => el("li", {},
+    el("div", {}, el("b", { textContent: o.serviceName }), el("small", { textContent: `${o.by} · ${o.price ? fmt(o.price) + " so'm" : "bepul"} · ${new Date(o.createdAt).toLocaleDateString("uz-UZ")}` })),
+    el("span", { className: "st " + o.status, textContent: STATUS[o.status] || o.status }))));
+}
+$("copy").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText($("invite").value); } catch { $("invite").select(); document.execCommand("copy"); }
+  $("copy").textContent = "Nusxalandi ✓"; setTimeout(() => ($("copy").textContent = "Nusxalash"), 1500);
+});
+$("reset-invite").addEventListener("click", async () => {
+  if (!confirm(T("Yangi havola yaratilsinmi? Eski havola ishlamay qoladi."))) return;
+  try { await api("/api/team/invite/reset", {}); loadTeam(); } catch (e) { teamErr(e); }
+});
+
+async function showJoin() {
+  $("join").hidden = false;
+  try {
+    const i = await api("/api/team/invite/" + encodeURIComponent(JOIN));
+    if (i.member) { $("join-text").textContent = "Siz allaqachon shu jamoadasiz ✅"; $("join-btn").hidden = true; return; }
+    const L = document.documentElement.lang;
+    $("join-text").textContent = L === "ru" ? `${i.ownerName} приглашает вас в команду AHdigital (${i.members} / ${i.seats} чел.). Присоединившись, вы сможете заказывать видео, слайды, посты и сайты за счёт команды.`
+      : L === "en" ? `${i.ownerName} invited you to their AHdigital team (${i.members} / ${i.seats} members). Once you join, you can order videos, slides, posts and websites on the team plan.`
+      : `${i.ownerName} sizni AHdigital jamoasiga taklif qildi (${i.members} / ${i.seats} kishi). Qo'shilsangiz, jamoa hisobidan video, slayd, post va sayt buyurtma qila olasiz.`;
+  } catch (e) { $("join-text").textContent = e.message; $("join-btn").hidden = true; }
+}
+$("join-btn").addEventListener("click", async () => {
+  $("join-btn").disabled = true; $("join-err").hidden = true;
+  try {
+    await api("/api/team/join", { token: JOIN });
+    $("join").hidden = true;
+    history.replaceState(null, "", "kabinet.html");
+    loadTeam();
+  } catch (e) { $("join-err").textContent = e.message; $("join-err").hidden = false; }
+  $("join-btn").disabled = false;
+});
+
 async function load() {
   const r = await fetch("/api/me");
-  if (r.ok && safeNext) return location.replace(safeNext);
-  if (r.ok) showProfile(await r.json()); else showLogin();
+  if (r.ok && safeNext && !JOIN) return location.replace(safeNext);
+  if (!r.ok) {
+    showLogin();
+    if (JOIN) { $("switch").before(el("p", { className: "muted", textContent: "Jamoaga qo'shilish uchun avval kiring." })); }
+    return;
+  }
+  showProfile(await r.json());
+  if (JOIN) showJoin();
+  loadTeam();
 }
 
 $("logout").addEventListener("click", async () => {
   await fetch("/api/auth/logout", { method: "POST" });
+  $("team").hidden = true; $("join").hidden = true;
   showLogin();
 });
 

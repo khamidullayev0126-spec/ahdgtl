@@ -367,3 +367,8 @@ img, video, svg, iframe { max-width: 100%; }
 .seats-total { margin: 6px 0 0; font-weight: 700; color: var(--accent-ink); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .team-total, :root:not([data-theme="light"]) .seats-total { color: var(--accent); } }
 :root[data-theme="dark"] .team-total, :root[data-theme="dark"] .seats-total { color: var(--accent); }
+.team-pick { display: flex; gap: 10px; align-items: flex-start; background: var(--accent-soft); color: var(--accent-ink); border-radius: 16px; padding: 12px 14px; cursor: pointer; }
+.team-pick input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex: none; }
+.team-pick small { display: block; font-size: 13px; opacity: .85; }
+.team-pick[hidden] { display: none; }
+#seats-field[hidden], .field[hidden] { display: none; }

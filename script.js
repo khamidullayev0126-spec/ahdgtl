@@ -180,6 +180,8 @@ form.addEventListener("submit", async (e) => {
   data.lang = document.documentElement.lang || "uz";
   const chosen = (window.SERVICES || []).find(x => x.id === data.serviceId);
   if (!chosen || !chosen.perSeat) delete data.seats;
+  const teamBox = document.getElementById("team-field");
+  if (!teamBox || teamBox.hidden || !document.getElementById("team").checked) delete data.team;
   if (data.name.trim().length < 2 || data.contact.trim().length < 5 || !data.serviceId) {
     statusEl.classList.add("error");
     statusEl.textContent = "Ismingiz, telefon yoki Telegram va xizmatni to'ldiring.";
@@ -344,4 +346,31 @@ renderServices();
   }
   selectEl.addEventListener("change", update);
   update();
+})();
+
+
+// Jamoa a'zosi: "Jamoa obunasi hisobidan" belgisi (video, slayd — bepul; vizitka — limit ichida bepul; katta sayt — 30% chegirma)
+(function teamPick() {
+  const box = document.getElementById("team-field"), cb = document.getElementById("team"), left = document.getElementById("team-left");
+  if (!box || !selectEl || location.protocol === "file:") return;
+  let team = null;
+  const ITEMS = ["video", "slayd"], SITES = ["vizitka"], DISC = ["katta-sayt"];
+  function update() {
+    const id = selectEl.value;
+    const ok = team && team.active && [...ITEMS, ...SITES, ...DISC].includes(id);
+    box.hidden = !ok;
+    if (!ok) return;
+    const u = ITEMS.includes(id) ? team.usage.items : SITES.includes(id) ? team.usage.sites : null;
+    const rest = u ? Math.max(0, u.limit - u.used) : null;
+    cb.disabled = rest === 0;
+    if (rest === 0) cb.checked = false;
+    left.textContent = tr(u ? (rest ? `bepul · bu oy qoldi: ${rest} ta` : "bu oylik limit tugadi") : "30% chegirma bilan");
+  }
+  fetch("api/team").then(r => (r.ok ? r.json() : {})).then(j => {
+    team = j.team || null;
+    if (team && team.active && new URLSearchParams(location.search).get("jamoa") === "1") cb.checked = true;
+    update();
+  }).catch(() => {});
+  selectEl.addEventListener("change", update);
+  form.addEventListener("reset", () => setTimeout(() => fetch("api/team").then(r => (r.ok ? r.json() : {})).then(j => { team = j.team || null; update(); }).catch(() => {})));
 })();

@@ -15,6 +15,7 @@ const { createAuth } = require("./auth");
 const { indexWithJsonLd } = require("./seo");
 const { createTz } = require("./tz");
 const { createKp } = require("./kp");
+const { createTeams } = require("./team");
 
 const app = express();
 app.disable("x-powered-by");   // server turini oshkor qilmaymiz
@@ -64,6 +65,7 @@ const writeOrders = orders => store.set("orders", orders);
 // Render manzilni RENDER_EXTERNAL_URL orqali o'zi beradi; kompyuterda bot "polling" rejimida ishlaydi
 // TZ (texnik topshiriq): agent tuzadi, mijoz /tz/<id> sahifasida tasdiqlaydi — tz.js
 const tz = createTz({ store, services: SERVICES, notifyOwner: text => bot && bot.sendOwner(text) });
+const teams = createTeams({ store, services: SERVICES, readOrders: () => readOrders(), publicUrl: () => (process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || "").replace(/\/$/, "") });   // jamoa obunasi — team.js
 const kp = createKp({ store, services: SERVICES, notifyOwner: text => bot && bot.sendOwner(text) });   // tijoriy taklif — kp.js
 const bot = createBot({
   tz, kp,
@@ -91,6 +93,15 @@ const payments = createPayments({
       ru: `💳 Оплата получена: ${fmtSum(part.amount)} сум (${method}). Спасибо!${left ? `\nОставшиеся ${fmtSum(left.amount)} сум — после готовности работы.` : "\nЗаказ полностью оплачен ✅"}`,
       en: `💳 Payment received: ${fmtSum(part.amount)} UZS (${method}). Thank you!${left ? `\nThe remaining ${fmtSum(left.amount)} UZS is due when the work is ready.` : "\nThe order is fully paid ✅"}`
     });
+    // Jamoa obunasi to'landi — jamoa ochiladi, egasiga taklif qilish yo'lini aytamiz
+    if (teams.TEAM_PLANS.includes(order.serviceId)) {
+      teams.sync();
+      bot.notifyCustomer(order, {
+        uz: "👥 Jamoangiz ochildi! Saytda kabinetga kiring — u yerda xodimlaringiz uchun taklif havolasi bor.",
+        ru: "👥 Ваша команда открыта! Зайдите в кабинет на сайте — там есть ссылка-приглашение для сотрудников.",
+        en: "👥 Your team is live! Open your dashboard on the site — you'll find an invite link for your team there."
+      });
+    }
   }
 });
 const PAY_ON = () => payments.methods().payme || payments.methods().click;
@@ -180,7 +191,7 @@ const auth = createAuth({ botToken: TELEGRAM_BOT_TOKEN, store, readOrders, publi
   orderExtra: o => ({ due: PAY_ON() ? payments.dueOf(o) : null, paid: (o.paid && Object.keys(o.paid).length) || 0, parts: payments.partsOf(o).length }), botUsername: () => (bot && bot.username()) || process.env.TELEGRAM_BOT_USERNAME || "" });
 tz.mount(app, { rateLimit });
 kp.mount(app, { rateLimit });   // mijoz kirmasdan ochadi — shuning uchun kirish tekshiruvidan oldin
-if (auth) { auth.install(app); app.use(auth.gate); }
+if (auth) { auth.install(app); app.use(auth.gate); teams.mount(app); }
 else app.get("/api/auth/config", (req, res) => res.json({ bot: "", google: "", email: false }));
 
 // Bosh sahifa: Google uchun JSON-LD (xizmatlar, narxlar, savol-javoblar) server o'zi qo'shadi — seo.js
@@ -259,8 +270,17 @@ app.post("/api/orders", rateLimit, async (req, res) => {
   if (message.length > 1000) {
     return res.status(400).json({ error: "Izoh 1000 ta belgidan oshmasin." });
   }
-  // Jamoa obunasi: narx = har xodim narxi × kishi soni (kamida minSeats)
+  // Jamoa obunasi: narx = har xodim narxi × kishi soni (kamida minSeats). Obunani faqat kirgan odam oladi — u jamoa egasi bo'ladi.
   let seats;
+  if (service.perSeat && !req.user) {
+    return res.status(401).json({ error: "Jamoa obunasini olish uchun avval kiring (Telegram, Google yoki email) — siz jamoa egasi bo'lasiz.", login: true });
+  }
+  // Jamoa a'zosi: "Jamoa obunasi hisobidan" — limit ichida bepul (katta sayt — chegirma bilan)
+  let teamPick = null;
+  if (req.body.team === true || req.body.team === "1" || req.body.team === "on") {
+    teamPick = teams.forOrder(req.user, service);
+    if (teamPick.error) return res.status(teamPick.status).json({ error: teamPick.error, login: teamPick.status === 401 || undefined });
+  }
   if (service.perSeat) {
     seats = Math.round(Number(req.body.seats));
     if (!Number.isFinite(seats) || seats < service.minSeats || seats > service.maxSeats) {
@@ -282,9 +302,10 @@ app.post("/api/orders", rateLimit, async (req, res) => {
     name,
     contact,
     serviceId,
-    serviceName: seats ? `${service.name} · ${seats} kishi` : service.name,
-    price: seats ? service.price * seats : service.price,
+    serviceName: seats ? `${service.name} · ${seats} kishi` : teamPick ? `${service.name} · Jamoa` : service.name,
+    price: seats ? service.price * seats : teamPick ? teamPick.price : service.price,
     seats,
+    teamId: teamPick ? teamPick.team.id : undefined,
     message,
     status: "yangi",
     tgUserId: req.user ? req.user.id : undefined,
@@ -297,7 +318,7 @@ app.post("/api/orders", rateLimit, async (req, res) => {
   writeOrders(orders);
   if (bot) bot.onNewOrder(order).catch(err => console.error("Bot xatosi:", err.message));
 
-  res.status(201).json({ ok: true, id: order.id, telegramLink: bot ? bot.deepLink(order) : "", payUrl: PAY_ON() ? "/tolov.html?o=" + order.code : "" });
+  res.status(201).json({ ok: true, id: order.id, telegramLink: bot ? bot.deepLink(order) : "", payUrl: PAY_ON() && payments.dueOf(order) ? "/tolov.html?o=" + order.code : "" });
 });
 
 // Admin: barcha buyurtmalar

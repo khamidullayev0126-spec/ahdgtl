@@ -113,6 +113,40 @@
     "1 oylik obuna": ["Подписка на 1 месяц", "1-month plan"],
     "1 yillik obuna": ["Подписка на 1 год", "1-year plan"],
     // Jamoa obunasi
+    "Jamoadan chiqarilsinmi?": ["Удалить из команды?", "Remove from the team?"],
+    "Jamoadan chiqasizmi?": ["Выйти из команды?", "Leave the team?"],
+    "Yangi havola yaratilsinmi? Eski havola ishlamay qoladi.": ["Создать новую ссылку? Старая перестанет работать.", "Create a new link? The old one will stop working."],
+    "Jamoam": ["Моя команда", "My team"],
+    "Siz — jamoa egasi": ["Вы — владелец команды", "You own this team"],
+    "Siz — jamoa a'zosi": ["Вы — участник команды", "You're a team member"],
+    "Jamoa obunasining muddati tugagan. Jamoa hisobidan buyurtma berib bo'lmaydi.": ["Срок командной подписки истёк. Заказывать за счёт команды нельзя.", "The team plan has expired. You can't order on the team plan."],
+    "Video, slayd va post": ["Видео, слайды и посты", "Videos, slides and posts"],
+    "Vizitka yoki menyu sayt": ["Сайт-визитка или меню", "Business card or menu site"],
+    "Hajm har oy 1-sanada yangilanadi. Katta sayt — 30% chegirma bilan.": ["Объём обновляется 1-го числа каждого месяца. Большой сайт — со скидкой 30%.", "The allowance resets on the 1st of each month. Full website — 30% off."],
+    "Jamoa hisobidan buyurtma": ["Заказать за счёт команды", "Order on the team plan"],
+    "Obunani uzaytirish": ["Продлить подписку", "Renew the plan"],
+    "A'zolar": ["Участники", "Members"],
+    "Ega": ["Владелец", "Owner"],
+    "Chiqarish": ["Удалить", "Remove"],
+    "Jamoadan chiqish": ["Выйти из команды", "Leave the team"],
+    "Taklif havolasi": ["Ссылка-приглашение", "Invite link"],
+    "Nusxalash": ["Копировать", "Copy"],
+    "Nusxalandi ✓": ["Скопировано ✓", "Copied ✓"],
+    "Telegram'da yuborish": ["Отправить в Telegram", "Send on Telegram"],
+    "Yangi havola yaratish (eskisi ishlamay qoladi)": ["Создать новую ссылку (старая перестанет работать)", "Create a new link (the old one stops working)"],
+    "Jamoada bo'sh joy yo'q. Yangi odam qo'shish uchun avval kimnidir chiqaring.": ["В команде нет свободных мест. Чтобы добавить человека, сначала удалите кого-то.", "The team is full. Remove someone first to add a new member."],
+    "Shu havolani xodimlaringizga yuboring. Ular kirib, jamoaga qo'shiladi.": ["Отправьте эту ссылку сотрудникам — они войдут и присоединятся к команде.", "Send this link to your team — they sign in and join."],
+    "Bu oy jamoa buyurtmalari": ["Заказы команды в этом месяце", "Team orders this month"],
+    "Bu oy hali jamoa buyurtmasi yo'q.": ["В этом месяце заказов команды ещё нет.", "No team orders yet this month."],
+    "Jamoaga taklif": ["Приглашение в команду", "Team invite"],
+    "Jamoaga qo'shilish": ["Присоединиться к команде", "Join the team"],
+    "Siz allaqachon shu jamoadasiz ✅": ["Вы уже в этой команде ✅", "You're already in this team ✅"],
+    "Jamoaga qo'shilish uchun avval kiring.": ["Чтобы присоединиться к команде, сначала войдите.", "Sign in first to join the team."],
+    "Jamoa obunasi hisobidan": ["За счёт командной подписки", "On the team plan"],
+    "bu oylik limit tugadi": ["лимит на этот месяц исчерпан", "this month's limit is used up"],
+    "30% chegirma bilan": ["со скидкой 30%", "30% off"],
+    "oylik": ["месячная", "monthly"],
+    "yillik": ["годовая", "yearly"],
     "Jamoa obunasi": ["Командная подписка", "Team plan"],
     "Jamoa": ["Команда", "Team"], "Jamoa (yillik)": ["Команда (годовая)", "Team (yearly)"],
     "Oylik": ["Помесячно", "Monthly"], "Yillik": ["Годовая", "Yearly"],
@@ -465,6 +499,8 @@
       const per = PERIOD[m[2]] ? PERIOD[m[2]][idx] : m[2];
       return (m[1] ? num(m[1]) + " " : "") + (lang === "ru" ? "сум / " : "UZS / ") + per;
     }
+    if ((m = s.match(/^bepul · bu oy qoldi: (\d+) ta$/))) return lang === "ru" ? `бесплатно · осталось в этом месяце: ${m[1]}` : `free · ${m[1]} left this month`;
+    if ((m = s.match(/^Shu havolani xodimlaringizga yuboring\. Bo'sh joy: (\d+) ta\.$/))) return lang === "ru" ? `Отправьте эту ссылку сотрудникам. Свободных мест: ${m[1]}.` : `Send this link to your team. Free seats: ${m[1]}.`;
     if ((m = s.match(/^[Kk]amida (\d+) kishi$/))) return lang === "ru" ? (s[0] === "K" ? "Минимум " : "минимум ") + `${m[1]} чел.` : (s[0] === "K" ? "Minimum " : "minimum ") + `${m[1]} members`;
     if ((m = s.match(/^(\d+) kishi$/))) return lang === "ru" ? `${m[1]} чел.` : `${m[1]} ${m[1] === "1" ? "member" : "members"}`;
     if ((m = s.match(/^([\d ]*\d) so'mdan$/))) return lang === "ru" ? `от ${m[1]} сум` : `from ${num(m[1])} UZS`;
