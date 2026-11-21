@@ -53,6 +53,14 @@
     .invite input { flex: 1 1 220px; min-width: 0; height: 44px; padding: 0 14px; border-radius: 14px; border: 1px solid var(--divider, #d6c4a6); background: #fffaf3; font: 14px Figtree, system-ui, sans-serif; color: var(--text); }
     .btn-sm { height: 40px; padding: 0 14px; font-size: 14px; }
     .team-card h3 { font-size: 17px; margin: 6px 0 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+    .stats-grid div { background: var(--bg); border-radius: 14px; padding: 10px 12px; }
+    .stats-grid b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
+    .stats-grid span { color: var(--muted); font-size: 13px; }
+    .month-pick { height: 40px; border-radius: 12px; border: 1px solid var(--divider, #d6c4a6); background: #fffaf3; padding: 0 10px; font: 14px Figtree, system-ui, sans-serif; color: var(--text); }
+    .saved { margin: 0; font-weight: 700; color: var(--accent-ink); }
+    #report-box { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid rgba(0,0,0,.08); padding-top: 12px; }
+    #report-box[hidden] { display: none; }
     [hidden] { display: none !important; }
   </style>
   <script src="i18n.js"></script>
@@ -137,6 +145,17 @@
           <a class="btn btn-secondary btn-sm" id="share-tg" target="_blank" rel="noopener">Telegram'da yuborish</a>
         </div>
         <button class="linkbtn" id="reset-invite" type="button" style="margin-top:8px; font-size:14px">Yangi havola yaratish (eskisi ishlamay qoladi)</button>
+      </div>
+
+      <div id="report-box" hidden>
+        <div class="head" style="align-items:center">
+          <h3>Oylik hisobot</h3>
+          <select id="report-month" class="month-pick" aria-label="Oy" data-no-i18n></select>
+        </div>
+        <div class="stats-grid" id="report-stats"></div>
+        <p class="muted" id="report-who" style="font-size:14px" data-no-i18n></p>
+        <p class="saved" id="report-saved" data-no-i18n></p>
+        <p class="muted" style="font-size:13px">Har oy 1-sanada o'tgan oy hisoboti Telegram'ga ham yuboriladi.</p>
       </div>
 
       <h3>Bu oy jamoa buyurtmalari</h3>
@@ -317,11 +336,36 @@ async function loadTeam() {
       ? "Jamoada bo'sh joy yo'q. Yangi odam qo'shish uchun avval kimnidir chiqaring."
       : `Shu havolani xodimlaringizga yuboring. Bo'sh joy: ${t.seats - t.members.length} ta.`;
   }
+  if (t.owner) loadReport(); else $("report-box").hidden = true;
   $("no-team-orders").hidden = t.orders.length > 0;
   $("team-orders").replaceChildren(...t.orders.map(o => el("li", {},
     el("div", {}, el("b", { textContent: o.serviceName }), el("small", { textContent: `${o.by} · ${o.price ? fmt(o.price) + " so'm" : "bepul"} · ${new Date(o.createdAt).toLocaleDateString("uz-UZ")}` })),
     el("span", { className: "st " + o.status, textContent: STATUS[o.status] || o.status }))));
 }
+// Oylik hisobot (faqat ega)
+const MONTHS = {
+  uz: ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentyabr", "oktyabr", "noyabr", "dekabr"],
+  ru: ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"],
+  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+};
+const monthLabel = m => { const [y, mm] = m.split("-"); return `${(MONTHS[LANG] || MONTHS.uz)[Number(mm) - 1]} ${y}`; };
+async function loadReport(month) {
+  let j;
+  try { j = await api("/api/team/report" + (month ? "?month=" + month : "")); } catch { $("report-box").hidden = true; return; }
+  const r = j.report;
+  $("report-box").hidden = !r;
+  if (!r) return;
+  const sel = $("report-month");
+  sel.replaceChildren(...j.months.map(m => el("option", { value: m, textContent: monthLabel(m), selected: m === r.month })));
+  const cell = (n, label) => el("div", {}, el("b", { textContent: n }), el("span", { textContent: T(label) }));
+  $("report-stats").replaceChildren(
+    cell(r.total, "Jami buyurtma"), cell(r.done, "Bajarildi"), cell(r.inWork, "Jarayonda"), cell(r.waiting, "Navbatda"),
+    cell(`${r.items.used} / ${r.items.limit}`, "Video, slayd va post"), cell(`${r.sites.used} / ${r.sites.limit}`, "Vizitka yoki menyu sayt"));
+  $("report-who").textContent = r.byMember.length ? T("Kim nechta buyurtma berdi") + ": " + r.byMember.map(m => `${m.name} — ${m.n}`).join(", ") : T("Bu oy jamoa buyurtma bermadi.");
+  $("report-saved").textContent = r.total ? `${T("Shu ishlarning oddiy narxi")}: ${fmt(r.value)} ${T("so'm")} · ${T("tejaldi")}: ${fmt(r.saved)} ${T("so'm")}` : "";
+}
+$("report-month").addEventListener("change", e => loadReport(e.target.value));
+
 $("copy").addEventListener("click", async () => {
   try { await navigator.clipboard.writeText($("invite").value); } catch { $("invite").select(); document.execCommand("copy"); }
   $("copy").textContent = "Nusxalandi ✓"; setTimeout(() => ($("copy").textContent = "Nusxalash"), 1500);

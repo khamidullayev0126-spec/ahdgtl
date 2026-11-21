@@ -96,6 +96,92 @@ function createTeams({ store, services, readOrders, publicUrl = () => "" }) {
     return { team, price: off ? Math.round(service.price * (1 - off)) : 0 };
   }
 
+  // ---------- Oylik hisobot ----------
+  const MONTHS = {
+    uz: ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentyabr", "oktyabr", "noyabr", "dekabr"],
+    ru: ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"],
+    en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  };
+  const monthName = (m, lang = "uz") => { const [y, mm] = m.split("-"); return `${y} ${MONTHS[lang] ? MONTHS[lang][Number(mm) - 1] : mm}`; };
+  const shiftMonth = (m, d) => { const [y, mm] = m.split("-").map(Number); const t = new Date(Date.UTC(y, mm - 1 + d, 1)); return t.toISOString().slice(0, 7); };
+  // Jamoa amal qilgan oylar (eng yangisi birinchi)
+  function monthsOf(team, now = Date.now()) {
+    const first = monthKey(team.startedAt), cur = monthKey(now);
+    const last = monthKey(Math.min(now, new Date(team.expiresAt).getTime() - 1));
+    const end = last < cur ? last : cur;
+    const list = [];
+    for (let m = end; m >= first && list.length < 24; m = shiftMonth(m, -1)) list.push(m);
+    return list;
+  }
+
+  function report(team, month, orders = readOrders()) {
+    const all = users();
+    const list = orders.filter(o => o.teamId === team.id && o.status !== "bekor" && monthKey(o.createdAt) === month);
+    const lim = limitsFor(team.seats);
+    const count = st => list.filter(o => st.includes(o.status)).length;
+    const by = {};
+    for (const o of list) { const n = (all[String(o.tgUserId)] || {}).name || o.name || "—"; by[n] = (by[n] || 0) + 1; }
+    const priceOf = id => (services.find(s => s.id === id) || {}).price || 0;
+    const value = list.reduce((a, o) => a + priceOf(o.serviceId), 0);         // shu ishlarning oddiy narxi
+    const paid = list.reduce((a, o) => a + (Number(o.price) || 0), 0);        // jamoa alohida to'lagani (katta sayt)
+    return {
+      month, seats: team.seats, period: team.period, expiresAt: team.expiresAt,
+      total: list.length,
+      done: count(["bajarildi"]), inWork: count(["tasdiqlandi", "jarayonda"]), waiting: count(["yangi"]),
+      items: { used: list.filter(o => ITEM_SERVICES.includes(o.serviceId)).length, limit: lim.items },
+      sites: { used: list.filter(o => SITE_SERVICES.includes(o.serviceId)).length, limit: lim.sites },
+      bigSites: list.filter(o => DISCOUNT_SERVICES[o.serviceId]).length,
+      byMember: Object.entries(by).sort((a, b) => b[1] - a[1]).map(([name, n]) => ({ name, n })),
+      value, paid, saved: Math.max(0, value - paid)
+    };
+  }
+
+  const fmt = n => Number(n).toLocaleString("ru-RU").replace(/[\s,]/g, " ");
+  const REPORT_WORDS = {
+    uz: { t: "oyi hisoboti", team: "Jamoa", ppl: "kishi", done: "Bajarildi", work: "Jarayonda", wait: "Navbatda", items: "Video, slayd va post", sites: "Vizitka/menyu sayt", big: "Katta sayt (30% chegirma)", who: "Kim nechta buyurtma berdi", val: "Shu ishlarning oddiy narxi", saved: "Obuna hisobidan tejaldi", sum: "so'm", none: "Bu oy jamoa buyurtma bermadi.", until: "Obuna amal qiladi", more: "Batafsil kabinetda" },
+    ru: { t: "— отчёт за месяц", team: "Команда", ppl: "чел.", done: "Выполнено", work: "В работе", wait: "В очереди", items: "Видео, слайды и посты", sites: "Сайт-визитка/меню", big: "Большой сайт (скидка 30%)", who: "Кто сколько заказал", val: "Обычная цена этих работ", saved: "Сэкономлено по подписке", sum: "сум", none: "В этом месяце команда ничего не заказывала.", until: "Подписка действует до", more: "Подробнее в кабинете" },
+    en: { t: "monthly report", team: "Team", ppl: "members", done: "Done", work: "In progress", wait: "Queued", items: "Videos, slides and posts", sites: "Business card/menu sites", big: "Full websites (30% off)", who: "Orders by member", val: "Regular price of this work", saved: "Saved with the plan", sum: "UZS", none: "The team placed no orders this month.", until: "Plan active until", more: "Details in your dashboard" }
+  };
+  function reportText(r, lang = "uz", cabinetUrl = "") {
+    const W = REPORT_WORDS[lang] || REPORT_WORDS.uz;
+    const lines = [`📊 ${monthName(r.month, lang)} ${W.t}`, `👥 ${W.team} · ${r.seats} ${W.ppl}`, ""];
+    if (!r.total) lines.push(W.none);
+    else {
+      lines.push(`✅ ${W.done}: ${r.done} · ⏳ ${W.work}: ${r.inWork} · 🕒 ${W.wait}: ${r.waiting}`);
+      lines.push(`🎬 ${W.items}: ${r.items.used} / ${r.items.limit}`);
+      lines.push(`🌐 ${W.sites}: ${r.sites.used} / ${r.sites.limit}`);
+      if (r.bigSites) lines.push(`🏗 ${W.big}: ${r.bigSites}`);
+      lines.push("", `${W.who}:`, ...r.byMember.map(m => `• ${m.name} — ${m.n}`));
+      lines.push("", `💰 ${W.val}: ${fmt(r.value)} ${W.sum}`, `🎁 ${W.saved}: ${fmt(r.saved)} ${W.sum}`);
+    }
+    const d = new Date(r.expiresAt);
+    lines.push("", `📅 ${W.until}: ${d.getUTCDate()} ${MONTHS[lang] ? MONTHS[lang][d.getUTCMonth()] : ""} ${d.getUTCFullYear()}`);
+    if (cabinetUrl) lines.push(`${W.more}: ${cabinetUrl}`);
+    return lines.join("\n");
+  }
+
+  // Har oy 1-sanada (Toshkent, 10:00 dan keyin) o'tgan oy hisobotini jamoa egasiga yuboradi. Bir oy — bir marta.
+  async function sendMonthly(send, now = Date.now()) {
+    const local = new Date(now + 5 * 3600_000);
+    if (local.getUTCDate() !== 1 || local.getUTCHours() < 10) return 0;
+    const month = shiftMonth(monthKey(now), -1);
+    const sent = store.get("jamoa_hisobotlar", {});
+    const orders = readOrders();
+    let n = 0;
+    for (const t of sync()) {
+      const key = `${t.id}:${month}`;
+      if (sent[key] || !monthsOf(t, now).includes(month)) continue;
+      const order = orders.find(o => o.code === t.id);
+      if (!order) continue;
+      sent[key] = new Date(now).toISOString();
+      store.set("jamoa_hisobotlar", sent);
+      const r = report(t, month, orders);
+      const lang = ["uz", "ru", "en"].includes(order.lang) ? order.lang : "uz";
+      try { await send(order, { [lang]: reportText(r, lang, `${publicUrl()}/kabinet.html`) }); n++; } catch {}
+    }
+    return n;
+  }
+
   function view(team, userId) {
     const all = users();
     const owner = team.ownerId === String(userId);
@@ -171,6 +257,18 @@ function createTeams({ store, services, readOrders, publicUrl = () => "" }) {
       res.json({ ok: true });
     });
 
+    // Ega: oylik hisobot (?month=YYYY-MM, bo'lmasa — joriy oy)
+    app.get("/api/team/report", (req, res) => {
+      if (!need(req, res)) return;
+      const t = teamOf(req.user.id);
+      if (!t) return res.status(404).json({ error: "Jamoa topilmadi." });
+      if (t.ownerId !== String(req.user.id)) return res.status(403).json({ error: "Hisobotni faqat jamoa egasi ko'radi." });
+      const months = monthsOf(t);
+      const month = months.includes(String(req.query.month)) ? String(req.query.month) : months[0];
+      if (!month) return res.json({ months, report: null });
+      res.json({ months, report: report(t, month) });
+    });
+
     // Ega: yangi taklif havolasi (eskisi ishlamay qoladi)
     app.post("/api/team/invite/reset", (req, res) => {
       if (!need(req, res)) return;
@@ -183,7 +281,7 @@ function createTeams({ store, services, readOrders, publicUrl = () => "" }) {
     });
   }
 
-  return { mount, teamOf, forOrder, usage, sync, TEAM_SERVICES, TEAM_PLANS: teamServices };
+  return { mount, teamOf, forOrder, usage, sync, report, reportText, sendMonthly, monthsOf, TEAM_SERVICES, TEAM_PLANS: teamServices };
 }
 
 module.exports = { createTeams, limitsFor, monthKey, TEAM_SERVICES };

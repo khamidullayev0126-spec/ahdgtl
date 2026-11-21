@@ -127,3 +127,44 @@ test("muddati tugagan jamoa hisobidan buyurtma berib bo'lmaydi", () => {
   assert.equal(r.status, 403);
   assert.match(r.error, /muddati tugagan/);
 });
+
+test("oylik hisobot: faqat ega ko'radi, raqamlar to'g'ri", async () => {
+  // boss jamoasida: Ali video (bepul) va Vali katta sayt (1 050 000) buyurtma bergan; Ali va Vali chiqib ketgan
+  const r = await get("/api/team/report", boss);
+  assert.equal(r.status, 200);
+  const x = r.body.report;
+  assert.equal(x.total, 2);
+  assert.deepEqual(x.items, { used: 1, limit: 18 });
+  assert.equal(x.bigSites, 1);
+  assert.equal(x.value, 30000 + 1500000);
+  assert.equal(x.paid, 1050000);
+  assert.equal(x.saved, 480000);
+  assert.equal(r.body.months.length, 1);
+  assert.equal((await get("/api/team/report", sardor)).status, 404);
+});
+
+test("oylik hisobot: 1-sanada bir marta yuboriladi, matn tilga mos", async () => {
+  const data = {};
+  const store = { get: (k, d) => data[k] ?? d, set: (k, v) => { data[k] = v; } };
+  const orders = [
+    { code: "t1", serviceId: "jamoa", seats: 3, status: "tasdiqlandi", tgUserId: 1, lang: "ru", createdAt: "2026-10-05T10:00:00Z" },
+    { code: "a", serviceId: "video", teamId: "t1", status: "bajarildi", tgUserId: 1, createdAt: "2026-10-10T10:00:00Z" },
+    { code: "b", serviceId: "slayd", teamId: "t1", status: "jarayonda", tgUserId: 1, createdAt: "2026-10-20T10:00:00Z" }
+  ];
+  data.foydalanuvchilar = { 1: { name: "Jasur" } };
+  data.jamoalar = [{ id: "t1", ownerId: "1", serviceId: "jamoa", seats: 3, period: "oy", startedAt: "2026-10-05T10:00:00Z", expiresAt: "2026-11-05T10:00:00Z", invite: "x", members: [{ id: "1" }] }];
+  const teams = createTeams({ store, services: SERVICES, readOrders: () => orders, publicUrl: () => "https://sayt.uz" });
+  const sent = [];
+  const send = async (o, t) => sent.push({ code: o.code, t });
+  assert.equal(await teams.sendMonthly(send, Date.parse("2026-11-02T08:00:00Z")), 0, "2-sana — yubormaydi");
+  assert.equal(await teams.sendMonthly(send, Date.parse("2026-11-01T02:00:00Z")), 0, "1-sana 07:00 — hali erta");
+  assert.equal(await teams.sendMonthly(send, Date.parse("2026-11-01T06:00:00Z")), 1, "1-sana 11:00 — yuboradi");
+  assert.equal(await teams.sendMonthly(send, Date.parse("2026-11-01T07:00:00Z")), 0, "ikkinchi marta yubormaydi");
+  assert.equal(sent[0].code, "t1");
+  const text = sent[0].t.ru;
+  assert.match(text, /2026 октябрь/);
+  assert.match(text, /Видео, слайды и посты: 2 \/ 18/);
+  assert.match(text, /Jasur — 2/);
+  assert.match(text, /Сэкономлено по подписке: 160 000 сум/);
+  assert.match(text, /https:\/\/sayt\.uz\/kabinet\.html/);
+});

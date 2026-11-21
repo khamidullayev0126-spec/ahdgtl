@@ -482,4 +482,9 @@ store.init().catch(err => { console.error("❌", err.message); process.exit(1); 
     res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"));
   });
   if (!process.env.AHD_TEST) { setTimeout(runBackups, 60_000); setInterval(runBackups, 24 * 3600_000).unref(); }
+  // Jamoa obunasi: har oy 1-sanada egasiga o'tgan oy hisoboti (soatda bir tekshiradi, bir oy — bir marta)
+  if (!process.env.AHD_TEST && bot) {
+    const monthly = () => teams.sendMonthly((order, texts) => bot.notifyCustomer(order, texts)).catch(err => console.error("Jamoa hisoboti:", err.message));
+    setTimeout(monthly, 90_000); setInterval(monthly, 3600_000).unref();
+  }
 }));
