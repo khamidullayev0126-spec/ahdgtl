@@ -1,7 +1,7 @@
 # Telegram post — Jamoa obunasi va obunachilar kabineti (21-noyabr)
 
 Rasm: `kontent/rasmlar/jamoa-obunasi-post.png` (1080×1350 — TG va Instagram uchun)
-Reels: `kontent/video/reels/11-jamoa-obunasi-ovozsiz.mp4` (hozircha ovozsiz, subtitrlar bilan — Instagram kutubxonasidan musiqa qo'shing).
+Reels: `kontent/video/reels/11-jamoa-obunasi.mp4` — Neuron AI ovozi (Kamronbek). Instagram'da «AI yorlig'i»ni yoqing. Ovozsiz versiya ham bor: `11-jamoa-obunasi-ovozsiz.mp4`.
 Skrinshotlardagi ismlar (Jasur, Ali, Dilnoza) — to'qima, sinov akkauntlari.
 
 ## Instagram caption (Reels)
