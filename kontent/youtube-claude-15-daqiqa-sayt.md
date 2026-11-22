@@ -1,7 +1,7 @@
 # YouTube: «Claude bilan 15 daqiqada sayt»
 
 Mavzu Telegram kanaldagi so'rovnomada g'olib bo'ldi (75%).
-Format: yuz (kamera) + ekran yozuvi, o'z ovozingiz (mikrofon). Uzunligi **~10–12 daqiqa**.
+Format: yuz (kamera) + ekran yozuvi, o'z ovozingiz (mikrofon). Uzunligi **~20 daqiqa** (matn: `kontent/video/youtube/15daq/matn.md`, PDF: `claude-15-daqiqa-matn.pdf`, 27 bo'lim).
 Sayt yasashning o'zi real vaqtda 15 daqiqa davom etadi. Videoda zerikarli joylar tezlashtiriladi, burchakdagi taymer esa **haqiqiy vaqtni** ko'rsatib turadi.
 
 ---
@@ -148,14 +148,34 @@ Claude (sun'iy intellekt) bilan 15 daqiqada bitta sahifali sayt yasadim — bir 
 📥 Videodagi barcha buyruqlar (promptlar) — Telegram kanalimda: t.me/ahdigital_01
 
 ⏱ Bo'limlar:
-0:00 Natija: 15 daqiqada sayt
-0:30 Nima kerak?
-1:30 To'g'ri buyruq qanday yoziladi
-3:30 Birinchi natija
-5:30 Saytni o'zgartirish
-8:00 Bepul internetga chiqarish
-10:00 Halol xulosa: nima mumkin, nima mumkin emas
-11:00 Keyingi video
+(Taxminiy vaqtlar — video tayyor bo'lgach, haqiqiy vaqtlarga almashtiring. Birinchisi 0:00 bo'lishi shart.)
+0:00 Kirish
+1:09 Nima kerak
+2:13 Ma'lumot yig'ish
+3:20 Yomon va yaxshi buyruq
+4:24 Claude'ga tayyor ma'lumot berish
+5:01 Birinchi natija
+5:48 O'zgartirishlar
+6:39 Ranglar va versiyalar
+7:24 Yangi bo'limlar
+8:18 Haqiqiy rasmlar qo'shish
+9:04 Matnlarni yaxshilash
+9:47 Buyurtma formasi
+10:41 «Hozir ochiq» belgisi va xarita
+11:32 Ikki tilli sayt
+12:17 Claude xato qilsa
+12:54 Bepul limitni tejash
+13:47 Telefonda tekshirish
+14:21 Google va ulashish
+15:11 Saytdagi hamma narsa ochiq
+15:53 Internetga chiqarish
+16:56 Saytni yangilab turish
+17:35 Tezlik va qulaylik tekshiruvi
+18:25 Boshqa bizneslarga moslash
+19:18 Bu ko'nikma bilan pul topish
+19:57 Keyin nima
+20:22 Halol xulosa va 5 ta xato
+21:14 Yakun
 
 #claude #sunniyintellekt #sayt #dasturlash #AHdigital
 ```

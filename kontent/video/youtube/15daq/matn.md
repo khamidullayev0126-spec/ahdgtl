@@ -1,11 +1,11 @@
-# «Claude bilan 15 daqiqada sayt» — ovoz matni (Sardor)
+# «Claude bilan 15 daqiqada sayt» — ovoz matni (~20 daqiqalik video)
 
 Har bir bo'lim alohida yoziladi (subtitr va sahnalarni aniq moslash uchun).
 Ekranda ko'rsatiladigan narsa [qavs ichida]. Faqat oddiy matn ovozga ketadi.
 
 ## 1. Kirish
 [Tayyor sayt varaqlanadi → bo'limlar ro'yxati]
-Shu videoda biz noldan boshlab haqiqiy sayt yasaymiz. Kod yozmaymiz — hammasini Claude qiladi, biz esa unga nima kerakligini aytamiz. Video oxirida sizda telefonda ham chiroyli ochiladigan, internetda turgan va do'stlaringizga yuborsa bo'ladigan sayt bo'ladi. Mana, natija shunday ko'rinadi. Bu — «Shirin Tortlar» degan tort do'koni sayti. Bosh qism, tortlar va narxlar, galereya, buyurtma berish tartibi, mijozlar fikri, savol-javob va aloqa — hammasi bor. Bu biznes o'ylab topilgan, lekin xuddi shunday saytni sartaroshxona, kafe, tikuvchi yoki o'zingizning portfoliongiz uchun ham yasashingiz mumkin. Videoning oxiriga yaqin buyruqni boshqa bizneslarga qanday moslashni ham ko'rsataman. Video bo'limlarga bo'lingan — pastdagi vaqt belgilaridan kerakli joyga o'tishingiz mumkin. Qani, boshladik.
+Shu videoda biz noldan boshlab haqiqiy sayt yasaymiz. Kod yozmaymiz — hammasini Claude qiladi, biz esa unga nima kerakligini aytamiz. Video oxirida sizda telefonda ham chiroyli ochiladigan, internetda turgan va do'stlaringizga yuborsa bo'ladigan sayt bo'ladi. Mana, natija shunday ko'rinadi. Bu — «Shirin Tortlar» degan tort do'koni sayti. Bosh qism, tortlar va narxlar, galereya, buyurtma berish tartibi, mijozlar fikri, savol-javob va aloqa — hammasi bor. Bu biznes o'ylab topilgan, lekin xuddi shunday saytni sartaroshxona, kafe, tikuvchi yoki o'zingizning portfoliongiz uchun ham yasashingiz mumkin. Videoning oxiriga yaqin buyruqni boshqa bizneslarga qanday moslashni ham ko'rsataman. Sarlavhada «15 daqiqa» deyilgan — buyruqlarni tayyor qilib takrorlasangiz, sayt taxminan shuncha vaqtda tayyor bo'ladi. Video esa uzunroq, chunki har bir qadamni tushuntirib boraman va bir nechta qo'shimcha imkoniyatni ham ko'rsataman. Video bo'limlarga bo'lingan — pastdagi vaqt belgilaridan kerakli joyga o'tishingiz mumkin. Qani, boshladik.
 
 ## 2. Nima kerak
 [3 ta kartochka → Artifact tushuntirishi]
@@ -73,6 +73,24 @@ Sayt chiroyli, lekin matnlarni ham yaxshilasa bo'ladi. Ko'p odam saytdagi matnga
 Sakkizinchi buyruq: «Saytdagi matnlarni iliqroq va ishonchliroq qilib qayta yoz, lekin yolg'on va'dalar va o'ylab topilgan raqamlar qo'shma». Oxirgi qismiga e'tibor bering. Agar buni yozmasangiz, Claude «ming mamnun mijoz» kabi chiroyli, lekin rost bo'lmagan gaplarni qo'shib yuborishi mumkin. Saytda faqat haqiqat bo'lishi kerak.
 Mana natija: shior aniqroq bo'ldi, tort tavsiflari ishtahani ochadigan bo'ldi, lekin hech qanday soxta raqam yo'q.
 
+## 10b. Buyurtma formasi
+[9-buyruq: forma → «Yuborish» → Telegram tayyor xabar bilan ochiladi]
+Hozir mijoz buyurtma berish uchun Telegram'ni o'zi ochib, hammasini qo'lda yozishi kerak. Buni osonlashtiramiz.
+To'qqizinchi buyruq: «Buyurtma bo'limiga kichik forma qo'sh: ism, qaysi tort, qaysi kunga va izoh. Yuborish bosilganda Telegram ochilsin va shu ma'lumotlar tayyor xabar bo'lib yozilgan bo'lsin». Mana — formani to'ldiraman, «Yuborish»ni bosaman va Telegram ochildi. Xabar allaqachon yozilgan, mijoz faqat yuborish tugmasini bosadi.
+Bitta nozik joy bor: bu forma ma'lumotni hech qayerda saqlamaydi, u shunchaki Telegram'ni ochadi. Bu yaxshi — mijoz ma'lumotlari begona serverga ketmaydi. Lekin mijoz xabarni yubormasa, buyurtma sizga yetib kelmaydi. Shuning uchun forma ostiga «Telegram ochilgach, xabarni yuborishni unutmang» degan kichik yozuv qo'yish foydali.
+
+## 10c. «Hozir ochiq» belgisi va xarita
+[10-buyruq: aloqa bo'limida qizil «Hozir yopiq» belgisi → «Xaritada ochish» tugmasi]
+Mijozlar ko'p so'raydigan yana bir savol: hozir ishlayapsizmi? Buni ham sayt o'zi aytib tursin.
+O'ninchi buyruq: «Aloqa bo'limida ish vaqtiga qarab 'Hozir ochiq' yoki 'Hozir yopiq' belgisi chiqsin. Ish vaqti har kuni soat to'qqizdan yigirmagacha, Toshkent vaqti bilan». Ko'ring — men bu videoni kechqurun yozyapman, shuning uchun qizil «Hozir yopiq» yozuvi chiqdi. Ertalab sayt ochilsa, belgi o'zi yashil «Hozir ochiq»qa aylanadi.
+Shu yerga xarita ham qo'shsa bo'ladi: «Manzil yoniga xaritada ochish tugmasini qo'sh». Bosilganda telefonda xarita ilovasi ochiladi va mijoz yo'lni o'zi topadi. Faqat esda tuting: uy manzilingizni emas, faqat do'kon yoki ish joyi manzilini qo'ying.
+
+## 10d. Ikki tilli sayt
+[11-buyruq: tepada «UZ | RU» tugmasi → bosilganda sahifa ruschaga o'tadi]
+O'zbekistonda ko'p mijozlar ruscha o'qishni afzal ko'radi. Saytni ikki tilli qilish ham bitta buyruq.
+O'n birinchi buyruq: «Saytga o'zbek va rus tillari tugmasini qo'sh. Bosilganda butun sahifa shu tilga o'tsin, tanlangan til esa eslab qolinsin». Tepada «UZ | RU» tugmasi paydo bo'ldi. RU'ni bosaman — sarlavhalar, tavsiflar va tugmalar ruschaga o'tdi. Sahifani yangilasam ham ruscha qoladi.
+Muhim maslahat: agar rus tilini yaxshi bilmasangiz, tarjimani rus tilida so'zlashadigan tanishingizga bir ko'rsating. Claude yaxshi tarjima qiladi, lekin mijozga ko'rinadigan matnni doim odam tekshirgani ma'qul.
+
 ## 11. Claude xato qilsa
 [Misol: «telefonda rasmlar ustma-ust» → aniq buyruq → tuzatilgan]
 Endi muhim mavzu: Claude ham xato qiladi. Masalan, ba'zan telefonda rasmlar bir-birining ustiga chiqib qoladi yoki biror tugma ishlamaydi. Bunday paytda vahima qilmang va hammasini qaytadan boshlamang.
@@ -94,10 +112,16 @@ Mana bizning sayt telefonda: hamma bo'limlar bir ustunga tizilgan, tugmalar katt
 Tekshirishda uchta narsaga qarang. Birinchi: matn juda mayda emasmi. Ikkinchi: tugmalarni barmoq bilan bosish osonmi. Uchinchi: hech narsa ekrandan chiqib ketmayaptimi — chapga-o'ngga surilib ketadigan sayt yomon ko'rinadi.
 
 ## 13. Google va ulashish
-[9-buyruq → brauzer tabida «Shirin Tortlar», havola ulashilgandagi ko'rinish]
+[12-buyruq → brauzer tabida «Shirin Tortlar», havola ulashilgandagi ko'rinish]
 Saytni internetga chiqarishdan oldin yana bitta kichik, lekin foydali qadam bor. Kimdir saytingiz havolasini Telegram'da yuborganda chiroyli ko'rinishi va Google uni tushunishi uchun saytning nomi va tavsifi kerak.
-To'qqizinchi buyruq: «Saytga Google uchun sarlavha va tavsif qo'sh, havola ulashilganda chiqadigan ma'lumotlarni ham sozla». Claude kodning yuqori qismiga bir nechta qator qo'shdi. Ular saytda ko'rinmaydi, lekin brauzer tabida endi «Shirin Tortlar» yozuvi chiqadi, havola ulashilganda esa nom va tavsif ko'rinadi.
+O'n ikkinchi buyruq: «Saytga Google uchun sarlavha va tavsif qo'sh, havola ulashilganda chiqadigan ma'lumotlarni ham sozla». Claude kodning yuqori qismiga bir nechta qator qo'shdi. Ular saytda ko'rinmaydi, lekin brauzer tabida endi «Shirin Tortlar» yozuvi chiqadi, havola ulashilganda esa nom va tavsif ko'rinadi.
 Esingizda bo'lsin: Google'da birinchi o'rinda chiqish uchun bu yetarli emas — buning uchun vaqt, yaxshi mazmun va boshqa ishlar kerak. Lekin bu yaxshi boshlanish.
+
+## 13b. Saytdagi hamma narsa ochiq
+[Brauzerda «Sahifa kodini ko'rish» → butun fayl ko'rinadi → nimani yozmaslik kerak ro'yxati]
+Saytni internetga chiqarishdan oldin bitta muhim xavfsizlik darsi. Saytingizdagi hamma narsani istalgan odam ko'ra oladi — faqat ekrandagi yozuvlarni emas, kodni ham. Brauzerda sichqonchaning o'ng tugmasini bosib, «Sahifa kodini ko'rish»ni tanlasangiz, butun fayl ochiladi.
+Shuning uchun saytga hech qachon parol, karta raqami, maxfiy kalit yoki faqat siz bilishingiz kerak bo'lgan ma'lumotni yozmang — hatto ular ekranda ko'rinmasa ham.
+Yana bir narsa: kimdir sizga «saytingizga to'lov qo'shib beraman, faqat karta ma'lumotlaring va SMS kodni yubor» desa, bu firibgarlik belgisi. Haqiqiy to'lov tizimlari maxfiy ma'lumotni sizdan chatda hech qachon so'ramaydi.
 
 ## 14. Internetga chiqarish
 [1-yo'l: Publish; 2-yo'l: Download → index.html → papka → Netlify Drop → sayt nomi]
@@ -116,6 +140,12 @@ Sayt bir marta yasalib, unutilib ketmasligi kerak. Narxlar o'zgaradi, yangi tort
 Birinchi yo'l: o'sha suhbatga qaytib, «Medovik narxini yuz yetmish ming so'm qil» deb yozasiz.
 Ikkinchi yo'l, limitni tejash uchun: sayt faylini oddiy matn muharririda ochasiz, eski narxni qidirib topasiz va yangisini yozasiz. Bu yerda kod bilish shart emas — shunchaki raqamni almashtirasiz.
 Keyin yangilangan papkani Netlify'dagi saytingiz sahifasiga yana sudrab tashlaysiz — havola o'sha-o'sha qoladi, sayt esa yangilanadi. Bir daqiqalik ish.
+
+## 14c. Tezlik va qulaylik tekshiruvi
+[PageSpeed Insights sahifasi → 4 ta baho doirasi → bitta tavsiya nusxalanib Claude'ga yuboriladi]
+Sayt internetda, lekin u qanchalik tez ochiladi? Buni bepul tekshirish mumkin. Google'ning «PageSpeed Insights» sahifasini ochib, saytingiz havolasini qo'yasiz. Bir daqiqadan keyin to'rtta baho chiqadi: tezlik, qulaylik, to'g'ri qurilganlik va Google uchun tayyorlik. Yashil — yaxshi, sariq — o'rtacha, qizil — tuzatish kerak.
+Pastda nimani tuzatish kerakligi yoziladi. Ingliz tilida bo'lsa ham qo'rqmang: o'sha tavsiyani nusxalab Claude'ga yuboring va «shuni tuzat» deb yozing. Ko'pincha muammo katta rasmlarda yoki rang farqi kamligida bo'ladi. Masalan, och kulrang fonda och kulrang yozuvni ko'zi zaif odam o'qiy olmaydi — qulaylik bahosi aynan shuni ko'rsatadi.
+Tuzatgandan keyin yangi faylni Netlify'ga qayta tashlab, tekshiruvni yana bir bor o'tkazing. Baholar yashil bo'lsa — sayt tayyor.
 
 ## 15. Boshqa bizneslarga moslash
 [Buyruq shabloni → sartarosh, kafe, portfolio misollari]

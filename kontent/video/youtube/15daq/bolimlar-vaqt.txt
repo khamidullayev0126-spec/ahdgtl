@@ -1,22 +1,27 @@
 0:00 Kirish
-0:44 Nima kerak
-1:38 Ma'lumot yig'ish
-2:37 Yomon va yaxshi buyruq
-3:29 Claude'ga tayyor ma'lumot berish
-3:59 Birinchi natija
-4:41 O'zgartirishlar
-5:25 Ranglar va versiyalar
-6:02 Yangi bo'limlar
-6:48 Haqiqiy rasmlar qo'shish
-7:32 Matnlarni yaxshilash
-8:07 Claude xato qilsa
-8:44 Bepul limitni tejash
-9:28 Telefonda tekshirish
-10:02 Google va ulashish
-10:42 Internetga chiqarish
-11:43 Saytni yangilab turish
-12:19 Boshqa bizneslarga moslash
-13:06 Bu ko'nikma bilan pul topish
-13:42 Keyin nima
-14:09 Halol xulosa va 5 ta xato
-14:52 Yakun
+1:09 Nima kerak
+2:13 Ma'lumot yig'ish
+3:20 Yomon va yaxshi buyruq
+4:24 Claude'ga tayyor ma'lumot berish
+5:01 Birinchi natija
+5:48 O'zgartirishlar
+6:39 Ranglar va versiyalar
+7:24 Yangi bo'limlar
+8:18 Haqiqiy rasmlar qo'shish
+9:04 Matnlarni yaxshilash
+9:47 Buyurtma formasi
+10:41 «Hozir ochiq» belgisi va xarita
+11:32 Ikki tilli sayt
+12:17 Claude xato qilsa
+12:54 Bepul limitni tejash
+13:47 Telefonda tekshirish
+14:21 Google va ulashish
+15:11 Saytdagi hamma narsa ochiq
+15:53 Internetga chiqarish
+16:56 Saytni yangilab turish
+17:35 Tezlik va qulaylik tekshiruvi
+18:25 Boshqa bizneslarga moslash
+19:18 Bu ko'nikma bilan pul topish
+19:57 Keyin nima
+20:22 Halol xulosa va 5 ta xato
+21:14 Yakun
