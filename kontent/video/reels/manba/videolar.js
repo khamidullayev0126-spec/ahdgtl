@@ -354,7 +354,7 @@ module.exports = {
       { at: 4, lines: [["Claude fikr", "sm"], ["o'qimaydi", "acc"]] },
       { at: 5, lines: [["Yaxshi buyruq", "sm"], ["= 3 qism", "acc"]] },
       { at: 9, lines: [["Mana", "sm"], ["farq!", "acc"]] },
-      { at: 11, lines: [["Tekin", "sm"], ["shablon", "acc"]] }
+      { at: 10, lines: [["Tayyor", "sm"], ["shablon", "acc"]] }
     ],
     vis: [
       { at: 0, v: "stamp", icon: "🤔", text: "Tushunmayaptimi?", fs: 64 },
@@ -366,7 +366,7 @@ module.exports = {
       { at: 9, v: "tg", mode: "bot", plain: true, name: "Claude", avatar: "✳️", abg: "#c96442", sub: "yangi chat", typing: "Claude yozmoqda…", replyAt: 9,
         msg: "Uyda tort pishiradigan «Shirin Tortlar» biznesi uchun sayt yasa: narxlar, buyurtma tugmasi, aloqa. O'zbek tilida, pushti ranglarda, telefonda chiroyli bo'lsin.",
         reply: "<div class='ln' style='font-weight:900;color:#ff9ec4;font-size:26px'>🎂 Shirin Tortlar</div><div class='ln'>Uyda, mehr bilan pishirilgan tortlar</div><div class='ln'>🍰 Medovik — 150 000 so'm</div><div class='ln'>🍫 Napoleon — 140 000 so'm</div><div class='ln' style='font-weight:900;color:#5fd38d;margin-top:8px'>✅ Buyurtma berish →</div>" },
-      { at: 11, v: "cta", line: "📥 Tekin shablon + 5 ta buyruq", url: "@ahdigital_01", small: "🔗 Telegram — havola bio'da" }
+      { at: 11, v: "cta", line: "📥 Tayyor shablon + 5 ta buyruq", url: "@ahdigital_01", small: "🔗 Telegram — havola bio'da" }
     ]
   }
 };
