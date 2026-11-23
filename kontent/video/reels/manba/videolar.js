@@ -369,4 +369,40 @@ module.exports = {
       { at: 11, v: "cta", line: "📥 Tayyor shablon + 5 ta buyruq", url: "@ahdigital_01", small: "🔗 Telegram — havola bio'da" }
     ]
   }
+  ,
+  13: {
+    tag: "AI xavfsizlik", out: "13-ai-ga-yozmang",
+    chunks: [
+      { c: "Bu beshta narsani Claude'ga ham, ChatGPT'ga ham hech qachon yozmang." },
+      { c: "Birinchi — parollar. Hech qanday sabab bilan." },
+      { c: "Ikkinchi — karta raqami, CVV va SMS kod." },
+      { c: "Uchinchi — pasport ma'lumotlari va uy manzilingiz." },
+      { c: "To'rtinchi — boshqa odamning shaxsiy ma'lumoti, uning ruxsatisiz." },
+      { c: "Beshinchi — maxfiy kalitlar: API kalit va tokenlar." },
+      { c: "Kerak bo'lsa, ularni yulduzchalar bilan yashiring — AI baribir tushunadi." },
+      { c: "Tekin maxfiylik cheklisti — Telegram kanalimda," }, { c: "havola bio'da." }
+    ],
+    heads: [
+      { at: 0, lines: [["AI'ga hech qachon", "sm"], ["yozmang!", "acc"]] },
+      { at: 1, lines: [["1", "sm"], ["Parol", "acc"]] },
+      { at: 2, lines: [["2", "sm"], ["Karta · SMS kod", "acc"]] },
+      { at: 3, lines: [["3", "sm"], ["Pasport · manzil", "acc"]] },
+      { at: 4, lines: [["4", "sm"], ["Begona ma'lumot", "acc"]] },
+      { at: 5, lines: [["5", "sm"], ["API kalit", "acc"]] },
+      { at: 6, lines: [["Yashiring", "sm"], ["****", "acc"]] },
+      { at: 7, lines: [["Tekin", "sm"], ["cheklist", "acc"]] }
+    ],
+    vis: [
+      { at: 0, v: "stamp", icon: "🔒", text: "5 ta narsa", bg: "#d94b3d", fs: 72 },
+      { at: 1, v: "stamp", icon: "🔑", text: "Parol", bg: "#d94b3d", fs: 72, sub: "hech qachon" },
+      { at: 2, v: "stamp", icon: "💳", text: "Karta&nbsp;·&nbsp;CVV&nbsp;·&nbsp;SMS&nbsp;kod", bg: "#d94b3d", fs: 52 },
+      { at: 3, v: "stamp", icon: "🪪", text: "Pasport&nbsp;·&nbsp;uy&nbsp;manzili", bg: "#d94b3d", fs: 56 },
+      { at: 4, v: "stamp", icon: "👤", text: "Boshqa&nbsp;odam&nbsp;ma'lumoti", bg: "#d94b3d", fs: 54, sub: "ruxsatisiz — yo'q" },
+      { at: 5, v: "stamp", icon: "🗝️", text: "API&nbsp;kalit&nbsp;·&nbsp;token", bg: "#d94b3d", fs: 60 },
+      { at: 6, v: "tg", mode: "bot", plain: true, name: "Claude", avatar: "✳️", abg: "#c96442", sub: "yangi chat", typing: "Claude yozmoqda…", replyAt: 6,
+        msg: "To'lov qaytmadi. Karta: 8600 **** **** 1234, summa 150 000 so'm. Bankka qanday ariza yozay?",
+        reply: "<div class='ln'>Tushundim! Mana ariza namunasi 👇</div><div class='ln' style='color:#9fb0c0'>«Hurmatli bank, 8600 **** 1234 kartadan…»</div><div class='ln' style='font-weight:900;color:#5fd38d;margin-top:8px'>✅ To'liq raqam shart emas edi</div>" },
+      { at: 7, v: "cta", line: "🔒 Tekin maxfiylik cheklisti", url: "@ahdigital_01", small: "🔗 Telegram — havola bio'da" }
+    ]
+  }
 };
