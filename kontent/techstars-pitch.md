@@ -72,7 +72,7 @@ Slaydlar: https://claude.ai/artifact/KnvdkwL99LFXhjikqiS4ky (har slaydda EN/UZ n
 
 | Savol | Javob (qisqa, rost) |
 |---|---|
-| How do you make money? / Qanday pul topasiz? | Core stays free. We'll test two models: a family plan and an anti-fraud API for banks and payment apps. Hali sinalmagan — shu hafta oxirida sinamoqchimiz. |
+| How do you make money? / Qanday pul topasiz? | Protection for individuals stays free. First: paid protection for large Telegram groups (test in 1–4 months), then a family plan, later an anti-fraud API. Hali sinalmagan — rostini ayting. |
 | Why not Kaspersky / Truecaller? / Ular bor-ku? | We're built for Uzbekistan: Uzbek and Russian, local scam patterns (fake Click/Payme, «Rasmlar.apk», «Ovoz bering»), and Telegram-native family alerts. |
 | Isn't reading notifications a privacy risk? | Checks run on the phone; message text never leaves it. Only hashes of files/numbers are sent. Every permission is opt-in. |
 | How accurate is it? | Rule-based engine shared with the bot, covered by automated tests; it explains *why* something is risky. It's a helper, not a 100% guarantee — we say that openly. |
