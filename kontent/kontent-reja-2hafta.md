@@ -8,14 +8,16 @@
 
 | # | Sana | Reels mavzusi | Telegram'dagi tekin narsa |
 |---|---|---|---|
-| 1 | Juma, 27-noyabr | Claude sizni tushunmayaptimi? | «Yaxshi buyruq» shabloni + 5 ta tayyor buyruq |
-| 2 | Dushanba, 30-noyabr | AI'ga hech qachon yozmang: 5 narsa | Maxfiylik cheklisti |
-| 3 | Chorshanba, 2-dekabr | Istalgan mavzuni 5 daqiqada tushunish | O'qish uchun 6 ta buyruq |
-| 4 | Juma, 4-dekabr | Qog'ozdan saytga / jadvalga — rasm yuborib | Rasm bilan ishlash uchun 4 ta buyruq |
-| 5 | Dushanba, 7-dekabr | Claude xato qiladi — uni qanday tekshirasiz | «O'zingni tekshir» buyrug'i |
-| 6 | Chorshanba, 9-dekabr | 15 daqiqada sayt (YouTube video) | Videodagi 12 ta buyruq to'plami |
+| 1 | **Dushanba, 23-noyabr (BUGUN)** | Claude sizni tushunmayaptimi? | «Yaxshi buyruq» shabloni + 5 ta tayyor buyruq |
+| 2 | Chorshanba, 25-noyabr | AI'ga hech qachon yozmang: 5 narsa | Maxfiylik cheklisti |
+| 3 | Juma, 27-noyabr | Istalgan mavzuni 5 daqiqada tushunish | O'qish uchun 6 ta buyruq |
+| 4 | Dushanba, 30-noyabr | Qog'ozdan saytga / jadvalga — rasm yuborib | Rasm bilan ishlash uchun 4 ta buyruq |
+| 5 | Chorshanba, 2-dekabr | Claude xato qiladi — uni qanday tekshirasiz | «O'zingni tekshir» buyrug'i |
+| 6 | Juma, 4-dekabr | 15 daqiqada sayt (YouTube video) | Videodagi 12 ta buyruq to'plami |
 
-> ⚠️ 5-dekabr — oyingizning tug'ilgan kuni. 4-dekabrdagi Reels'ni oldinroq (2–3-dekabr) tayyorlab qo'ying.
+> ⚠️ **25-noyabr — Startup Week (Founder Day).** Reels 2'ni 24-noyabr kechqurun yozib, tayyor qilib qo'ying; 25-kuni faqat 19:00 da joylaysiz.
+> ⚠️ **5-dekabr — oyingizning tug'ilgan kuni.** Reels 6 (4-dekabr) ni 2–3-dekabrda tayyorlab qo'ying.
+> ⚠️ **Reels 6** uchun YouTube video 4-dekabrgacha joylangan bo'lishi kerak. Ulgurmasa — Reels 6 o'rniga boshqa foydali mavzu qilamiz.
 
 ---
 
