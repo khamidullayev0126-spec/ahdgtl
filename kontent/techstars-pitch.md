@@ -1,48 +1,58 @@
 # Techstars Startup Weekend — Tekshir pitch (24-noyabr)
 
-Slaydlar: https://claude.ai/artifact/KnvdkwL99LFXhjikqiS4ky (11 ta, inglizcha + o'zbekcha qator; har slaydda EN/UZ nutq «Speaker notes»da).
+Slaydlar: https://claude.ai/artifact/KnvdkwL99LFXhjikqiS4ky (v2: 12 ta, inglizcha + o'zbekcha qator; har slaydda EN/UZ nutq «Speaker notes»da).
 
 > Startup Weekend tartibi odatda: **1-kun** — 60 soniyalik g'oya pitchi (slaydsiz!) → ovoz berish → jamoa yig'ish. **Oxirgi kun** — 5 daqiqa taqdimot + 3–5 daqiqa savol-javob. Aniq qoidalarni tashkilotchilardan so'rang.
 
 ---
 
-## 1. 60 soniyalik pitch (1-kun, slaydsiz)
+## 1. 60 soniyalik pitch — v2 (1-kun, slaydsiz)
 
-### English (~140 so'z)
-Hi, I'm Abdulhamid. Raise your hand if your parents or grandparents ever got a message like "Your card is blocked — tell us the SMS code."
+> Raqamlar (25 / 8) — o'tgan haftaniki. Pitch kuni ertalab `/stats`ni ko'rib, haqiqiy raqamni ayting.
+
+### English (~150 so'z)
+Last week, people sent my Telegram bot 25 suspicious messages. **Eight were real scams** — almost one in three.
+A fake bank SMS. A "Photos.apk" file that steals bank codes. A "vote for my niece" link that steals your Telegram.
 *(pause)*
-That's the problem. Scammers in Uzbekistan reach people every day through SMS and Telegram — and the people who lose money are usually our parents, who are too ashamed to tell us.
-I built **Tekshir**. It's a free Android app and Telegram bot that checks suspicious messages, links and APK files right on the phone, and warns automatically. And our killer feature: if a scam reaches your grandmother's phone, **you** get an alert on Telegram — so you can call her before the money is gone.
-The bot is already live, the app works on my phone, and 15 testers are waiting for our Google Play launch.
-I'm looking for teammates in marketing, design and business. Let's protect our families together. Thank you!
+Scammers don't need to hack your bank. They just need to text your grandmother. And when she gets fooled, she's often too ashamed to tell anyone.
+I'm Abdulhamid, a student from Tashkent, and I built **Tekshir** — a free Android app and Telegram bot that checks messages, links and files right on the phone.
+Our killer feature: if a scam reaches grandma's phone, **you** get an alert on Telegram — so you can call her before the money is gone. And we teach, too: a safety tip every day, and a game that teaches kids strong passwords.
+It's live and catching real scams every week. Now I need teammates in **marketing, design and business**. Let's protect our families together. Thank you!
 
-### O'zbekcha (~130 so'z)
-Assalomu alaykum, men Abdulhamidman. Qo'l ko'taring: ota-onangiz yoki buvingizga hech qachon «Kartangiz bloklandi — SMS kodni ayting» degan xabar kelganmi?
+### O'zbekcha (~140 so'z)
+O'tgan hafta odamlar Telegram botimga 25 ta shubhali xabar yubordi. **Ulardan 8 tasi haqiqiy firibgarlik** chiqdi — deyarli har uchtadan bittasi.
+Soxta bank SMS'i. Bank kodlarini o'g'irlaydigan «Rasmlar.apk». Telegram akkauntni o'g'irlaydigan «jiyanimga ovoz bering» havolasi.
 *(pauza)*
-Muammo shu. Firibgarlar har kuni SMS va Telegram orqali yozadi — eng ko'p ota-onalarimiz aldanadi va ular ko'pincha uyalib, bizga aytmaydi.
-Men **Tekshir**'ni yaratdim. Bu bepul Android ilova va Telegram bot: shubhali xabar, havola va APK fayllarni telefonning o'zida tekshiradi va avtomatik ogohlantiradi. Eng zo'r imkoniyati: buvingizga firibgar yozsa — **sizga** Telegram'da xabar keladi va pul ketmasdan qo'ng'iroq qilasiz.
-Bot allaqachon ishlayapti, ilova telefonimda ishlaydi, 15 kishi Google Play'da sinashni kutyapti.
-Menga marketing, dizayn va biznes bo'yicha jamoadoshlar kerak. Keling, oilalarimizni birga himoya qilamiz. Rahmat!
+Firibgarga bankingizni buzish shart emas. Buvingizga SMS yozsa yetadi. Aldangandan keyin esa u ko'pincha uyalib, hech kimga aytmaydi.
+Men Abdulhamid, Toshkentlik o'quvchiman. Men **Tekshir**'ni yaratdim — xabar, havola va fayllarni telefonning o'zida tekshiradigan bepul Android ilova va Telegram bot.
+Eng zo'r imkoniyati: buvingizga firibgar yozsa — xabar **sizga** Telegram'da keladi va pul ketmasdan qo'ng'iroq qilasiz. Biz o'rgatamiz ham: har kuni bitta xavfsizlik maslahati va bolalarga kuchli parolni o'rgatadigan o'yin.
+Tekshir ishlayapti va har hafta haqiqiy firibgarlikni ushlayapti. Menga **marketing, dizayn va biznes** bo'yicha jamoadoshlar kerak. Keling, oilalarimizni birga himoya qilamiz. Rahmat!
 
-**Maslahat:** 60 soniyani telefonda sekundomer bilan 5 marta mashq qiling. Oxirida doim **nima kerakligini** (jamoadoshlar) ayting.
+**Nima o'zgardi (v1 → v2):** savol bilan emas, **o'z ma'lumotingiz** bilan boshlanadi — hakamlar raqamni eslab qoladi. «Kuchli jumla» qo'shildi: «Firibgarga bankingizni buzish shart emas — buvingizga SMS yozsa yetadi.» Oxiri o'zgarmadi: doim **nima kerakligini** ayting.
+
+**Mashq:** sekundomer bilan 5 marta, yangi mikrofonga yozib tinglang. 60 soniyadan oshsa — «A fake bank SMS…» qatorini qisqartiring.
 
 ---
 
-## 2. Yakuniy pitch (5 daqiqa, slaydlar bilan)
+## 2. Yakuniy pitch — v2 (5 daqiqa, 12 slayd)
+
+Slaydlar: https://claude.ai/artifact/KnvdkwL99LFXhjikqiS4ky (har slaydda EN/UZ nutq «Speaker notes»da).
 
 | Slayd | Vaqt | Asosiy gap |
 |---|---|---|
-| 1 Cover | 0:15 | Kimman, Tekshir nima |
-| 2 Problem | 0:30 | 3 ta haqiqiy firibgar xabar |
-| 3 Who gets hurt | 0:30 | Ota-onalar, uyalib aytmaydi |
-| 4 Solution | 0:15 | Bitta jumla |
-| 5 Product | 0:40 | 4 himoya |
-| 6 Family | **1:00** | **JONLI DEMO** — eng muhim joy |
-| 7 Privacy | 0:20 | Matn telefondan chiqmaydi |
-| 8 Traction | 0:30 | /stats raqamlari, 15 sinovchi |
-| 9 Model | 0:20 | Bepul + 2 gipoteza |
-| 10 Roadmap | 0:15 | Dekabr Play |
-| 11 Ask | 0:15 | Nima kerak + rahmat |
+| 1 Cover | 0:20 | **Hook:** «25 xabar → 8 firibgarlik, har uchtadan bittasi» |
+| 2 Problem | 0:25 | 3 ta haqiqiy firibgar xabar |
+| 3 Who gets hurt | 0:25 | Ota-onalar, uyalib aytmaydi |
+| 4 Solution | 0:10 | Bitta jumla |
+| 5 Product | 0:35 | 4 himoya |
+| 6 Family | **0:55** | **JONLI DEMO** — eng muhim joy |
+| 7 Learn *(yangi)* | 0:25 | Har kungi maslahat + Parol qal'asi o'yini |
+| 8 Privacy | 0:15 | Matn telefondan chiqmaydi |
+| 9 Traction | 0:25 | `/stats` raqamlari, 15 sinovchi |
+| 10 Model *(yangilandi)* | 0:25 | 1) guruhlar himoyasi 2) oila tarifi 3) API |
+| 11 Roadmap | 0:10 | Dekabr — Google Play |
+| 12 Ask | 0:10 | Nima kerak + rahmat |
+| | **5:00** | |
 
 ### Jonli demo (Family slaydida)
 1. Telefon ekranini proyektorga ulang (yoki oldindan **ekran yozuvi** videosini tayyorlang — internet bo'lmasa zaxira!).
