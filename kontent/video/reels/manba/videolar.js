@@ -332,4 +332,41 @@ module.exports = {
       { at: 10, v: "cta", line: "👥 Jamoa obunasi — batafsil", url: "@ahdigital_01", small: "🔗 Kanal havolasi — bio'da" }
     ]
   }
+  ,
+  12: {
+    tag: "Claude maslahat", out: "12-claude-tushunmayapti",
+    chunks: [
+      { c: "Claude sizni tushunmayaptimi?" },
+      { c: "Muammo Claude'da emas — buyruqda." },
+      { c: "Ko'pchilik shunday yozadi: «menga sayt yasab ber»." },
+      { c: "Natija — bo'sh, inglizcha, umumiy sahifa." },
+      { c: "Chunki Claude fikringizni o'qiy olmaydi." },
+      { c: "Yaxshi buyruqning uchta qismi bor." },
+      { c: "Birinchi — kim uchun: uyda tort pishiradigan biznes uchun." },
+      { c: "Ikkinchi — nima kerak: narxlar, buyurtma tugmasi va aloqa." },
+      { c: "Uchinchi — qanday: o'zbek tilida, pushti ranglarda, telefonda chiroyli." },
+      { c: "Mana farq!" },
+      { c: "Tayyor shablon va beshta buyruq — Telegram kanalimda," }, { c: "havola bio'da." }
+    ],
+    heads: [
+      { at: 0, lines: [["Claude sizni", "sm"], ["tushunmayaptimi?", "acc"]] },
+      { at: 2, lines: [["Ko'pchilikning", "sm"], ["xatosi", "acc"]] },
+      { at: 4, lines: [["Claude fikr", "sm"], ["o'qimaydi", "acc"]] },
+      { at: 5, lines: [["Yaxshi buyruq", "sm"], ["= 3 qism", "acc"]] },
+      { at: 9, lines: [["Mana", "sm"], ["farq!", "acc"]] },
+      { at: 11, lines: [["Tekin", "sm"], ["shablon", "acc"]] }
+    ],
+    vis: [
+      { at: 0, v: "stamp", icon: "🤔", text: "Tushunmayaptimi?", fs: 64 },
+      { at: 2, v: "tg", mode: "bot", plain: true, name: "Claude", avatar: "✳️", abg: "#c96442", sub: "yangi chat", typing: "Claude yozmoqda…", replyAt: 3,
+        msg: "menga sayt yasab ber",
+        reply: "<div class='ln' style='font-family:monospace;color:#9fb0c0'>&lt;h1&gt;Welcome to My Website&lt;/h1&gt;</div><div class='ln' style='font-family:monospace;color:#9fb0c0'>&lt;p&gt;Lorem ipsum dolor sit amet…&lt;/p&gt;</div><div class='ln' style='font-weight:900;color:#ff6b5e;margin-top:8px'>❌ Bo'sh · inglizcha · umumiy</div>" },
+      { at: 4, v: "stamp", icon: "🧠❓", size: 200, text: "Fikr o'qimaydi", bg: "#d94b3d", fs: 64 },
+      { at: 5, v: "steps", items: [[6, "<b>Kim uchun?</b><br><span style='font-weight:600;font-size:34px'>tort pishiradigan biznes</span>", "👩‍🍳"], [7, "<b>Nima kerak?</b><br><span style='font-weight:600;font-size:34px'>narxlar, tugma, aloqa</span>", "📋"], [8, "<b>Qanday?</b><br><span style='font-weight:600;font-size:34px'>o'zbekcha, pushti, telefonga mos</span>", "🎨"]] },
+      { at: 9, v: "tg", mode: "bot", plain: true, name: "Claude", avatar: "✳️", abg: "#c96442", sub: "yangi chat", typing: "Claude yozmoqda…", replyAt: 9,
+        msg: "Uyda tort pishiradigan «Shirin Tortlar» biznesi uchun sayt yasa: narxlar, buyurtma tugmasi, aloqa. O'zbek tilida, pushti ranglarda, telefonda chiroyli bo'lsin.",
+        reply: "<div class='ln' style='font-weight:900;color:#ff9ec4;font-size:26px'>🎂 Shirin Tortlar</div><div class='ln'>Uyda, mehr bilan pishirilgan tortlar</div><div class='ln'>🍰 Medovik — 150 000 so'm</div><div class='ln'>🍫 Napoleon — 140 000 so'm</div><div class='ln' style='font-weight:900;color:#5fd38d;margin-top:8px'>✅ Buyurtma berish →</div>" },
+      { at: 11, v: "cta", line: "📥 Tekin shablon + 5 ta buyruq", url: "@ahdigital_01", small: "🔗 Telegram — havola bio'da" }
+    ]
+  }
 };
