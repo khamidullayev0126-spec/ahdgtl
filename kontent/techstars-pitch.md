@@ -79,7 +79,7 @@ Slaydlar: https://claude.ai/artifact/KnvdkwL99LFXhjikqiS4ky (har slaydda EN/UZ n
 | Will Google allow it? | It uses only standard Android permissions with in-app disclosure; no SMS or call-log permissions. Closed testing starts with 15 testers. |
 | What about iPhone? | Android first — most phones in Uzbekistan are Android. The Telegram bot works on any phone today. |
 | How old are you? / Yoshingiz nechada? | Rost ayting. Yosh — kuchli tomon: «bitta o'quvchi qurdi va ishlayapti». |
-| Team? | Me (product & code) and Afruz (co-founder, AHdigital). This weekend I'm looking for marketing, design and business. |
+| Team? / Jamoangiz? | Right now it's just me — I built the bot, the app, the game and the website myself. That's exactly why I'm here: this weekend I'm looking for co-founders in marketing, design and business. Rostini ayting — Startup Weekend aynan jamoa yig'ish uchun. |
 
 > Raqam bilmasangiz — o'ylab topmang: «Aniq bilmayman, tekshirib aytaman» deyish hakamlarda ishonch uyg'otadi.
 
@@ -105,5 +105,5 @@ Slaydlar: https://claude.ai/artifact/KnvdkwL99LFXhjikqiS4ky (har slaydda EN/UZ n
 "Step by step, through three channels. Content: one of my videos got 1,550 views in 6 hours. The product spreads itself: every young user connects their parents and grandparents, every Telegram group shows the bot to hundreds of people. And schools and parents' meetings. For me the goal isn't money first — it's that no grandmother loses her savings to a fake SMS."
 
 **6. You're a student — why you?**
-"Because I've already done it while being a student: after school I built a 24/7 Telegram bot, a native Android app in Kotlin, a website and an online game — with 141 automated tests. I work about two hours every day after classes and more on weekends. And I'm not alone: my co-founder Afruz handles sales, my parents support me, and this weekend I'm looking for teammates."
-*(Raqamlarni o'zingizdagi haqiqiyga moslang.)*
+"Because I've already done it while being a student: after school I built a 24/7 Telegram bot, a native Android app in Kotlin, a website and an online game — with 141 automated tests. I work about two hours every day after classes and more on weekends. I know one person can't do everything — that's why I'm here this weekend: to find co-founders who are strong where I'm weak, in marketing and business. And my parents support me."
+*(Raqamlarni o'zingizdagi haqiqiyga moslang. Afruz — AHdigital sherigi, Tekshir'da emas: uni Tekshir hammuassisi deb aytmang.)*
