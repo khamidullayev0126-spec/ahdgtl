@@ -8,7 +8,7 @@
 
 ### Dekabr 2026 — «Asos»
 - [x] Eski Play Console hisobi o'z so'rovimiz bilan yopildi (23-noyabr), $25 qaytarilmoqda
-- [ ] 3–7-dekabr: $25 kelganini Google Payments → Activity'da tekshirish
+- [x] $25 qaytarildi (24-noyabr) ✅
 - [ ] Yangi Play Console hisobi — oyim nomida (18+ talabi), $25 — oyim roziligi bilan
 - [ ] APK qo'riqchini o'rnatib, Tekshir bilan aniq solishtirish (jadval)
 - [ ] Meizon'ga rahmat xabari + savollar
