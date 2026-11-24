@@ -49,7 +49,7 @@ test("portfolio ishlari (works.js): har birida rasm/havola bor va matnlari tarji
 });
 
 test("sahifalardagi rasm va video fayllari mavjud (src, srcset, poster)", () => {
-  for (const page of ["index.html", "portfolio.html", "ishlar/ahdigital.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html", "blog/landing-page.html", "blog/menyu-sayt-qr.html"]) {
+  for (const page of ["index.html", "portfolio.html", "ishlar/ahdigital.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html", "blog/landing-page.html", "blog/menyu-sayt-qr.html", "blog/claude-15-daqiqada-sayt.html"]) {
     const html = fs.readFileSync(path.join(ROOT, page), "utf8");
     const refs = [...html.matchAll(/\b(?:src|poster)="([^"]+)"|\bsrcset="([^"]+)"/g)]
       .flatMap(m => m[1] ? [m[1]] : m[2].split(",").map(x => x.trim().split(/\s+/)[0]))
@@ -98,7 +98,7 @@ test("cookie roziligi: boshida hammasi denied, Google kodi yuklanmaydi; «Rozima
 });
 
 test("ochiq sahifalarda consent.js bor, xizmat sahifalarida yo'q", () => {
-  for (const f of ["index.html", "portfolio.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html", "blog/landing-page.html", "blog/menyu-sayt-qr.html", "ishlar/ahdigital.html", "404.html"]) {
+  for (const f of ["index.html", "portfolio.html", "maxfiylik.html", "shartlar.html", "blog/index.html", "blog/ai-bilan-sayt.html", "blog/landing-page.html", "blog/menyu-sayt-qr.html", "blog/claude-15-daqiqada-sayt.html", "ishlar/ahdigital.html", "404.html"]) {
     const s = fs.readFileSync(path.join(ROOT, f), "utf8");
     assert.ok(s.includes("consent.js") && s.includes("analytics.js"), `${f} da consent.js/analytics.js yo'q`);
   }
