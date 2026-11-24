@@ -1,21 +1,51 @@
 <!doctype html><html><head><meta charset="utf-8">
 <style>
-@font-face{font-family:Caprasimo;src:url(/f/Caprasimo.ttf)}
+@font-face{font-family:Figtree;font-weight:600;src:url(/f/Figtree-600.ttf)}
 @font-face{font-family:Figtree;font-weight:800;src:url(/f/Figtree-800.ttf)}
+@font-face{font-family:Mono;src:url(/f/JetBrainsMono-Regular.ttf)}
 *{margin:0;box-sizing:border-box}
-html,body{width:1080px;height:1920px;overflow:hidden;background:#f5ead8}
-canvas{display:block}
-#cap{position:absolute;left:60px;right:60px;top:200px;text-align:center;font:400 92px/1.05 Caprasimo;color:#201e1d;text-shadow:0 4px 0 rgba(255,255,255,.6)}
-#cap .a{color:#c4602f}
-#sub{position:absolute;left:0;right:0;bottom:250px;text-align:center}
-#sub span{display:inline-block;background:#201e1d;color:#f5ead8;font:800 46px Figtree;padding:16px 34px;border-radius:999px}
-#logo{position:absolute;left:50%;top:90px;transform:translateX(-50%);font:400 40px Caprasimo;color:#201e1d;opacity:.85}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0b1030;font-family:Figtree}
+#gl{position:absolute;inset:0}
+#sub{position:absolute;left:90px;right:90px;top:1180px;text-align:center;font:800 50px/1.25 Figtree;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.6)}
+#sub.o{color:#ffab6e}
+.ui{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);opacity:0}
+.phone{width:600px;height:1180px;border-radius:84px;background:#141418;padding:18px;box-shadow:0 60px 140px rgba(0,0,0,.6),0 0 0 3px #2a2a33}
+.phone .scr{width:100%;height:100%;border-radius:68px;background:#fff;overflow:hidden;position:relative}
+.island{position:absolute;left:50%;top:22px;width:150px;height:42px;border-radius:30px;background:#000;transform:translateX(-50%)}
+.term{width:900px;border-radius:30px;background:#16161c;box-shadow:0 50px 120px rgba(0,0,0,.6),0 0 0 2px #2c2c36;overflow:hidden}
+.term .bar{height:62px;background:#22222b;display:flex;align-items:center;gap:14px;padding:0 26px;font:600 26px Figtree;color:#8b8b99}
+.term .bar i{width:18px;height:18px;border-radius:50%;display:inline-block}
+.term pre{font:400 34px/1.6 Mono;color:#e8e8ee;padding:30px 36px 40px;white-space:pre-wrap;min-height:330px}
+.ok{color:#7ee2a8}.or{color:#ffab6e}.dim{color:#777788}
+#title{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 54px Figtree;color:rgba(255,255,255,.55);opacity:0}
+#end{position:absolute;left:70px;right:70px;top:300px;text-align:center;opacity:0}
+#end .t1{font:800 76px/1.12 Figtree;color:#fff}
+#end .t1 b{color:#ffab6e}
+#end .t2{margin-top:36px;display:inline-block;background:#ffab6e;color:#1b1206;font:800 46px Figtree;padding:18px 40px;border-radius:999px}
+#end .t3{margin-top:26px;font:600 38px Figtree;color:rgba(255,255,255,.7)}
 </style>
 <script type="importmap">{"imports":{"three":"/three/build/three.module.js"}}</script>
 </head><body>
-<div id="logo">AHdigital</div>
-<div id="cap"></div>
-<div id="sub"><span id="subt"></span></div>
+<div id="gl"></div>
+
+<div class="ui phone" id="feed"><div class="scr">
+  <div class="island"></div>
+  <div style="padding:96px 34px 0;font:800 30px Figtree;color:#222;display:flex;align-items:center;gap:14px"><span style="width:52px;height:52px;border-radius:50%;background:#333;display:inline-block"></span>dasturchi_uz</div>
+  <div style="margin:26px 0 0;height:620px;background:linear-gradient(160deg,#1d1d24,#3a3a46);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px">
+    <div style="font:800 64px/1.1 Figtree;color:#fff">Codex — eng zo'ri! 🔥</div>
+    <div style="font:600 34px Figtree;color:#c9c9d6;margin-top:22px">Hamma unga o'tyapti</div></div>
+  <div style="padding:26px 34px;font:800 34px Figtree;color:#222">❤️ <span id="likes">12 400</span> ta layk</div>
+  <div style="padding:0 34px;font:600 28px Figtree;color:#777">Sen hali ham o'tmadingmi? 👀</div>
+</div></div>
+
+<div class="ui term" id="codexT"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>&nbsp; codex</div><pre id="codexTxt"></pre></div>
+<div class="ui term" id="memT"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>&nbsp; ~/loyihalarim</div><pre id="memTxt"></pre></div>
+<div class="ui term" id="claudeT"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>&nbsp; claude</div><pre id="claudeTxt"></pre></div>
+
+<div id="title">Bir haftadan keyin</div>
+<div id="end"><div class="t1">Asbobni emas —<br><b>o'zingizga qulayini</b><br>tanlang</div><div class="t2">Siz qaysi birini? 👇</div><div class="t3">@ahdigital_01</div></div>
+<div id="sub"></div>
+
 <script type="module">
 import * as THREE from "three";
 const W = 1080, H = 1920;
@@ -23,220 +53,159 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffe
 renderer.setPixelRatio(1); renderer.setSize(W, H);
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
-document.body.prepend(renderer.domElement);
-
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+const glEl = document.getElementById("gl"); glEl.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#f5ead8");
-scene.fog = new THREE.Fog("#f5ead8", 14, 30);
-const cam = new THREE.PerspectiveCamera(38, W / H, 0.1, 100);
+const cam = new THREE.PerspectiveCamera(34, W / H, 0.1, 100);
 
-// Yorug'lik: iliq asosiy, sovuq to'ldiruvchi, orqa kontur
-scene.add(new THREE.HemisphereLight("#fff6ea", "#d9c4a6", 1.1));
-const key = new THREE.DirectionalLight("#fff1dc", 2.4);
-key.position.set(-5, 9, 6); key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048); key.shadow.camera.left = -10; key.shadow.camera.right = 10; key.shadow.camera.top = 10; key.shadow.camera.bottom = -10; key.shadow.radius = 6; key.shadow.bias = -0.0005;
+// Orqa fon: tungi deraza + chiroqlar (bokeh) — o'z chizmamiz
+function bgTex() {
+  const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 1024;
+  const x = cv.getContext("2d");
+  const g = x.createLinearGradient(0, 0, 0, 1024); g.addColorStop(0, "#1a2a78"); g.addColorStop(.55, "#121c55"); g.addColorStop(1, "#0a0f2c");
+  x.fillStyle = g; x.fillRect(0, 0, 1024, 1024);
+  x.fillStyle = "rgba(5,8,30,.55)"; [180, 470, 760].forEach(px => x.fillRect(px, 0, 26, 1024)); x.fillRect(0, 610, 1024, 22);
+  let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 90; i++) { x.fillStyle = `rgba(255,255,255,${.15 + rnd() * .35})`; x.fillRect(rnd() * 1024, rnd() * 600, 2, 2); }
+  for (let i = 0; i < 11; i++) {
+    const cx = 40 + i * 96, cy = 70 + Math.sin(i * .9) * 10;
+    const r = x.createRadialGradient(cx, cy, 0, cx, cy, 34); r.addColorStop(0, "rgba(255,236,200,.95)"); r.addColorStop(.45, "rgba(255,214,150,.55)"); r.addColorStop(1, "rgba(255,200,120,0)");
+    x.fillStyle = r; x.fillRect(cx - 40, cy - 40, 80, 80);
+  }
+  for (let i = 0; i < 14; i++) {
+    const cx = rnd() * 1024, cy = 700 + rnd() * 300, rr = 20 + rnd() * 50;
+    const r = x.createRadialGradient(cx, cy, 0, cx, cy, rr); r.addColorStop(0, `rgba(255,${120 + rnd() * 80 | 0},80,.35)`); r.addColorStop(1, "rgba(255,150,80,0)");
+    x.fillStyle = r; x.beginPath(); x.arc(cx, cy, rr, 0, 7); x.fill();
+  }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const bg = new THREE.Mesh(new THREE.PlaneGeometry(26, 26), new THREE.MeshBasicMaterial({ map: bgTex() }));
+bg.position.set(0, 4, -9); scene.add(bg);
+
+scene.add(new THREE.HemisphereLight("#6f7fe0", "#1a1030", 0.9));
+const key = new THREE.DirectionalLight("#ffd2a6", 2.6); key.position.set(4, 5, 4); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 5; key.shadow.camera.left = -6; key.shadow.camera.right = 6; key.shadow.camera.top = 6; key.shadow.camera.bottom = -6;
 scene.add(key);
-const rim = new THREE.DirectionalLight("#cfe0ff", 0.7); rim.position.set(6, 4, -6); scene.add(rim);
+const rim = new THREE.DirectionalLight("#7f95ff", 1.6); rim.position.set(-5, 3, -4); scene.add(rim);
+const warm = new THREE.PointLight("#ff9a5a", 6, 8, 2); warm.position.set(1.5, 1.8, 1.5); scene.add(warm);
 
-// Qog'oz material (qirrali — flatShading)
-const paper = (c, r = 0.85) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: 0, flatShading: true, side: THREE.DoubleSide });
-const C = { or: "#e07a4a", or2: "#f0a06f", cream: "#fbf3e6", gray: "#d9d9d4", gray2: "#efefec", dark: "#2b2b2b", ink: "#201e1d" };
-const mesh = (g, m, cast = true) => { const o = new THREE.Mesh(g, m); o.castShadow = cast; o.receiveShadow = true; return o; };
+const mat = (c, r = .8) => new THREE.MeshStandardMaterial({ color: c, roughness: r, flatShading: true });
+const mesh = (g, m) => { const o = new THREE.Mesh(g, m); o.castShadow = true; o.receiveShadow = true; return o; };
+const floor = mesh(new THREE.PlaneGeometry(40, 40), mat("#1b1838", 1)); floor.rotation.x = -Math.PI / 2; scene.add(floor);
 
-// Yer: qog'oz varaq
-const ground = mesh(new THREE.PlaneGeometry(60, 60), paper("#efe1c8", 1), false);
-ground.rotation.x = -Math.PI / 2; scene.add(ground);
-// Yo'l: kichik qog'oz plitalar
-for (let i = -6; i <= 6; i++) {
-  const s = mesh(new THREE.BoxGeometry(0.7, 0.03, 0.5), paper(i % 2 ? "#f7eddc" : "#eadbc0"), false);
-  s.position.set(i * 0.62, 0.015, 0.6); s.rotation.y = (i % 3) * 0.08; scene.add(s);
+// Bola (low-poly)
+const boy = new THREE.Group(); scene.add(boy);
+const skin = mat("#f2c9a6", .7), hairM = mat("#7a3f22", .8), sweater = mat("#6a4fd6", .85), pants = mat("#3a3170", .9);
+const torso = mesh(new THREE.BoxGeometry(1.15, 1.2, .7), sweater); torso.position.y = 1.05; boy.add(torso);
+const neck = mesh(new THREE.BoxGeometry(.35, .2, .35), skin); neck.position.y = 1.72; boy.add(neck);
+const headG = new THREE.IcosahedronGeometry(.52, 1); headG.scale(1, 1.08, .95);
+const head = mesh(headG, skin); head.position.y = 2.25; boy.add(head);
+for (let i = 0; i < 9; i++) {
+  const a = (i / 9) * Math.PI * 1.6 - Math.PI * .8;
+  const sp = mesh(new THREE.ConeGeometry(.16, .5, 4), hairM);
+  sp.position.set(Math.sin(a) * .32, .42 + Math.cos(i) * .03, Math.cos(a) * .18 - .1); sp.rotation.set(-.3 + Math.cos(a) * .3, 0, -Math.sin(a) * .7); head.add(sp);
 }
+const capM = mesh(new THREE.IcosahedronGeometry(.5, 0), hairM); capM.scale.set(1.02, .45, 1); capM.position.set(0, .3, -.05); head.add(capM);
+const eyeM = new THREE.MeshStandardMaterial({ color: "#111", roughness: .2 });
+const eyes = [-.19, .19].map(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(.07, 10, 10), eyeM); e.position.set(x, .05, .46); head.add(e); return e; });
+const nose = mesh(new THREE.ConeGeometry(.07, .16, 4), skin); nose.rotation.x = Math.PI / 2; nose.position.set(0, -.08, .5); head.add(nose);
+const mouth = new THREE.Mesh(new THREE.BoxGeometry(.2, .05, .04), mat("#5a2a1a")); mouth.position.set(0, -.25, .45); head.add(mouth);
+[-.52, .52].forEach(x => { const e = mesh(new THREE.BoxGeometry(.1, .2, .14), skin); e.position.set(x, 0, 0); head.add(e); });
+const armL = mesh(new THREE.BoxGeometry(.3, 1.05, .3), sweater), armR = armL.clone();
+armL.position.set(-.74, 1.05, 0); armR.position.set(.74, 1.05, 0); boy.add(armL, armR);
+const legL = mesh(new THREE.BoxGeometry(.38, .5, .38), pants), legR = legL.clone();
+legL.position.set(-.25, .25, 0); legR.position.set(.25, .25, 0); boy.add(legL, legR);
 
-// Matnli tekstura
-function textTex(lines, { bg = "#fbf3e6", fg = "#201e1d", w = 512, h = 320, size = 64, font = "Caprasimo", mono = false } = {}) {
-  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
-  const x = cv.getContext("2d"); x.fillStyle = bg; x.fillRect(0, 0, w, h);
-  x.fillStyle = fg; x.textAlign = mono ? "left" : "center"; x.textBaseline = "middle";
-  x.font = `${mono ? "800" : "400"} ${size}px ${mono ? "Figtree" : font}`;
-  lines.forEach((l, i) => x.fillText(l, mono ? 36 : w / 2, h / 2 + (i - (lines.length - 1) / 2) * size * 1.25));
-  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+// Yordamchi qutilar: yuzi — terminal ekrani (o'z qahramonimiz)
+function faceTex(kind, glow, fg) {
+  const cv = document.createElement("canvas"); cv.width = 512; cv.height = 512;
+  const x = cv.getContext("2d"); x.fillStyle = glow; x.fillRect(0, 0, 512, 512);
+  x.fillStyle = fg; x.textAlign = "center"; x.textBaseline = "middle"; x.font = "bold 150px Mono";
+  const F = { calm: ["▮", "▮"], sad: ["╥", "╥"], happy: ["^", "^"], prompt: [">", "_"], hmm: ["•", "•"] }[kind];
+  x.fillText(F[0], 160, 230); x.fillText(F[1], 352, 230);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
-
-// Uy: quti + 4 qirrali tom + eshik + nom taxtachasi
-function house(wall, roof, name, nameBg, nameFg) {
+function buddy(body, glow, fg, kinds) {
   const g = new THREE.Group();
-  const body = mesh(new THREE.BoxGeometry(2.2, 1.6, 1.8), paper(wall)); body.position.y = 0.8; g.add(body);
-  const r = mesh(new THREE.ConeGeometry(1.75, 1.2, 4, 1), paper(roof)); r.position.y = 2.2; r.rotation.y = Math.PI / 4; g.add(r);
-  const door = mesh(new THREE.BoxGeometry(0.55, 0.9, 0.05), paper(roof)); door.position.set(0, 0.45, 0.92); g.add(door);
-  const sign = mesh(new THREE.BoxGeometry(1.9, 0.5, 0.04), new THREE.MeshStandardMaterial({ map: textTex([name], { bg: nameBg, fg: nameFg, w: 760, h: 200, size: 96 }), roughness: 0.9 }));
-  sign.position.set(0, 1.3, 0.93); g.add(sign);
+  const faces = {}; kinds.forEach(k => (faces[k] = faceTex(k, glow, fg)));
+  const bm = mat(body, .75);
+  const faceM = new THREE.MeshStandardMaterial({ map: faces[kinds[0]], emissive: "#ffffff", emissiveMap: faces[kinds[0]], emissiveIntensity: .35, roughness: .6 });
+  const box = mesh(new THREE.BoxGeometry(1.9, 1.6, 1.5), [bm, bm, bm, bm, faceM, bm]); box.position.y = 1.35; g.add(box);
+  [-.55, .55].forEach(x => { const l = mesh(new THREE.BoxGeometry(.28, .55, .28), bm); l.position.set(x, .28, .1); g.add(l); });
+  g.userData = { faceM, box };
+  g.setFace = k => { if (faceM.map !== faces[k]) { faceM.map = faces[k]; faceM.emissiveMap = faces[k]; faceM.needsUpdate = true; } };
   return g;
 }
-const claudeHouse = house(C.cream, C.or, "Claude Code", "#e07a4a", "#fff7ee");
-claudeHouse.position.set(-3.2, 0, -0.6); claudeHouse.rotation.y = 0.35; scene.add(claudeHouse);
-const codexHouse = house(C.gray2, C.dark, "Codex", "#2b2b2b", "#f2f2ef");
-codexHouse.position.set(3.2, 0, -0.6); codexHouse.rotation.y = -0.35; scene.add(codexHouse);
+const orange = buddy("#e2683a", "#2a1408", "#ffb27a", ["calm", "sad", "happy", "hmm"]);
+const gray = buddy("#c9c9cf", "#101014", "#e9e9f2", ["prompt"]);
+scene.add(orange, gray);
 
-// Daraxtlar (origami archa)
-[[-5.6, -2.5], [-1.4, -3.2], [1.2, -3.4], [5.8, -2.4], [-6.5, 1.5], [6.6, 1.8]].forEach(([x, z], i) => {
-  const t = mesh(new THREE.ConeGeometry(0.45, 1.4, 5), paper(i % 2 ? "#9bb07a" : "#b4c48f")); t.position.set(x, 0.7, z); scene.add(t);
-});
-
-// Origami bola
-const boy = new THREE.Group();
-const bodyM = paper(C.or2), skin = paper("#f6d2b1"), hair = paper("#3a2a22");
-const torso = mesh(new THREE.ConeGeometry(0.32, 0.75, 4), bodyM); torso.position.y = 0.62; torso.rotation.y = Math.PI / 4; boy.add(torso);
-const head = mesh(new THREE.IcosahedronGeometry(0.24, 0), skin); head.position.y = 1.18; boy.add(head);
-const cap = mesh(new THREE.ConeGeometry(0.25, 0.16, 5), hair); cap.position.y = 1.36; boy.add(cap);
-const eyeM = new THREE.MeshBasicMaterial({ color: C.ink });
-[-0.08, 0.08].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.025, 6, 6), eyeM); e.position.set(x, 1.2, 0.21); boy.add(e); });
-const legL = mesh(new THREE.BoxGeometry(0.1, 0.32, 0.1), paper("#5b6b8a")), legR = legL.clone();
-legL.position.set(-0.1, 0.16, 0); legR.position.set(0.1, 0.16, 0); boy.add(legL, legR);
-const armL = mesh(new THREE.BoxGeometry(0.08, 0.34, 0.08), bodyM), armR = armL.clone();
-armL.position.set(-0.3, 0.72, 0); armR.position.set(0.3, 0.72, 0); boy.add(armL, armR);
-scene.add(boy);
-
-// Boshidagi qog'oz varaq (buklanadi)
-const sheet = new THREE.Group();
-const halfA = mesh(new THREE.PlaneGeometry(0.9, 1.8), paper("#fbf3e6")), halfB = halfA.clone();
-halfA.geometry = halfA.geometry.clone().translate(0.45, 0, 0); halfB.geometry = halfB.geometry.clone().translate(-0.45, 0, 0);
-sheet.add(halfA, halfB); sheet.position.set(-2.2, 1.1, 0.8); scene.add(sheet);
-
-// Terminallar
-function terminal(bg, fg, lines) {
-  const g = new THREE.Group();
-  const stand = mesh(new THREE.BoxGeometry(0.2, 0.6, 0.2), paper(bg === "#2b2b2b" ? "#555" : C.or)); stand.position.y = 0.3; g.add(stand);
-  const scr = mesh(new THREE.BoxGeometry(1.5, 1, 0.08), new THREE.MeshStandardMaterial({ map: textTex(lines, { bg, fg, w: 600, h: 400, size: 40, mono: true }), roughness: 0.7 }));
-  scr.position.y = 1.05; g.add(scr); g.userData.scr = scr; return g;
-}
-const codexTerm = terminal("#2b2b2b", "#e9e9e6", ["$ codex", "> yangi loyiha...", "> kod yozilmoqda ▍"]);
-codexTerm.position.set(3.7, 0, 1.3); codexTerm.rotation.y = -0.9; scene.add(codexTerm);
-const claudeTerm = terminal("#fbf3e6", "#c4602f", ["$ claude", "", "Qaytganingdan", "xursandman 🙂"]);
-claudeTerm.position.set(-0.8, 0, 1.0); claudeTerm.rotation.y = -0.25; scene.add(claudeTerm);
-
-// Uchadigan kod chiziqlari (Codex)
-const strips = [];
-for (let i = 0; i < 8; i++) {
-  const s = mesh(new THREE.BoxGeometry(0.42, 0.06, 0.01), paper(i % 2 ? "#e9e9e6" : "#bdbdb8"));
-  scene.add(s); strips.push(s);
-}
-
-// Xotira kartochkalari (Claude)
-const cardNames = ["CLAUDE.md", "skill'larim", "loyihalarim"];
-const cards = cardNames.map(n => {
-  const c = mesh(new THREE.BoxGeometry(1.05, 0.62, 0.02), [paper(C.or), paper(C.or), paper(C.or), paper(C.or),
-    new THREE.MeshStandardMaterial({ map: textTex([n], { bg: "#f0a06f", fg: "#201e1d", w: 520, h: 300, size: 70 }), roughness: 0.9 }), paper(C.or)]);
-  scene.add(c); return c;
-});
-
-// Qog'oz samolyot
-const pg = new THREE.BufferGeometry();
-pg.setAttribute("position", new THREE.Float32BufferAttribute([
-  0, 0, 1.1, -0.75, 0.05, -0.6, 0, 0, -0.45,
-  0, 0, 1.1, 0, 0, -0.45, 0.75, 0.05, -0.6,
-  0, 0, 1.1, 0, 0, -0.45, 0, -0.22, -0.5
-], 3)); pg.computeVertexNormals();
-const plane = mesh(pg, paper(C.or)); scene.add(plane);
-
-// ---------- Vaqtga bog'liq animatsiya ----------
 const cl = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const lin = (t, a, b) => cl((t - a) / (b - a));
 const ease = x => 1 - Math.pow(1 - x, 3);
 const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-const back = x => { const c = 1.70158, c3 = c + 1; return 1 + c3 * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 const mix = (a, b, p) => a + (b - a) * p;
-const V = (x, y, z) => new THREE.Vector3(x, y, z);
-let B = window.BEATS || {};
-window.setBeats = b => (B = b);
+let B = {}; window.setBeats = b => (B = b);
+const $ = id => document.getElementById(id);
 
-const capEl = document.getElementById("cap"), subEl = document.getElementById("subt");
-function caption(t) {
-  const list = B.captions || [];
-  const c = list.filter(x => t >= x.t).pop();
-  const p = c ? ease(lin(t, c.t, c.t + 0.35)) : 0;
-  capEl.innerHTML = c ? c.html : ""; capEl.style.opacity = p; capEl.style.transform = `translateY(${(1 - p) * 30}px)`;
-  const s = (B.subs || []).filter(x => t >= x.t && t < x.e).pop();
-  subEl.textContent = s ? s.text : ""; subEl.parentElement.style.opacity = s ? 1 : 0;
+function typeText(t, t0, lines, cps = 40) {
+  let n = Math.max(0, Math.floor((t - t0) * cps)), out = "";
+  for (const l of lines) { const plain = l.replace(/<[^>]+>/g, ""); if (n <= 0) break; if (n >= plain.length) { out += l + "\n"; n -= plain.length; } else { out += plain.slice(0, n) + "▍"; n = 0; } }
+  return out;
+}
+function panel(el, t, a, b) {
+  const p = ease(lin(t, a, a + .45)) * (1 - ease(lin(t, b - .35, b)));
+  el.style.opacity = p; el.style.transform = `translate(-50%,-50%) translateY(${(1 - p) * 80}px) rotate(${(1 - p) * -3}deg) scale(${.94 + .06 * p})`;
+  return p;
 }
 
 window.render = function (t) {
-  const b = B;
-  // 1) Varaq buklanadi → bola paydo bo'ladi
-  const f1 = eio(lin(t, b.fold0, b.fold0 + 0.7)), f2 = ease(lin(t, b.fold0 + 0.6, b.fold0 + 1.2));
-  halfB.rotation.y = -f1 * Math.PI * 0.98;
-  sheet.scale.setScalar(1 - f2); sheet.rotation.z = f2 * 1.2;
-  sheet.visible = f2 < 1;
-  const pop = back(lin(t, b.fold0 + 0.9, b.fold0 + 1.5));
-  // 2) Yurish: Claude uyidan Codex uyiga
-  const walk = eio(lin(t, b.walk0, b.walk1));
-  const bx = mix(-2.2, 2.4, walk);
-  // 5) Uchib qaytish
-  const fly = eio(lin(t, b.fly0, b.fly1));
-  const flying = t >= b.fly0 && t < b.fly1 + 0.6;
-  const home = ease(lin(t, b.fly1, b.fly1 + 0.6));
-  let pos = V(bx, 0, 0.6), rotY = walk > 0 && walk < 1 ? Math.PI / 2 : 0;
-  if (t >= b.code0) rotY = 1.1;                    // terminalga qaraydi
-  if (t >= b.mem0) rotY = mix(1.1, -0.5, ease(lin(t, b.mem0, b.mem0 + 1)));  // orqaga qaraydi
-  if (flying || t >= b.fly1) {
-    const px = mix(2.4, -2.2, fly), py = 0.45 + Math.sin(fly * Math.PI) * 2.6;
-    pos = V(px, mix(py, 0, home), 0.6 + Math.sin(fly * Math.PI) * 0.8);
-    rotY = t >= b.fly1 ? mix(-Math.PI / 2, 0.2, home) : -Math.PI / 2;
-  }
-  boy.position.copy(pos); boy.rotation.y = rotY;
-  boy.scale.setScalar(Math.max(0.001, pop));
-  const step = walk > 0 && walk < 1 ? Math.sin(t * 14) : 0;
-  legL.rotation.x = step * 0.6; legR.rotation.x = -step * 0.6; armL.rotation.x = -step * 0.5; armR.rotation.x = step * 0.5;
-  boy.position.y += Math.abs(step) * 0.05;
-  // yozish (Codex)
-  const typing = t >= b.code0 && t < b.mem0;
-  if (typing) { armL.rotation.x = -1.2 + Math.sin(t * 22) * 0.15; armR.rotation.x = -1.2 + Math.cos(t * 22) * 0.15; }
-  // 3) Codex: kod chiziqlari uchadi
-  strips.forEach((s, i) => {
-    const ph = ((t - b.code0) * 0.7 + i / strips.length) % 1;
-    const on = t >= b.code0 && t < b.mem0 + 0.5;
-    s.visible = on;
-    const base = codexTerm.position;
-    s.position.set(base.x + Math.sin(i * 2.1) * 0.6, 1.6 + ph * 2.2, base.z + Math.cos(i * 1.7) * 0.3);
-    s.rotation.set(ph * 3 + i, ph * 2, 0); s.scale.setScalar(Math.sin(ph * Math.PI) * (on ? 1 : 0) + 0.001);
-  });
-  // 4) Xotira kartochkalari: chapdan uchib keladi, bola atrofida aylanadi, 5) samolyotga yig'iladi
-  cards.forEach((c, i) => {
-    const s0 = b.mem0 + 0.4 + i * 1.6;
-    const inP = ease(lin(t, s0, s0 + 1.2));
-    const ang = (t - s0) * 0.6 + i * 2.1;
-    const orbit = V(boy.position.x + Math.cos(ang) * 0.95, 1.45 + i * 0.32 + Math.sin(t * 1.5 + i) * 0.08, 0.6 + Math.sin(ang) * 0.7);
-    const from = V(-6, 2.5 + i * 0.4, 1);
-    const p = from.clone().lerp(orbit, inP);
-    const gather = eio(lin(t, b.fold1 - 0.6, b.fold1));
-    p.lerp(V(boy.position.x, 0.9, 1.2), gather);
-    c.position.copy(p); c.lookAt(cam.position);
-    c.scale.setScalar((1 - gather) * (t >= s0 ? 1 : 0) + 0.0001);
-  });
-  // samolyot
-  const pl = back(lin(t, b.fold1 - 0.1, b.fold1 + 0.5));
-  plane.visible = t >= b.fold1 - 0.1 && home < 1;
-  plane.scale.setScalar(Math.max(0.001, pl) * 0.9);
-  plane.position.set(boy.position.x, boy.position.y - 0.05, boy.position.z);
-  plane.rotation.set(Math.sin(t * 3) * 0.08, flying ? -Math.PI / 2 : 0, Math.sin(t * 2) * 0.12);
-  if (t >= b.fold1 && t < b.fly0) boy.position.y += 0.1;
-  // 6) Claude terminali yonadi
-  const tOn = ease(lin(t, b.end0, b.end0 + 0.6));
-  claudeTerm.scale.setScalar(0.6 + 0.4 * tOn); claudeTerm.visible = t >= b.fly1;
-  codexTerm.visible = t >= b.code0 - 0.6;
-  codexTerm.scale.setScalar(Math.max(0.001, back(lin(t, b.code0 - 0.6, b.code0))));
+  const b = B, S = b.scenes;
+  orange.position.set(2.6, 0, -.4); orange.rotation.y = -.45; gray.position.set(-2.8, 0, -.6); gray.rotation.y = .5;
+  const breathe = Math.sin(t * 2.2) * .02;
+  torso.scale.y = 1 + breathe; head.position.y = 2.25 + breathe * 1.2;
+  let look = .35;
+  if (t >= S.gray) look = mix(.35, -.5, ease(lin(t, S.gray, S.gray + .6)));
+  if (t >= S.back) look = mix(-.5, .45, ease(lin(t, S.back, S.back + .6)));
+  head.rotation.y = look; head.rotation.x = (t >= S.mem && t < S.back) ? .18 : Math.sin(t * 1.3) * .03;
+  const talking = (b.talk || []).some(([a, e]) => t >= a && t < e);
+  mouth.scale.y = talking ? 1 + Math.abs(Math.sin(t * 18)) * 2.2 : 1;
+  const blink = (t % 3.7) < .12 ? .15 : 1; eyes.forEach(e => (e.scale.y = blink));
+  orange.setFace(t < S.sad ? "calm" : t < S.back ? "sad" : t < S.happy ? "hmm" : "happy");
+  const hop = k => Math.max(0, Math.sin(lin(t, k, k + .5) * Math.PI)) * .35;
+  orange.position.y = hop(S.happy) + hop(S.happy + .55);
+  orange.userData.box.rotation.z = t >= S.sad && t < S.back ? -.06 : 0;
+  orange.userData.faceM.emissiveIntensity = t >= S.happy ? .8 : t >= S.sad && t < S.back ? .15 : .35;
 
-  // Kamera: har sahnaga yumshoq o'tish
-  const shots = b.shots || [];
-  let k = 0; while (k < shots.length - 1 && t >= shots[k + 1].t) k++;
-  const prev = shots[Math.max(0, k - 1)], cur = shots[k];
-  const p = k === 0 ? 1 : eio(lin(t, cur.t, cur.t + (cur.blend || 1.2)));
-  const follow = o => (o.follow ? V(boy.position.x * o.follow, 0, 0) : V(0, 0, 0));
-  const posC = V(...prev.pos).add(follow(prev)).lerp(V(...cur.pos).add(follow(cur)), p);
-  const look = V(...prev.look).add(follow(prev)).lerp(V(...cur.look).add(follow(cur)), p);
-  cam.position.copy(posC); cam.lookAt(look);
-  caption(t);
+  const shots = b.shots; let k = 0; while (k < shots.length - 1 && t >= shots[k + 1].t) k++;
+  const A = shots[Math.max(0, k - 1)], C = shots[k];
+  const p = k === 0 || C.cut ? 1 : eio(lin(t, C.t, C.t + (C.blend || 1)));
+  const P = new THREE.Vector3(...A.pos).lerp(new THREE.Vector3(...C.pos), p);
+  const L = new THREE.Vector3(...A.look).lerp(new THREE.Vector3(...C.look), p);
+  P.addScaledVector(L.clone().sub(P).normalize(), (t - C.t) * (C.push ?? .06));
+  P.x += Math.sin(t * .7) * .03; P.y += Math.sin(t * .9) * .02;
+  cam.position.copy(P); cam.lookAt(L);
   renderer.render(scene, cam);
+
+  let blur = 0;
+  blur = Math.max(blur, panel($("feed"), t, S.feed, S.gray));
+  $("likes").textContent = Math.round(mix(12400, 48900, ease(lin(t, S.feed + .5, S.gray - .5)))).toLocaleString("ru-RU");
+  blur = Math.max(blur, panel($("codexT"), t, S.code, S.title));
+  $("codexTxt").innerHTML = typeText(t, S.code + .3, ["$ codex", "<span class=ok>✓ loyiha yaratildi</span>", "<span class=ok>✓ testlar o'tdi</span>", "<span class=dim>Kuchli ekan… 👍</span>"], 34);
+  const tp = ease(lin(t, S.title, S.title + .4)) * (1 - ease(lin(t, S.mem - .4, S.mem)));
+  $("title").style.opacity = tp;
+  blur = Math.max(blur, panel($("memT"), t, S.mem, S.back));
+  $("memTxt").innerHTML = typeText(t, S.mem + .3, ["$ ls", "<span class=or>CLAUDE.md</span>", "<span class=or>skill'larim/</span>  <span class=dim>(12 ta)</span>", "<span class=or>loyihalarim/</span> <span class=dim>(sayt, bot, Tekshir)</span>", "", "<span class=dim># hammasi Claude bilan qurilgan…</span>"], 38);
+  blur = Math.max(blur, panel($("claudeT"), t, S.happy, S.end));
+  $("claudeTxt").innerHTML = typeText(t, S.happy + .3, ["$ claude", "", "<span class=or>Qaytganingdan xursandman 🙂</span>", "<span class=dim>Qayerda to'xtagan edik?</span>"], 34);
+  const ep = ease(lin(t, S.end, S.end + .6)); $("end").style.opacity = ep; $("end").style.transform = `translateY(${(1 - ep) * 50}px)`;
+  blur = Math.max(blur, tp, ep * .8);
+  glEl.style.filter = blur > .01 ? `blur(${(blur * 10).toFixed(1)}px) brightness(${(1 - blur * .45).toFixed(2)})` : "none";
+
+  const s = (b.subs || []).filter(x => t >= x.t && t < x.e).pop();
+  const sub = $("sub"); sub.textContent = s ? s.text : ""; sub.className = s && s.who === "o" ? "o" : "";
+  sub.style.top = blur > .3 ? "1650px" : "1180px";
+  sub.style.opacity = s ? ease(lin(t, s.t, s.t + .2)) : 0;
 };
 window.ready = document.fonts.ready.then(() => true);
 </script></body></html>

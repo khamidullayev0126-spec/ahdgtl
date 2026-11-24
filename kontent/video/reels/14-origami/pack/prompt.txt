@@ -1,0 +1,35 @@
+BRAND
+HERO: low-poly boy, 2.6 units: icosahedron head F2C9A6, nine spiky hair cones 7A3F22, black eyes, box mouth, sweater 6A4FD6.
+CAST: BUDDY, box 1.9x1.6x1.5 E2683A on two short legs, face = terminal screen 2A1408, glyph eyes FFAB6E: "▮ ▮" calm, "╥ ╥" sad, "^ ^" happy. CODEX, same box C9C9CF, screen 101014, eyes "> _".
+UI: PHONE post "dasturchi_uz", likes 12 400 → 48 900; terminals codex, ~/loyihalarim, claude typing 35 chars/s, JetBrains Mono.
+SET: night bedroom, window 1A2A78 → 0A0F2C, faint stars, 11 warm bokeh lights across the top.
+PALETTE: night 0B1030, accent FFAB6E, ok 7EE2A8, text FFFFFF.
+MATERIAL: matte flat-shaded low-poly, roughness 0.75.
+TEXT (exact): subtitles "Men Claude Code'ni tashlab ketdim…" / "…nima?!" / "Chunki hamma Codex'ni maqtayotgan edi." / "Rosti, Codex ham kuchli. Gap yo'q." / "Lekin hamma loyiham, skill'larim, odatlarim — Claude bilan qurilgan edi." / "Shuning uchun… qaytib keldim." / "Qaytganingdan xursandman!"; card "Bir haftadan keyin"; post "Codex — eng zo'ri! 🔥"; terminals "$ codex", "✓ loyiha yaratildi", "✓ testlar o'tdi" / "$ ls", "CLAUDE.md", "skill'larim/", "loyihalarim/" / "$ claude", "Qaytganingdan xursandman 🙂"; end card "Asbobni emas — o'zingizga qulayini tanlang", "Siz qaysi birini? 👇", "@ahdigital_01".
+
+FORMAT: One HTML file, three.js 0.160.0 via jsDelivr importmap, 1080x1920, 30 fps, 34 s, 120 BPM. renderAt(t) draws exact time t, seeded random, ?t= freezes; fonts loaded before frame 0. Voice ref/ovoz.mp3: detect its pauses, re-time BEATS and subtitles to the spoken lines.
+
+LOOK: warm key FFD2A6 right, cool rim 7F95FF from window, contact shadows; UI up → 3D blurs 10 px, darkens 45%; BUDDY reads E2683A in wide shots; 1.5% grain.
+
+TYPE: Figtree 800 from Google Fonts (display=block); subtitles 50 px white, BUDDY's lines FFAB6E, centred at y 1180 (y 1420 while UI is up), inside x 120–960.
+
+BEATS (s):
+0 close on HERO mid-sentence, eyes on BUDDY.
+3.5 cut to BUDDY: eyes ▮ ▮ → ╥ ╥ in 4 frames, box tilts 4°.
+5.0 PHONE rises from below, likes count up.
+9.0 PHONE drops; HERO's head turns to CODEX.
+10.5 codex terminal slides in and types.
+15.0 cut to blurred room, card "Bir haftadan keyin" 1.5 s.
+16.5 close on HERO looking down; ~/loyihalarim types the list in accent.
+22.5 cut to sad BUDDY; HERO turns back.
+24.5 BUDDY eyes → ^ ^, hops 0.35 units at 24.5 and 25.0; claude terminal types.
+29.5 pull wide, HERO and BUDDY side by side, CODEX dim behind; end card rises.
+34 hold.
+
+CAMERA: 2% handheld drift, slow push-ins on dialogue, cuts only at 3.5, 15.0, 22.5, ease-in-out-quart pan to CODEX at 9.0, pull wide at 29.5.
+
+MOTION: mouth flaps only while voice is audible; blink every 3.7 s; 4-frame anticipation, squash 1.2x0.8 on landings; UI in ease-out-quint 14 frames, out 8.
+
+BANNED: neon glow, floating particles, real logos, text moving while read, text not in TEXT.
+
+CHECKS: camera never inside HERO or a box (log per frame); feet on floor; subtitles inside safe area, held ≥0.5 s; BUDDY probes E2683A ±8; mouth closed in silence; contact sheet of every beat before finishing.
