@@ -1,0 +1,181 @@
+{
+ "_izoh": "Seriya 3-qism. Ovoz: Davronbek (bola) + İrem (quti)",
+ "end": 31,
+ "scenes": {
+  "happy1": 3.7,
+  "bad": 5.6,
+  "spot": 8.6,
+  "sad": 11.0,
+  "check": 17.4,
+  "ticks": [
+   20.0,
+   21.0,
+   22.0
+  ],
+  "good": 23.2,
+  "happy2": 23.5,
+  "end": 25.4
+ },
+ "shots": [
+  {
+   "t": 0,
+   "pos": [
+    0.5,
+    2.3,
+    5.0
+   ],
+   "look": [
+    0.15,
+    2.05,
+    0
+   ],
+   "push": 0.07
+  },
+  {
+   "t": 3.5,
+   "pos": [
+    0.4,
+    1.95,
+    6.6
+   ],
+   "look": [
+    2.3,
+    1.35,
+    -0.4
+   ],
+   "cut": true,
+   "push": 0.05
+  },
+  {
+   "t": 13.7,
+   "pos": [
+    0.5,
+    2.35,
+    4.6
+   ],
+   "look": [
+    0.15,
+    2.0,
+    0
+   ],
+   "cut": true,
+   "push": 0.05
+  },
+  {
+   "t": 23.0,
+   "pos": [
+    0.4,
+    1.95,
+    6.6
+   ],
+   "look": [
+    2.3,
+    1.35,
+    -0.4
+   ],
+   "cut": true,
+   "push": 0.04
+  },
+  {
+   "t": 25.4,
+   "pos": [
+    1.0,
+    2.4,
+    7.6
+   ],
+   "look": [
+    1.0,
+    1.5,
+    -0.2
+   ],
+   "blend": 1.6,
+   "push": 0.03
+  }
+ ],
+ "talk": [
+  [
+   0.3,
+   3.4
+  ],
+  [
+   5.9,
+   7.72
+  ],
+  [
+   8.0,
+   10.5
+  ],
+  [
+   13.9,
+   17.15
+  ],
+  [
+   17.6,
+   22.9
+  ],
+  [
+   25.6,
+   29.94
+  ]
+ ],
+ "subs": [
+  {
+   "t": 0.3,
+   "e": 3.6,
+   "text": "Saytni tekshirmasdan mijozga yubormoqchi edim…"
+  },
+  {
+   "t": 3.7,
+   "e": 5.6,
+   "text": "Tayyor! Yuboraveramiz!",
+   "who": "o"
+  },
+  {
+   "t": 5.9,
+   "e": 7.9,
+   "text": "…lekin oxirgi marta qarasam:"
+  },
+  {
+   "t": 8.0,
+   "e": 10.8,
+   "text": "Tortning narxi — 250 000 so'm! 😱"
+  },
+  {
+   "t": 11.0,
+   "e": 13.7,
+   "text": "Uzr… bitta nol ortiqcha ketibdi.",
+   "who": "o"
+  },
+  {
+   "t": 13.9,
+   "e": 15.5,
+   "text": "AI ham xato qilishi mumkin."
+  },
+  {
+   "t": 15.5,
+   "e": 17.3,
+   "text": "Oxirgi tekshiruv — meniki."
+  },
+  {
+   "t": 17.6,
+   "e": 23.1,
+   "text": "Endi har doim 3 ta narsani tekshiraman: narx, telefon raqam va telefonda ko'rinishi."
+  },
+  {
+   "t": 23.5,
+   "e": 25.2,
+   "text": "Tekshirganing yaxshi bo'ldi!",
+   "who": "o"
+  },
+  {
+   "t": 25.6,
+   "e": 27.2,
+   "text": "AI yozadi — siz tekshirasiz."
+  },
+  {
+   "t": 27.2,
+   "e": 30.4,
+   "text": "Tekshirish ro'yxati — Telegram kanalimda."
+  }
+ ]
+}
