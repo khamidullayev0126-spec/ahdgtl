@@ -503,5 +503,14 @@ if ("serviceWorker" in navigator) addEventListener("load", () => navigator.servi
 <script src="/vendor/qrcode-generator.js"></script>
 <script src="/app-maslahatlar.js?v=2"></script>
 <script src="/app-foydali.js?v=4"></script>
+<script>
+  // Telegram bot ichida ochilganda (Mini App): to'liq ekranga yoyiladi va Telegram'ga "tayyor" deydi
+  if (new URLSearchParams(location.search).get("tg") === "1") {
+    const t = document.createElement("script");
+    t.src = "https://telegram.org/js/telegram-web-app.js";
+    t.onload = () => { const w = window.Telegram && Telegram.WebApp; if (w) { w.ready(); w.expand(); try { w.setHeaderColor("#f5ead8"); w.setBackgroundColor("#f5ead8"); } catch {} } };
+    document.head.appendChild(t);
+  }
+</script>
 </body>
 </html>

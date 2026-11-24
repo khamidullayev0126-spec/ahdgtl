@@ -190,6 +190,25 @@ test("egasi botga /zaxira yozsa — zaxira fayli keladi", async () => {
   assert.match(doc.body.caption, /Zaxira/);
 });
 
+test("bot: mijoz tili — Telegram tilidan, /til bilan almashtiriladi", async () => {
+  const crypto = require("crypto");
+  const secret = crypto.createHash("sha256").update("123456:TEST-TOKEN").digest("hex").slice(0, 32);
+  const hook = body => fetch(base + "/telegram/webhook", { method: "POST", headers: { ...JSON_H, "X-Telegram-Bot-Api-Secret-Token": secret }, body: JSON.stringify(body) });
+  const waitMsg = async pred => { for (let i = 0; i < 30; i++) { const m = srv.telegram().filter(pred).pop(); if (m) return m; await new Promise(r => setTimeout(r, 100)); } };
+  const chat = { id: 7701, type: "private" };
+  // Ruscha Telegram — ruscha javob
+  await hook({ update_id: 11, message: { message_id: 1, chat, from: { id: 7701, language_code: "ru" }, text: "/start" } });
+  const ru = await waitMsg(x => x.method === "sendMessage" && x.body.chat_id === 7701 && /Здравствуйте/.test(x.body.text));
+  assert.ok(ru, "ruscha salom kelmadi");
+  assert.ok(ru.body.reply_markup.inline_keyboard.flat().some(b => b.callback_data === "til:en"), "til tugmalari yo'q");
+  // Inglizchani tanlaydi — keyingi javoblar inglizcha
+  await hook({ update_id: 12, callback_query: { id: "q1", from: { id: 7701 }, message: { message_id: 2, chat }, data: "til:en" } });
+  assert.ok(await waitMsg(x => x.method === "sendMessage" && x.body.chat_id === 7701 && /^Hi!/.test(x.body.text)), "inglizcha javob kelmadi");
+  await hook({ update_id: 13, message: { message_id: 3, chat, from: { id: 7701, language_code: "ru" }, text: "/start" } });
+  const again = await waitMsg(x => x.method === "sendMessage" && x.body.chat_id === 7701);
+  assert.match(again.body.text, /^Hi!/, "tanlangan til saqlanmadi");
+});
+
 // Bu test oxirida turadi: IP'ni 15 daqiqaga bloklaydi
 // (oldingi testdagi "admin123" urinishi ham hisoblanadi — shuning uchun "ko'pi bilan 5 ta" deb tekshiramiz)
 test("admin: 5 marta noto'g'ri paroldan keyin bloklanadi (to'g'ri parol bilan ham)", async () => {

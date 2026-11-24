@@ -175,7 +175,9 @@ app.use(express.json({ limit: "20kb" }));
 // ---------- Xavfsizlik sarlavhalari (brauzer uchun) ----------
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  // Ilova (app.html) Telegram Mini App sifatida web.telegram.org ichida ham ochiladi — faqat Telegram'ga ruxsat
+  if (req.path === "/app.html") res.setHeader("Content-Security-Policy", "frame-ancestors 'self' https://web.telegram.org https://*.telegram.org");
+  else res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   if (process.env.RENDER) res.setHeader("Strict-Transport-Security", "max-age=15552000");

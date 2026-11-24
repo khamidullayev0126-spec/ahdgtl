@@ -75,7 +75,7 @@ function createBot({ token, ownerChatId, publicUrl, services, readOrders, writeO
   const priceList = services.filter(s => !s.hidden).map(s => `- ${s.name}: ${s.price.toLocaleString("ru-RU")} so'm / ${s.period}. ${s.desc}`).join("\n");
   const SYSTEM = `Sen Claude — Anthropic yaratgan AI yordamchisan. AHdigital (Abdulhamid Xamidullayevning AI kontent va web sayt xizmatlari) Telegram botida mijozlar bilan gaplashyapsan.
 Qoidalar:
-- Faqat o'zbek tilida, qisqa (1–4 gap), samimiy javob ber. Markdown ishlatma, oddiy matn yoz.
+- Mijoz qaysi tilda yozsa (o'zbek, rus yoki ingliz), o'sha tilda qisqa (1–4 gap), samimiy javob ber. Markdown ishlatma, oddiy matn yoz.
 - O'zingni odam deb ko'rsatma. So'rashsa, AI ekaningni ayt.
 - Narx va xizmatlarni faqat quyidagi ro'yxatdan ayt. Ro'yxatda yo'q narx, chegirma, muddat yoki va'da o'ylab topma — bunday savollarga "Abdulhamid o'zi aniq javob beradi" de.
 - Buyurtma berish uchun saytdagi formani yoki Abdulhamidga yozishni taklif qil: Telegram @Abdulkhamid_2905, telefon +998 95 632 29 05.
@@ -210,9 +210,57 @@ ${priceList}`;
     caller, sendPhoto
   }) : null;
 
-  const intro = claude
-    ? "Salom! 👋 Men Claude — AHdigital'ning AI yordamchisiman (sun'iy intellekt, odam emasman)."
-    : "Salom! 👋 Men AHdigital'ning avtomatik yordamchi botiman (odam emasman).";
+  // ---------- Mijoz tili (o'zbek, rus, ingliz) ----------
+  const LANGS = ["uz", "ru", "en"];
+  const T = {
+    intro: claude
+      ? { uz: "Salom! 👋 Men Claude — AHdigital'ning AI yordamchisiman (sun'iy intellekt, odam emasman).",
+          ru: "Здравствуйте! 👋 Я Claude — AI-помощник AHdigital (искусственный интеллект, не человек).",
+          en: "Hi! 👋 I'm Claude — AHdigital's AI assistant (artificial intelligence, not a human)." }
+      : { uz: "Salom! 👋 Men AHdigital'ning avtomatik yordamchi botiman (odam emasman).",
+          ru: "Здравствуйте! 👋 Я автоматический бот-помощник AHdigital (не человек).",
+          en: "Hi! 👋 I'm AHdigital's automatic assistant bot (not a human)." },
+    welcome: { uz: "AHdigital xizmatlari haqida savolingiz bo'lsa, shu yerga yozing. Buyurtma berish va holatini kuzatish — pastdagi «📱 Ilova» tugmasida.",
+               ru: "Если есть вопросы об услугах AHdigital, пишите сюда. Заказать и следить за статусом — кнопка «📱 Приложение» ниже.",
+               en: "If you have questions about AHdigital's services, write here. To order and track status, tap “📱 App” below." },
+    found: { uz: c => `Buyurtmangiz #${c} topildi. Bir daqiqada tasdiqlash uchun yozaman.`,
+             ru: c => `Ваш заказ #${c} найден. Через минуту напишу для подтверждения.`,
+             en: c => `Your order #${c} was found. I'll message you in a minute to confirm.` },
+    app: { uz: "📱 Ilova", ru: "📱 Приложение", en: "📱 App" },
+    langAsk: { uz: "🌐 Tilni tanlang:", ru: "🌐 Выберите язык:", en: "🌐 Choose a language:" },
+    langSet: { uz: "✅ Til: o'zbekcha", ru: "✅ Язык: русский", en: "✅ Language: English" },
+    confirmQ: { uz: (o, f) => `Siz AHdigital saytida buyurtma qoldirdingiz:\n📦 ${o.serviceName} — ${f} so'm\n👤 ${o.name}\n\nRostdan ham shu buyurtmani olasizmi?`,
+                ru: (o, f) => `Вы оставили заказ на сайте AHdigital:\n📦 ${o.serviceName} — ${f} сум\n👤 ${o.name}\n\nПодтверждаете этот заказ?`,
+                en: (o, f) => `You placed an order on the AHdigital website:\n📦 ${o.serviceName} — ${f} UZS\n👤 ${o.name}\n\nDo you confirm this order?` },
+    yes: { uz: "✅ Ha, buyurtma beraman", ru: "✅ Да, заказываю", en: "✅ Yes, I confirm" },
+    no: { uz: "❌ Yo'q, bekor qilaman", ru: "❌ Нет, отменить", en: "❌ No, cancel" },
+    okShort: { uz: "Tasdiqlandi!", ru: "Подтверждено!", en: "Confirmed!" },
+    noShort: { uz: "Bekor qilindi", ru: "Отменено", en: "Cancelled" },
+    okLong: { uz: n => `✅ Rahmat! Buyurtmangiz tasdiqlandi: ${n}.\nAbdulhamid tez orada siz bilan bog'lanadi.`,
+              ru: n => `✅ Спасибо! Ваш заказ подтверждён: ${n}.\nАбдулхамид скоро свяжется с вами.`,
+              en: n => `✅ Thank you! Your order is confirmed: ${n}.\nAbdulhamid will contact you soon.` },
+    noLong: { uz: "❌ Buyurtma bekor qilindi. Savollaringiz bo'lsa, shu yerga yozing.",
+              ru: "❌ Заказ отменён. Если есть вопросы, пишите сюда.",
+              en: "❌ The order was cancelled. If you have questions, write here." },
+    notFound: { uz: "Buyurtma topilmadi.", ru: "Заказ не найден.", en: "Order not found." },
+    already: { uz: "Javobingiz allaqachon qabul qilingan.", ru: "Ваш ответ уже принят.", en: "Your answer was already received." },
+    delivered: { uz: "Xabaringiz Abdulhamidga yetkazildi ✅ U tez orada javob beradi.",
+                 ru: "Ваше сообщение передано Абдулхамиду ✅ Он скоро ответит.",
+                 en: "Your message was passed to Abdulhamid ✅ He'll reply soon." },
+    busy: { uz: (url) => `Abdulhamid hozir band, xabaringizni ko'rishi bilan javob beradi.\nXizmatlar va narxlar: ${url || "saytimizda"}\nKanal: t.me/ahdigital_01`,
+            ru: (url) => `Абдулхамид сейчас занят и ответит, как только увидит сообщение.\nУслуги и цены: ${url || "на нашем сайте"}\nКанал: t.me/ahdigital_01`,
+            en: (url) => `Abdulhamid is busy right now and will reply as soon as he sees your message.\nServices and prices: ${url || "on our website"}\nChannel: t.me/ahdigital_01` },
+    instead: { uz: "Abdulhamid o'rniga javob beryapman, u ham bu chatni ko'radi.",
+               ru: "Отвечаю вместо Абдулхамида, он тоже видит этот чат.",
+               en: "I'm replying on Abdulhamid's behalf — he sees this chat too." }
+  };
+  const tgLang = code => { const c = String(code || "").slice(0, 2).toLowerCase(); return c === "ru" ? "ru" : c === "en" ? "en" : "uz"; };
+  // Saqlangan tanlov > Telegram tili > o'zbekcha
+  const chatLang = (chatId, from) => store.get("bot-tillar", {})[chatId] || tgLang(from && from.language_code);
+  const setChatLang = (chatId, lang) => { const all = store.get("bot-tillar", {}); all[chatId] = lang; store.set("bot-tillar", all); };
+  const appUrl = lang => (/^https:\/\//.test(publicUrl || "") ? `${publicUrl.replace(/\/$/, "")}/app.html?lang=${lang}&tg=1` : "");
+  const LANG_ROW = [{ text: "🇺🇿 O'zbekcha", callback_data: "til:uz" }, { text: "🇷🇺 Русский", callback_data: "til:ru" }, { text: "🇬🇧 English", callback_data: "til:en" }];
+  const startKeyboard = lang => ({ inline_keyboard: [...(appUrl(lang) ? [[{ text: T.app[lang], web_app: { url: appUrl(lang) } }]] : []), LANG_ROW] });
 
   // ---------- Yangi buyurtma (server.js chaqiradi) ----------
   function deepLink(order) {
@@ -243,11 +291,11 @@ ${priceList}`;
       timers.delete(order.code);
       const fresh = findOrder(order.code);
       if (!fresh || !fresh.tgChatId || fresh.status !== "yangi") return;
-      await send(fresh.tgChatId,
-        `Siz AHdigital saytida buyurtma qoldirdingiz:\n📦 ${fresh.serviceName} — ${fmt(fresh.price)} so'm\n👤 ${fresh.name}\n\nRostdan ham shu buyurtmani olasizmi?`,
+      const lang = langOf(fresh);
+      await send(fresh.tgChatId, T.confirmQ[lang](fresh, fmt(fresh.price)),
         { reply_markup: { inline_keyboard: [[
-          { text: "✅ Ha, buyurtma beraman", callback_data: `ok:${fresh.code}` },
-          { text: "❌ Yo'q, bekor qilaman", callback_data: `no:${fresh.code}` }
+          { text: T.yes[lang], callback_data: `ok:${fresh.code}` },
+          { text: T.no[lang], callback_data: `no:${fresh.code}` }
         ]] } });
     }, wait));
   }
@@ -304,17 +352,16 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
 
     const opts = { business_connection_id: msg.business_connection_id };
     const first = !greeted.has(chatId);
+    const lang = tgLang(msg.from && msg.from.language_code);
     if (claude) {
       await api("sendChatAction", { chat_id: chatId, action: "typing", ...opts });
       const answer = await askClaude(`b${chatId}`, msg.text);
-      const out = first ? `${intro} Abdulhamid o'rniga javob beryapman, u ham bu chatni ko'radi.\n\n${answer}` : answer;
+      const out = first ? `${T.intro[lang]} ${T.instead[lang]}\n\n${answer}` : answer;
       const sent = await send(chatId, out, opts);
       if (sent.ok) remember({ chat: msg.chat, text: out }, "bot", msg.business_connection_id);
       greeted.set(chatId, Date.now());
     } else if (first || Date.now() - greeted.get(chatId) > AWAY_REPEAT_MS) {
-      await send(chatId,
-        `${intro}\n\nAbdulhamid hozir band, xabaringizni ko'rishi bilan javob beradi.\n` +
-        `Xizmatlar va narxlar: ${publicUrl || "saytimizda"}\nKanal: t.me/ahdigital_01`, opts);
+      await send(chatId, `${T.intro[lang]}\n\n${T.busy[lang](publicUrl)}`, opts);
       greeted.set(chatId, Date.now());
     }
   }
@@ -346,21 +393,28 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
       const q = update.callback_query;
       if (agent && String(q.from.id) === String(ownerChatId) && await agent.onCallback(q)) return;
       const [action, code] = (q.data || "").split(":");
+      // Til tanlandi
+      if (action === "til" && LANGS.includes(code)) {
+        setChatLang(q.message.chat.id, code);
+        await api("answerCallbackQuery", { callback_query_id: q.id, text: T.langSet[code] });
+        await send(q.message.chat.id, `${T.intro[code]}\n\n${T.welcome[code]}`, { reply_markup: startKeyboard(code) });
+        if (appUrl(code)) await api("setChatMenuButton", { chat_id: q.message.chat.id, menu_button: { type: "web_app", text: T.app[code], web_app: { url: appUrl(code) } } });
+        return;
+      }
       const order = findOrder(code);
+      const cl = order ? langOf(order) : chatLang(q.message.chat.id, q.from);
       if (!order || String(order.tgChatId) !== String(q.message.chat.id)) {
-        return api("answerCallbackQuery", { callback_query_id: q.id, text: "Buyurtma topilmadi." });
+        return api("answerCallbackQuery", { callback_query_id: q.id, text: T.notFound[cl] });
       }
       if (order.status !== "yangi") {
-        return api("answerCallbackQuery", { callback_query_id: q.id, text: "Javobingiz allaqachon qabul qilingan." });
+        return api("answerCallbackQuery", { callback_query_id: q.id, text: T.already[cl] });
       }
       const ok = action === "ok";
       updateOrder(code, { status: ok ? "tasdiqlandi" : "bekor", answeredAt: new Date().toISOString() });
-      await api("answerCallbackQuery", { callback_query_id: q.id, text: ok ? "Tasdiqlandi!" : "Bekor qilindi" });
+      await api("answerCallbackQuery", { callback_query_id: q.id, text: ok ? T.okShort[cl] : T.noShort[cl] });
       await api("editMessageText", {
         chat_id: q.message.chat.id, message_id: q.message.message_id,
-        text: ok
-          ? `✅ Rahmat! Buyurtmangiz tasdiqlandi: ${order.serviceName}.\nAbdulhamid tez orada siz bilan bog'lanadi.`
-          : "❌ Buyurtma bekor qilindi. Savollaringiz bo'lsa, shu yerga yozing."
+        text: ok ? T.okLong[cl](order.serviceName) : T.noLong[cl]
       });
       if (ownerChatId) await send(ownerChatId, `${ok ? "✅ TASDIQLANDI" : "❌ BEKOR QILINDI"} — buyurtma #${code}\n👤 ${order.name} · 📦 ${order.serviceName}`);
       return;
@@ -389,15 +443,23 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
     }
 
     // /start <kod> — mijoz saytdagi tugmani bosdi
+    if (text === "/til" || text === "/lang" || text === "/language") {
+      const lang = chatLang(chatId, msg.from);
+      await send(chatId, T.langAsk[lang], { reply_markup: { inline_keyboard: [LANG_ROW] } });
+      return;
+    }
     if (text.startsWith("/start")) {
       const code = text.split(" ")[1];
       const order = code && findOrder(code);
       if (order) {
+        const lang = langOf(order);
+        setChatLang(chatId, lang);
         updateOrder(code, { tgChatId: chatId });
-        await send(chatId, `${intro}\n\nBuyurtmangiz #${code} topildi. Bir daqiqada tasdiqlash uchun yozaman.`);
+        await send(chatId, `${T.intro[lang]}\n\n${T.found[lang](code)}`, { reply_markup: startKeyboard(lang) });
         scheduleConfirm(order);
       } else {
-        await send(chatId, `${intro}\n\nAHdigital xizmatlari haqida savolingiz bo'lsa, shu yerga yozing.`);
+        const lang = chatLang(chatId, msg.from);
+        await send(chatId, `${T.intro[lang]}\n\n${T.welcome[lang]}`, { reply_markup: startKeyboard(lang) });
       }
       return;
     }
@@ -412,7 +474,7 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
       await api("sendChatAction", { chat_id: chatId, action: "typing" });
       await send(chatId, await askClaude(chatId, text));
     } else {
-      await send(chatId, "Xabaringiz Abdulhamidga yetkazildi ✅ U tez orada javob beradi.");
+      await send(chatId, T.delivered[chatLang(chatId, msg.from)]);
     }
   }
 
@@ -451,6 +513,12 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
           }
         }
       })();
+    }
+
+    // Bot ichida ilova (Telegram Mini App): chap pastdagi menyu tugmasi + mijozlar uchun buyruqlar
+    if (appUrl("uz")) await api("setChatMenuButton", { menu_button: { type: "web_app", text: "📱 AHdigital", web_app: { url: appUrl("uz") } } });
+    for (const [lc, cmds] of [["", [["start", "Boshlash"], ["til", "Tilni o'zgartirish"]]], ["ru", [["start", "Начать"], ["til", "Сменить язык"]]], ["en", [["start", "Start"], ["til", "Change language"]]]]) {
+      await api("setMyCommands", { commands: cmds.map(([command, description]) => ({ command, description })), ...(lc ? { language_code: lc } : {}) });
     }
 
     // Server qayta ishga tushsa — kutilayotgan tasdiqlarni tiklaymiz
