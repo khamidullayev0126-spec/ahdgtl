@@ -1,7 +1,7 @@
 # Tekshir — aprel 2027 tanlovlariga tayyorgarlik
 
 **Maqsad:** 2027-yil aprelgacha Tekshir'ni haqiqiy raqamlari bor, Google Play'da turgan, kuchli pitchli startapga aylantirish.
-**Asosiy nishon:** Land of Startups (2027-yil aprel). E'lon chiqqach — talablarni (yosh, kompaniya, til) tekshiramiz.
+**Asosiy nishon:** Land of Startups (e'lon — 1-aprelgacha, arizalar — aprel 2027, final — 15-dekabrgacha). E'lon chiqqach — talablarni (yosh, kompaniya, til) tekshiramiz.
 **Muhim:** arizalar, kompaniya ro'yxati va pul masalalari — ota-ona (oyim) nomidan va ular bilan birga.
 
 ## Oy bo'yicha reja
@@ -33,7 +33,11 @@
 - [ ] 1 daqiqalik demo video
 - [ ] Raqobatchilar slaydi (APK qo'riqchi va boshqalar)
 - [ ] Savol-javob mashqi (har hafta)
-- [ ] Land of Startups e'lonini kuzatish → talablarni o'qish
+- [ ] Land of Startups: 1-aprelgacha maxsus portalda e'lon qilinadi → shartlarni o'qish:
+  - yosh chegarasi bormi? (hali noma'lum)
+  - mahalliy startaplar qatnasha oladimi yoki faqat xorijlik asoschilar? (yangiliklarda noaniq)
+  - pul olish uchun O'zbekistonda yuridik shaxs kerak → kompaniya ota-ona nomidan
+- [ ] Mos kelmasa — muqobil: Startup Weekend Tashkent, IT Park dasturlari, UzVC SGP (yoz 2027)
 
 ### Aprel 2027 — «Ariza»
 - [ ] Arizani oyim bilan birga topshirish
