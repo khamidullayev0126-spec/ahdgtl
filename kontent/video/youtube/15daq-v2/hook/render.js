@@ -1,11 +1,14 @@
-// Hook videosi (40 s, 1920×1080, 30 fps) — ovozsiz. Ovozni Abdulhamid o'zi yozadi.
+// Hook videosi (1920×1080, 30 fps) — Abdulhamidning ovozi bilan (ovoz.m4a).
+// Ovoz bo'lmasa — ovozsiz versiya chiqadi.
 // Ishlatish: node render.js [fps] [masshtab]   — tez ko'rish: node render.js 10 0.4
 const { chromium } = require("playwright");
 const { execFileSync } = require("child_process");
 const fs = require("fs"), path = require("path"), os = require("os");
 const ROOT = path.join(__dirname, "../../../../..");
 const [fps = 30, scale = 1] = process.argv.slice(2).map(Number);
-const END = 40;
+const VOICE = path.join(__dirname, "ovoz.m4a");
+const HAS_VOICE = fs.existsSync(VOICE);
+const END = HAS_VOICE ? 37.6 : 40;
 
 (async () => {
   const b64 = f => fs.readFileSync(f).toString("base64");
@@ -27,10 +30,11 @@ const END = 40;
   }
   await br.close();
   if (errs.length) console.log("⚠️", errs.slice(0, 3));
-  const out = path.join(__dirname, "..", (scale < 1 ? "korish-" : "") + "hook-ovozsiz.mp4");
+  const out = path.join(__dirname, "..", (scale < 1 ? "korish-" : "") + (HAS_VOICE ? "hook.mp4" : "hook-ovozsiz.mp4"));
   execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-framerate", String(fps), "-i", path.join(dir, "%05d.jpg"),
-    "-f", "lavfi", "-t", String(END), "-i", "anullsrc=r=48000:cl=stereo",
-    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", scale < 1 ? "28" : "18", "-c:a", "aac", "-shortest", "-movflags", "+faststart", out]);
+    ...(HAS_VOICE ? ["-i", VOICE, "-af", "highpass=f=80,loudnorm=I=-14:TP=-1.5:LRA=11,apad", "-ar", "48000", "-ac", "2"]
+                  : ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo"]),
+    "-t", String(END), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", scale < 1 ? "28" : "18", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out]);
   fs.rmSync(dir, { recursive: true });
   console.log("✅", path.basename(out), n, "kadr");
 })();

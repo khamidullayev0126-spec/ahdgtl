@@ -95,8 +95,9 @@ function inout(t,a,b,d=.5){return Math.min(ease(lin(t,a,a+d)),1-ease(lin(t,b-d,b
 let SITE_H=0;
 window.setup=(asset)=>{ $('logoimg').src=asset.logo; $('site').src=asset.site; SITE_H=asset.siteH; window.__wait=$('site').decode(); };
 window.render=function(t){
-  // 1-sahna: 0–14 s
-  const L1=inout(t,0,14.2,.6);
+  // Ovoz: e2750b49-YouTube.m4a (37.3 s) ga moslangan
+  // 1-sahna: 0–14.8 s
+  const L1=inout(t,0,14.8,.6);
   $('L1').style.opacity=L1;
   const pin=ease(lin(t,.2,1.2));
   $('phone').style.transform=`translateY(${(1-pin)*140}px) rotate(${(1-pin)*6+2}deg)`;
@@ -105,26 +106,26 @@ window.render=function(t){
   const scroll=ease(lin(t,1.6,12.2))*(imgH-screenH);
   $('site').style.transform=`translateY(${-scroll}px)`;
   const kh=ease(lin(t,.3,1.1)); $('k1').style.opacity=kh; $('h1').style.opacity=kh; $('h1').style.transform=`translateY(${(1-kh)*40}px)`;
-  [['c1',7.2],['c2',8.6],['c3',10.0]].forEach(([id,s])=>{const p=back(lin(t,s,s+.5));$(id).style.opacity=cl(p*1.3);$(id).style.transform=`translateX(${(1-p)*-80}px)`;});
-  const np=back(lin(t,11.6,12.2)); $('notif').style.opacity=cl(np*1.4)*(1-lin(t,13.6,14.1)); $('notif').style.transform=`translateY(${(1-np)*60}px) scale(${.9+.1*np})`;
+  [['c1',3.6],['c2',5.8],['c3',7.7]].forEach(([id,s])=>{const p=back(lin(t,s,s+.5));$(id).style.opacity=cl(p*1.3);$(id).style.transform=`translateX(${(1-p)*-80}px)`;});
+  const np=back(lin(t,10.4,11.0)); $('notif').style.opacity=cl(np*1.4)*(1-lin(t,14.0,14.5)); $('notif').style.transform=`translateY(${(1-np)*60}px) scale(${.9+.1*np})`;
   // 2-sahna: qoidalar 14.4–24 s
-  $('rules').style.opacity=inout(t,14.4,24.2,.5);
-  [['r1',15.4],['r2',17.6],['r3',20.0]].forEach(([id,s])=>{const p=back(lin(t,s,s+.55));$(id).style.opacity=cl(p*1.3);$(id).style.transform=`translateY(${(1-p)*90}px) scale(${.85+.15*cl(p)})`;});
+  $('rules').style.opacity=inout(t,14.7,22.1,.5);
+  [['r1',16.1],['r2',17.7],['r3',20.1]].forEach(([id,s])=>{const p=back(lin(t,s,s+.55));$(id).style.opacity=cl(p*1.3);$(id).style.transform=`translateY(${(1-p)*90}px) scale(${.85+.15*cl(p)})`;});
   // 3-sahna: taymer 24.4–31 s
-  const tp=back(lin(t,24.4,25.1));
-  let to=cl(tp*1.3)*(1-lin(t,30.0,30.5));
+  const tp=back(lin(t,22.0,22.7));
+  let to=cl(tp*1.3)*(1-lin(t,27.6,28.1));
   $('timer').style.opacity=to;
-  const shrink=ease(lin(t,29.4,30.4));
-  const pulse=1+.035*Math.sin(Math.max(0,t-25.2)*Math.PI*2*1.0);   // yurak urishi — taymer hali boshlanmagan
+  const shrink=ease(lin(t,27.0,28.0));
+  const pulse=1+.035*Math.sin(Math.max(0,t-22.7)*Math.PI*2*1.0);   // yurak urishi — taymer hali boshlanmagan
   $('timer').style.transform=`translate(${shrink*640}px,${shrink*-400}px) scale(${(.6+.4*cl(tp))*pulse*(1-shrink*.8)})`;
   $('tnum').textContent='15:00';
-  const qp=back(lin(t,26.4,27.0)); $('q').style.opacity=cl(qp*1.3)*(1-lin(t,29.4,30.0)); $('q').style.transform=`scale(${.8+.2*cl(qp)})`;
-  const mp=lin(t,30.2,30.7); $('mini').style.opacity=mp;
+  const qp=back(lin(t,24.3,24.9)); $('q').style.opacity=cl(qp*1.3)*(1-lin(t,27.0,27.6)); $('q').style.transform=`scale(${.8+.2*cl(qp)})`;
+  const mp=lin(t,27.8,28.3); $('mini').style.opacity=mp;
   // 4-sahna: final 31–40 s
-  const fp=inout(t,31.0,41,.6); $('final').style.opacity=fp;
-  const f2=back(lin(t,31.2,31.9)); document.querySelector('#final .t2').style.transform=`scale(${.85+.15*cl(f2)})`;
-  const f3=back(lin(t,33.6,34.2)); document.querySelector('#final .t3').style.opacity=cl(f3*1.3); document.querySelector('#final .t3').style.transform=`translateY(${(1-f3)*40}px)`;
-  const f4=lin(t,35.0,35.6); document.querySelector('#final .t4').style.opacity=f4;
+  const fp=inout(t,28.1,41,.6); $('final').style.opacity=fp;
+  const f2=back(lin(t,28.3,29.0)); document.querySelector('#final .t2').style.transform=`scale(${.85+.15*cl(f2)})`;
+  const f3=back(lin(t,29.4,30.0)); document.querySelector('#final .t3').style.opacity=cl(f3*1.3); document.querySelector('#final .t3').style.transform=`translateY(${(1-f3)*40}px)`;
+  const f4=lin(t,34.4,35.0); document.querySelector('#final .t4').style.opacity=f4;
   return window.__wait;
 };
 </script></body></html>
