@@ -1,23 +1,170 @@
 {
- "_izoh": "Tungi uslub (reference'dan ilhom). Vaqtlar taxminiy — ovoz kelgach so'zlarga moslanadi.",
- "end": 34,
- "scenes": {"sad": 4.0, "feed": 5.0, "gray": 9.0, "code": 10.6, "title": 15.0, "mem": 16.6, "back": 22.6, "happy": 24.4, "end": 29.6},
+ "_izoh": "Ovozga moslangan: ref/ovoz-bola.mp3 + ref/ovoz-quti.mp3 -> ovoz.mp3",
+ "end": 31,
+ "scenes": {
+  "sad": 3.2,
+  "feed": 4.6,
+  "gray": 8.6,
+  "code": 9.2,
+  "title": 12.8,
+  "mem": 14.4,
+  "back": 20.8,
+  "happy": 23.2,
+  "end": 26.4
+ },
  "shots": [
-  {"t": 0,    "pos": [0.35, 2.3, 3.4],  "look": [0.15, 2.2, 0], "push": 0.08},
-  {"t": 3.6,  "pos": [1.3, 1.6, 2.6],   "look": [2.6, 1.45, -0.4], "cut": true, "push": 0.05},
-  {"t": 9.0,  "pos": [-1.0, 1.9, 4.0],  "look": [-2.2, 1.4, -0.6], "blend": 0.9},
-  {"t": 15.0, "pos": [0.2, 2.25, 2.6],  "look": [0, 2.0, 0], "cut": true, "push": 0.04},
-  {"t": 22.4, "pos": [1.2, 1.7, 2.8],   "look": [2.6, 1.5, -0.4], "cut": true},
-  {"t": 27.4, "pos": [1.2, 2.4, 7.0],   "look": [1.2, 1.5, -0.2], "blend": 1.6, "push": 0.03}
+  {
+   "t": 0,
+   "pos": [
+    0.5,
+    2.3,
+    5.0
+   ],
+   "look": [
+    0.15,
+    2.05,
+    0
+   ],
+   "push": 0.07
+  },
+  {
+   "t": 3.2,
+   "pos": [
+    0.4,
+    1.95,
+    6.6
+   ],
+   "look": [
+    2.3,
+    1.35,
+    -0.4
+   ],
+   "cut": true,
+   "push": 0.05
+  },
+  {
+   "t": 8.6,
+   "pos": [
+    -0.8,
+    1.9,
+    4.7
+   ],
+   "look": [
+    -2.4,
+    1.45,
+    -0.6
+   ],
+   "blend": 0.9
+  },
+  {
+   "t": 12.8,
+   "pos": [
+    0.5,
+    2.5,
+    4.0
+   ],
+   "look": [
+    0.1,
+    2.0,
+    0
+   ],
+   "cut": true,
+   "push": 0.04
+  },
+  {
+   "t": 20.8,
+   "pos": [
+    0.4,
+    1.95,
+    6.6
+   ],
+   "look": [
+    2.3,
+    1.35,
+    -0.4
+   ],
+   "cut": true
+  },
+  {
+   "t": 26.4,
+   "pos": [
+    1.0,
+    2.4,
+    7.6
+   ],
+   "look": [
+    1.0,
+    1.5,
+    -0.2
+   ],
+   "blend": 1.6,
+   "push": 0.03
+  }
  ],
- "talk": [[0.3, 3.4], [16.8, 21.8], [22.8, 24.2]],
+ "talk": [
+  [
+   0.3,
+   2.78
+  ],
+  [
+   5.0,
+   7.13
+  ],
+  [
+   9.6,
+   12.19
+  ],
+  [
+   14.8,
+   20.44
+  ],
+  [
+   21.2,
+   22.91
+  ]
+ ],
  "subs": [
-  {"t": 0.3,  "e": 3.6,  "text": "Men Claude Code'ni tashlab ketdim…"},
-  {"t": 3.6,  "e": 4.9,  "text": "…nima?!", "who": "o"},
-  {"t": 5.0,  "e": 8.9,  "text": "Chunki hamma Codex'ni maqtayotgan edi."},
-  {"t": 10.6, "e": 14.8, "text": "Rosti, Codex ham kuchli. Gap yo'q."},
-  {"t": 16.8, "e": 22.2, "text": "Lekin hamma loyiham, skill'larim, odatlarim — Claude bilan qurilgan edi."},
-  {"t": 22.8, "e": 24.3, "text": "Shuning uchun… qaytib keldim."},
-  {"t": 24.4, "e": 29.4, "text": "Qaytganingdan xursandman!", "who": "o"}
+  {
+   "t": 0.3,
+   "e": 3.0,
+   "text": "Men Claude Code'ni tashlab ketdim…"
+  },
+  {
+   "t": 3.4,
+   "e": 4.5,
+   "text": "…nima?!",
+   "who": "o"
+  },
+  {
+   "t": 5.0,
+   "e": 7.6,
+   "text": "Chunki hamma Codex'ni maqtayotgan edi."
+  },
+  {
+   "t": 9.6,
+   "e": 12.6,
+   "text": "Rosti, Codex ham kuchli. Gap yo'q."
+  },
+  {
+   "t": 14.8,
+   "e": 18.5,
+   "text": "Lekin hamma loyiham, skill'larim, odatlarim —"
+  },
+  {
+   "t": 18.5,
+   "e": 20.7,
+   "text": "…Claude bilan qurilgan edi."
+  },
+  {
+   "t": 21.2,
+   "e": 23.2,
+   "text": "Shuning uchun… qaytib keldim."
+  },
+  {
+   "t": 23.6,
+   "e": 26.3,
+   "text": "Qaytganingdan xursandman!",
+   "who": "o"
+  }
  ]
 }

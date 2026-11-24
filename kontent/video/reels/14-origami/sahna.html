@@ -6,7 +6,7 @@
 *{margin:0;box-sizing:border-box}
 html,body{width:1080px;height:1920px;overflow:hidden;background:#0b1030;font-family:Figtree}
 #gl{position:absolute;inset:0}
-#sub{position:absolute;left:90px;right:90px;top:1180px;text-align:center;font:800 50px/1.25 Figtree;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.6)}
+#sub{position:absolute;left:90px;right:90px;top:1430px;text-align:center;font:800 50px/1.25 Figtree;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.6)}
 #sub.o{color:#ffab6e}
 .ui{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);opacity:0}
 .phone{width:600px;height:1180px;border-radius:84px;background:#141418;padding:18px;box-shadow:0 60px 140px rgba(0,0,0,.6),0 0 0 3px #2a2a33}
@@ -88,6 +88,7 @@ key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 5; key.shadow.camera.lef
 scene.add(key);
 const rim = new THREE.DirectionalLight("#7f95ff", 1.6); rim.position.set(-5, 3, -4); scene.add(rim);
 const warm = new THREE.PointLight("#ff9a5a", 6, 8, 2); warm.position.set(1.5, 1.8, 1.5); scene.add(warm);
+const fill = new THREE.PointLight("#ffc29a", 7, 10, 2); fill.position.set(1.0, 2.4, 3.2); scene.add(fill);
 
 const mat = (c, r = .8) => new THREE.MeshStandardMaterial({ color: c, roughness: r, flatShading: true });
 const mesh = (g, m) => { const o = new THREE.Mesh(g, m); o.castShadow = true; o.receiveShadow = true; return o; };
@@ -117,9 +118,10 @@ const legL = mesh(new THREE.BoxGeometry(.38, .5, .38), pants), legR = legL.clone
 legL.position.set(-.25, .25, 0); legR.position.set(.25, .25, 0); boy.add(legL, legR);
 
 // Yordamchi qutilar: yuzi — terminal ekrani (o'z qahramonimiz)
-function faceTex(kind, glow, fg) {
+function faceTex(kind, glow, fg, body) {
   const cv = document.createElement("canvas"); cv.width = 512; cv.height = 512;
-  const x = cv.getContext("2d"); x.fillStyle = glow; x.fillRect(0, 0, 512, 512);
+  const x = cv.getContext("2d"); x.fillStyle = body; x.fillRect(0, 0, 512, 512);
+  x.fillStyle = glow; x.beginPath(); x.roundRect(46, 54, 420, 380, 36); x.fill();
   x.fillStyle = fg; x.textAlign = "center"; x.textBaseline = "middle"; x.font = "bold 150px Mono";
   const F = { calm: ["▮", "▮"], sad: ["╥", "╥"], happy: ["^", "^"], prompt: [">", "_"], hmm: ["•", "•"] }[kind];
   x.fillText(F[0], 160, 230); x.fillText(F[1], 352, 230);
@@ -127,7 +129,7 @@ function faceTex(kind, glow, fg) {
 }
 function buddy(body, glow, fg, kinds) {
   const g = new THREE.Group();
-  const faces = {}; kinds.forEach(k => (faces[k] = faceTex(k, glow, fg)));
+  const faces = {}; kinds.forEach(k => (faces[k] = faceTex(k, glow, fg, body)));
   const bm = mat(body, .75);
   const faceM = new THREE.MeshStandardMaterial({ map: faces[kinds[0]], emissive: "#ffffff", emissiveMap: faces[kinds[0]], emissiveIntensity: .35, roughness: .6 });
   const box = mesh(new THREE.BoxGeometry(1.9, 1.6, 1.5), [bm, bm, bm, bm, faceM, bm]); box.position.y = 1.35; g.add(box);
@@ -204,7 +206,7 @@ window.render = function (t) {
 
   const s = (b.subs || []).filter(x => t >= x.t && t < x.e).pop();
   const sub = $("sub"); sub.textContent = s ? s.text : ""; sub.className = s && s.who === "o" ? "o" : "";
-  sub.style.top = blur > .3 ? "1650px" : "1180px";
+  sub.style.top = "1430px";
   sub.style.opacity = s ? ease(lin(t, s.t, s.t + .2)) : 0;
 };
 window.ready = document.fonts.ready.then(() => true);
