@@ -12,7 +12,8 @@
 - [x] Yangi Play Console hisobi ochildi (24-noyabr): AHdigital, Personal, oyim nomida; trader: «not a trader»
 - [ ] Shaxs tasdiqlanishini kutish (email) → Android qurilma (Play Console ilovasi) → telefon raqami
 - [ ] APK qo'riqchini o'rnatib, Tekshir bilan aniq solishtirish (jadval)
-- [ ] Meizon'ga rahmat xabari + savollar
+- [ ] Meizon'ga rahmat xabari + savollar (lookbook tahlili: kontent/meizon-va-sgp.md)
+- [ ] Tekshir bir sahifalik (lookbook uslubida): bir gaplik ta'rif, teglar, raqamlar
 - [ ] Startup Week'da tanishganlarga follow-up xabarlar
 - [ ] Kontent reja: haftasiga 3 ta Reels (davom etadi)
 
@@ -37,7 +38,7 @@
   - yosh chegarasi bormi? (hali noma'lum)
   - mahalliy startaplar qatnasha oladimi yoki faqat xorijlik asoschilar? (yangiliklarda noaniq)
   - pul olish uchun O'zbekistonda yuridik shaxs kerak → kompaniya ota-ona nomidan
-- [ ] Mos kelmasa — muqobil: Startup Weekend Tashkent, IT Park dasturlari, UzVC SGP (yoz 2027)
+- [ ] Mos kelmasa — muqobil: Startup Weekend Tashkent, IT Park dasturlari, UzVC SGP 4.0 (SGP 3.0 sentyabrda boshlangan edi — 4.0 e'lonini kuzatish)
 
 ### Aprel 2027 — «Ariza»
 - [ ] Arizani oyim bilan birga topshirish
