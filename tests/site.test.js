@@ -209,6 +209,24 @@ test("bot: mijoz tili — Telegram tilidan, /til bilan almashtiriladi", async ()
   assert.match(again.body.text, /^Hi!/, "tanlangan til saqlanmadi");
 });
 
+test("bot: egasi ham /start, /til va /ilova ni sinay oladi; Menu — buyruqlar ro'yxati", async () => {
+  const crypto = require("crypto");
+  const secret = crypto.createHash("sha256").update("123456:TEST-TOKEN").digest("hex").slice(0, 32);
+  const hook = body => fetch(base + "/telegram/webhook", { method: "POST", headers: { ...JSON_H, "X-Telegram-Bot-Api-Secret-Token": secret }, body: JSON.stringify(body) });
+  const own = Number(OWNER_ID), chat = { id: own, type: "private" };
+  const before = srv.telegram().length;
+  const waitNew = async pred => { for (let i = 0; i < 30; i++) { const m = srv.telegram().slice(before).filter(pred).pop(); if (m) return m; await new Promise(r => setTimeout(r, 100)); } };
+  await hook({ update_id: 21, message: { message_id: 1, chat, from: { id: own }, text: "/til" } });
+  const ask = await waitNew(x => x.method === "sendMessage" && String(x.body.chat_id) === OWNER_ID && x.body.reply_markup);
+  assert.ok(ask && ask.body.reply_markup.inline_keyboard.flat().some(b => b.callback_data === "til:ru"), "egasiga til tugmalari chiqmadi");
+  await hook({ update_id: 22, callback_query: { id: "q2", from: { id: own }, message: { message_id: 2, chat }, data: "til:ru" } });
+  assert.ok(await waitNew(x => x.method === "sendMessage" && String(x.body.chat_id) === OWNER_ID && /Здравствуйте/.test(x.body.text)), "egasi uchun ruscha ishlamadi");
+  const menu = srv.telegram().filter(x => x.method === "setChatMenuButton");
+  assert.ok(menu.length && menu.every(x => x.body.menu_button.type === "commands"), "Menu tugmasi buyruqlar bo'lishi kerak");
+  const cmds = srv.telegram().filter(x => x.method === "setMyCommands" && !x.body.scope);
+  assert.ok(cmds.some(x => x.body.commands.some(c => c.command === "til")), "/til buyruqlar ro'yxatida yo'q");
+});
+
 // Bu test oxirida turadi: IP'ni 15 daqiqaga bloklaydi
 // (oldingi testdagi "admin123" urinishi ham hisoblanadi — shuning uchun "ko'pi bilan 5 ta" deb tekshiramiz)
 test("admin: 5 marta noto'g'ri paroldan keyin bloklanadi (to'g'ri parol bilan ham)", async () => {

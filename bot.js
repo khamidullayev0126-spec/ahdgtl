@@ -227,6 +227,7 @@ ${priceList}`;
              ru: c => `Ваш заказ #${c} найден. Через минуту напишу для подтверждения.`,
              en: c => `Your order #${c} was found. I'll message you in a minute to confirm.` },
     app: { uz: "📱 Ilova", ru: "📱 Приложение", en: "📱 App" },
+    appOpen: { uz: "Ilovani shu yerning o'zida ochish uchun tugmani bosing 👇", ru: "Нажмите кнопку, чтобы открыть приложение прямо здесь 👇", en: "Tap the button to open the app right here 👇" },
     langAsk: { uz: "🌐 Tilni tanlang:", ru: "🌐 Выберите язык:", en: "🌐 Choose a language:" },
     langSet: { uz: "✅ Til: o'zbekcha", ru: "✅ Язык: русский", en: "✅ Language: English" },
     confirmQ: { uz: (o, f) => `Siz AHdigital saytida buyurtma qoldirdingiz:\n📦 ${o.serviceName} — ${f} so'm\n👤 ${o.name}\n\nRostdan ham shu buyurtmani olasizmi?`,
@@ -398,7 +399,6 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
         setChatLang(q.message.chat.id, code);
         await api("answerCallbackQuery", { callback_query_id: q.id, text: T.langSet[code] });
         await send(q.message.chat.id, `${T.intro[code]}\n\n${T.welcome[code]}`, { reply_markup: startKeyboard(code) });
-        if (appUrl(code)) await api("setChatMenuButton", { chat_id: q.message.chat.id, menu_button: { type: "web_app", text: T.app[code], web_app: { url: appUrl(code) } } });
         return;
       }
       const order = findOrder(code);
@@ -425,6 +425,24 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
     const chatId = msg.chat.id, text = msg.text.trim();
     const isOwner = ownerChatId && String(chatId) === String(ownerChatId);
 
+    // /til va /ilova — hamma uchun (egasi ham mijoz ko'rinishini sinab ko'ra oladi)
+    if (["/til", "/lang", "/language"].includes(text)) {
+      const lang = chatLang(chatId, msg.from);
+      await send(chatId, T.langAsk[lang], { reply_markup: { inline_keyboard: [LANG_ROW] } });
+      return;
+    }
+    if (text === "/ilova" || text === "/app") {
+      const lang = chatLang(chatId, msg.from);
+      const url = appUrl(lang);
+      await send(chatId, url ? T.appOpen[lang] : T.welcome[lang], url ? { reply_markup: { inline_keyboard: [[{ text: T.app[lang], web_app: { url } }]] } } : {});
+      return;
+    }
+    if (isOwner && text === "/start") {
+      const lang = chatLang(chatId, msg.from);
+      await send(chatId, `${T.intro[lang]}\n\n${T.welcome[lang]}\n\n(👑 Siz egasisiz: mijozlar shuni ko'radi. Boshqa xabarlaringiz AI agentga boradi.)`, { reply_markup: startKeyboard(lang) });
+      return;
+    }
+
     // Egasi mijoz xabariga "reply" qildi — javobni mijozga yuboramiz
     if (isOwner) {
       const target = msg.reply_to_message && forwards.get(msg.reply_to_message.message_id);
@@ -443,11 +461,6 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
     }
 
     // /start <kod> — mijoz saytdagi tugmani bosdi
-    if (text === "/til" || text === "/lang" || text === "/language") {
-      const lang = chatLang(chatId, msg.from);
-      await send(chatId, T.langAsk[lang], { reply_markup: { inline_keyboard: [LANG_ROW] } });
-      return;
-    }
     if (text.startsWith("/start")) {
       const code = text.split(" ")[1];
       const order = code && findOrder(code);
@@ -516,8 +529,8 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
     }
 
     // Bot ichida ilova (Telegram Mini App): chap pastdagi menyu tugmasi + mijozlar uchun buyruqlar
-    if (appUrl("uz")) await api("setChatMenuButton", { menu_button: { type: "web_app", text: "📱 AHdigital", web_app: { url: appUrl("uz") } } });
-    for (const [lc, cmds] of [["", [["start", "Boshlash"], ["til", "Tilni o'zgartirish"]]], ["ru", [["start", "Начать"], ["til", "Сменить язык"]]], ["en", [["start", "Start"], ["til", "Change language"]]]]) {
+    await api("setChatMenuButton", { menu_button: { type: "commands" } });   // «Menu» tugmasida buyruqlar ro'yxati
+    for (const [lc, cmds] of [["", [["start", "Boshlash"], ["til", "🌐 Tilni o'zgartirish"], ["ilova", "📱 Ilovani ochish"]]], ["ru", [["start", "Начать"], ["til", "🌐 Сменить язык"], ["ilova", "📱 Открыть приложение"]]], ["en", [["start", "Start"], ["til", "🌐 Change language"], ["ilova", "📱 Open the app"]]]]) {
       await api("setMyCommands", { commands: cmds.map(([command, description]) => ({ command, description })), ...(lc ? { language_code: lc } : {}) });
     }
 
@@ -529,6 +542,8 @@ Javob uchun menga yozing, masalan: "${msg.chat.first_name || "unga"}ga yoz: ..."
       console.log("🧠 Shaxsiy AI agent yoqildi (egasi uchun)");
       await api("setMyCommands", { commands: [
         { command: "yordam", description: "Agent nimalar qila oladi" },
+        { command: "til", description: "🌐 Tilni o'zgartirish (mijoz ko'rinishi)" },
+        { command: "ilova", description: "📱 Ilovani ochish" },
         { command: "yangi", description: "Suhbatni yangidan boshlash" },
         { command: "zaxira", description: "Barcha ma'lumotlarning zaxira faylini olish" }
       ], scope: { type: "chat", chat_id: Number(ownerChatId) } });
