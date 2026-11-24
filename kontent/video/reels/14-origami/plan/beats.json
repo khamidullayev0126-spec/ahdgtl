@@ -1,0 +1,141 @@
+{
+ "_izoh": "Vaqtlar taxminiy (ovoz kelguncha). Ovoz kelgach — so'z vaqtlariga moslanadi.",
+ "end": 32,
+ "fold0": 0.2,
+ "walk0": 3.2,
+ "walk1": 7.6,
+ "code0": 8.2,
+ "mem0": 14.2,
+ "fold1": 20.6,
+ "fly0": 21.6,
+ "fly1": 25.6,
+ "end0": 27.0,
+ "shots": [
+  {
+   "t": 0,
+   "pos": [
+    -2.2,
+    1.5,
+    5.2
+   ],
+   "look": [
+    -2.2,
+    1.55,
+    0.6
+   ]
+  },
+  {
+   "t": 2.2,
+   "pos": [
+    -0.6,
+    3.0,
+    10.5
+   ],
+   "look": [
+    0,
+    1.7,
+    0
+   ],
+   "follow": 0.6,
+   "blend": 1.4
+  },
+  {
+   "t": 8.0,
+   "pos": [
+    1.0,
+    1.9,
+    6.4
+   ],
+   "look": [
+    3.0,
+    1.55,
+    0.8
+   ],
+   "blend": 1.2
+  },
+  {
+   "t": 14.0,
+   "pos": [
+    2.0,
+    2.0,
+    7.0
+   ],
+   "look": [
+    2.4,
+    1.75,
+    0.6
+   ],
+   "blend": 1.0
+  },
+  {
+   "t": 21.4,
+   "pos": [
+    0,
+    4.0,
+    12.5
+   ],
+   "look": [
+    0,
+    2.1,
+    0
+   ],
+   "follow": 0.5,
+   "blend": 1.4
+  },
+  {
+   "t": 26.4,
+   "pos": [
+    -1.8,
+    1.7,
+    6.2
+   ],
+   "look": [
+    -1.6,
+    1.55,
+    0.6
+   ],
+   "blend": 1.2
+  },
+  {
+   "t": 29.2,
+   "pos": [
+    0,
+    4.5,
+    13.5
+   ],
+   "look": [
+    0,
+    1.9,
+    -0.5
+   ],
+   "blend": 2.0
+  }
+ ],
+ "captions": [
+  {
+   "t": 0.4,
+   "html": "Claude Code'ni<br><span class=a>tashlab ketdim…</span>"
+  },
+  {
+   "t": 3.6,
+   "html": "Hamma <span class=a>Codex</span>'ni<br>maqtardi"
+  },
+  {
+   "t": 8.6,
+   "html": "Codex ham<br><span class=a>kuchli</span> 💪"
+  },
+  {
+   "t": 14.6,
+   "html": "Lekin…"
+  },
+  {
+   "t": 21.8,
+   "html": "<span class=a>QAYTIB</span><br>KELDIM 🧡"
+  },
+  {
+   "t": 27.4,
+   "html": "Siz qaysi<br>birini <span class=a>ishlatasiz?</span> 👇"
+  }
+ ],
+ "subs": []
+}
