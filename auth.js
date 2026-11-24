@@ -41,6 +41,21 @@ function createAuth({ botToken, store, readOrders, botUsername, publicDir, order
     return age >= 0 && age < MAX_AUTH_AGE;
   }
 
+  // Telegram Mini App (bot ichidagi ilova) imzosi: core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
+  function checkWebApp(initData) {
+    if (!botToken || typeof initData !== "string" || initData.length > 4096) return null;
+    const p = new URLSearchParams(initData);
+    const hash = p.get("hash");
+    if (!hash) return null;
+    p.delete("hash");
+    const checkString = [...p.entries()].map(([k, v]) => `${k}=${v}`).sort().join("\n");
+    const key = crypto.createHmac("sha256", "WebAppData").update(botToken).digest();
+    if (!same(crypto.createHmac("sha256", key).update(checkString).digest("hex"), hash)) return null;
+    const age = Math.floor(Date.now() / 1000) - Number(p.get("auth_date"));
+    if (!(age >= 0 && age < MAX_AUTH_AGE)) return null;
+    try { const u = JSON.parse(p.get("user") || "null"); return u && u.id ? u : null; } catch { return null; }
+  }
+
   function makeSession(id) {
     const body = b64(JSON.stringify({ id, exp: Date.now() + SESSION_DAYS * 864e5 }));
     return body + "." + sign(body);
@@ -197,6 +212,21 @@ function createAuth({ botToken, store, readOrders, botUsername, publicDir, order
       };
       store.set("foydalanuvchilar", all);
       setCookie(res, makeSession(data.id), SESSION_DAYS * 86400);
+      res.json({ ok: true });
+    });
+
+    // Bot ichidagi ilovadan avtomatik kirish (Telegram Mini App initData)
+    app.post("/api/auth/telegram-webapp", (req, res) => {
+      const u = checkWebApp((req.body || {}).initData);
+      if (!u) return res.status(401).json({ error: "Telegram tasdig'i noto'g'ri yoki eskirgan. Ilovani botdan qayta oching." });
+      const id = String(u.id);
+      const old = users()[id] || {};
+      login(res, id, {
+        provider: "telegram",
+        name: [u.first_name, u.last_name].filter(Boolean).join(" ") || old.name || "",
+        username: u.username || old.username || "",
+        photo: u.photo_url || old.photo || ""
+      });
       res.json({ ok: true });
     });
 

@@ -227,6 +227,28 @@ test("bot: egasi ham /start, /til va /ilova ni sinay oladi; Menu — buyruqlar r
   assert.ok(cmds.some(x => x.body.commands.some(c => c.command === "til")), "/til buyruqlar ro'yxatida yo'q");
 });
 
+test("bot ichidagi ilova: Telegram Mini App ma'lumoti bilan kirish", async () => {
+  const crypto = require("crypto");
+  const make = (user, token = "123456:TEST-TOKEN") => {
+    const p = new URLSearchParams({ auth_date: String(Math.floor(Date.now() / 1000)), query_id: "AAE1", user: JSON.stringify(user) });
+    const check = [...p.entries()].map(([k, v]) => `${k}=${v}`).sort().join("\n");
+    const key = crypto.createHmac("sha256", "WebAppData").update(token).digest();
+    p.set("hash", crypto.createHmac("sha256", key).update(check).digest("hex"));
+    return p.toString();
+  };
+  const post = initData => fetch(base + "/api/auth/telegram-webapp", { method: "POST", headers: JSON_H, body: JSON.stringify({ initData }) });
+  const ok = await post(make({ id: 5550001, first_name: "Mini", username: "mini_app" }));
+  assert.equal(ok.status, 200);
+  const cookie = ok.headers.get("set-cookie").split(";")[0];
+  const me = await (await fetch(base + "/api/me", { headers: { cookie } })).json();
+  assert.equal(me.user.name, "Mini");
+  assert.equal((await post(make({ id: 5550002, first_name: "Soxta" }, "999:BOSHQA-TOKEN"))).status, 401, "boshqa token bilan imzolangan qabul qilinmasin");
+  const forged = make({ id: 5550003, first_name: "A" }).replace("5550003", "5550004");
+  assert.equal((await post(forged)).status, 401, "o'zgartirilgan ma'lumot qabul qilinmasin");
+  const page = await fetch(base + "/app.html", { headers: { cookie } });
+  assert.match(page.headers.get("content-security-policy") || "", /frame-ancestors 'self' https:\/\/web\.telegram\.org/);
+});
+
 // Bu test oxirida turadi: IP'ni 15 daqiqaga bloklaydi
 // (oldingi testdagi "admin123" urinishi ham hisoblanadi — shuning uchun "ko'pi bilan 5 ta" deb tekshiramiz)
 test("admin: 5 marta noto'g'ri paroldan keyin bloklanadi (to'g'ri parol bilan ham)", async () => {

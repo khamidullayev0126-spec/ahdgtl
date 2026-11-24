@@ -415,6 +415,19 @@ document.addEventListener("submit", async e => {
   if (e.target.id === "chat-form") return sendChat();
 });
 
+// Bot ichida (Telegram Mini App) — Google va oddiy Telegram kirishi ishlamaydi, shuning uchun Telegram ma'lumoti bilan avtomatik kiramiz
+let tgTried = false;   // bir marta urinamiz — cookie saqlanmasa, cheksiz aylanib qolmasin
+async function tgAutoLogin() {
+  if (tgTried || new URLSearchParams(location.search).get("tg") !== "1") return false;
+  tgTried = true;
+  for (let i = 0; i < 30 && !(window.Telegram && Telegram.WebApp); i++) await new Promise(r => setTimeout(r, 100));
+  const initData = window.Telegram && Telegram.WebApp && Telegram.WebApp.initData;
+  if (!initData) return false;
+  const r = await fetch("/api/auth/telegram-webapp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData }) }).catch(() => null);
+  return !!(r && r.ok);
+}
+const signIn = async next => { if (await tgAutoLogin()) return true; location.href = "/kabinet.html?mode=signin&next=" + encodeURIComponent(next); return false; };
+
 async function sendOrder(form) {
   const err = document.getElementById("o-err"), btn = document.getElementById("o-send");
   const body = Object.fromEntries(new FormData(form));
@@ -426,7 +439,7 @@ async function sendOrder(form) {
   try {
     const r = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const data = await r.json().catch(() => ({}));
-    if (r.status === 401) { location.href = "/kabinet.html?mode=signin&next=" + encodeURIComponent("/app.html#buyurtma"); return; }
+    if (r.status === 401) { if (await signIn("/app.html#buyurtma")) { btn.disabled = false; btn.textContent = "Buyurtmani yuborish"; return sendOrder(form); } return; }
     if (!r.ok) throw new Error(data.error || "Buyurtma yuborilmadi.");
     state.sent = data; loadMe(); render(); scrollTo(0, 0);
   } catch (x) {
@@ -485,7 +498,7 @@ function showInstall() {
 async function loadMe() {
   try {
     const r = await fetch("/api/me");
-    if (r.status === 401) { location.href = "/kabinet.html?mode=signin&next=" + encodeURIComponent("/app.html" + location.hash); return; }
+    if (r.status === 401) { if (await signIn("/app.html" + location.search + location.hash)) return loadMe(); return; }
     if (r.ok) { const d = await r.json(); state.me = d.user; state.orders = d.orders || []; }
     // Sayt egasi bo'lsa — "Men" bo'limida Admin panel tugmasi chiqadi (server baribir o'zi tekshiradi)
     state.owner = !!(await (await fetch("/api/admin/me")).json()).owner;
