@@ -7,7 +7,9 @@
 ## Oy bo'yicha reja
 
 ### Dekabr 2026 — «Asos»
-- [ ] Google Play: rad etish sababini emaildan o'qish → oyim nomida qayta ro'yxatdan o'tish
+- [x] Eski Play Console hisobi o'z so'rovimiz bilan yopildi (23-noyabr), $25 qaytarilmoqda
+- [ ] 3–7-dekabr: $25 kelganini Google Payments → Activity'da tekshirish
+- [ ] Yangi Play Console hisobi — oyim nomida (18+ talabi), $25 — oyim roziligi bilan
 - [ ] APK qo'riqchini o'rnatib, Tekshir bilan aniq solishtirish (jadval)
 - [ ] Meizon'ga rahmat xabari + savollar
 - [ ] Startup Week'da tanishganlarga follow-up xabarlar
