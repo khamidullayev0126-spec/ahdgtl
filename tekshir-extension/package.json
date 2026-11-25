@@ -1,0 +1,13 @@
+{
+  "name": "tekshir-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tekshir — firibgarlardan himoya qiluvchi brauzer kengaytmasi (Chrome, Edge, Yandex)",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node --test tests/engine.test.js",
+    "e2e": "node tests/e2e.js",
+    "zip": "node build.js && rm -f tekshir-extension.zip && zip -qr tekshir-extension.zip manifest.json engine.js text.js content.js background.js popup.html popup.js check.html check.js ui.js ui.css icons"
+  },
+  "license": "MIT"
+}

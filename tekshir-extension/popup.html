@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>Tekshir</title>
+<link rel="stylesheet" href="ui.css">
+</head>
+<body class="popup">
+<div class="wrap">
+  <header><img src="icons/icon-48.png" alt=""><h1>Tekshir</h1><span class="pill" id="active"></span></header>
+  <section id="site" class="card"><div class="kicker" id="k-current"></div><div class="host" id="host"></div><div id="site-res"></div></section>
+  <section class="card">
+    <div class="kicker" id="k-check"></div>
+    <textarea id="q" spellcheck="false"></textarea>
+    <button class="main" id="go"></button>
+    <div class="err" id="err" hidden></div>
+    <div id="res"></div>
+  </section>
+  <section class="card">
+    <div class="kicker" id="k-settings"></div>
+    <label class="sw"><input type="checkbox" id="warn"> <span id="l-warn"></span></label>
+    <label class="sw"><input type="checkbox" id="badges"> <span id="l-badges"></span></label>
+    <label class="sw"><span id="l-lang"></span>
+      <select id="lang"><option value="uz-latn">O'zbekcha</option><option value="ru">Русский</option></select></label>
+  </section>
+  <div class="muted" id="privacy"></div>
+  <div class="links"><a id="bot" href="https://t.me/tekshirbot_bot?start=ext" target="_blank" rel="noopener"></a>
+    <a id="app" href="https://tekshir.ah-digital.uz" target="_blank" rel="noopener"></a></div>
+</div>
+<script src="engine.js"></script>
+<script src="text.js"></script>
+<script src="ui.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>
