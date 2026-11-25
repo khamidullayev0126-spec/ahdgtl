@@ -306,6 +306,8 @@ M["src/scoring"] = function (module, exports, require) {
 // Ballarni yig'ish va xavf darajasini aniqlash.
 // 0–29 → safe (✅), 30–69 → suspicious (🟡), 70–100 → danger (🔴)
 
+const K = require("data/scam-keywords.json");
+
 function levelOf(score) {
   if (score >= 70) return "danger";
   if (score >= 30) return "suspicious";
@@ -333,6 +335,7 @@ function combine(results) {
 
 // Havolalar + matn natijasini birlashtirish (4-bosqich).
 // Ikkalasi ham shubhali bo'lsa (masalan, "SMS kodni yuboring" + soxta havola) — xavf yanada oshadi: +20.
+// Firibgar matn guruhi + shubhali havola (data/scam-keywords.json → url_combo) — ham ball oshadi.
 // extra — qo'shimcha natijalar (7-bosqich: raqamlar/domenlar ustidan shikoyatlar)
 function combineAll(urlResults = [], textResult = null, fileResult = null, extra = []) {
   const parts = [...urlResults, ...extra.filter(r => r.reasons.length)];
@@ -342,8 +345,14 @@ function combineAll(urlResults = [], textResult = null, fileResult = null, extra
   const sum = r => Math.min(100, r.reasons.reduce((a, x) => a + x.points, 0));
   const urlMax = Math.max(0, ...urlResults.map(sum));
   const textScore = textResult ? sum(textResult) : 0;
-  if (urlMax >= 30 && textScore >= 30) {
-    res.score = Math.min(100, res.score + 20);
+  // Firibgar matn guruhi (sovrin, posilka, ovoz, pul o'tkazish) + ball olgan rasmiy bo'lmagan havola.
+  // «yutdingiz» (25) + «.click» (25) alohida 30 ga yetmaydi, lekin birga — tipik aldov. Ikkala qo'shimcha (+20 va url_combo) bir-biriga qo'shilmaydi.
+  const uc = K.url_combo;
+  const linkScam = !!uc && !!textResult && (textResult.groups || []).some(g => uc.groups.includes(g)) &&
+    urlResults.some(r => !r.trusted && sum(r) > 0);
+  const bonus = urlMax >= 30 && textScore >= 30 ? 20 : linkScam ? uc.points : 0;
+  if (bonus) {
+    res.score = Math.min(100, res.score + bonus);
     res.level = levelOf(res.score);
   }
   res.hasUrl = urlResults.length > 0;
@@ -670,6 +679,11 @@ M["data/scam-keywords.json"] = function (module) { module.exports = {
     "не называйте",
     "не передавайте"
   ],
+  "url_combo": {
+    "_izoh": "Firibgar matn guruhi + ball olgan (rasmiy bo'lmagan) havola: masalan «yutdingiz» + https://yutuq-uz.click. Har biri alohida 30 ga yetmasa ham — birga shubhali.",
+    "groups": ["prize", "parcel", "vote", "transfer"],
+    "points": 20
+  },
   "combos": [
     {
       "need": [
