@@ -234,6 +234,11 @@
     "не называйте",
     "не передавайте"
   ],
+  "url_combo": {
+    "_izoh": "Firibgar matn guruhi + ball olgan (rasmiy bo'lmagan) havola: masalan «yutdingiz» + https://yutuq-uz.click. Har biri alohida 30 ga yetmasa ham — birga shubhali.",
+    "groups": ["prize", "parcel", "vote", "transfer"],
+    "points": 20
+  },
   "combos": [
     {
       "need": [

@@ -3,7 +3,7 @@ const test = require("node:test");
 const assert = require("node:assert");
 const { analyzeText } = require("../src/checkers/text");
 const { combineAll } = require("../src/scoring");
-const { extractUrls, checkUrls } = require("../src/checkers/url");
+const { extractUrls, checkUrls, analyzeUrl } = require("../src/checkers/url");
 
 const level = text => combineAll([], analyzeText(text)).level;
 const score = text => combineAll([], analyzeText(text)).score;
@@ -56,3 +56,28 @@ test("rasmiy havola + firibgar matn → baribir 🔴 (sayt rasmiy, lekin matn al
   const r = combineAll(await checkUrls(extractUrls(text)), analyzeText(text));
   assert.strictEqual(r.level, "danger");
 });
+
+// ---- Firibgar matn guruhi + shubhali havola (internetsiz) ----
+// Xato edi: «yutdingiz» (25) va «.click» (25) alohida 30 ga yetmasdi → ✅ chiqardi.
+const offline = text => combineAll(extractUrls(text).map(analyzeUrl), analyzeText(text));
+test("sovrin + shubhali havola (uz) → kamida 🟡", () => {
+  const r = offline("Tabriklaymiz! Siz iPhone 16 yutdingiz. Sovg'ani olish uchun https://yutuq-uz.click saytiga kiring");
+  assert.notStrictEqual(r.level, "safe");
+  assert.ok(r.score >= 30);
+});
+test("sovrin + shubhali havola (ru) → kamida 🟡", () =>
+  assert.notStrictEqual(offline("Поздравляем! Вы выиграли iPhone 16. Заберите приз на https://yutuq-uz.click").level, "safe"));
+test("posilka / ovoz / pul o'tkazish + shubhali havola → kamida 🟡", () => {
+  for (const g of ["parcel", "vote", "transfer"]) {
+    const word = require("../data/scam-keywords.json").groups.find(x => x.id === g).p[0];
+    const r = offline(`${word} https://mening-saytim.click`);
+    assert.ok(r.groups.includes(g), g);
+    assert.notStrictEqual(r.level, "safe", g);
+  }
+});
+test("sovrin + rasmiy havola (click.uz) → ✅ qoladi", () =>
+  assert.strictEqual(offline("Bonus yutdingiz! Batafsil: https://click.uz").level, "safe"));
+test("sovrin, havolasiz → ✅ qoladi", () =>
+  assert.strictEqual(offline("Tabriklaymiz! Siz iPhone 16 yutdingiz").level, "safe"));
+test("shubhali havola, firibgar matnsiz → ✅ qoladi", () =>
+  assert.strictEqual(offline("Mana mening saytim: https://mening-saytim.click").level, "safe"));

@@ -9,7 +9,7 @@ class EngineTest {
     private fun res(name: String) = javaClass.classLoader.getResource(name)!!.readText()
     private val engine = Engine(Rules(res("scam-keywords.json"), res("url-rules.json"), res("trusted-domains.json")))
 
-    /** Asosiy test: Telegram botdagi mexanizm bilan BIR XIL natija (42 ta holat — parity.json botdan yaratilgan). */
+    /** Asosiy test: Telegram botdagi mexanizm bilan BIR XIL natija (parity.json botdan yaratilgan: tekshir-bot → node scripts/parity.js). */
     @Test fun botBilanBirXil() {
         val cases = JSONArray(res("parity.json"))
         val errors = mutableListOf<String>()
@@ -24,6 +24,20 @@ class EngineTest {
                 errors += "«${text.ifEmpty { file }}»: bot=${c.getString("level")}/${c.getInt("score")} $codes, kotlin=${r.level}/${r.score} $got"
         }
         assertTrue(errors.isEmpty(), "Farqlar:\n" + errors.joinToString("\n"))
+    }
+
+    /** Xato edi: «yutdingiz» (25) + «.click» (25) alohida 30 ga yetmasdi → SAFE chiqardi. Endi — kamida SUSPICIOUS. */
+    @Test fun sovrinVaShubhaliHavola() {
+        for (msg in listOf(
+            "Tabriklaymiz! Siz iPhone 16 yutdingiz. Sovg'ani olish uchun https://yutuq-uz.click saytiga kiring",
+            "Поздравляем! Вы выиграли iPhone 16. Заберите приз на https://yutuq-uz.click",
+            "Posilkangiz keldi: https://mening-saytim.click",
+            "Pul o'tkazing: https://mening-saytim.click"
+        )) assertTrue(engine.check(msg).score >= 30, msg)
+        // Rasmiy sayt, havolasiz xabar va firibgar matnsiz havola — xavfsiz qoladi
+        assertEquals(Level.SAFE, engine.check("Bonus yutdingiz! Batafsil: https://click.uz").level)
+        assertEquals(Level.SAFE, engine.check("Tabriklaymiz! Siz iPhone 16 yutdingiz").level)
+        assertEquals(Level.SAFE, engine.check("Mana mening saytim: https://mening-saytim.click").level)
     }
 
     @Test fun matnlarTayyor() {

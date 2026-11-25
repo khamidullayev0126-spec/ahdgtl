@@ -21,7 +21,7 @@
   "text": "https://c1ick-uz.com/bonus",
   "file": null,
   "level": "danger",
-  "score": 85,
+  "score": 100,
   "codes": [
    "url_brand",
    "txt_prize",
@@ -403,11 +403,69 @@
   "text": "Yutuq! https://prize-uz.top",
   "file": "sovga.apk",
   "level": "danger",
-  "score": 80,
+  "score": 100,
   "codes": [
    "file_apk",
    "url_tld",
    "txt_prize"
+  ]
+ },
+ {
+  "text": "Tabriklaymiz! Siz iPhone 16 yutdingiz. Sovg'ani olish uchun https://yutuq-uz.click saytiga kiring",
+  "file": null,
+  "level": "suspicious",
+  "score": 45,
+  "codes": [
+   "url_tld",
+   "txt_prize"
+  ]
+ },
+ {
+  "text": "Поздравляем! Вы выиграли iPhone 16. Заберите приз на https://yutuq-uz.click",
+  "file": null,
+  "level": "suspicious",
+  "score": 45,
+  "codes": [
+   "url_tld",
+   "txt_prize"
+  ]
+ },
+ {
+  "text": "Posilkangiz keldi: https://mening-saytim.click",
+  "file": null,
+  "level": "suspicious",
+  "score": 45,
+  "codes": [
+   "url_tld",
+   "txt_parcel"
+  ]
+ },
+ {
+  "text": "Bonus yutdingiz! Batafsil: https://click.uz",
+  "file": null,
+  "level": "safe",
+  "score": 25,
+  "codes": [
+   "txt_prize"
+  ]
+ },
+ {
+  "text": "Mana mening saytim: https://mening-saytim.click",
+  "file": null,
+  "level": "safe",
+  "score": 25,
+  "codes": [
+   "url_tld"
+  ]
+ },
+ {
+  "text": "Sovg'a: https://bit.ly/abc123",
+  "file": null,
+  "level": "suspicious",
+  "score": 45,
+  "codes": [
+   "txt_prize",
+   "url_shortener_wait"
   ]
  }
 ]

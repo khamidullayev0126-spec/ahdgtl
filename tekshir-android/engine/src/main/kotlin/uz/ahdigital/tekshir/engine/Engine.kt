@@ -40,6 +40,8 @@ class Rules(keywordsJson: String, urlRulesJson: String, trustedJson: String) {
     val groups: List<Group>
     val negation: List<String>
     val combos: List<Combo>
+    /** url_combo: firibgar matn guruhi + ball olgan rasmiy bo'lmagan havola → qo'shimcha ball (bo'lmasa — null). */
+    val urlCombo: Combo?
     val shorteners: Set<String>
     val suspiciousTlds: Set<String>
     val pathWords: List<String>
@@ -62,6 +64,9 @@ class Rules(keywordsJson: String, urlRulesJson: String, trustedJson: String) {
                 val o = a.getJSONObject(i)
                 Combo(o.getJSONArray("need").let { n -> (0 until n.length()).map { n.getString(it) } }, o.getInt("points"))
             }
+        }
+        urlCombo = k.optJSONObject("url_combo")?.let { o ->
+            Combo(o.getJSONArray("groups").let { n -> (0 until n.length()).map { n.getString(it) } }, o.getInt("points"))
         }
         val u = JSONObject(urlRulesJson)
         fun list(name: String) = u.getJSONArray(name).let { a -> (0 until a.length()).map { a.getString(it) } }
@@ -246,7 +251,8 @@ class Engine(private val rules: Rules) {
         private fun sum(p: Part) = minOf(100, p.reasons.sumOf { it.points })
     }
 
-    /** Botdagi combineAll: eng xavfli bo'lak ball beradi; havola VA matn ikkalasi shubhali bo'lsa +20. */
+    /** Botdagi combineAll: eng xavfli bo'lak ball beradi; havola VA matn ikkalasi shubhali bo'lsa +20;
+     *  aks holda firibgar matn guruhi + ball olgan rasmiy bo'lmagan havola bo'lsa — url_combo bali (qo'shilmaydi). */
     fun combine(urlParts: List<Part>, text: Part?, file: Part?, groups: List<String> = emptyList()): Result {
         val parts = urlParts + listOfNotNull(text?.takeIf { it.reasons.isNotEmpty() }, file)
         var score = 0
@@ -258,7 +264,10 @@ class Engine(private val rules: Rules) {
         }
         val urlMax = urlParts.maxOfOrNull { sum(it) } ?: 0
         val textScore = text?.let { sum(it) } ?: 0
-        if (urlMax >= 30 && textScore >= 30) score = minOf(100, score + 20)
+        val uc = rules.urlCombo
+        val linkScam = uc != null && text != null && groups.any { it in uc.need } && urlParts.any { !it.trusted && sum(it) > 0 }
+        val bonus = if (urlMax >= 30 && textScore >= 30) 20 else if (linkScam) uc!!.points else 0
+        if (bonus > 0) score = minOf(100, score + bonus)
         val risky = reasons.filter { it.points > 0 }.sortedByDescending { it.points }
         return Result(score, levelOf(score), if (risky.isNotEmpty()) risky else reasons,
             urlParts.isNotEmpty(), file != null, groups, urlParts.map { it.host }.filter { it.isNotEmpty() })
