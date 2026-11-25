@@ -32,6 +32,7 @@ Telefonda: ekran tugmasi + ovoz pasaytirish. Skrinshotlarda shaxsiy xabar va raq
   - *Personal info → Phone number*: **Collected**, ephemeral, not stored (qo'ng'iroq qilgan notanish raqam — shikoyatlarni tekshirish). Purpose: *Fraud prevention, security*.
   - *Files and docs*: **No** (faqat SHA-256 hash — fayl emas).
   - *Device or other IDs*: **No** (oila himoyasi kaliti tasodifiy, qurilma ID'si emas).
+  - *Photos and videos*: **No** (9-bosqich: skrinshot telefonda ML Kit bilan o'qiladi, hech qayerga yuborilmaydi — «processed on device» Data safety'ga kirmaydi). Galereya ruxsati yo'q (Photo Picker), kamera ruxsati yo'q (Google code scanner).
 - **Encrypted in transit:** Yes (HTTPS).
 - **Users can request deletion:** Yes — tarix ilovada o'chiriladi; oila — «Uzish» yoki /oila_ochir; so'rov: Telegram @Abdulkhamid_2905.
 - **Privacy policy URL:** `https://tekshir.ah-digital.uz/maxfiylik.html`
@@ -51,7 +52,8 @@ Telefonda: ekran tugmasi + ovoz pasaytirish. Skrinshotlarda shaxsiy xabar va raq
 - [ ] Tushuntirish oynasi chiqadi (Sozlama → Xabarlarni kuzatish → Yoqish)
 - [ ] Maxfiylik siyosati ochiladi (Sozlama → Maxfiylik siyosati)
 - [x] 1.0 (versionCode 1) imzolangan AAB yaratildi, kalit fleshkada zaxirada — 2026-11-19
-- [ ] Keyingi versiyalarda versionCode oshiriladi
+- [ ] Keyingi versiyalarda versionCode oshiriladi (1.0 hali yuklanmagan — 9-bosqich bilan AAB'ni **qayta yarating**, versionCode 1 qolaveradi; Play'ga yuklangandan keyingi har yangilanishda +1)
+- [ ] 9-bosqich telefonda sinaldi: 📸 skrinshot, 🔳 QR, 🆘, ✈️, 🎓
 - [ ] Sinovdan keyin telefonda **USB debugging o'chirildi** va **Auto Blocker yoqildi**
 
 ## 8. Holat (2026-11-19)

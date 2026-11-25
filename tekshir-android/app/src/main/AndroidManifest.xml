@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
 
+    <!-- 9-bosqich: ML Kit modellari ilova bilan birga keladi (bundled) — internetdan yuklanmaydi.
+         QR skaner Google Play xizmatlarining oynasi: Tekshir'ga KAMERA ruxsati kerak emas. -->
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -21,6 +23,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tekshir"
         tools:targetApi="31">
+        <!-- 9-bosqich: QR skaner moduli ilova o'rnatilayotganda yuklab olinsin (birinchi bosishda kutmaslik uchun) -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode_ui" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -50,6 +56,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/vnd.android.package-archive" />
                 <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+            <!-- 9-bosqich: skrinshotni «Ulashish → Tekshir» — rasmdagi matn va QR telefonda o'qiladi (internetsiz) -->
+            <intent-filter android:label="Tekshir: skrinshotni tekshirish">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
 

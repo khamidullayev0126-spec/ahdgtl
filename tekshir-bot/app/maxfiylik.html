@@ -40,6 +40,8 @@
     <li><b>📞 Qo'ng'iroqlarda ogohlantirish</b> (Android «spam aniqlovchi» roli) — notanish O'zbekiston raqamidan qo'ng'iroq bo'lsa, shu raqam shikoyatlar bazasi bilan solishtirish uchun serverga yuboriladi. Serverda u faqat hash ko'rinishida solishtiriladi va <b>saqlanmaydi</b>. Kontaktlaringizdagi raqamlar tekshirilmaydi. Qo'ng'iroqlar hech qachon bloklanmaydi, qo'ng'iroqlar jurnaliga ruxsat so'ralmaydi.</li>
     <li><b>👨‍👩‍👧 Oila himoyasi</b> — siz botdan olingan kodni kiritsangiz, telefon yaqiningizning Telegram chatiga ulanadi. Xavf aniqlanganda yaqiningizga faqat <b>xavf turi</b> (xabar, ilova, APK yoki qo'ng'iroq) va manba nomi (masalan «Telegram») boradi — xabar matni, raqamlar, ilova nomlari yuborilmaydi. Serverda: yaqiningizning Telegram ID'si, siz yozgan nom (masalan «Oyim») va qurilma kalitining hash'i. «Uzish» tugmasi yoki botdagi /oila_ochir bilan o'chiriladi.</li>
     <li><b>🩺 Xavfsizlik bali</b> — ekran qulfi, yangilanish sanasi, USB debugging va boshqalar faqat telefonda tekshiriladi.</li>
+    <li><b>📸 Skrinshot va 🔳 QR kod</b> — siz tanlagan rasmdagi matn va QR kod <b>telefonda</b> (Google ML Kit, internetsiz) o'qiladi. Rasm hech qayerga yuborilmaydi va saqlanmaydi; galereyaga ruxsat so'ralmaydi — faqat siz tanlagan rasm beriladi. QR kamera oynasini Google Play xizmatlari ochadi, Tekshir'ga kamera ruxsati kerak emas. O'qilgan matn odatdagi tekshiruvdan o'tadi (havola bo'lsa — faqat havola serverga). Wi-Fi QR kodidagi parol o'qilmaydi.</li>
+    <li><b>✈️ Telegram himoyasi va 🎓 mashq</b> — belgilaringiz va mashq natijangiz faqat telefonda saqlanadi. Tekshir Telegram akkauntingizga kira olmaydi.</li>
     <li><b>Ogohlantirishlar</b> — Android bildirishnomasi sifatida ko'rsatiladi («Bildirishnoma» ruxsati).</li>
   </ul>
 
@@ -91,6 +93,8 @@
     <li><b>Звонки</b> (роль «определение спама») — незнакомый узбекский номер отправляется на сервер для сверки с базой жалоб (только в виде хеша, не сохраняется). Номера из контактов не проверяются, звонки не блокируются.</li>
     <li><b>Защита семьи</b> — близкому в Telegram отправляется только тип опасности и источник (например «Telegram»), без текста и номеров. На сервере: Telegram ID близкого, указанное имя и хеш ключа устройства. Отключается кнопкой или командой /oila_ochir.</li>
     <li><b>Оценка безопасности</b> — считается только на телефоне.</li>
+    <li><b>Скриншот и QR-код</b> — текст и QR-код на выбранном изображении распознаются <b>на телефоне</b> (Google ML Kit, без интернета). Изображение никуда не отправляется и не сохраняется; доступ к галерее не запрашивается — передаётся только выбранное вами изображение. Окно камеры для QR открывают сервисы Google Play, разрешение на камеру Tekshir не нужно. Пароль из QR-кода Wi-Fi не считывается.</li>
+    <li><b>Защита Telegram и упражнение</b> — отметки и результаты хранятся только на телефоне. Tekshir не имеет доступа к вашему аккаунту Telegram.</li>
   </ul>
   <h2>Что хранится на сервере</h2>
   <p>В Telegram-боте — ваш Telegram ID, выбранный язык и источник (например «канал»); имя и username не хранятся. Также только результат (уровень, балл, код причины) для общей статистики, имя сайта (домен) без полного адреса и жалобы на номера — только в зашифрованном виде (хеш).</p>

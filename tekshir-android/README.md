@@ -20,6 +20,13 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 - [x] **6-bosqich:** 📞 Qo'ng'iroqda ogohlantirish (Android 10+, «spam aniqlovchi» roli): notanish raqam shikoyatlar bazasida bo'lsa — ogohlantirish. Qo'ng'iroq bloklanmaydi.
 - [x] **7-bosqich:** 👨‍👩‍👧 Oila himoyasi: botda /oila → 6 raqamli kod → ilovada kiritiladi; 🔴 xavf aniqlansa yaqiniga Telegram'da xabar (matnsiz).
 - [x] **8-bosqich:** Google Play'ga tayyorlash — ruxsatdan oldin tushuntirish oynasi, yangilangan maxfiylik siyosati, `PLAY.md` (imzolash, deklaratsiyalar, Data safety javoblari). Do'konga chiqarish — dadamning Play Console hisobi bilan.
+- [x] **9-bosqich:** yordam va yangi tekshiruvlar (APK Qo'riqchida yo'q):
+  - 📸 **Skrinshot tekshiruvi** — rasmdagi matn va QR telefonda o'qiladi (Google ML Kit, internetsiz), keyin odatdagidek tekshiriladi. «Ulashish → Tekshir» bilan ham ishlaydi.
+  - 🔳 **QR kod** — kamera bilan (kamera ruxsatisiz, Google Play xizmatlari oynasi): havola, Wi-Fi, telefon, SMS QR'larini tushuntiradi.
+  - 🆘 **«Aldandim — nima qilay?»** — 4 holat (kod/karta, pul o'tkazma, APK, Telegram) uchun qadam-baqadam yo'riqnoma + 102 tugmasi.
+  - ✈️ **Telegram himoyasi** — 7 bandli ro'yxat (bulutli parol, seanslar…), Telegram'ning kerakli sahifasini ochadi.
+  - 🎓 **«Firibgarni tani»** — 10 savolli mashq, natijani yaqinlarga yuborish.
+  - Matnda «Rasmlar.apk» kabi fayl nomi bo'lsa — fayl sifatida ham tekshiriladi.
 
 ## 1-bosqichni o'rnatish
 1. Android Studio → **New Project → Empty Activity**
@@ -57,6 +64,21 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 - **📞 Qo'ng'iroqlar:** Sozlama → Qo'ng'iroqlarda ogohlantirish → Yoqish → «Spam aniqlovchi»: Tekshir.
 - **👨‍👩‍👧 Oila:** dadangiz (yoki o'zingiz boshqa Telegram'dan) botga `/oila` → kod → ilovada Sozlama → Oila himoyasi → kod + nom → Ulash.
   Botda «✅ … telefoni ulandi» chiqadi. Keyin 🧪 «Sinab ko'rish» — botga «🚨 Oila himoyasi» xabari keladi.
+
+## 9-bosqichni o'rnatish va sinash
+1. `app/build.gradle.kts` → `dependencies { … }` ichiga 3 qator qo'shing → **Sync Now**:
+   ```kotlin
+   implementation("com.google.mlkit:text-recognition:16.0.1")          // 📸 rasmdagi matn (telefonda)
+   implementation("com.google.mlkit:barcode-scanning:17.3.0")          // 📸 rasmdagi QR (telefonda)
+   implementation("com.google.android.gms:play-services-code-scanner:16.1.0") // 🔳 kamera QR skaneri
+   ```
+   Versiyani Android Studio sariq qilib «yangisi bor» desa — yangilasangiz bo'ladi.
+2. Zip'dagi yangi fayllarni ko'chiring: `ui/Help.kt`, `guard/ImageScan.kt`, `engine/Help.kt`; almashadi: `ui/Screens.kt`, `ui/Strings.kt`, `data/Store.kt`, `MainActivity.kt`, `AndroidManifest.xml`.
+3. **▶ Run** va sinang:
+   - **📸 Skrinshot:** Tekshirish → 📸 Skrinshot → firibgar SMS skrinshotini tanlang → natija 🔴. Yoki Galereya → rasm → Ulashish → **Tekshir**.
+   - **🔳 QR:** Tekshirish → 🔳 QR kod → istalgan QR (masalan Wi-Fi yoki sayt havolasi). Birinchi marta skaner moduli yuklanishi uchun internet kerak bo'lishi mumkin.
+   - **🆘 / ✈️ / 🎓:** bosh ekran → «Yordam va o'rganish».
+   - 102 tugmasi faqat telefon oynasini ochadi — **sinovda qo'ng'iroqni bosmang**.
 
 ## Xavfsizlik
 - Imzolash kaliti (`.jks`/`.keystore`) GitHub'ga yuklanmaydi (`.gitignore`).

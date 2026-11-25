@@ -52,6 +52,16 @@ class Store(private val ctx: Context) {
         get() = prefs.getString("family_label", "") ?: ""
         set(v) { prefs.edit().putString("family_label", v).apply() }
 
+    /** 9-bosqich: ✈️ Telegram himoyasi — foydalanuvchi o'zi belgilagan bandlar (faqat telefonda). */
+    var tgDone: Set<String>
+        get() = prefs.getStringSet("tg_done", emptySet())?.toSet() ?: emptySet()
+        set(v) { prefs.edit().putStringSet("tg_done", v).apply() }
+
+    /** 9-bosqich: 🎓 mashqdagi eng yaxshi natija (10 tadan). */
+    var quizBest: Int
+        get() = prefs.getInt("quiz_best", -1)
+        set(v) { prefs.edit().putInt("quiz_best", v).apply() }
+
     /** Avtomatik ogohlantirishlar soni (bosh ekrandagi hisob uchun). */
     val warnedCount: Int get() = prefs.getInt("warned", 0)
     fun noteWarned() = prefs.edit().putInt("warned", warnedCount + 1).apply()

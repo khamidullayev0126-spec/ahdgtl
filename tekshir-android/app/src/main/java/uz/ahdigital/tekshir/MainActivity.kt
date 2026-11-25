@@ -1,5 +1,6 @@
 // Tekshir — asosiy oyna. Android Studio yaratgan MainActivity.kt o'rniga.
 // «Ulashish → Tekshir»: boshqa ilovadan matn kelsa (ACTION_SEND), uni darhol tekshiradi.
+// 9-bosqich: rasm (skrinshot) ulashilsa — rasmdagi matn va QR telefonda o'qilib tekshiriladi.
 package uz.ahdigital.tekshir
 
 import android.content.Intent
@@ -19,6 +20,7 @@ import uz.ahdigital.tekshir.ui.theme.TekshirTheme
 class MainActivity : ComponentActivity() {
     private var shared by mutableStateOf<String?>(null)
     private var sharedFile by mutableStateOf<Uri?>(null)    // 4-bosqich: tekshirish uchun kelgan APK fayl
+    private var sharedImage by mutableStateOf<Uri?>(null)   // 9-bosqich: tekshirish uchun kelgan skrinshot
     private var resumed by mutableStateOf(0)      // Sozlamalardan qaytganda ruxsat holatini qayta tekshirish uchun
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +30,7 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) readShare(intent)
         setContent {
             TekshirTheme {
-                TekshirApp(store, shared, sharedFile, resumed, { shared = null }, { sharedFile = null })
+                TekshirApp(store, shared, sharedFile, sharedImage, resumed, { shared = null }, { sharedFile = null }, { sharedImage = null })
             }
         }
     }
@@ -52,7 +54,7 @@ class MainActivity : ComponentActivity() {
         if (i.action == Intent.ACTION_SEND && i.type?.startsWith("text/") != true) {
             val u: Uri? = if (Build.VERSION.SDK_INT >= 33) i.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
                 else i.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
-            if (u != null) sharedFile = u
+            if (u != null) { if (i.type?.startsWith("image/") == true) sharedImage = u else sharedFile = u }
             return
         }
         if (i.action != Intent.ACTION_SEND || i.type?.startsWith("text/") != true) return

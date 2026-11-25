@@ -4,6 +4,7 @@
 // 3-bosqich: 📲 ilovalar tekshiruvi (bosh ekran → «Yangi ilovalar»).
 // 4-bosqich: 📁 APK faylni o'rnatishdan oldin tekshirish (Tekshirish oynasi, «Tekshir bilan ochish»).
 // 5-bosqich: 🩺 xavfsizlik bali · 6-bosqich: 📞 qo'ng'iroqlar · 7-bosqich: 👨‍👩‍👧 oila himoyasi (Sozlama).
+// 9-bosqich: 📸 skrinshot · 🔳 QR kod · 🆘 Aldandim · ✈️ Telegram himoyasi · 🎓 Firibgarni tani (ui/Help.kt).
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package uz.ahdigital.tekshir.ui
@@ -103,6 +104,10 @@ import uz.ahdigital.tekshir.guard.CallGuard
 import uz.ahdigital.tekshir.guard.FamilyAlert
 import uz.ahdigital.tekshir.guard.Score
 import uz.ahdigital.tekshir.engine.SecurityScore
+import uz.ahdigital.tekshir.engine.QrCheck
+import uz.ahdigital.tekshir.engine.QrInfo
+import uz.ahdigital.tekshir.engine.Scan
+import uz.ahdigital.tekshir.guard.ImageScan
 import android.content.Intent
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
@@ -128,13 +133,14 @@ enum class Tab(val icon: String, val key: String) {
     HOME("🛡", "tab_home"), CHECK("🔍", "tab_check"), HIST("🕘", "tab_hist"), TIPS("💡", "tab_tips"), SET("⚙️", "tab_set")
 }
 
-private fun levelColor(l: String) = when (l) { "danger" -> Danger; "suspicious" -> Warn; else -> Safe }
-private fun levelBg(l: String) = when (l) { "danger" -> DangerBg; "suspicious" -> WarnBg; else -> SafeBg }
-private fun rank(l: String) = when (l) { "danger" -> 2; "suspicious" -> 1; else -> 0 }
+internal fun levelColor(l: String) = when (l) { "danger" -> Danger; "suspicious" -> Warn; else -> Safe }
+internal fun levelBg(l: String) = when (l) { "danger" -> DangerBg; "suspicious" -> WarnBg; else -> SafeBg }
+internal fun rank(l: String) = when (l) { "danger" -> 2; "suspicious" -> 1; else -> 0 }
 
 /** Butun ilova. shared — boshqa ilovadan «Ulashish → Tekshir» bilan kelgan matn. */
 @Composable
-fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, resumed: Int, onSharedUsed: () -> Unit, onFileUsed: () -> Unit) {
+fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, sharedImage: Uri?, resumed: Int,
+               onSharedUsed: () -> Unit, onFileUsed: () -> Unit, onImageUsed: () -> Unit) {
     var lang by remember { mutableStateOf(store.lang) }
     var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
     var input by rememberSaveable { mutableStateOf("") }
@@ -150,6 +156,11 @@ fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, resumed: Int, on
     var apkState by remember { mutableStateOf(0) }       // 0 — yo'q, 1 — o'qilmoqda, 2 — tayyor, 3 — o'qib bo'lmadi
     var apkOnline by remember { mutableStateOf<Online.Answer?>(null) }
     var apkOnlineState by remember { mutableStateOf(0) }
+    // 9-bosqich: yordam sahifalari («rescue», «tg», «quiz»), skrinshot va QR
+    var page by rememberSaveable { mutableStateOf("") }
+    var imgState by remember { mutableStateOf(0) }      // 0 — yo'q, 1 — o'qilmoqda, 3 — ochilmadi, 4 — matn topilmadi
+    var qrInfo by remember { mutableStateOf<QrInfo?>(null) }
+    var qrFail by remember { mutableStateOf(false) }
     val ctx = LocalContext.current              // tarix yangilanganda ekranni qayta chizish uchun
     val scope = rememberCoroutineScope()
 
@@ -157,7 +168,7 @@ fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, resumed: Int, on
         val text = input.trim()
         if (text.isEmpty()) { error = S.t(lang, "empty"); return }
         error = null
-        val r = store.engine.check(text)                         // 1) telefonda, internetsiz — darhol
+        val r = Scan.check(store.engine, text)                    // 1) telefonda, internetsiz — darhol (matndagi «….apk» ham)
         result = r; online = null
         val lv = r.level.name.lowercase()
         store.addHistory(lv, Texts.t(lang, "level_$lv"), text); histTick++
@@ -189,7 +200,32 @@ fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, resumed: Int, on
         }
     }
 
+    // 📸 Skrinshot: rasmdagi matn va QR kodlar telefonda o'qiladi, keyin odatdagidek tekshiriladi
+    fun runImage(uri: Uri) {
+        tab = Tab.CHECK; appsOpen = false; scoreOpen = false; page = ""
+        imgState = 1; qrInfo = null; qrFail = false
+        scope.launch {
+            val out = withContext(Dispatchers.IO) { ImageScan.read(ctx, uri) }
+            if (out == null) { imgState = 3; return@launch }
+            val qrs = out.qr.map(QrCheck::parse)
+            qrInfo = qrs.firstOrNull()
+            val parts = (listOf(out.text) + qrs.map(QrCheck::textToCheck)).filter { it.isNotBlank() }.distinct()
+            if (parts.isEmpty() && qrInfo == null) { imgState = 4; result = null; return@launch }
+            imgState = 0
+            if (parts.isNotEmpty()) { input = parts.joinToString("\n"); runCheck() } else { result = null; onlineState = 0 }
+        }
+    }
+
+    // 🔳 QR kod (kamera): ichidagi havola yoki matn tekshiriladi, Wi-Fi/telefon bo'lsa — eslatma
+    fun runQr(raw: String) {
+        val q = QrCheck.parse(raw)
+        qrInfo = q; qrFail = false; imgState = 0
+        val t = QrCheck.textToCheck(q)
+        if (t.isNotBlank()) { input = t; runCheck() } else { result = null; online = null; onlineState = 0 }
+    }
+
     LaunchedEffect(sharedFile) { if (sharedFile != null) { runApk(sharedFile); onFileUsed() } }
+    LaunchedEffect(sharedImage) { if (sharedImage != null) { runImage(sharedImage); onImageUsed() } }
 
     // Ilovaga qaytganda (masalan avtomatik ogohlantirishdan keyin) tarix va hisoblar yangilansin
     LaunchedEffect(resumed) { histTick++ }
@@ -204,7 +240,8 @@ fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, resumed: Int, on
             NavigationBar(containerColor = Surface) {
                 Tab.entries.forEach { t ->
                     NavigationBarItem(
-                        selected = tab == t && !appsOpen && !scoreOpen, onClick = { tab = t; appsOpen = false; scoreOpen = false },
+                        selected = tab == t && !appsOpen && !scoreOpen && page.isEmpty(),
+                        onClick = { tab = t; appsOpen = false; scoreOpen = false; page = "" },
                         icon = { Text(t.icon, fontSize = 20.sp) },
                         label = { Text(S.t(lang, t.key), fontSize = 11.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedTextColor = Safe, unselectedTextColor = Muted, indicatorColor = SafeBg)
@@ -214,15 +251,27 @@ fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, resumed: Int, on
         }
     ) { pad ->
         Box(Modifier.padding(pad).fillMaxSize()) {
-            if (appsOpen) {
+            if (page.isNotEmpty()) {
+                BackHandler { page = ""; histTick++ }
+                when (page) {
+                    "rescue" -> RescueScreen(lang) { page = "" }
+                    "tg" -> TgScreen(store, lang) { page = ""; histTick++ }
+                    else -> QuizScreen(store, lang) { page = ""; histTick++ }
+                }
+            } else if (appsOpen) {
                 BackHandler { appsOpen = false }
                 AppsScreen(store, lang, resumed) { appsOpen = false }
             } else if (scoreOpen) {
                 BackHandler { scoreOpen = false }
                 ScoreScreen(store, lang, resumed, { scoreOpen = false }, { scoreOpen = false; appsOpen = true }, { scoreOpen = false; tab = Tab.SET })
             } else when (tab) {
-                Tab.HOME -> HomeScreen(store, lang, histTick, resumed, { tab = Tab.CHECK }, { tab = Tab.SET }, { appsOpen = true }, { scoreOpen = true })
-                Tab.CHECK -> CheckScreen(lang, input, { input = it }, ::runCheck, result, online, onlineState, error) {
+                Tab.HOME -> HomeScreen(store, lang, histTick, resumed, { tab = Tab.CHECK }, { tab = Tab.SET }, { appsOpen = true }, { scoreOpen = true }) { page = it }
+                Tab.CHECK -> CheckScreen(lang, input, { input = it }, { qrInfo = null; imgState = 0; runCheck() }, result, online, onlineState, error,
+                    scanSection = {
+                        ScanSection(lang, imgState, qrInfo, qrFail, ::runImage) {
+                            ImageScan.scanQr(ctx, { raw -> if (raw != null) runQr(raw) }) { qrFail = true }
+                        }
+                    }) {
                     ApkSection(lang, apk, apkState, apkOnline, apkOnlineState, ::runApk)
                 }
                 Tab.HIST -> HistoryScreen(store, lang, histTick) { store.clearHistory(); histTick++ }
@@ -235,7 +284,7 @@ fun TekshirApp(store: Store, shared: String?, sharedFile: Uri?, resumed: Int, on
 
 // ================= Umumiy bo'laklar =================
 @Composable
-private fun Header(title: String, pill: String? = null) {
+internal fun Header(title: String, pill: String? = null) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         ShieldIcon(Modifier.size(34.dp), anim = false)
         Spacer(Modifier.width(10.dp))
@@ -246,13 +295,13 @@ private fun Header(title: String, pill: String? = null) {
 }
 
 @Composable
-private fun Card(modifier: Modifier = Modifier, bg: Color = CardBg, border: Color = Line, content: @Composable () -> Unit) {
+internal fun Card(modifier: Modifier = Modifier, bg: Color = CardBg, border: Color = Line, content: @Composable () -> Unit) {
     Column(modifier.fillMaxWidth().background(bg, RoundedCornerShape(20.dp)).border(1.dp, border, RoundedCornerShape(20.dp)).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)) { content() }
 }
 
 @Composable
-private fun Kicker(text: String) = Text(text.uppercase(), color = Accent, fontSize = 12.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 0.6.sp)
+internal fun Kicker(text: String) = Text(text.uppercase(), color = Accent, fontSize = 12.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 0.6.sp)
 
 /** Qalqon belgisi (Canvas bilan chiziladi — rasm fayli kerak emas). */
 @Composable
@@ -287,7 +336,8 @@ private fun ShieldHero() {
 
 // ================= 1. Himoya (bosh ekran) =================
 @Composable
-private fun HomeScreen(store: Store, lang: String, tick: Int, resumed: Int, onCheck: () -> Unit, onGuard: () -> Unit, onApps: () -> Unit, onScore: () -> Unit) {
+private fun HomeScreen(store: Store, lang: String, tick: Int, resumed: Int, onCheck: () -> Unit, onGuard: () -> Unit, onApps: () -> Unit, onScore: () -> Unit,
+                       onPage: (String) -> Unit) {
     val ctx = LocalContext.current
     val hist = remember(tick) { store.history() }
     val allowed = remember(resumed, tick) { MessageGuard.allowed(ctx) }
@@ -313,6 +363,7 @@ private fun HomeScreen(store: Store, lang: String, tick: Int, resumed: Int, onCh
             colors = ButtonDefaults.buttonColors(containerColor = Safe, contentColor = Bg)) {
             Text(S.t(lang, "check_btn"), fontSize = 17.sp, fontWeight = FontWeight.ExtraBold)
         }
+        HelpLinks(store, lang, tick, onPage)
         Kicker(S.t(lang, "modules"))
         for ((icon, key) in listOf("🔔" to "m_notif", "📲" to "m_apps", "📁" to "m_files", "📞" to "m_calls", "👨‍👩‍👧" to "m_family", "🩺" to "m_score")) {
             val ready = true                                    // 2–7-bosqich: hamma modullar tayyor
@@ -370,6 +421,7 @@ private fun TipCard(tip: Tip, catName: String) {
 private fun CheckScreen(
     lang: String, input: String, onInput: (String) -> Unit, onCheck: () -> Unit,
     result: Result?, online: Online.Answer?, onlineState: Int, error: String?,
+    scanSection: @Composable () -> Unit = {},
     apkSection: @Composable () -> Unit = {}
 ) {
     val clip = LocalClipboardManager.current
@@ -391,9 +443,11 @@ private fun CheckScreen(
                 Text(S.t(lang, "check_btn"), fontWeight = FontWeight.ExtraBold)
             }
         }
+        scanSection()
         if (error != null) Text(error, color = Danger, fontWeight = FontWeight.Bold)
         if (result != null) ResultCard(lang, result, online, onlineState)
         Text(S.t(lang, "privacy"), color = Muted, fontSize = 13.sp)
+        Text(S.t(lang, "img_priv"), color = Muted, fontSize = 12.sp)
         apkSection()
     }
 }
