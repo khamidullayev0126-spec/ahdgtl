@@ -3,6 +3,7 @@
 const { analyzeText } = require("src/checkers/text");
 const { extractUrls, analyzeUrl } = require("src/checkers/url");
 const { analyzeFileName } = require("src/checkers/file");
+const { extractNumbers } = require("src/checkers/numbers");
 const { combine, combineAll, levelOf } = require("src/scoring");
 const RULES = require("data/url-rules.json");
 const LOCALES = require("locales");
@@ -71,4 +72,14 @@ function t(lang, key, vars = {}) {
   return s;
 }
 
-module.exports = { checkPage, checkText, adviceKeys, fileInText, t, levelOf, LANGS };
+/**
+ * Serverga yuboriladigan qism: faqat havolalar va telefon/karta raqamlari (xabar matni emas).
+ * Server ular bo'yicha Google/VirusTotal va shikoyatlar bazasini tekshiradi. Bo'sh — serverga hech narsa kerak emas.
+ */
+function onlinePart(text) {
+  const urls = extractUrls(text);
+  const nums = extractNumbers(String(text || "")).map(n => n.kind === "phone" ? "+" + n.digits : n.digits);
+  return [...urls, ...nums].join("\n");
+}
+
+module.exports = { checkPage, checkText, adviceKeys, fileInText, onlinePart, t, levelOf, LANGS };

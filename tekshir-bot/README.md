@@ -95,6 +95,13 @@ AI faqat shaxsiy chatda va `/tekshir` da ishlaydi, faqat xavfni **oshiradi** (fi
 ---
 
 ## Tekshir ilovasi (PWA)
+
+**iPhone va kompyuter uchun (2026-11-25):**
+- Tekshiruv **telefonning o'zida** — `app/engine.js` (botdagi mexanizm, `tekshir-extension/build.js` yig'adi; bot kodi o'zgarsa: `cd ../tekshir-extension && node build.js`). Internetsiz ham ishlaydi.
+- Serverga faqat **havolalar va telefon/karta raqamlari** ketadi (Google, VirusTotal, shikoyatlar) — xabar matni emas.
+- 🆘 «Aldandim» (`#aldandim`), ✈️ Telegram himoyasi (`#telegram`), 🎓 «Firibgarni tani» (`#mashq`) — `app/yordam.js`, matnlar Android ilova bilan aynan bir xil (`tests/yordam.test.js`).
+- iPhone: «Bosh ekranga qo'shish» yo'riqnomasi, skrinshot (Live Text) va QR (Kamera) bo'yicha ko'rsatma, 180×180 ikonka.
+- iPhone ko'rinishidagi sinov: `node tests/e2e/pwa.js` (Playwright).
 Bot serveri bosh sahifada (`/`) **Tekshir ilovasini** ham beradi — `app/` papkasi. Server pullik va doim uyg'oq, shuning uchun ilova darhol ochiladi.
 - **Ekranlar:** Himoya (qalqon, statistika) · Tekshirish · Tarix · Maslahat (70 ta) · Haqida (o'zbek/rus tili).
 - **Ulashish → Tekshir:** ilova telefonga o'rnatilgach, boshqa ilovadagi xabarni «Ulashish» orqali to'g'ridan-to'g'ri tekshirish (`/share`).

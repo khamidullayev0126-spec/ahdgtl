@@ -1,7 +1,8 @@
 // Tekshir — service worker: ilova internet sekin yoki yo'q bo'lsa ham ochiladi.
 // Tekshiruvning o'zi (/api/check) hech qachon keshlanmaydi.
-const VERSION = "tekshir-v1";
-const SHELL = ["/", "/maslahatlar.js", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png"];
+const VERSION = "tekshir-v2";
+// engine.js va yordam.js keshda — tekshiruv va yordam bo'limlari internetsiz ham ishlaydi (iPhone ham)
+const SHELL = ["/", "/maslahatlar.js", "/engine.js", "/yordam.js", "/manifest.webmanifest", "/icon-180.png", "/icon-192.png", "/icon-512.png"];
 self.addEventListener("install", e => e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener("activate", e => e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== VERSION).map(x => caches.delete(x)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", e => {

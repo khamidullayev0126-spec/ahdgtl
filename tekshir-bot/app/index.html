@@ -8,7 +8,12 @@
 <meta name="theme-color" content="#0a1020">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tekshir">
+<meta name="format-detection" content="telephone=no">
 <style>
   /* Tekshir — xavfsizlik paneli uslubi: to'q fon, holat ranglari (yashil / sariq / qizil) */
   :root {
@@ -91,6 +96,29 @@
   nav a svg { width: 22px; height: 22px; }
   nav a[aria-current="page"] { color: var(--safe); background: var(--safe-bg); }
   .sel { display: flex; gap: 8px; } .sel button { flex: 1; }
+
+  /* Yordam: 🆘 / ✈️ / 🎓 */
+  .tile.sos { grid-column: 1 / -1; flex-direction: row; align-items: center; background: var(--danger-bg); border-color: var(--danger); }
+  .tile.sos .ic { background: rgba(239,68,68,.2); flex: none; }
+  .tile.sos div { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  details.card > summary { cursor: pointer; font-weight: 800; list-style: none; display: flex; gap: 10px; align-items: center; }
+  details.card > summary::-webkit-details-marker { display: none; }
+  details.card > summary::after { content: "▾"; margin-left: auto; color: var(--muted); }
+  details.card[open] > summary::after { content: "▴"; }
+  details.rescue[open] { border-color: var(--danger); }
+  ol.steps { margin: 6px 0 0; padding: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 10px; }
+  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 26px 1fr; gap: 10px; font-size: 15px; }
+  ol.steps li::before { content: counter(s); width: 26px; height: 26px; border-radius: 50%; background: var(--danger); color: var(--bg); font-weight: 800; font-size: 13px; display: grid; place-items: center; }
+  .btn.red { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+  .card.ok { background: var(--safe-bg); border-color: var(--safe); }
+  label.chk { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+  label.chk input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--safe); flex: none; }
+  .card.done { border-color: var(--safe); }
+  .bubble { background: var(--surface); border: 1px solid var(--line); border-radius: 18px 18px 18px 4px; padding: 14px; font-size: 16px; }
+  .score { font-size: 26px; font-weight: 800; }
+  .lv-safe { color: var(--safe); } .lv-suspicious { color: var(--warn); } .lv-danger { color: var(--danger); }
+  .card.install { border-color: var(--accent); }
+  .x { margin-left: auto; background: none; border: 0; color: var(--muted); font: 700 14px system-ui, sans-serif; cursor: pointer; padding: 4px 8px; }
   a.link { color: var(--accent); }
 </style>
 </head>
@@ -105,6 +133,8 @@
 </div></nav>
 
 <script src="/maslahatlar.js"></script>
+<script src="/engine.js"></script>
+<script src="/yordam.js"></script>
 <script>
 // ================= Tekshir ilovasi =================
 // Matn faqat tekshirish uchun serverga yuboriladi va saqlanmaydi. Fayl umuman yuborilmaydi — faqat nomi va SHA-256.
@@ -119,31 +149,74 @@ const T = {
     check_btn: "🔍 Tekshirish", t_msg: "Xabar", t_msg_s: "SMS yoki Telegram", t_link: "Havola", t_link_s: "Sayt manzili", t_apk: "APK fayl", t_apk_s: "Ilova yoki hujjat", t_num: "Raqam", t_num_s: "Telefon yoki karta",
     tip_day: "💡 Kun maslahati", check_title: "Tekshirish", ph: "Shubhali xabar, havola yoki raqamni shu yerga qo'ying…", paste: "📋 Joylash", file: "📎 Fayl tanlash", checking: "Tekshirilmoqda…",
     why: "Nima uchun", todo: "Nima qilish kerak", nums: "Raqamlar", reports: "ta shikoyat", no_reports: "shikoyat yo'q", rep_note: "Shikoyatlar soni — foydalanuvchilar fikri, rasmiy xulosa emas.",
-    privacy: "🔒 Xabaringiz saqlanmaydi. Fayl yuklanmaydi — faqat uning «barmoq izi» tekshiriladi. Natija 100% kafolat emas.", empty: "Avval xabar yoki havolani qo'ying.",
+    privacy: "🔒 Xabar telefoningizda tekshiriladi. Internetga faqat havola va raqamlar yuboriladi — xabar matni emas. Fayl yuklanmaydi — faqat uning «barmoq izi». Natija 100% kafolat emas.", empty: "Avval xabar yoki havolani qo'ying.",
     net: "Internet bilan bog'lanib bo'lmadi. Qayta urinib ko'ring.", busy: "Juda tez yuboryapsiz — bir daqiqa kuting.", fail: "Hozir tekshirib bo'lmadi. Birozdan keyin urinib ko'ring.",
     paste_fail: "Matnni nusxalang, maydonni bosib turing va «Joylash» ni tanlang.", hist_title: "Tekshiruvlar tarixi", hist_empty: "Hali tekshiruv yo'q. Shubhali xabar kelsa — shu yerda ko'rinadi.", hist_note: "Tarix faqat shu telefonda saqlanadi. Raqamlar yashirilgan.", clear: "🗑 Tarixni tozalash", clear_q: "Tarix o'chirilsinmi?",
     all: "Barchasi", tips_title: "Maslahatlar", share_tips: "↗️ Oilamga ulashish", about_title: "Tekshir haqida",
     about_p: "Tekshir — firibgarlikka qarshi bepul ilova. Shubhali SMS, Telegram xabar, havola, APK fayl yoki karta raqamini tekshiradi va sodda tilda tushuntiradi.",
-    how: "Qanday ishlaydi", how_1: "Xabarni nusxalab shu yerga qo'ying — yoki boshqa ilovada «Ulashish → Tekshir» ni bosing.", how_2: "Tekshir uni qoidalar, Google Safe Browsing va VirusTotal orqali tekshiradi.", how_3: "Natija: ✅ xavf topilmadi · 🟡 shubhali · 🔴 xavfli — sabablari va nima qilish kerakligi bilan.",
+    how: "Qanday ishlaydi", how_1: "Xabarni nusxalab shu yerga qo'ying — yoki boshqa ilovada «Ulashish → Tekshir» ni bosing.", how_2: "Tekshir uni avval telefonning o'zida tekshiradi — internetsiz ham ishlaydi. Havola yoki raqam bo'lsa — Google Safe Browsing, VirusTotal va shikoyatlar bazasida ham.", how_3: "Natija: ✅ xavf topilmadi · 🟡 shubhali · 🔴 xavfli — sabablari va nima qilish kerakligi bilan.",
     lang: "Til", bot: "Telegram bot: @tekshirbot_bot", bot_s: "Guruhlarda ham ishlaydi", made: "AHdigital tomonidan yaratilgan", priv_title: "Maxfiylik",
-    priv_p: "Xabar matni serverda saqlanmaydi — faqat natija (daraja va sabab kodi) statistika uchun. Telefon va karta raqamlari faqat shifrlangan ko'rinishda. Tarix faqat shu telefonda.",
-    kind_msg: "Xabar", kind_file: "Fayl", ago_now: "hozir", share_text: "Firibgarlardan himoya: shubhali xabarni Tekshir ilovasida tekshiring 👇" },
+    priv_p: "Xabar matni telefoningizdan chiqmaydi — serverga faqat havola va raqamlar boradi va saqlanmaydi (faqat natija statistika uchun). Telefon va karta raqamlari faqat shifrlangan ko'rinishda. Tarix faqat shu telefonda.",
+    kind_msg: "Xabar", kind_file: "Fayl", ago_now: "hozir", share_text: "Firibgarlardan himoya: shubhali xabarni Tekshir ilovasida tekshiring 👇",
+    on_1: "⏳ Havola va raqamlar internetda qo'shimcha tekshirilmoqda…", on_2: "🌐 Google, VirusTotal va shikoyatlar bazasida ham tekshirildi", on_3: "📴 Internetsiz tekshirildi (telefondagi qoidalar bilan)",
+    help: "Yordam va o'rganish", h_rescue: "Aldandim — nima qilay?", h_rescue_s: "Pul, kod yoki akkaunt ketdimi? Qadam-baqadam yordam",
+    h_tg: "Telegram himoyasi", h_quiz: "Firibgarni tani", h_quiz_s: "10 ta savol — o'zingizni sinang", h_quiz_best: "Eng yaxshi natija: {n}/10",
+    r_title: "🆘 Aldandim — nima qilay?", r_p: "Vahima qilmang. Nima bo'lganini tanlang — qadamlarni tartib bilan bajaring:", r_police: "📞 102 — politsiya",
+    tg_title: "✈️ Telegram himoyasi", tg_p: "«Ovoz bering», «Premium sovg'a» havolalari orqali har kuni akkauntlar o'g'irlanmoqda. Har bandni Telegram'da tekshiring va belgilang.",
+    tg_score: "{n}/{k} bajarildi", tg_good: "Zo'r! Akkauntingiz yaxshi himoyalangan.", tg_mid: "Yaxshi, lekin yana bir necha qadam qoldi.", tg_bad: "Akkauntingiz xavf ostida — avval bulutli parolni yoqing.",
+    tg_open: "Telegram'ni ochish →", tg_priv: "🔒 Belgilaringiz faqat shu telefonda saqlanadi. Tekshir Telegram'ingizga kira olmaydi va hech narsani o'qimaydi.",
+    q_title: "🎓 Firibgarni tani", q_p: "Xabarni o'qing: firibgarmi yoki oddiy xabarmi?", q_scam: "🔴 Firibgar", q_safe: "🟢 Oddiy", q_right: "✅ To'g'ri!", q_wrong: "❌ Noto'g'ri",
+    q_next: "Keyingi →", q_finish: "Natijani ko'rish", q_of: "{i}/{n}-savol", q_score: "{c}/{n} to'g'ri", q_again: "🔁 Yana o'ynash", q_share: "📤 Yaqinlarga yuborish",
+    quiz_r3: "🏆 Ajoyib! Firibgarlar sizni aldolmaydi.", quiz_r2: "👍 Yaxshi! Ba'zi belgilarga yana e'tibor bering.", quiz_r1: "⚠️ Ehtiyot bo'ling — «Maslahat» bo'limini o'qib, yana urinib ko'ring.",
+    q_share_text: "Men Tekshir'dagi «Firibgarni tani» mashqida {c}/{n} oldim. Siz ham sinab ko'ring:",
+    ios_t: "📲 iPhone'ga o'rnating", ios_p: "Pastdagi «Ulashish» ⬆️ tugmasi → «Bosh ekranga qo'shish» (На экран «Домой») → «Qo'shish». Tekshir ilovadek ochiladi va internetsiz ham ishlaydi.",
+    close: "Yopish", install: "📲 Telefonga o'rnatish",
+    shot_q: "📸 Skrinshot yoki 🔳 QR kodni qanday tekshiraman?",
+    shot_ios: "iPhone: skrinshotni «Rasmlar»da oching → matnni bosib turing → «Nusxalash». Keyin shu yerda «📋 Joylash» → «🔍 Tekshirish».",
+    qr_ios: "QR kod: «Kamera»ni oching va QR'ga qarating → chiqqan havolani bosib turing → «Nusxalash» → shu yerga joylang. Havolani tekshirmasdan ochmang!",
+    shot_and: "Android: Tekshir ilovasi skrinshot va QR'ni o'zi o'qiydi. Yoki Google Lens bilan matnni nusxalab, shu yerga joylang." },
   ru: { nav_home: "Защита", nav_hist: "История", nav_tips: "Советы", nav_about: "О нас", protected: "Вы под защитой", hero_sub: "Не открывайте подозрительное, не проверив", checked: "проверено", dangers: "опасных", tips_n: "советов",
     check_btn: "🔍 Проверить", t_msg: "Сообщение", t_msg_s: "SMS или Telegram", t_link: "Ссылка", t_link_s: "Адрес сайта", t_apk: "APK файл", t_apk_s: "Приложение или документ", t_num: "Номер", t_num_s: "Телефон или карта",
     tip_day: "💡 Совет дня", check_title: "Проверка", ph: "Вставьте подозрительное сообщение, ссылку или номер…", paste: "📋 Вставить", file: "📎 Выбрать файл", checking: "Проверяем…",
     why: "Почему", todo: "Что делать", nums: "Номера", reports: "жалоб", no_reports: "жалоб нет", rep_note: "Число жалоб — мнение пользователей, а не официальный вывод.",
-    privacy: "🔒 Сообщение не сохраняется. Файл не загружается — проверяется только его «отпечаток». Результат не даёт 100% гарантии.", empty: "Сначала вставьте сообщение или ссылку.",
+    privacy: "🔒 Сообщение проверяется на телефоне. В интернет отправляются только ссылки и номера — не текст сообщения. Файл не загружается — только его «отпечаток». Результат не даёт 100% гарантии.", empty: "Сначала вставьте сообщение или ссылку.",
     net: "Нет связи с интернетом. Попробуйте ещё раз.", busy: "Слишком часто — подождите минуту.", fail: "Сейчас не получилось проверить. Попробуйте позже.",
     paste_fail: "Скопируйте текст, зажмите поле и выберите «Вставить».", hist_title: "История проверок", hist_empty: "Пока нет проверок.", hist_note: "История хранится только на этом телефоне. Номера скрыты.", clear: "🗑 Очистить историю", clear_q: "Удалить историю?",
     all: "Все", tips_title: "Советы", share_tips: "↗️ Поделиться с семьёй", about_title: "О приложении Tekshir",
     about_p: "Tekshir — бесплатное приложение против мошенников. Проверяет подозрительные SMS, сообщения, ссылки, APK-файлы и номера карт и объясняет простым языком.",
-    how: "Как это работает", how_1: "Вставьте сообщение сюда — или нажмите «Поделиться → Tekshir» в другом приложении.", how_2: "Tekshir проверяет его по правилам, через Google Safe Browsing и VirusTotal.", how_3: "Результат: ✅ угроз нет · 🟡 подозрительно · 🔴 опасно — с причинами и советами.",
+    how: "Как это работает", how_1: "Вставьте сообщение сюда — или нажмите «Поделиться → Tekshir» в другом приложении.", how_2: "Tekshir сначала проверяет его на самом телефоне — работает и без интернета. Если есть ссылка или номер — ещё и через Google Safe Browsing, VirusTotal и базу жалоб.", how_3: "Результат: ✅ угроз нет · 🟡 подозрительно · 🔴 опасно — с причинами и советами.",
     lang: "Язык", bot: "Telegram-бот: @tekshirbot_bot", bot_s: "Работает и в группах", made: "Создано AHdigital", priv_title: "Конфиденциальность",
-    priv_p: "Текст сообщения не сохраняется на сервере — только результат для статистики. Номера телефонов и карт — только в зашифрованном виде. История — только на этом телефоне.",
-    kind_msg: "Сообщение", kind_file: "Файл", ago_now: "сейчас", share_text: "Защита от мошенников: проверьте подозрительное сообщение в приложении Tekshir 👇" }
+    priv_p: "Текст сообщения не покидает телефон — на сервер отправляются только ссылки и номера, и они не сохраняются (только результат для статистики). Номера — только в зашифрованном виде. История — только на этом телефоне.",
+    kind_msg: "Сообщение", kind_file: "Файл", ago_now: "сейчас", share_text: "Защита от мошенников: проверьте подозрительное сообщение в приложении Tekshir 👇",
+    on_1: "⏳ Дополнительно проверяем ссылки и номера в интернете…", on_2: "🌐 Проверено также в Google, VirusTotal и базе жалоб", on_3: "📴 Проверено без интернета (правилами на телефоне)",
+    help: "Помощь и обучение", h_rescue: "Меня обманули — что делать?", h_rescue_s: "Ушли деньги, код или аккаунт? Пошаговая помощь",
+    h_tg: "Защита Telegram", h_quiz: "Распознай мошенника", h_quiz_s: "10 вопросов — проверьте себя", h_quiz_best: "Лучший результат: {n}/10",
+    r_title: "🆘 Меня обманули — что делать?", r_p: "Без паники. Выберите, что случилось, и выполняйте шаги по порядку:", r_police: "📞 102 — полиция",
+    tg_title: "✈️ Защита Telegram", tg_p: "Через ссылки «проголосуй» и «Premium в подарок» каждый день крадут аккаунты. Проверьте каждый пункт в Telegram и отметьте.",
+    tg_score: "Выполнено {n}/{k}", tg_good: "Отлично! Аккаунт хорошо защищён.", tg_mid: "Хорошо, но осталось несколько шагов.", tg_bad: "Аккаунт под угрозой — сначала включите облачный пароль.",
+    tg_open: "Открыть Telegram →", tg_priv: "🔒 Отметки хранятся только на этом телефоне. Tekshir не имеет доступа к вашему Telegram и ничего не читает.",
+    q_title: "🎓 Распознай мошенника", q_p: "Прочитайте сообщение: мошенник или обычное сообщение?", q_scam: "🔴 Мошенник", q_safe: "🟢 Обычное", q_right: "✅ Верно!", q_wrong: "❌ Неверно",
+    q_next: "Дальше →", q_finish: "Посмотреть результат", q_of: "Вопрос {i}/{n}", q_score: "Верно: {c}/{n}", q_again: "🔁 Пройти ещё раз", q_share: "📤 Отправить близким",
+    quiz_r3: "🏆 Отлично! Мошенникам вас не обмануть.", quiz_r2: "👍 Хорошо! Обратите внимание на некоторые признаки.", quiz_r1: "⚠️ Будьте осторожны — прочитайте «Советы» и попробуйте ещё раз.",
+    q_share_text: "Я прошёл упражнение «Распознай мошенника» в Tekshir: {c}/{n}. Попробуйте и вы:",
+    ios_t: "📲 Установите на iPhone", ios_p: "Нажмите «Поделиться» ⬆️ внизу → «На экран «Домой»» → «Добавить». Tekshir откроется как приложение и будет работать даже без интернета.",
+    close: "Закрыть", install: "📲 Установить на телефон",
+    shot_q: "📸 Как проверить скриншот или 🔳 QR-код?",
+    shot_ios: "iPhone: откройте скриншот в «Фото» → зажмите текст → «Скопировать». Затем здесь «📋 Вставить» → «🔍 Проверить».",
+    qr_ios: "QR-код: откройте «Камеру» и наведите на QR → зажмите появившуюся ссылку → «Скопировать» → вставьте сюда. Не открывайте ссылку, не проверив!",
+    shot_and: "Android: приложение Tekshir само читает скриншоты и QR. Или скопируйте текст через Google Lens и вставьте сюда." }
 };
-const S = { lang: store.get("tk_lang", (navigator.language || "").startsWith("ru") ? "ru" : "uz"), text: "", busy: false, res: null, err: "", cat: "all" };
-const t = k => (T[S.lang] || T.uz)[k] || T.uz[k] || k;
+const S = { lang: store.get("tk_lang", (navigator.language || "").startsWith("ru") ? "ru" : "uz"), text: "", busy: false, res: null, err: "", cat: "all",
+  online: 0,                                   // 0 — kerak emas, 1 — kutilmoqda, 2 — tayyor, 3 — internetsiz
+  q: { i: 0, right: 0, ans: null, done: false } };  // 🎓 mashq
+const t = (k, v = {}) => Object.entries(v).reduce((s, [a, b]) => s.split(`{${a}}`).join(String(b)), (T[S.lang] || T.uz)[k] || T.uz[k] || k);
+// Tekshiruv mexanizmi (Telegram bot bilan bir xil) — telefonda, internetsiz. engine.js eski keshda bo'lmasa — faqat server.
+const E = window.TekshirEngine, Y = window.YORDAM;
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const STANDALONE = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+let installEvt = null;                                    // Android Chrome: «O'rnatish» oynasi
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (current() === "bosh") render(); });
+const ql = () => S.lang === "ru" ? "ru" : "uz";
 const apiLang = () => S.lang === "ru" ? "ru" : "uz-latn";
 
 // Tarix: faqat telefonda. Raqamlar yashiriladi, matn qisqartiriladi.
@@ -167,6 +240,7 @@ const screens = {
       <div class="hero"><div class="ring">${SHIELD()}</div></div>
       <div class="hero-t"><b>${t("protected")}</b><span class="muted">${t("hero_sub")}</span></div>
       <div class="stats"><div class="stat"><b>${h.length}</b><span>${t("checked")}</span></div><div class="stat"><b style="color:var(--danger)">${h.filter(x => x.l === "danger").length}</b><span>${t("dangers")}</span></div><div class="stat"><b>${TIPS.length}</b><span>${t("tips_n")}</span></div></div>
+      ${installCard()}
       <a class="btn" href="#tekshir">${t("check_btn")}</a>
       <div class="grid">
         <a class="tile" href="#tekshir" data-focus="1"><span class="ic">💬</span><b>${t("t_msg")}</b><span>${t("t_msg_s")}</span></a>
@@ -174,6 +248,12 @@ const screens = {
         <button class="tile" type="button" data-act="file"><span class="ic">📎</span><b>${t("t_apk")}</b><span>${t("t_apk_s")}</span></button>
         <a class="tile" href="#tekshir" data-focus="1"><span class="ic">📞</span><b>${t("t_num")}</b><span>${t("t_num_s")}</span></a>
       </div>
+      ${Y ? `<span class="kicker">${t("help")}</span>
+      <div class="grid">
+        <a class="tile sos" href="#aldandim"><span class="ic">🆘</span><div><b>${t("h_rescue")}</b><span>${t("h_rescue_s")}</span></div></a>
+        <a class="tile" href="#telegram"><span class="ic">✈️</span><b>${t("h_tg")}</b><span>${t("tg_score", { n: tgDone().length, k: Y.tg.uz.length })}</span></a>
+        <a class="tile" href="#mashq"><span class="ic">🎓</span><b>${t("h_quiz")}</b><span>${store.get("tk_quiz_best", -1) >= 0 ? t("h_quiz_best", { n: store.get("tk_quiz_best", 0) }) : t("h_quiz_s")}</span></a>
+      </div>` : ""}
       <span class="kicker">${t("tip_day")}</span>${tipCard(tipOfDay())}`;
   },
   tekshir() {
@@ -188,6 +268,10 @@ const screens = {
       </form>
       ${S.err ? `<p class="err" role="alert">${esc(S.err)}</p>` : ""}
       ${r ? resultHtml(r) : ""}
+      ${r && S.online ? `<p class="note" role="status">${t("on_" + S.online)}</p>` : ""}
+      <details class="card"${IOS ? " open" : ""}><summary>${t("shot_q")}</summary>
+        ${IOS ? `<p>${t("shot_ios")}</p><p>${t("qr_ios")}</p>` : `<p>${t("shot_and")}</p><p class="muted">${t("shot_ios")}</p><p class="muted">${t("qr_ios")}</p>`}
+      </details>
       <p class="note">${t("privacy")}</p>`;
   },
   tarix() {
@@ -206,6 +290,48 @@ const screens = {
       <div class="chips" role="group">${[["all", `${t("all")} · ${TIPS.length}`], ...CATS.map(c => [c[0], `${c[1]} ${c[2]}`])].map(([id, l]) => `<button class="chip" type="button" data-cat="${id}" aria-pressed="${S.cat === id}">${esc(l)}</button>`).join("")}</div>
       ${list.map(tipCard).join("")}
       <button class="btn ghost" type="button" data-act="share">${t("share_tips")}</button>`;
+  },
+  aldandim() {
+    const l = ql();
+    return `
+      <div class="top">${LOGO}<span class="brand">${t("r_title")}</span></div>
+      <p class="muted">${t("r_p")}</p>
+      ${Y.rescue[l].map(c => `<details class="card rescue"><summary><span>${c.icon}</span><span>${esc(c.title)}</span></summary>
+        <ol class="steps">${c.steps.map(x => `<li><span>${esc(x)}</span></li>`).join("")}</ol></details>`).join("")}
+      <a class="btn red" href="tel:102">${t("r_police")}</a>
+      <div class="card ok"><p>${esc(Y.rescue.footer[l])}</p></div>`;
+  },
+  telegram() {
+    const l = ql(), done = tgDone(), n = Y.tg[l].filter(x => done.includes(x.id)).length, k = Y.tg[l].length;
+    const lv = n >= k ? "safe" : n >= 4 ? "suspicious" : "danger";        // Android'dagi TgSafety.level bilan bir xil
+    return `
+      <div class="top">${LOGO}<span class="brand">${t("tg_title")}</span></div>
+      <p class="muted">${t("tg_p")}</p>
+      <section class="res ${lv}"><span class="score lv-${lv}">${t("tg_score", { n, k })}</span><p>${t(lv === "safe" ? "tg_good" : lv === "suspicious" ? "tg_mid" : "tg_bad")}</p></section>
+      ${Y.tg[l].map(x => `<div class="card${done.includes(x.id) ? " done" : ""}"><label class="chk"><input type="checkbox" data-tg="${x.id}" ${done.includes(x.id) ? "checked" : ""}><span><b>${esc(x.title)}</b><br><span class="muted">${esc(x.how)}</span></span></label></div>`).join("")}
+      <a class="btn ghost" href="tg://settings">${t("tg_open")}</a>
+      <p class="note">${t("tg_priv")}</p>`;
+  },
+  mashq() {
+    const l = ql(), Q = S.q, n = Y.quiz.length;
+    if (Q.done) {
+      const key = Q.right * 10 >= n * 9 ? "quiz_r3" : Q.right * 10 >= n * 6 ? "quiz_r2" : "quiz_r1";   // Android'dagi Quiz.result bilan bir xil
+      const lv = { quiz_r3: "safe", quiz_r2: "suspicious", quiz_r1: "danger" }[key];
+      return `
+        <div class="top">${LOGO}<span class="brand">${t("q_title")}</span></div>
+        <section class="res ${lv}"><span class="score lv-${lv}">${t("q_score", { c: Q.right, n })}</span><p>${t(key)}</p></section>
+        <button class="btn" type="button" data-act="q-again">${t("q_again")}</button>
+        <button class="btn ghost" type="button" data-act="q-share">${t("q_share")}</button>`;
+    }
+    const q = Y.quiz[Q.i], ok = Q.ans === q.scam;
+    return `
+      <div class="top">${LOGO}<span class="brand">${t("q_title")}</span></div>
+      <p class="muted">${t("q_of", { i: Q.i + 1, n })} · ${t("q_p")}</p>
+      <div class="bubble">${esc(q[l])}</div>
+      ${Q.ans === null ? `<div class="row2"><button class="btn red" type="button" data-act="q-scam">${t("q_scam")}</button><button class="btn" type="button" data-act="q-safe">${t("q_safe")}</button></div>` : `
+      <section class="res ${ok ? "safe" : "danger"}"><b class="score lv-${ok ? "safe" : "danger"}">${t(ok ? "q_right" : "q_wrong")}</b>
+        <b>${t(q.scam ? "q_scam" : "q_safe")}</b><p>${esc(l === "ru" ? q.whyRu : q.whyUz)}</p></section>
+      <button class="btn" type="button" data-act="q-next">${t(Q.i === n - 1 ? "q_finish" : "q_next")}</button>`}`;
   },
   haqida() {
     return `
@@ -230,18 +356,46 @@ function resultHtml(r) {
 }
 
 // ================= Tekshirish =================
+// 1) Telefonda, internetsiz (engine.js — Telegram bot bilan bir xil qoidalar) — natija darhol.
+// 2) Havola yoki raqam bo'lsa — FAQAT ularni serverga (Google, VirusTotal, shikoyatlar). Xabar matni yuborilmaydi.
+const RANK = { safe: 0, suspicious: 1, danger: 2 };
+function localResult(r) {
+  const L = apiLang();
+  return { level: r.level, title: E.t(L, "level_" + r.level), numbers: [],
+    reasons: r.reasons.filter(x => x.points > 0).slice(0, 5).map(x => E.t(L, x.code, x.vars)),
+    advice: E.adviceKeys(r).map(k => E.t(L, k)) };
+}
+function merge(local, server) {
+  const top = RANK[server.level] > RANK[local.level] ? server : local;
+  return { level: top.level, title: top.title, advice: top.advice, numbers: server.numbers || [],
+    reasons: [...new Set([...local.reasons, ...server.reasons])].slice(0, 6) };
+}
+async function post(payload) {
+  const r = await fetch("/api/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, lang: apiLang(), app: "tekshir" }) });
+  if (r.status === 429) throw new Error(t("busy"));
+  if (!r.ok) throw new Error(t("fail"));
+  return r.json();
+}
+function shown() { S.busy = false; render(); $("#res")?.scrollIntoView({ behavior: "smooth", block: "start" }); }
 async function check(payload, kind, preview) {
-  S.busy = true; S.err = ""; S.res = null;
+  S.busy = true; S.err = ""; S.res = null; S.online = 0;
   if (location.hash !== "#tekshir") location.hash = "tekshir"; else render();
-  try {
-    const r = await fetch("/api/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, lang: apiLang(), app: "tekshir" }) });
-    if (r.status === 429) throw new Error(t("busy"));
-    if (!r.ok) throw new Error(t("fail"));
-    S.res = await r.json();
-    addHist(kind, preview, S.res);
-  } catch (e) { S.err = e.message === "Failed to fetch" ? t("net") : e.message; }
-  S.busy = false; render();
-  $("#res")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const local = E ? localResult(E.checkText(payload.text ?? (payload.file && payload.file.name) ?? "")) : null;
+  if (local && payload.text != null) {
+    S.res = local;
+    const part = E.onlinePart(payload.text);
+    if (!part) { addHist(kind, preview, S.res); return shown(); }
+    S.online = 1; shown();
+    try { S.res = merge(local, await post({ text: part })); S.online = 2; } catch { S.online = 3; }
+    addHist(kind, preview, S.res); render(); return;
+  }
+  // Fayl (nomi va hash'i — fayl o'zi yuborilmaydi) yoki eski versiya: server; internet bo'lmasa — telefondagi natija
+  try { S.res = await post(payload); if (local) S.res = merge(local, S.res); addHist(kind, preview, S.res); }
+  catch (e) {
+    if (local) { S.res = local; S.online = 3; addHist(kind, preview, S.res); }
+    else S.err = e.message === "Failed to fetch" ? t("net") : e.message;
+  }
+  shown();
 }
 async function sha256(file) { const h = await crypto.subtle.digest("SHA-256", await file.arrayBuffer()); return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, "0")).join(""); }
 const picker = Object.assign(document.createElement("input"), { type: "file", hidden: true });
@@ -256,12 +410,12 @@ picker.addEventListener("change", async () => {
 
 // ================= Marshrut va harakatlar =================
 const view = $("#view");
-function current() { const h = location.hash.slice(1); return screens[h] ? h : "bosh"; }
+function current() { const h = location.hash.slice(1); return screens[h] && (Y || !["aldandim", "telegram", "mashq"].includes(h)) ? h : "bosh"; }
 function render() {
   const name = current();
   document.documentElement.lang = S.lang === "ru" ? "ru" : "uz";
   view.innerHTML = screens[name]();
-  document.querySelectorAll("nav a").forEach(a => a.dataset.tab === name || (name === "tekshir" && a.dataset.tab === "bosh") ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  document.querySelectorAll("nav a").forEach(a => a.dataset.tab === name || (["tekshir", "aldandim", "telegram", "mashq"].includes(name) && a.dataset.tab === "bosh") ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
   document.querySelectorAll("[data-t]").forEach(el => el.textContent = t(el.dataset.t));
 }
 addEventListener("hashchange", () => { render(); scrollTo(0, 0); });
@@ -276,7 +430,37 @@ document.addEventListener("click", async e => {
   if (a === "paste") { try { S.text = await navigator.clipboard.readText(); render(); } catch { alert(t("paste_fail")); } }
   if (a === "clear" && confirm(t("clear_q"))) { store.set("tk_hist", []); render(); }
   if (a === "share" && navigator.share) navigator.share({ title: "Tekshir", text: t("share_text"), url: location.origin + "/?ref=ulash" }).catch(() => {});
+  // 🎓 mashq
+  if (a === "q-scam" || a === "q-safe") { const q = Y.quiz[S.q.i]; S.q.ans = a === "q-scam"; if (S.q.ans === q.scam) S.q.right++; render(); }
+  if (a === "q-next") {
+    if (S.q.i === Y.quiz.length - 1) { S.q.done = true; if (S.q.right > store.get("tk_quiz_best", -1)) store.set("tk_quiz_best", S.q.right); }
+    else { S.q.i++; S.q.ans = null; }
+    render(); scrollTo(0, 0);
+  }
+  if (a === "q-again") { S.q = { i: 0, right: 0, ans: null, done: false }; render(); }
+  if (a === "q-share") {
+    const text = t("q_share_text", { c: S.q.right, n: Y.quiz.length }), url = location.origin + "/?ref=mashq#mashq";
+    if (navigator.share) navigator.share({ title: "Tekshir", text, url }).catch(() => {});
+    else { try { await navigator.clipboard.writeText(text + " " + url); } catch { /* nusxalab bo'lmadi */ } }
+  }
+  // o'rnatish
+  if (a === "ios-close") { store.set("tk_ios_hide", 1); render(); }
+  if (a === "install" && installEvt) { installEvt.prompt(); installEvt.userChoice.finally(() => { installEvt = null; render(); }); }
 });
+// ✈️ Telegram ro'yxati — belgilar faqat shu telefonda
+const tgDone = () => store.get("tk_tg", []);
+document.addEventListener("change", e => {
+  const id = e.target.dataset && e.target.dataset.tg; if (!id) return;
+  const d = new Set(tgDone()); e.target.checked ? d.add(id) : d.delete(id);
+  store.set("tk_tg", [...d]); render();
+});
+function installCard() {
+  if (STANDALONE) return "";
+  if (IOS && !store.get("tk_ios_hide", 0))
+    return `<div class="card install"><div class="top"><b>${t("ios_t")}</b><button class="x" type="button" data-act="ios-close" aria-label="${t("close")}">✕</button></div><p class="muted">${t("ios_p")}</p></div>`;
+  if (installEvt) return `<button class="btn ghost" type="button" data-act="install">${t("install")}</button>`;
+  return "";
+}
 document.addEventListener("input", e => { if (e.target.id === "tx") S.text = e.target.value; });
 document.addEventListener("submit", e => {
   if (e.target.id !== "f") return;

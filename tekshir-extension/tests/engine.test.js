@@ -82,12 +82,19 @@ test("maslahatlar va matnlar uch tilda", () => {
   assert.match(E.t("ru", "url_brand", { name: "Click", real: "click.uz" }), /click\.uz/);
 });
 
-test("engine.js eskirmagan (bot o'zgarsa — node build.js)", () => {
-  const { build } = require("../build.js");
-  const before = ENGINE_SRC;
+test("engine.js eskirmagan, kengaytma va veb-ilovada bir xil (bot o'zgarsa — node build.js)", () => {
+  const { build, OUTS } = require("../build.js");
+  const before = OUTS.map(o => fs.existsSync(o) ? fs.readFileSync(o, "utf8") : "");
   build();
-  assert.equal(fs.readFileSync(path.join(__dirname, "..", "engine.js"), "utf8"), before,
-    "engine.js botdagi koddan farq qilyapti — `node build.js` ni ishga tushiring");
+  OUTS.forEach((o, i) => assert.equal(fs.readFileSync(o, "utf8"), before[i],
+    `${path.relative(path.join(__dirname, "..", ".."), o)} eskirgan — \`node build.js\` ni ishga tushiring`));
+});
+
+test("serverga faqat havola va raqamlar ketadi", () => {
+  const p = E.onlinePart("Salom! Kartangiz bloklandi, SMS kodni ayting. Tel: +998 90 123 45 67, sayt https://c1ick-uz.com");
+  assert.ok(p.includes("c1ick-uz.com") && p.includes("+998901234567"));
+  assert.ok(!/Salom|bloklandi|SMS/.test(p), "xabar matni yuborilmasligi kerak");
+  assert.equal(E.onlinePart("Ertaga darsga kelasanmi?"), "");
 });
 
 test("internetga murojaat yo'q", () => {

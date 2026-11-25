@@ -5,13 +5,15 @@ const fs = require("fs");
 const path = require("path");
 
 const BOT = path.join(__dirname, "..", "tekshir-bot");
-const OUT = path.join(__dirname, "engine.js");
+// Bitta mexanizm — ikki joyda: brauzer kengaytmasi va Tekshir veb-ilovasi (iPhone, kompyuter)
+const OUTS = [path.join(__dirname, "engine.js"), path.join(BOT, "app", "engine.js")];
 
 // Modul kaliti → manba fayl. Kalitlar bot papkasiga nisbatan yo'l (kengaytmaniki — "src/api").
 const MODULES = {
   "src/checkers/text": path.join(BOT, "src/checkers/text.js"),
   "src/checkers/url": path.join(BOT, "src/checkers/url.js"),
   "src/checkers/file": path.join(BOT, "src/checkers/file.js"),
+  "src/checkers/numbers": path.join(BOT, "src/checkers/numbers.js"),
   "src/scoring": path.join(BOT, "src/scoring.js"),
   "api": path.join(__dirname, "src/api.js"),
 };
@@ -66,9 +68,9 @@ g.TekshirEngine = require("api");
   // Chrome kengaytma fayllarida Unicode «noncharacter» belgilarni (masalan U+FFFF) qabul qilmaydi —
   // botdagi URL_RE ichida bor. Ularni \uXXXX ko'rinishiga o'tkazamiz (regex va matnda ma'nosi o'zgarmaydi).
   const safe = out.replace(/[\uFDD0-\uFDEF\uFFFE\uFFFF]/g, c => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
-  fs.writeFileSync(OUT, safe);
-  return OUT;
+  for (const o of OUTS) fs.writeFileSync(o, safe);
+  return OUTS;
 }
 
-if (require.main === module) console.log("✅ " + path.relative(process.cwd(), build()));
-module.exports = { build };
+if (require.main === module) for (const o of build()) console.log("✅ " + path.relative(process.cwd(), o));
+module.exports = { build, OUTS };
