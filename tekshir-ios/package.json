@@ -1,0 +1,6 @@
+{
+  "name": "tekshir-ios",
+  "private": true,
+  "description": "Tekshir iPhone ilovasi — JavaScriptCore muhitidagi testlar (Swift kodi Xcode'da yig'iladi)",
+  "scripts": { "test": "node --test tests/jsc.test.js" }
+}

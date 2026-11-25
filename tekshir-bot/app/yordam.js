@@ -85,6 +85,28 @@ window.YORDAM = {
     ]
   },
 
+  // 🔳 QR kod eslatmalari (Android HelpTexts bilan bir xil)
+  qrNotes: {
+    uz: {
+      qr_wifi: "📶 Bu Wi-Fi tarmog'i QR kodi. Notanish joydagi tarmoqda bank ilovasiga kirmang.",
+      qr_wifi_open: "📶 Parolsiz (ochiq) Wi-Fi tarmog'i. Bunday tarmoqda bank, Click va Payme'ga kirmang — ma'lumotlarni boshqalar ko'rishi mumkin.",
+      qr_tel: "📞 QR kod telefon raqamini ochadi. Qo'ng'iroqda bank xodimi deb kod so'rashsa — ishonmang.",
+      qr_sms: "✉️ QR kod tayyor SMS yuboradi. Pullik raqamga SMS ketishi mumkin — yuborishdan oldin raqamni tekshiring.",
+      qr_geo: "📍 Bu xaritadagi joylashuv. O'zi xavfli emas.",
+      qr_http: "🔓 Havola himoyalanmagan (https emas). Bunday saytga karta ma'lumotini kiritmang.",
+      qr_wifi_name: "Tarmoq nomi"
+    },
+    ru: {
+      qr_wifi: "📶 Это QR-код сети Wi-Fi. В незнакомом месте не заходите в приложение банка через такую сеть.",
+      qr_wifi_open: "📶 Открытая сеть Wi-Fi без пароля. Не заходите в банк, Click и Payme — данные могут увидеть другие.",
+      qr_tel: "📞 QR-код открывает номер телефона. Если при звонке «сотрудник банка» просит код — не верьте.",
+      qr_sms: "✉️ QR-код отправляет готовое SMS. Оно может уйти на платный номер — проверьте номер перед отправкой.",
+      qr_geo: "📍 Это место на карте. Само по себе не опасно.",
+      qr_http: "🔓 Ссылка без защиты (не https). Не вводите на таком сайте данные карты.",
+      qr_wifi_name: "Название сети"
+    }
+  },
+
   // scam: true — firibgarlik, false — oddiy xabar
   quiz: [
     { scam: true,

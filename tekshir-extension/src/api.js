@@ -82,4 +82,49 @@ function onlinePart(text) {
   return [...urls, ...nums].join("\n");
 }
 
-module.exports = { checkPage, checkText, adviceKeys, fileInText, onlinePart, t, levelOf, LANGS };
+// ---------- 🔳 QR kod (Android'dagi QrCheck bilan bir xil: tekshir-android/.../engine/Help.kt) ----------
+// Natija: { kind, text, fields, notes, check } — check: mexanizmga beriladigan matn (bo'sh — tekshiradigan narsa yo'q).
+// Wi-Fi paroli hech qachon olinmaydi.
+function qr(raw) {
+  const s = String(raw || "").trim(), low = s.toLowerCase();
+  let kind = "text", text = s, fields = {};
+  if (!s) kind = "empty";
+  else if (low.startsWith("wifi:")) {
+    const f = {}; let cur = "", esc = false;
+    const flush = () => { const i = cur.indexOf(":"); if (i > 0) f[cur.slice(0, i).toUpperCase()] = cur.slice(i + 1); cur = ""; };
+    for (const c of s.slice(5)) { if (esc) { cur += c; esc = false; } else if (c === "\\") esc = true; else if (c === ";") flush(); else cur += c; }
+    flush();
+    const tt = (f.T || "").toUpperCase();
+    const security = !tt || tt === "NOPASS" ? "nopass" : tt.startsWith("WPA") ? "wpa" : tt === "WEP" ? "wep" : tt.toLowerCase();
+    kind = "wifi"; text = f.S || ""; fields = { ssid: f.S || "", security, hidden: f.H || "false" };
+  } else if (low.startsWith("tel:")) { kind = "tel"; text = s.slice(4).trim(); }
+  else if (low.startsWith("smsto:")) {
+    const rest = s.slice(6), i = rest.indexOf(":");
+    kind = "sms"; text = i < 0 ? rest.trim() : rest.slice(i + 1).trim(); fields = { to: (i < 0 ? rest : rest.slice(0, i)).trim() };
+  } else if (low.startsWith("sms:")) {
+    const rest = s.slice(4), m = rest.match(/[?&]body=([^&]*)/);
+    let body = ""; if (m) { try { body = decodeURIComponent(m[1]); } catch { body = m[1]; } }
+    kind = "sms"; text = body; fields = { to: rest.split("?")[0].trim() };
+  } else if (low.startsWith("mailto:") || low.startsWith("matmsg:")) kind = "email";
+  else if (low.startsWith("geo:")) kind = "geo";
+  else if (/^(https?:\/\/|www\.)/.test(low)) kind = "url";
+  const check = ["url", "text", "email", "tel"].includes(kind) ? text
+    : kind === "sms" ? [text, fields.to].filter(Boolean).join("\n") : "";
+  const notes = kind === "wifi" ? [fields.security === "nopass" ? "qr_wifi_open" : "qr_wifi"]
+    : kind === "tel" ? ["qr_tel"] : kind === "sms" ? ["qr_sms"] : kind === "geo" ? ["qr_geo"]
+    : kind === "url" && low.startsWith("http://") ? ["qr_http"] : [];
+  return { kind, text, fields, notes, check };
+}
+
+/** Ilova uchun tayyor natija (iPhone ilovasi chizadi): daraja, sarlavha, sabablar, maslahatlar, serverga ketadigan qism. */
+function view(text, lang) {
+  const r = checkText(text);
+  return {
+    level: r.level, score: r.score, title: t(lang, "level_" + r.level),
+    reasons: r.reasons.filter(x => x.points > 0).slice(0, 5).map(x => t(lang, x.code, x.vars)),
+    advice: adviceKeys(r).map(k => t(lang, k)),
+    online: onlinePart(text), pending: !!r.pending
+  };
+}
+
+module.exports = { checkPage, checkText, adviceKeys, fileInText, onlinePart, view, qr, t, levelOf, LANGS };

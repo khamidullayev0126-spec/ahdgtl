@@ -1,5 +1,81 @@
 // AVTOMATIK YARATILGAN FAYL — qo'lda tahrirlamang. Manba: tekshir-bot/src va src/api.js. Yangilash: node build.js
 // Tekshir tekshiruv mexanizmi (Telegram bot bilan bir xil). Internetga hech narsa yubormaydi.
+// URL o'rinbosari — faqat `URL` YO'Q muhitlar uchun (iPhone'dagi JavaScriptCore). Brauzer va Node'da ishlamaydi.
+// Mexanizmga kerak bo'lgani: protocol, username, password, hostname (punycode «xn--» bilan), port, pathname, search, hash.
+// Xalqaro harfli domenlar (masalan kirill «с» bilan «сlick.uz») — xuddi brauzerdagidek «xn--…» ko'rinishiga o'tadi:
+// firibgarlikni aynan shu belgi bo'yicha ushlaymiz (url_punycode).
+(function (g) {
+  if (typeof g.URL === "function") return;
+
+  // ---- Punycode (RFC 3492), faqat kodlash ----
+  const BASE = 36, TMIN = 1, TMAX = 26, SKEW = 38, DAMP = 700, INITIAL_BIAS = 72, INITIAL_N = 128;
+  const digit = d => String.fromCharCode(d + 22 + 75 * (d < 26));
+  function adapt(delta, num, first) {
+    let k = 0;
+    delta = first ? Math.floor(delta / DAMP) : delta >> 1;
+    delta += Math.floor(delta / num);
+    for (; delta > ((BASE - TMIN) * TMAX) >> 1; k += BASE) delta = Math.floor(delta / (BASE - TMIN));
+    return Math.floor(k + ((BASE - TMIN + 1) * delta) / (delta + SKEW));
+  }
+  function encode(input) {
+    const cps = Array.from(input).map(c => c.codePointAt(0));
+    let n = INITIAL_N, delta = 0, bias = INITIAL_BIAS, out = "";
+    for (const c of cps) if (c < 128) out += String.fromCharCode(c);
+    const b = out.length; let h = b;
+    if (b) out += "-";
+    while (h < cps.length) {
+      let m = Infinity;
+      for (const c of cps) if (c >= n && c < m) m = c;
+      delta += (m - n) * (h + 1); n = m;
+      for (const c of cps) {
+        if (c < n) delta++;
+        if (c === n) {
+          let q = delta;
+          for (let k = BASE; ; k += BASE) {
+            const t = k <= bias ? TMIN : k >= bias + TMAX ? TMAX : k - bias;
+            if (q < t) break;
+            out += digit(t + ((q - t) % (BASE - t)));
+            q = Math.floor((q - t) / (BASE - t));
+          }
+          out += digit(q);
+          bias = adapt(delta, h + 1, h === b);
+          delta = 0; h++;
+        }
+      }
+      delta++; n++;
+    }
+    return out;
+  }
+  const toASCII = host => host.split(".").map(l => /[^\x00-\x7f]/.test(l) ? "xn--" + encode(l.normalize("NFC")) : l).join(".");
+
+  const RE = /^([a-z][a-z0-9+.\-]*:)\/\/(?:([^:@\/?#]*)(?::([^@\/?#]*))?@)?(\[[^\]]*\]|[^\/?#:]*)(?::(\d*))?([^?#]*)(\?[^#]*)?(#.*)?$/i;
+  class URL {
+    constructor(href) {
+      const m = RE.exec(String(href).trim());
+      if (!m || !m[4]) throw new TypeError("Invalid URL: " + href);
+      this.protocol = m[1].toLowerCase();
+      this.username = m[2] || "";
+      this.password = m[3] || "";
+      let host = m[4].toLowerCase();
+      try { host = decodeURIComponent(host); } catch { /* o'zgarishsiz */ }
+      this.hostname = toASCII(host);
+      const defPort = { "http:": "80", "https:": "443" }[this.protocol];
+      this.port = m[5] && m[5] !== defPort ? m[5] : "";
+      this.pathname = m[6] || "/";
+      this.search = m[7] && m[7] !== "?" ? m[7] : "";
+      this.hash = m[8] && m[8] !== "#" ? m[8] : "";
+      this.host = this.hostname + (this.port ? ":" + this.port : "");
+      this.origin = this.protocol + "//" + this.host;
+    }
+    get href() {
+      const auth = this.username ? this.username + (this.password ? ":" + this.password : "") + "@" : "";
+      return this.protocol + "//" + auth + this.host + this.pathname + this.search + this.hash;
+    }
+    toString() { return this.href; }
+  }
+  g.URL = URL;
+})(typeof globalThis !== "undefined" ? globalThis : this);
+
 (function (g) {
 "use strict";
 const M = {}, C = {};
@@ -504,7 +580,52 @@ function onlinePart(text) {
   return [...urls, ...nums].join("\n");
 }
 
-module.exports = { checkPage, checkText, adviceKeys, fileInText, onlinePart, t, levelOf, LANGS };
+// ---------- 🔳 QR kod (Android'dagi QrCheck bilan bir xil: tekshir-android/.../engine/Help.kt) ----------
+// Natija: { kind, text, fields, notes, check } — check: mexanizmga beriladigan matn (bo'sh — tekshiradigan narsa yo'q).
+// Wi-Fi paroli hech qachon olinmaydi.
+function qr(raw) {
+  const s = String(raw || "").trim(), low = s.toLowerCase();
+  let kind = "text", text = s, fields = {};
+  if (!s) kind = "empty";
+  else if (low.startsWith("wifi:")) {
+    const f = {}; let cur = "", esc = false;
+    const flush = () => { const i = cur.indexOf(":"); if (i > 0) f[cur.slice(0, i).toUpperCase()] = cur.slice(i + 1); cur = ""; };
+    for (const c of s.slice(5)) { if (esc) { cur += c; esc = false; } else if (c === "\\") esc = true; else if (c === ";") flush(); else cur += c; }
+    flush();
+    const tt = (f.T || "").toUpperCase();
+    const security = !tt || tt === "NOPASS" ? "nopass" : tt.startsWith("WPA") ? "wpa" : tt === "WEP" ? "wep" : tt.toLowerCase();
+    kind = "wifi"; text = f.S || ""; fields = { ssid: f.S || "", security, hidden: f.H || "false" };
+  } else if (low.startsWith("tel:")) { kind = "tel"; text = s.slice(4).trim(); }
+  else if (low.startsWith("smsto:")) {
+    const rest = s.slice(6), i = rest.indexOf(":");
+    kind = "sms"; text = i < 0 ? rest.trim() : rest.slice(i + 1).trim(); fields = { to: (i < 0 ? rest : rest.slice(0, i)).trim() };
+  } else if (low.startsWith("sms:")) {
+    const rest = s.slice(4), m = rest.match(/[?&]body=([^&]*)/);
+    let body = ""; if (m) { try { body = decodeURIComponent(m[1]); } catch { body = m[1]; } }
+    kind = "sms"; text = body; fields = { to: rest.split("?")[0].trim() };
+  } else if (low.startsWith("mailto:") || low.startsWith("matmsg:")) kind = "email";
+  else if (low.startsWith("geo:")) kind = "geo";
+  else if (/^(https?:\/\/|www\.)/.test(low)) kind = "url";
+  const check = ["url", "text", "email", "tel"].includes(kind) ? text
+    : kind === "sms" ? [text, fields.to].filter(Boolean).join("\n") : "";
+  const notes = kind === "wifi" ? [fields.security === "nopass" ? "qr_wifi_open" : "qr_wifi"]
+    : kind === "tel" ? ["qr_tel"] : kind === "sms" ? ["qr_sms"] : kind === "geo" ? ["qr_geo"]
+    : kind === "url" && low.startsWith("http://") ? ["qr_http"] : [];
+  return { kind, text, fields, notes, check };
+}
+
+/** Ilova uchun tayyor natija (iPhone ilovasi chizadi): daraja, sarlavha, sabablar, maslahatlar, serverga ketadigan qism. */
+function view(text, lang) {
+  const r = checkText(text);
+  return {
+    level: r.level, score: r.score, title: t(lang, "level_" + r.level),
+    reasons: r.reasons.filter(x => x.points > 0).slice(0, 5).map(x => t(lang, x.code, x.vars)),
+    advice: adviceKeys(r).map(k => t(lang, k)),
+    online: onlinePart(text), pending: !!r.pending
+  };
+}
+
+module.exports = { checkPage, checkText, adviceKeys, fileInText, onlinePart, view, qr, t, levelOf, LANGS };
 
 };
 M["src/checkers/external"] = function (module) { module.exports = { externalReasons: async () => ({ reasons: [], checked: [] }), virusTotalFile: async () => null }; };

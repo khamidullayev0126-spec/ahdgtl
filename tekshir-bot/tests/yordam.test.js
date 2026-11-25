@@ -22,6 +22,7 @@ function strings() {
     for (const i of Y.tg[l]) out.push(i.title, i.how);
   }
   for (const q of Y.quiz) out.push(q.uz, q.ru, q.whyUz, q.whyRu);
+  for (const l of ["uz", "ru"]) out.push(...Object.values(Y.qrNotes[l]));
   return out;
 }
 

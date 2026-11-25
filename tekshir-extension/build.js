@@ -5,8 +5,11 @@ const fs = require("fs");
 const path = require("path");
 
 const BOT = path.join(__dirname, "..", "tekshir-bot");
-// Bitta mexanizm — ikki joyda: brauzer kengaytmasi va Tekshir veb-ilovasi (iPhone, kompyuter)
-const OUTS = [path.join(__dirname, "engine.js"), path.join(BOT, "app", "engine.js")];
+// Bitta mexanizm — uch joyda: brauzer kengaytmasi, Tekshir veb-ilovasi va iPhone ilovasi (JavaScriptCore)
+const IOS_RES = path.join(__dirname, "..", "tekshir-ios", "Resources");
+const OUTS = [path.join(__dirname, "engine.js"), path.join(BOT, "app", "engine.js"), path.join(IOS_RES, "engine.js")];
+// iPhone ilovasi veb-ilova bilan bir xil matnlarni ishlatadi: yordam (🆘 ✈️ 🎓) va maslahatlar
+const COPIES = ["yordam.js", "maslahatlar.js"].map(f => [path.join(BOT, "app", f), path.join(IOS_RES, f)]);
 
 // Modul kaliti → manba fayl. Kalitlar bot papkasiga nisbatan yo'l (kengaytmaniki — "src/api").
 const MODULES = {
@@ -52,6 +55,7 @@ function build() {
 
   const out = `// AVTOMATIK YARATILGAN FAYL — qo'lda tahrirlamang. Manba: tekshir-bot/src va src/api.js. Yangilash: node build.js
 // Tekshir tekshiruv mexanizmi (Telegram bot bilan bir xil). Internetga hech narsa yubormaydi.
+${fs.readFileSync(path.join(__dirname, "src", "url-shim.js"), "utf8")}
 (function (g) {
 "use strict";
 const M = {}, C = {};
@@ -68,9 +72,10 @@ g.TekshirEngine = require("api");
   // Chrome kengaytma fayllarida Unicode «noncharacter» belgilarni (masalan U+FFFF) qabul qilmaydi —
   // botdagi URL_RE ichida bor. Ularni \uXXXX ko'rinishiga o'tkazamiz (regex va matnda ma'nosi o'zgarmaydi).
   const safe = out.replace(/[\uFDD0-\uFDEF\uFFFE\uFFFF]/g, c => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
-  for (const o of OUTS) fs.writeFileSync(o, safe);
-  return OUTS;
+  for (const o of OUTS) { fs.mkdirSync(path.dirname(o), { recursive: true }); fs.writeFileSync(o, safe); }
+  for (const [from, to] of COPIES) fs.copyFileSync(from, to);
+  return [...OUTS, ...COPIES.map(c => c[1])];
 }
 
 if (require.main === module) for (const o of build()) console.log("✅ " + path.relative(process.cwd(), o));
-module.exports = { build, OUTS };
+module.exports = { build, OUTS, COPIES };

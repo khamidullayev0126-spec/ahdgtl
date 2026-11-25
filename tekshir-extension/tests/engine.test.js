@@ -90,6 +90,58 @@ test("engine.js eskirmagan, kengaytma va veb-ilovada bir xil (bot o'zgarsa — n
     `${path.relative(path.join(__dirname, "..", ".."), o)} eskirgan — \`node build.js\` ni ishga tushiring`));
 });
 
+// iPhone (JavaScriptCore)da URL yo'q — o'rinbosar bilan natija AYNAN bir xil bo'lishi shart
+test("URL'siz muhit (iPhone): o'rinbosar brauzer URL bilan bir xil", () => {
+  const box = {};
+  vm.createContext(box);
+  vm.runInContext(ENGINE_SRC, box);
+  const J = box.TekshirEngine;
+  assert.notEqual(box.URL, URL, "o'rinbosar o'rnatilishi kerak edi");
+  const hosts = ["https://сlick.uz/pay", "https://xn--lick-0nd.uz", "https://paymе.uz", "http://клик.уз/a?b=1#c", "https://user:pw@click.uz.evil.top:8080/x?y",
+    "https://WWW.Click.UZ/", "http://185.22.33.44/login", "https://bit.ly/x", "https://mÿbank.uz/?bonus=1", "https://sub.domain.payme.uz.tk/karta"];
+  for (const u of hosts) {
+    const a = new box.URL(u), b = new URL(u);
+    for (const k of ["protocol", "username", "password", "hostname", "port", "pathname", "search"]) assert.equal(a[k], b[k], `${u} → ${k}`);
+  }
+  assert.throws(() => new box.URL("salom"));
+  for (const t of [...TEXTS, ...hosts]) {
+    const a = plain(J.checkText(t)), b = plain(E.checkText(t));
+    assert.deepEqual([a.level, a.score, a.reasons.map(r => r.code)], [b.level, b.score, b.reasons.map(r => r.code)], t);
+  }
+  assert.equal(J.checkText("https://сlick.uz/pay").level, "danger");
+});
+
+test("view(): iPhone ilovasi uchun tayyor natija", () => {
+  const v = plain(E.view("Bank xodimi: kartangiz bloklandi, SMS kodni ayting https://c1ick-uz.com", "ru"));
+  assert.equal(v.level, "danger");
+  assert.match(v.title, /ОПАСНО/);
+  assert.ok(v.reasons.length >= 3 && v.advice.length >= 2);
+  assert.equal(v.online, "https://c1ick-uz.com");
+});
+
+test("iPhone ilovasidagi yordam va maslahat fayllari veb-ilovadagi bilan bir xil", () => {
+  const { COPIES } = require("../build.js");
+  for (const [from, to] of COPIES) assert.equal(fs.readFileSync(to, "utf8"), fs.readFileSync(from, "utf8"), to);
+});
+
+// Android'dagi HelpTest bilan bir xil holatlar
+test("QR kod: Android QrCheck bilan bir xil", () => {
+  const q = plain(E.qr("  https://c1ick-uz.com/pay "));
+  assert.equal(q.kind, "url"); assert.equal(E.checkText(q.check).level, "danger"); assert.deepEqual(q.notes, []);
+  assert.deepEqual(plain(E.qr("http://example.com")).notes, ["qr_http"]);
+  const w = plain(E.qr("WIFI:T:WPA;S:Uy\\;tarmoq;P:juda-maxfiy;H:false;;"));
+  assert.equal(w.kind, "wifi"); assert.equal(w.fields.ssid, "Uy;tarmoq"); assert.equal(w.fields.security, "wpa");
+  assert.ok(!JSON.stringify(w).includes("juda-maxfiy"), "Wi-Fi paroli olinmasligi kerak");
+  assert.equal(w.check, ""); assert.deepEqual(w.notes, ["qr_wifi"]);
+  assert.deepEqual(plain(E.qr("WIFI:S:Kafe;T:nopass;;")).notes, ["qr_wifi_open"]);
+  assert.deepEqual(plain(E.qr("WIFI:S:Kafe;;")).notes, ["qr_wifi_open"]);
+  const s = plain(E.qr("SMSTO:+998901234567:Kartangiz bloklandi, SMS kodni ayting"));
+  assert.equal(s.kind, "sms"); assert.equal(s.fields.to, "+998901234567"); assert.notEqual(E.checkText(s.check).level, "safe");
+  assert.equal(E.qr("sms:+998901234567?body=Salom%20do%27stim").text, "Salom do'stim");
+  const t = plain(E.qr("tel:+998 90 123 45 67")); assert.equal(t.kind, "tel"); assert.deepEqual(t.notes, ["qr_tel"]);
+  assert.equal(E.qr("   ").kind, "empty"); assert.equal(E.qr("Salom").kind, "text");
+});
+
 test("serverga faqat havola va raqamlar ketadi", () => {
   const p = E.onlinePart("Salom! Kartangiz bloklandi, SMS kodni ayting. Tel: +998 90 123 45 67, sayt https://c1ick-uz.com");
   assert.ok(p.includes("c1ick-uz.com") && p.includes("+998901234567"));

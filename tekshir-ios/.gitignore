@@ -1,0 +1,7 @@
+# xcodegen yaratadi — har safar qayta yaratiladi
+Tekshir.xcodeproj/
+Tekshir/Info.plist
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate

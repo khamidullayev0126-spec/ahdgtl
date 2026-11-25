@@ -1,0 +1,40 @@
+# Tekshir — iPhone ilovasi. Xcode loyihasi shu fayldan yaratiladi:  xcodegen   (README.md ga qarang)
+name: Tekshir
+options:
+  bundleIdPrefix: uz.ahdigital
+  deploymentTarget:
+    iOS: "16.4"          # 16.4 — JavaScriptCore'da mexanizmga kerakli RegExp imkoniyatlari bor
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  Tekshir:
+    type: application
+    platform: iOS
+    sources:
+      - path: Tekshir
+      - path: Resources          # engine.js, yordam.js, maslahatlar.js — botdagi mexanizm va matnlar
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: uz.ahdigital.tekshir
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_PREVIEWS: YES
+    info:
+      path: Tekshir/Info.plist
+      properties:
+        CFBundleDisplayName: Tekshir
+        CFBundleDevelopmentRegion: uz
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: LaunchBg
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIUserInterfaceStyle: Dark
+        ITSAppUsesNonExemptEncryption: false
+        LSApplicationQueriesSchemes: [tg]
+        NSCameraUsageDescription: "QR kodni skanerlash uchun kamera kerak. Rasm hech qayerga yuborilmaydi. / Камера нужна только для сканирования QR-кода."
