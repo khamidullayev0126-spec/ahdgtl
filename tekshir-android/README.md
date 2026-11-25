@@ -11,6 +11,8 @@ Telegram bot (`tekshir-bot/`) bilan bir xil qoidalar — `engine/` testlari 43 t
 | `app/` | Android Studio loyihasiga **nusxalanadigan** fayllar (Kotlin kod, manifest, qoidalar) |
 | `engine/` | Tekshiruv mexanizmi + testlar (kompyuterda: `cd engine && gradle test`) |
 
+Bot qoidalari (`tekshir-bot/src/scoring.js`, `data/*.json`) o'zgarsa: `cd tekshir-bot && node scripts/parity.js` — `engine/src/test/resources/parity.json` qayta yaratiladi, so'ng `gradle test` Kotlin mexanizmi bot bilan bir xil ekanini tekshiradi.
+
 ## Bosqichlar
 - [x] **1-bosqich:** dizayn, Himoya · Tekshirish (internetsiz + havolalar uchun Google/VirusTotal) · Tarix · 50 ta xavfsizlik maslahati · Sozlama (o'zbek/rus) · «Ulashish → Tekshir»
 - [x] **2-bosqich:** 🔔 Xabarlarni avtomatik kuzatish — SMS, Telegram, WhatsApp… bildirishnomasi kelishi bilan telefonda (internetsiz) tekshiradi, xavfli/shubhali bo'lsa ogohlantiradi. Xabar matni hech qayerga yuborilmaydi.
