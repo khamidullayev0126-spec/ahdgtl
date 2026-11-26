@@ -1,0 +1,265 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Figtree;font-weight:600;src:url(/f/Figtree-600.ttf)}
+@font-face{font-family:Figtree;font-weight:800;src:url(/f/Figtree-800.ttf)}
+@font-face{font-family:Mono;src:url(/f/JetBrainsMono-Regular.ttf)}
+*{margin:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0b1030;font-family:Figtree}
+#gl{position:absolute;inset:0}
+#sub{position:absolute;left:90px;right:90px;top:1475px;text-align:center;font:800 48px/1.25 Figtree;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.6)}
+#sub.o{color:#ffab6e;text-shadow:0 2px 4px rgba(0,0,0,.9),0 3px 22px rgba(0,0,0,.85)}
+.ui{position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);opacity:0}
+.phone{width:600px;height:1180px;border-radius:84px;background:#141418;padding:18px;box-shadow:0 60px 140px rgba(0,0,0,.6),0 0 0 3px #2a2a33}
+.phone .scr{width:100%;height:100%;border-radius:68px;background:#fff;overflow:hidden;position:relative}
+.island{position:absolute;left:50%;top:22px;width:150px;height:42px;border-radius:30px;background:#000;transform:translateX(-50%)}
+.term{width:900px;border-radius:30px;background:#16161c;box-shadow:0 50px 120px rgba(0,0,0,.6),0 0 0 2px #2c2c36;overflow:hidden}
+.term .bar{height:62px;background:#22222b;display:flex;align-items:center;gap:14px;padding:0 26px;font:600 26px Figtree;color:#8b8b99}
+.term .bar i{width:18px;height:18px;border-radius:50%;display:inline-block}
+.term pre{font:400 34px/1.6 Mono;color:#e8e8ee;padding:30px 36px 40px;white-space:pre-wrap;min-height:330px}
+.ok{color:#7ee2a8}.or{color:#ffab6e}.dim{color:#777788}
+#title{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 54px Figtree;color:rgba(255,255,255,.55);opacity:0}
+#end{position:absolute;left:70px;right:70px;top:300px;text-align:center;opacity:0}
+#end .t1{font:800 76px/1.12 Figtree;color:#fff}
+#end .t1 b{color:#ffab6e}
+#end .t2{margin-top:36px;display:inline-block;background:#ffab6e;color:#1b1206;font:800 46px Figtree;padding:18px 40px;border-radius:999px}
+#end .t3{margin-top:26px;font:600 38px Figtree;color:rgba(255,255,255,.7)}
+</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js"}}</script>
+</head><body>
+<div id="gl"></div>
+
+<div class="ui phone" id="mail"><div class="scr" style="background:#fff">
+  <div class="island"></div>
+  <div style="padding:100px 40px 0;display:flex;justify-content:space-between;font:800 34px Figtree;color:#1a1a1f">Yangi xat <span style="color:#1a73e8">Yuborish ➤</span></div>
+  <div style="margin:34px 40px 0;border-top:2px solid #eee"></div>
+  <div id="fromRow" style="margin:0 24px;padding:24px 16px;font:600 30px Figtree;color:#55555f;border-bottom:2px solid #eee;border-radius:18px">Kimdan: <b style="color:#1a1a1f">sardor.dokon2009@gmail.com</b></div>
+  <div style="margin:0 40px;padding:24px 0;font:600 30px Figtree;color:#55555f;border-bottom:2px solid #eee">Kimga: <b style="color:#1a1a1f">mijoz@kompaniya.uz</b></div>
+  <div style="margin:0 40px;padding:24px 0;font:600 30px Figtree;color:#55555f;border-bottom:2px solid #eee">Mavzu: <b style="color:#1a1a1f">Narxlar ro'yxati</b></div>
+  <div style="margin:30px 40px 0;display:flex;flex-direction:column;gap:18px">
+    <i style="display:block;height:22px;width:92%;background:#ececf1;border-radius:11px"></i><i style="display:block;height:22px;width:80%;background:#ececf1;border-radius:11px"></i>
+    <i style="display:block;height:22px;width:86%;background:#ececf1;border-radius:11px"></i><i style="display:block;height:22px;width:55%;background:#ececf1;border-radius:11px"></i>
+  </div>
+  <div id="mailTag" style="position:absolute;left:50%;top:560px;transform:translateX(-50%);white-space:nowrap;background:#e5484d;color:#fff;font:800 34px Figtree;padding:14px 28px;border-radius:999px;opacity:0">🤔 Ishonchli ko'rinadimi?</div>
+</div></div>
+<div class="ui" id="cmp" style="width:920px;display:flex;flex-direction:column;gap:34px">
+  <div id="cardA" style="background:#fff;border-radius:34px;padding:34px 36px;display:flex;align-items:center;gap:26px;box-shadow:0 40px 100px rgba(0,0,0,.5)">
+    <div style="width:96px;height:96px;border-radius:50%;background:#d9d9e0;display:grid;place-items:center;font:800 46px Figtree;color:#77778a">S</div>
+    <div style="flex:1"><div style="font:600 28px Figtree;color:#77778a">Kimdan</div><div style="font:800 38px Figtree;color:#1a1a1f">sardor.dokon2009@gmail.com</div></div>
+    <div style="font:800 56px Figtree">❓</div></div>
+  <div id="cardB" style="background:#fff;border-radius:34px;padding:34px 36px;display:flex;align-items:center;gap:26px;box-shadow:0 40px 100px rgba(0,0,0,.5);border:6px solid transparent">
+    <div style="width:96px;height:96px;border-radius:24px;background:#c67139;display:grid;place-items:center;font:800 46px Figtree;color:#fff">S</div>
+    <div style="flex:1"><div style="font:600 28px Figtree;color:#77778a">Kimdan</div><div style="font:800 44px Figtree;color:#1a1a1f">info@sardor.uz</div></div>
+    <div style="font:800 56px Figtree">✅</div></div>
+  <div style="text-align:center;font:600 30px Figtree;color:rgba(255,255,255,.6)">namuna — o'ylab topilgan</div>
+</div>
+<div class="ui" id="mine" style="width:920px">
+  <div style="background:#fff;border-radius:40px;padding:50px 44px;box-shadow:0 50px 120px rgba(0,0,0,.55);position:relative">
+    <div style="font:800 30px Figtree;color:#c67139;letter-spacing:.06em">AHDIGITAL · BIZNES POCHTA</div>
+    <div style="margin-top:18px;font:600 30px Figtree;color:#77778a">Kimdan</div>
+    <div style="font:800 54px/1.15 Figtree;color:#1a1a1f">abdulhamid@<br>ah-digital.uz ✅</div>
+    <div style="margin-top:26px;display:flex;gap:14px;flex-wrap:wrap">
+      <span style="background:#eef7f1;color:#2f9e6a;font:800 28px Figtree;padding:10px 22px;border-radius:999px">✓ Xat keladi</span>
+      <span style="background:#eef7f1;color:#2f9e6a;font:800 28px Figtree;padding:10px 22px;border-radius:999px">✓ Xat ketadi</span>
+    </div>
+    <div id="stamp" style="position:absolute;right:30px;top:40px;border:7px solid #e5484d;color:#e5484d;font:800 52px Figtree;padding:10px 24px;border-radius:22px;transform:rotate(12deg) scale(1.6);opacity:0">0 so'm</div>
+  </div>
+</div>
+<div class="ui term" id="steps"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>&nbsp; biznes-pochta.txt</div><pre id="stepsTxt"></pre></div>
+<div class="ui phone" id="inbox"><div class="scr" style="background:#fff">
+  <div class="island"></div>
+  <div style="padding:100px 40px 0;font:800 48px Figtree;color:#1a1a1f">Kiruvchi</div>
+  <div style="padding:6px 40px 0;font:600 28px Figtree;color:#77778a">abdulhamid@ah-digital.uz</div>
+  <div id="newMail" style="margin:30px 24px 0;padding:26px 20px;border-radius:22px;display:flex;gap:18px;align-items:flex-start">
+    <i style="flex:none;width:18px;height:18px;margin-top:12px;border-radius:50%;background:#1a73e8"></i>
+    <div style="flex:1"><div style="display:flex;justify-content:space-between;font:800 32px Figtree;color:#1a1a1f">Sinov xati <span style="font:600 26px Figtree;color:#1a73e8">hozir</span></div>
+    <div style="font:800 30px Figtree;color:#1a1a1f">Assalomu alaykum!</div><div style="font:600 28px Figtree;color:#77778a">Pochta ishlayaptimi?</div></div></div>
+  <div style="margin:0 24px;padding:26px 20px 26px 56px;border-top:2px solid #eee"><div style="font:600 30px Figtree;color:#55555f">Zoho Mail</div><div style="font:600 28px Figtree;color:#9a9aa8">Xush kelibsiz! Pochtangiz tayyor</div></div>
+  <div id="inTag" style="position:absolute;left:50%;top:640px;transform:translateX(-50%);white-space:nowrap;background:#2f9e6a;color:#fff;font:800 34px Figtree;padding:14px 28px;border-radius:999px;opacity:0">✓ Yetib keldi</div>
+</div></div>
+<div id="spam" style="position:absolute;left:50%;top:330px;width:860px;transform:translateX(-50%);opacity:0;display:flex;flex-direction:column;gap:22px">
+  <div style="background:#fff;border-radius:30px;padding:26px 32px;display:flex;justify-content:space-between;align-items:center;font:800 38px Figtree;color:#1a1a1f;box-shadow:0 30px 80px rgba(0,0,0,.5)"><span>SPF + DKIM bor</span><span style="color:#2f9e6a">📥 Kiruvchi ✅</span></div>
+  <div id="spamBad" style="background:#fff;border-radius:30px;padding:26px 32px;display:flex;justify-content:space-between;align-items:center;font:800 38px Figtree;color:#1a1a1f;box-shadow:0 30px 80px rgba(0,0,0,.5)"><span>SPF, DKIM yo'q</span><span style="color:#e5484d">🚫 Spam</span></div>
+</div>
+<div id="end"><div class="t1">Biznes pochta:<br><b>domen pullik —<br>pochta bepul</b></div><div class="t2">Yo'riqnoma — Telegram'da 👇</div><div class="t3">@ahdigital_01 · Saqlab qo'ying 🔖</div></div>
+<div id="sub"></div>
+
+<script type="module">
+import * as THREE from "three";
+const W = 1080, H = 1920;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+const glEl = document.getElementById("gl"); glEl.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(34, W / H, 0.1, 100);
+
+// Orqa fon: tungi deraza + chiroqlar (bokeh) — o'z chizmamiz
+function bgTex() {
+  const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 1024;
+  const x = cv.getContext("2d");
+  const g = x.createLinearGradient(0, 0, 0, 1024); g.addColorStop(0, "#1a2a78"); g.addColorStop(.55, "#121c55"); g.addColorStop(1, "#0a0f2c");
+  x.fillStyle = g; x.fillRect(0, 0, 1024, 1024);
+  x.fillStyle = "rgba(5,8,30,.55)"; [180, 470, 760].forEach(px => x.fillRect(px, 0, 26, 1024)); x.fillRect(0, 610, 1024, 22);
+  let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 90; i++) { x.fillStyle = `rgba(255,255,255,${.15 + rnd() * .35})`; x.fillRect(rnd() * 1024, rnd() * 600, 2, 2); }
+  for (let i = 0; i < 11; i++) {
+    const cx = 40 + i * 96, cy = 70 + Math.sin(i * .9) * 10;
+    const r = x.createRadialGradient(cx, cy, 0, cx, cy, 34); r.addColorStop(0, "rgba(255,236,200,.95)"); r.addColorStop(.45, "rgba(255,214,150,.55)"); r.addColorStop(1, "rgba(255,200,120,0)");
+    x.fillStyle = r; x.fillRect(cx - 40, cy - 40, 80, 80);
+  }
+  for (let i = 0; i < 14; i++) {
+    const cx = rnd() * 1024, cy = 700 + rnd() * 300, rr = 20 + rnd() * 50;
+    const r = x.createRadialGradient(cx, cy, 0, cx, cy, rr); r.addColorStop(0, `rgba(255,${120 + rnd() * 80 | 0},80,.35)`); r.addColorStop(1, "rgba(255,150,80,0)");
+    x.fillStyle = r; x.beginPath(); x.arc(cx, cy, rr, 0, 7); x.fill();
+  }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const bg = new THREE.Mesh(new THREE.PlaneGeometry(26, 26), new THREE.MeshBasicMaterial({ map: bgTex() }));
+bg.position.set(0, 4, -9); scene.add(bg);
+
+scene.add(new THREE.HemisphereLight("#6f7fe0", "#1a1030", 0.9));
+const key = new THREE.DirectionalLight("#ffd2a6", 2.6); key.position.set(4, 5, 4); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 5; key.shadow.camera.left = -6; key.shadow.camera.right = 6; key.shadow.camera.top = 6; key.shadow.camera.bottom = -6;
+scene.add(key);
+const rim = new THREE.DirectionalLight("#7f95ff", 1.6); rim.position.set(-5, 3, -4); scene.add(rim);
+const warm = new THREE.PointLight("#ff9a5a", 6, 8, 2); warm.position.set(1.5, 1.8, 1.5); scene.add(warm);
+const fill = new THREE.PointLight("#ffc29a", 7, 10, 2); fill.position.set(1.0, 2.4, 3.2); scene.add(fill);
+
+const mat = (c, r = .8) => new THREE.MeshStandardMaterial({ color: c, roughness: r, flatShading: true });
+const mesh = (g, m) => { const o = new THREE.Mesh(g, m); o.castShadow = true; o.receiveShadow = true; return o; };
+const floor = mesh(new THREE.PlaneGeometry(40, 40), mat("#1b1838", 1)); floor.rotation.x = -Math.PI / 2; scene.add(floor);
+
+// Bola (low-poly)
+const boy = new THREE.Group(); scene.add(boy);
+const skin = mat("#f2c9a6", .7), hairM = mat("#7a3f22", .8), sweater = mat("#6a4fd6", .85), pants = mat("#3a3170", .9);
+const torso = mesh(new THREE.BoxGeometry(1.15, 1.2, .7), sweater); torso.position.y = 1.05; boy.add(torso);
+const neck = mesh(new THREE.BoxGeometry(.35, .2, .35), skin); neck.position.y = 1.72; boy.add(neck);
+const headG = new THREE.IcosahedronGeometry(.52, 1); headG.scale(1, 1.08, .95);
+const head = mesh(headG, skin); head.position.y = 2.25; boy.add(head);
+for (let i = 0; i < 9; i++) {
+  const a = (i / 9) * Math.PI * 1.6 - Math.PI * .8;
+  const sp = mesh(new THREE.ConeGeometry(.16, .5, 4), hairM);
+  sp.position.set(Math.sin(a) * .32, .42 + Math.cos(i) * .03, Math.cos(a) * .18 - .1); sp.rotation.set(-.3 + Math.cos(a) * .3, 0, -Math.sin(a) * .7); head.add(sp);
+}
+const capM = mesh(new THREE.IcosahedronGeometry(.5, 0), hairM); capM.scale.set(1.02, .45, 1); capM.position.set(0, .3, -.05); head.add(capM);
+const eyeM = new THREE.MeshStandardMaterial({ color: "#111", roughness: .2 });
+const eyes = [-.19, .19].map(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(.07, 10, 10), eyeM); e.position.set(x, .05, .46); head.add(e); return e; });
+const nose = mesh(new THREE.ConeGeometry(.07, .16, 4), skin); nose.rotation.x = Math.PI / 2; nose.position.set(0, -.08, .5); head.add(nose);
+const mouth = new THREE.Mesh(new THREE.BoxGeometry(.2, .05, .04), mat("#5a2a1a")); mouth.position.set(0, -.25, .45); head.add(mouth);
+[-.52, .52].forEach(x => { const e = mesh(new THREE.BoxGeometry(.1, .2, .14), skin); e.position.set(x, 0, 0); head.add(e); });
+const armL = mesh(new THREE.BoxGeometry(.3, 1.05, .3), sweater), armR = armL.clone();
+armL.position.set(-.74, 1.05, 0); armR.position.set(.74, 1.05, 0); boy.add(armL, armR);
+const legL = mesh(new THREE.BoxGeometry(.38, .5, .38), pants), legR = legL.clone();
+legL.position.set(-.25, .25, 0); legR.position.set(.25, .25, 0); boy.add(legL, legR);
+
+// Yordamchi qutilar: yuzi — terminal ekrani (o'z qahramonimiz)
+function faceTex(kind, glow, fg, body) {
+  const cv = document.createElement("canvas"); cv.width = 512; cv.height = 512;
+  const x = cv.getContext("2d"); x.fillStyle = body; x.fillRect(0, 0, 512, 512);
+  x.fillStyle = glow; x.beginPath(); x.roundRect(46, 54, 420, 380, 36); x.fill();
+  x.fillStyle = fg; x.textAlign = "center"; x.textBaseline = "middle"; x.font = "bold 150px Mono";
+  const F = { calm: ["▮", "▮"], sad: ["╥", "╥"], happy: ["^", "^"], prompt: [">", "_"], hmm: ["•", "•"] }[kind];
+  x.fillText(F[0], 160, 230); x.fillText(F[1], 352, 230);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function buddy(body, glow, fg, kinds) {
+  const g = new THREE.Group();
+  const faces = {}; kinds.forEach(k => (faces[k] = faceTex(k, glow, fg, body)));
+  const bm = mat(body, .75);
+  const faceM = new THREE.MeshStandardMaterial({ map: faces[kinds[0]], emissive: "#ffffff", emissiveMap: faces[kinds[0]], emissiveIntensity: .35, roughness: .6 });
+  const box = mesh(new THREE.BoxGeometry(1.9, 1.6, 1.5), [bm, bm, bm, bm, faceM, bm]); box.position.y = 1.35; g.add(box);
+  [-.55, .55].forEach(x => { const l = mesh(new THREE.BoxGeometry(.28, .55, .28), bm); l.position.set(x, .28, .1); g.add(l); });
+  g.userData = { faceM, box };
+  g.setFace = k => { if (faceM.map !== faces[k]) { faceM.map = faces[k]; faceM.emissiveMap = faces[k]; faceM.needsUpdate = true; } };
+  return g;
+}
+const orange = buddy("#e2683a", "#2a1408", "#ffb27a", ["calm", "sad", "happy", "hmm"]);
+const gray = buddy("#c9c9cf", "#101014", "#e9e9f2", ["prompt"]);
+scene.add(orange, gray);
+
+const cl = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lin = (t, a, b) => cl((t - a) / (b - a));
+const ease = x => 1 - Math.pow(1 - x, 3);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const mix = (a, b, p) => a + (b - a) * p;
+let B = {}; window.setBeats = b => (B = b);
+const $ = id => document.getElementById(id);
+
+function typeText(t, t0, lines, cps = 40) {
+  let n = Math.max(0, Math.floor((t - t0) * cps)), out = "";
+  for (const l of lines) { const plain = l.replace(/<[^>]+>/g, ""); if (n <= 0) break; if (n >= plain.length) { out += l + "\n"; n -= plain.length; } else { out += plain.slice(0, n) + "▍"; n = 0; } }
+  return out;
+}
+function panel(el, t, a, b) {
+  const p = ease(lin(t, a, a + .45)) * (1 - ease(lin(t, b - .35, b)));
+  el.style.opacity = p; el.style.transform = `translate(-50%,-50%) translateY(${(1 - p) * 80}px) rotate(${(1 - p) * -3}deg) scale(${.94 + .06 * p})`;
+  return p;
+}
+
+window.render = function (t) {
+  const b = B, S = b.scenes;
+  gray.visible = false;
+  orange.position.set(2.6, 0, -.4); orange.rotation.y = -.45;
+  const breathe = Math.sin(t * 2.2) * .02;
+  torso.scale.y = 1 + breathe; head.position.y = 2.25 + breathe * 1.2;
+  head.rotation.y = .35; head.rotation.x = Math.sin(t * 1.3) * .03;
+  const talking = (b.talk || []).some(([a, e]) => t >= a && t < e);
+  mouth.scale.y = talking ? 1 + Math.abs(Math.sin(t * 18)) * 2.2 : 1;
+  const blink = (t % 3.7) < .12 ? .15 : 1; eyes.forEach(e => (e.scale.y = blink));
+  const qTalk = (b.qtalk || []).some(([a, e]) => t >= a && t < e);
+  orange.setFace(t < S.cmp ? "sad" : t < S.mine ? "hmm" : t < S.warn ? "happy" : t < S.inbox ? "hmm" : "happy");
+  const hop = k => Math.max(0, Math.sin(lin(t, k, k + .5) * Math.PI)) * .35;
+  orange.position.y = hop(S.free) + hop(S.inbox + .2) + hop(S.inbox + .75);
+  orange.userData.box.rotation.z = t < S.cmp ? -.06 : 0;
+  orange.userData.box.scale.setScalar(qTalk ? 1 + Math.abs(Math.sin(t * 14)) * .025 : 1);
+  orange.userData.faceM.emissiveIntensity = qTalk ? .55 + Math.abs(Math.sin(t * 14)) * .4 : t < S.cmp ? .15 : .45;
+
+  const shots = b.shots; let k = 0; while (k < shots.length - 1 && t >= shots[k + 1].t) k++;
+  const A = shots[Math.max(0, k - 1)], C = shots[k];
+  const p = k === 0 || C.cut ? 1 : eio(lin(t, C.t, C.t + (C.blend || 1)));
+  const P = new THREE.Vector3(...A.pos).lerp(new THREE.Vector3(...C.pos), p);
+  const L = new THREE.Vector3(...A.look).lerp(new THREE.Vector3(...C.look), p);
+  P.addScaledVector(L.clone().sub(P).normalize(), (t - C.t) * (C.push ?? .06));
+  P.x += Math.sin(t * .7) * .03; P.y += Math.sin(t * .9) * .02;
+  cam.position.copy(P); cam.lookAt(L);
+  renderer.render(scene, cam);
+
+  let blur = 0;
+  blur = Math.max(blur, panel($("mail"), t, S.mail, S.cmp));
+  const mq = ease(lin(t, S.doubt, S.doubt + .35));
+  $("mailTag").style.opacity = mq; $("fromRow").style.background = `rgba(229,72,77,${.12 * mq})`;
+  blur = Math.max(blur, panel($("cmp"), t, S.cmp, S.mine));
+  const bq = ease(lin(t, S.pick, S.pick + .4));
+  $("cardB").style.borderColor = `rgba(47,158,106,${bq})`; $("cardB").style.transform = `scale(${1 + .05 * bq})`; $("cardA").style.opacity = 1 - .45 * bq;
+  blur = Math.max(blur, panel($("mine"), t, S.mine, S.steps));
+  const sp = ease(lin(t, S.free, S.free + .3));
+  $("stamp").style.opacity = sp; $("stamp").style.transform = `rotate(12deg) scale(${1.6 - .6 * sp})`;
+  blur = Math.max(blur, panel($("steps"), t, S.steps, S.warn));
+  const on = (k, html) => t >= k ? html : "";
+  const row = (k, l) => t >= k ? `   ${l} <span class=ok>✓</span>` : `   <span class=dim>${l.replace(/<[^>]+>/g, "")}</span>`;
+  $("stepsTxt").innerHTML = [
+    on(S.s1, "1. 🌐 Domen — <span class=or>sardor.uz</span>"), on(S.s1 + 1.6, "   <span class=dim>pullik · yiliga bir marta</span>"),
+    on(S.s2, "2. ✉️ Zoho Mail — <span class=ok>bepul reja</span>"),
+    on(S.s3, "3. 🛠 DNS — 5 ta yozuv:"),
+    ...(t >= S.s3 ? ["MX   mx.zoho.com ", "MX   mx2.zoho.com", "MX   mx3.zoho.com", "TXT  <span class=or>SPF</span>        ", "TXT  <span class=or>DKIM</span>       "].map((l, i) => row(S.dns[i], l)) : [])
+  ].filter(x => x !== "").join("\n");
+  // SPF/DKIM eslatmasi — 3D quti ko'rinib turadi (fon xiralashmaydi)
+  const wp = ease(lin(t, S.warn + .3, S.warn + .8)) * (1 - ease(lin(t, S.inbox - .35, S.inbox)));
+  $("spam").style.opacity = wp; $("spam").style.transform = `translateX(-50%) translateY(${(1 - wp) * -40}px)`;
+  $("spamBad").style.transform = `translateX(${Math.sin(t * 30) * 6 * ease(lin(t, S.warn + 2.6, S.warn + 2.9)) * (1 - lin(t, S.warn + 3.3, S.warn + 3.6))}px)`;
+  blur = Math.max(blur, panel($("inbox"), t, S.inbox, S.end));
+  const ip = ease(lin(t, S.inbox + .5, S.inbox + .9));
+  $("newMail").style.background = `rgba(26,115,232,${.08 * ip})`; $("inTag").style.opacity = ip;
+  const ep = ease(lin(t, S.end, S.end + .6)); $("end").style.opacity = ep; $("end").style.transform = `translateY(${(1 - ep) * 50}px)`;
+  blur = Math.max(blur, ep * .8);
+  glEl.style.filter = blur > .01 ? `blur(${(blur * 10).toFixed(1)}px) brightness(${(1 - blur * .45).toFixed(2)})` : "none";
+
+  const s = (b.subs || []).filter(x => t >= x.t && t < x.e).pop();
+  const sub = $("sub"); sub.textContent = s ? s.text : ""; sub.className = s && s.who === "o" ? "o" : "";
+  sub.style.top = "1475px";
+  sub.style.opacity = s ? ease(lin(t, s.t, s.t + .2)) : 0;
+};
+window.ready = document.fonts.ready.then(() => true);
+</script></body></html>
