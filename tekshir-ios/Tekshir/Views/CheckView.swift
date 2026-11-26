@@ -11,6 +11,8 @@ struct CheckView: View {
     @FocusState private var focused: Bool
 
     var body: some View {
+        // PhotosPicker yozuvini alohida (Sendable) yopilmada chizadi — matn oldindan tayyorlanadi
+        let shotLabel = checker.reading ? store.t("reading") : store.t("shot")
         Screen {
             Header(title: store.t("check_title"))
 
@@ -33,7 +35,7 @@ struct CheckView: View {
                     if let s = UIPasteboard.general.string { checker.input = s }
                 }.buttonStyle(GhostButtonStyle())
                 PhotosPicker(selection: $photo, matching: .images) {
-                    Text(checker.reading ? store.t("reading") : store.t("shot"))
+                    Text(shotLabel)
                 }.buttonStyle(GhostButtonStyle()).disabled(checker.reading)
                 Button(store.t("qr_btn")) { Task { @MainActor in await openScanner() } }.buttonStyle(GhostButtonStyle())
             }
