@@ -5,3 +5,5 @@ build/
 DerivedData/
 xcuserdata/
 *.xcuserstate
+Share/Info.plist
+Widget/Info.plist

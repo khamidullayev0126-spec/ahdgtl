@@ -30,6 +30,7 @@ enum S {
         "privacy": "🔒 Xabar telefoningizda tekshiriladi. Internetga faqat havola va raqamlar yuboriladi — xabar matni emas. Natija 100% kafolat emas.",
         "img_priv": "📸 Skrinshot va QR telefonda o'qiladi, rasm hech qayerga yuborilmaydi.",
         "no_engine": "Tekshiruv fayli topilmadi — ilovani qayta o'rnating.",
+        "done": "Tayyor", "share_empty": "Tekshiradigan matn, havola yoki rasm topilmadi.",
         // Tarix
         "hist_title": "Tekshiruvlar tarixi", "hist_empty": "Hali tekshiruv yo'q. Shubhali xabar kelsa — shu yerda ko'rinadi.",
         "hist_note": "Tarix faqat shu telefonda. Raqamlar yashirilgan.", "clear": "🗑 Tarixni tozalash", "clear_q": "Tarix o'chirilsinmi?",
@@ -78,6 +79,7 @@ enum S {
         "privacy": "🔒 Сообщение проверяется на телефоне. В интернет отправляются только ссылки и номера — не текст сообщения. Результат не даёт 100% гарантии.",
         "img_priv": "📸 Скриншоты и QR распознаются на телефоне, изображение никуда не отправляется.",
         "no_engine": "Файл проверки не найден — переустановите приложение.",
+        "done": "Готово", "share_empty": "Не найден текст, ссылка или изображение для проверки.",
         "hist_title": "История проверок", "hist_empty": "Пока нет проверок.",
         "hist_note": "История — только на этом телефоне. Номера скрыты.", "clear": "🗑 Очистить историю", "clear_q": "Удалить историю?",
         "yes": "Да", "no": "Нет",

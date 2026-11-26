@@ -56,14 +56,26 @@ test("yordam va maslahatlar — Swift Help, Tip tuzilmalariga mos", () => {
   assert.ok(tips.filter(t => security.includes(t[0])).length >= 40, "xavfsizlik maslahatlari");
 });
 
-test("Swift kodidagi matn kalitlari Strings.swift'da bor (uz va ru)", () => {
-  const src = fs.readdirSync(path.join(__dirname, "..", "Tekshir"), { recursive: true })
-    .filter(f => f.endsWith(".swift")).map(f => fs.readFileSync(path.join(__dirname, "..", "Tekshir", f), "utf8")).join("\n");
+test("Swift kodidagi matn kalitlari Strings.swift'da bor (uz va ru) — ilova, ulashish, vidjet", () => {
+  const src = ["Tekshir", "Share", "Widget"].flatMap(dir => fs.readdirSync(path.join(__dirname, "..", dir), { recursive: true })
+    .filter(f => f.endsWith(".swift")).map(f => fs.readFileSync(path.join(__dirname, "..", dir, f), "utf8"))).join("\n");
   const strings = fs.readFileSync(path.join(__dirname, "..", "Tekshir", "Strings.swift"), "utf8");
   const uz = strings.slice(strings.indexOf("private static let uz"), strings.indexOf("private static let ru"));
   const ru = strings.slice(strings.indexOf("private static let ru"));
-  const used = new Set([...src.matchAll(/\.t\("([a-z_0-9]+)"/g)].map(m => m[1]));
+  // store.t("kalit") va S.t(til, "kalit")
+  const used = new Set([...src.matchAll(/\.t\((?:[^,()"]+,\s*)?"([a-z_0-9]+)"/g)].map(m => m[1]));
   ["on_1", "on_2", "on_3", "quiz_r1", "quiz_r2", "quiz_r3", "tg_good", "tg_mid", "tg_bad"].forEach(k => used.add(k));   // dinamik kalitlar
   const missing = [...used].filter(k => !uz.includes(`"${k}":`) || !ru.includes(`"${k}":`));
   assert.deepEqual(missing, [], "Strings.swift'da yo'q kalitlar");
+});
+
+test("loyiha: ulashish va vidjet kengaytmalari ulangan, kerakli fayllar bor", () => {
+  const yml = fs.readFileSync(path.join(__dirname, "..", "project.yml"), "utf8");
+  for (const t of ["TekshirShare", "TekshirWidget"]) assert.ok(yml.includes(`target: ${t}`), t + " ilovaga ulanmagan");
+  assert.ok(yml.includes("com.apple.share-services") && yml.includes("com.apple.widgetkit-extension"));
+  assert.ok(yml.includes("CFBundleSchemes") === false && yml.includes("CFBundleURLSchemes: [tekshir]"));
+  // kengaytmalarga berilgan har bir fayl mavjud
+  for (const m of yml.matchAll(/- path: (Tekshir\/[^\s]+\.swift)/g)) assert.ok(fs.existsSync(path.join(__dirname, "..", m[1])), m[1]);
+  // kamera (VisionKit) kengaytmalarga kirmasin
+  assert.ok(!/TekshirShare:[\s\S]*QRScanner\.swift/.test(yml));
 });

@@ -36,6 +36,11 @@ struct RootView: View {
                 .tabItem { Label(store.t("tab_set"), systemImage: "gearshape") }.tag(AppTab.settings)
         }
         .tint(Theme.safe)
+        // Vidjetdan: tekshir://check → Tekshirish, tekshir://tips → Maslahat
+        .onOpenURL { url in
+            guard url.scheme == "tekshir" else { return }
+            tab = url.host == "tips" ? .tips : .check
+        }
         .onAppear {
             // Pastki menyu va sarlavhalar to'q fonda
             let tb = UITabBarAppearance(); tb.configureWithOpaqueBackground(); tb.backgroundColor = UIColor(Theme.surface)

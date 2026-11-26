@@ -13,7 +13,15 @@ Firibgarlikdan himoya — Android ilova bilan bir xil imkoniyatlar, iPhone'ning 
 
 **Mexanizm bitta:** `Resources/engine.js` — Telegram botning o'z kodi (`tekshir-extension/build.js` yig'adi), iPhone'ning **JavaScriptCore**'ida ishlaydi. Shuning uchun bot, Android, sayt, kengaytma va iPhone bir xil javob beradi.
 
-**Keyingi bosqichlar:** 2) ✉️ SMS filtri (firibgar SMS «Junk»ga) + ↗️ «Ulashish → Tekshir»; 3) 🧩 vidjet + Siri/Qisqa buyruqlar + App Store'ga tayyorlash.
+## 2-bosqich: ↗️ Ulashish va 🧩 vidjet
+| | |
+|---|---|
+| ↗️ | **«Ulashish → Tekshir»** — Safari, Telegram, Rasmlar va boshqa ilovalardan matn, havola yoki skrinshot. Natija ulashish oynasining o'zida (ilovani ochish shart emas). |
+| 🧩 | **Vidjet** — kichik: qalqon + «🔍 Tekshirish»; o'rtacha: kun maslahati; qulf ekrani: kun maslahati sarlavhasi. Bosilsa ilova kerakli bo'limda ochiladi (`tekshir://check`, `tekshir://tips`). |
+
+Ikkalasi ham Apple ID'siz, **simulatorda** sinaladi. Kengaytmalar ham `engine.js` bilan ishlaydi (bot bilan bir xil natija).
+
+**Keyingi bosqichlar:** 3) ✉️ SMS filtri — faqat haqiqiy iPhone'da sinaladi; 4) App Store'ga tayyorlash.
 
 ## Mac'da ochish (birinchi marta)
 1. **Terminal**'ni oching. Homebrew bormi?
@@ -49,6 +57,12 @@ Firibgarlikdan himoya — Android ilova bilan bir xil imkoniyatlar, iPhone'ning 
 - **📸 Skrinshot:** firibgar SMS skrinshotini tanlang → 🔴. (Simulatorda ham ishlaydi — rasmni simulator oynasiga sudrab tashlang.)
 - **🔳 QR:** faqat haqiqiy iPhone'da (simulatorda kamera yo'q — «QR skaner ishlamaydi» degan xabar chiqishi to'g'ri).
 - **🆘 / ✈️ / 🎓:** Himoya → «Yordam va o'rganish».
+
+### 2-bosqichni sinash (simulatorda)
+- **↗️ Ulashish:** simulatorda **Safari** → istalgan sayt (masalan `c1ick-uz.com` deb yozing) → pastdagi **Ulashish ⬆️** → ro'yxatda **Tekshir** (ko'rinmasa: ro'yxat oxirida **«More/Ещё» → Tekshir'ni yoqing**). Natija 🔴 chiqishi kerak.
+- **📸 Skrinshot ulashish:** Mac'dan rasmni simulator oynasiga sudrab tashlang → **Photos**da oching → **Ulashish → Tekshir**.
+- **🧩 Vidjet:** bosh ekranda bo'sh joyni bosib turing → yuqorida **«Edit» → «Add Widget»** (yoki **+**) → **Tekshir** → kichik yoki o'rtacha → **Add Widget**. Bosing — ilova ochiladi.
+- Xcode'da yuqoridagi sxema **Tekshir** bo'lsin (TekshirShare / TekshirWidget emas) → **⌘R**.
 
 ## Dasturchi uchun
 ```bash
