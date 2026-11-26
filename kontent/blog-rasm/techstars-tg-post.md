@@ -19,3 +19,23 @@ ah-digital.uz/blog/techstars-startup-week.html
 Siz ham startap tadbirlariga borganmisiz? Izohda yozing 👇
 
 #tekshir_kundaligi #techstars #startap #ahdigital
+
+---
+
+## 3-kun / yakuniy post (26-noyabr, joylangan; rasm: images/blog/techstars-kun3-sahna.webp)
+
+🎉 Techstars Startup Week tugadi!
+
+3 kun Humo Arena'da bo'ldim: Demo Day, Founder Day va bugun — Creative Economy Day 🎨
+
+Bugun eng ko'p Sharif Abdullayevning chiqishi yoqdi — u moda sanoatidagi brendlar va o'zining YUZ brendi haqida gapirdi 👗
+
+Rostini aytsam, bugun hech kim bilan gaplasha olmadim. Lekin 2 ta yangi saboq oldim:
+🌍 Tadbirning tiliga tayyorlaning — Techstars'da asosan ingliz tili edi
+👥 Startapga jamoa, pul va tajriba kerak
+
+Hammasi — 7 ta saboq bilan — blogimda 👇
+ah-digital.uz/blog/techstars-startup-week.html
+
+#tekshir_kundaligi
+@ahdigital_01
