@@ -5,7 +5,7 @@ Ovoz: AI (ElevenLabs), avvalgi Reels'dagi bola ovozi. Musiqasiz yoki mualliflik 
 
 ## Ushlab qolish usullari (v2)
 1. **1-soniyada harakat**: «STOP ✋» qo'li ekranga uriladi + daftar varag'i yirtiladi — birinchi kadrdayoq nimadir bo'ladi.
-2. **Ochiq savol**: «3-usul — eng kuchlisi» deb oldindan aytamiz → oxirigacha ko'rishadi.
+2. **Ochiq savol**: «oxirgisi — eng kuchlisi» deb oldindan aytamiz → oxirigacha ko'rishadi.
 3. **Teskari sanoq 3 → 2 → 1**: eng zo'ri oxirida.
 4. **Tomoshabin o'ynaydi**: 2-usulda ekranda savol + 3 soniyalik taymer — «Sen ham javob ber!» (videoni to'xtatib/qayta ko'rishadi).
 5. **Natijani ko'rsatamiz**: har bir buyruqdan keyin AI javobi (pitsa rasmi bilan kasr, ✅/❌ tekshiruv, qizil chiziqli xatolar) — gap emas, isbot.
@@ -15,7 +15,7 @@ Ovoz: AI (ElevenLabs), avvalgi Reels'dagi bola ovozi. Musiqasiz yoki mualliflik 
 | Vaqt | Ekranda | Ovoz |
 |---|---|---|
 | 0–2.5 s | ✋ **STOP!** qo'li urilib, «Uy vazifasi» daftari yirtiladi. Yozuv: **«AI'ga uy vazifangni yozdirma!»** | «To'xta! AI'ga uy vazifangni yozdirma!» |
-| 2.5–5 s | **3 ta aqlli usul** · pastda kichik: «3-chisi — eng kuchlisi 🔥» | «Mana undan aqlliroq 3 ta usul. Uchinchisi eng kuchlisi.» |
+| 2.5–5 s | **3 ta aqlli usul** · pastda kichik: «oxirgisi — eng kuchlisi 🔥» | «Mana undan aqlliroq 3 ta usul. Oxirgisi — eng kuchlisi.» |
 | 5–10 s | **3️⃣ «10 yoshli bolaga tushuntir»** · chatga yoziladi: «Kasrlarni 10 yoshli bolaga tushuntir» → AI javobi: 🍕 pitsa 4 bo'lakka bo'linadi, «1/4 = bitta bo'lak» | «Tushunmagan mavzuni yoz va: 10 yoshli bolaga tushuntir de. Mana — pitsa bilan bir zumda tushunasan!» |
 | 10–17 s | **2️⃣ «Menga imtihon ol»** · chatda: «Kasrlardan 5 ta savol ber, javobimni tekshir» → ekranda savol **«1/2 + 1/4 = ?»** + ⏱ 3-2-1 taymer → **«3/4 ✅»** | «Nazorat oldidan: menga 5 ta savol ber, de. Qani, sen ham javob ber… uch, ikki, bir — to'g'ri javob: to'rtdan uch!» |
 | 17–24 s | **1️⃣ «Xatoni ko'rsat, tuzatma»** (eng kuchlisi 🔥) · insho matni, AI xato so'zlarni **qizil** bilan belgilaydi, lekin tuzatmaydi → bola o'zi tuzatadi ✍️ | «Eng kuchlisi: inshoni o'zing yoz, keyin: xatolarimni ko'rsat, lekin tuzatma, de. Shunda haqiqiy o'rganasan.» |
