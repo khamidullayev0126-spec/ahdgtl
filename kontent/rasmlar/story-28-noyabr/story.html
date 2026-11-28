@@ -1,0 +1,102 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:F;font-weight:800;src:url(../../../Figtree-800.ttf)}
+@font-face{font-family:F;font-weight:600;src:url(../../../Figtree-600.ttf)}
+@font-face{font-family:C;src:url(../../../Caprasimo.ttf)}
+@font-face{font-family:M;src:url(../../../JetBrainsMono-Regular.ttf)}
+:root{--ink:#1f1c18;--ink2:#2c2822;--cream:#f5ead8;--orange:#e08a52;--peach:#f6a06b;--sage:#8fa66a;--green:#5fd38a;--red:#ef5a50;--mute:#a89c88}
+*{margin:0;box-sizing:border-box}
+body{background:#000}
+.s{width:1080px;height:1920px;position:relative;overflow:hidden;background:var(--ink);color:var(--cream);font-family:F,"Noto Color Emoji",sans-serif;
+  background-image:radial-gradient(circle at 1px 1px,rgba(245,234,216,.09) 1.5px,transparent 0);background-size:36px 36px}
+.s+.s{margin-top:40px}
+/* yuqori chiziq — har bir storyda bir xil «imzo» */
+.bar{position:absolute;left:70px;right:70px;top:250px;display:flex;justify-content:space-between;align-items:center;font:30px M;color:var(--mute)}
+.bar b{color:var(--orange);font-weight:400}
+.step{font:400 34px C;color:var(--ink);background:var(--orange);padding:8px 22px;border-radius:14px}
+.mono{font-family:M}
+h1{font:400 112px/1.0 C;letter-spacing:-1px}
+h2{font:400 82px/1.04 C}
+.ok{color:var(--green)}
+.commit{font:34px/1.4 M;color:var(--mute)}
+.commit .ok{font-weight:400}
+.card{background:var(--cream);color:var(--ink);border-radius:34px;padding:34px 38px;box-shadow:0 0 0 4px var(--orange),14px 16px 0 4px rgba(0,0,0,.45)}
+.chips{display:flex;flex-wrap:wrap;gap:18px}
+.chip{background:var(--ink2);border:3px solid rgba(245,234,216,.18);border-radius:999px;padding:16px 26px;font-weight:800;font-size:38px}
+.hint{position:absolute;left:70px;right:70px;font:30px M;color:var(--mute);text-align:center}
+.tag{display:inline-block;background:var(--ink);color:var(--cream);font:28px M;padding:6px 16px;border-radius:10px}
+.cursor{display:inline-block;width:22px;height:52px;background:var(--orange);vertical-align:-8px;margin-left:6px}
+</style></head><body>
+
+<!-- 1: muqova -->
+<div class="s" id="s1">
+  <div class="bar"><span>~/ahdigital <b>$</b> git log --today</span><span class="step">1/5</span></div>
+  <div style="position:absolute;left:70px;right:70px;top:430px">
+    <div class="commit">// 28.11.2026 · shanba</div>
+    <h1 style="margin-top:24px">Founder'ning<br><span style="color:var(--orange)">bir kuni</span><span class="cursor"></span></h1>
+    <p style="font-size:42px;font-weight:600;margin-top:36px;color:var(--cream);opacity:.85">Bugun nimalar qildim — ochiq ko'rsataman 👇</p>
+  </div>
+  <div class="card" style="position:absolute;left:70px;right:70px;top:1050px">
+    <div class="mono" style="font-size:34px;line-height:1.75">
+      <div><span style="color:#2e8b57">✓</span> Tekshir: 4 ta yangi aldov turi</div>
+      <div><span style="color:#2e8b57">✓</span> Yangi Reels: AI bilan o'qish</div>
+      <div><span style="color:#2e8b57">✓</span> Testlar: 196 ta — hammasi o'tdi</div>
+      <div style="color:#a07a4a">… + sizga savol</div>
+    </div>
+  </div>
+  <div class="hint" style="top:1560px">bosib o'ting →</div>
+</div>
+
+<!-- 2: Tekshir yangilanishi + so'rovnoma -->
+<div class="s" id="s2">
+  <div class="bar"><span><b>✓</b> commit #1</span><span class="step">2/5</span></div>
+  <div style="position:absolute;left:70px;right:70px;top:380px">
+    <h2>Tekshir endi <span style="color:var(--orange)">4 ta yangi</span> aldovni taniydi</h2>
+    <div class="chips" style="margin-top:44px">
+      <span class="chip">💼 «Oson ish»</span><span class="chip">📱 «Yangi raqamim»</span>
+      <span class="chip">🎄 Yangi yil aksiyasi</span><span class="chip">📦 «Kuryer»</span>
+    </div>
+    <div class="card" style="margin-top:56px;padding:30px">
+      <div style="background:#3d7bfd;color:#fff;border-radius:26px;padding:22px 26px;font-weight:600;font-size:34px;margin-left:120px">Bu mening yangi raqamim. Telefonim buzildi, kartaga 500 ming tashlang</div>
+      <div style="background:#efe4d2;border-radius:26px;padding:22px 26px;font-size:36px;margin-top:20px;margin-right:120px"><b>🔴 XAVFLI</b><br><span style="font-size:30px;font-weight:600">Yaqiningizga eski raqamiga qo'ng'iroq qilib tekshiring</span></div>
+    </div>
+  </div>
+  <div class="hint" style="top:1300px">👇 sizchi?</div>
+</div>
+
+<!-- 3: Reels -->
+<div class="s" id="s3">
+  <div class="bar"><span><b>✓</b> commit #2</span><span class="step">3/5</span></div>
+  <div style="position:absolute;left:70px;right:70px;top:380px">
+    <h2>Yangi Reels <span style="color:var(--orange)">chiqdi</span> 🎬</h2>
+    <p class="commit" style="margin-top:20px">// 33 soniya · ovoz · animatsiya · tovushlar — hammasi kod bilan</p>
+  </div>
+  <img src="../../video/reels/18-ai-bilan-oqish/post/muqova.jpg" style="position:absolute;left:290px;top:640px;width:500px;border-radius:36px;transform:rotate(-4deg);box-shadow:0 0 0 6px var(--orange),18px 22px 0 6px rgba(0,0,0,.5)">
+  <div class="hint" style="top:1610px">👇 tomosha qiling</div>
+</div>
+
+<!-- 4: testlar + viktorina -->
+<div class="s" id="s4">
+  <div class="bar"><span><b>✓</b> commit #3</span><span class="step">4/5</span></div>
+  <div style="position:absolute;left:70px;right:70px;top:380px">
+    <h2>Testlar ham <span class="ok">yashil</span> 💚</h2>
+    <div style="display:flex;gap:26px;margin-top:50px">
+      <div class="card" style="flex:1;text-align:center;padding:30px 20px"><div style="font:400 120px C;color:#2e8b57">163</div><div class="mono" style="font-size:30px">bot</div></div>
+      <div class="card" style="flex:1;text-align:center;padding:30px 20px"><div style="font:400 120px C;color:#2e8b57">33</div><div class="mono" style="font-size:30px">Android</div></div>
+    </div>
+    <p style="font-size:40px;font-weight:600;margin-top:44px;opacity:.9">Dasturchining eng sevimli rangi —<br>yashil ✅ 😄</p>
+  </div>
+  <div class="hint" style="top:1180px">👇 sinab ko'ring</div>
+</div>
+
+<!-- 5: savol -->
+<div class="s" id="s5">
+  <div class="bar"><span><b>$</b> git commit -m "???"</span><span class="step">5/5</span></div>
+  <div style="position:absolute;left:70px;right:70px;top:400px">
+    <h2>Ertaga Tekshir'ga <span style="color:var(--orange)">nima</span> qo'shay?</h2>
+    <p style="font-size:42px;font-weight:600;margin-top:34px;opacity:.85">Sizga kelgan g'alati xabar turini yozing — eng yaxshisini qo'shaman 🛡</p>
+  </div>
+  <div class="hint" style="top:1150px">👇 javobingizni yozing</div>
+  <div style="position:absolute;left:0;right:0;top:1580px;text-align:center"><span class="tag" style="font-size:34px;background:var(--orange);color:var(--ink)">@ahdigital_01</span></div>
+</div>
+</body></html>
