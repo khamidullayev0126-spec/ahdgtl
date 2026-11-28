@@ -552,7 +552,7 @@ function adviceKeys(r) {
     if (r.hasFile) out.push("adv_no_install");
     if (r.hasUrl) out.push("adv_no_open");
     out.push("adv_no_code");
-    if (g.some(x => ["transfer", "money", "prize", "parcel"].includes(x))) out.push("adv_no_money");
+    if (g.some(x => ["transfer", "money", "prize", "parcel", "job", "relative", "holiday"].includes(x))) out.push("adv_no_money");
     out.push(r.hasFile ? "adv_installed" : "adv_call_bank");
   } else {
     if (r.hasFile) out.push("adv_file_wait");
@@ -804,7 +804,16 @@ M["data/scam-keywords.json"] = function (module) { module.exports = {
         "посылка",
         "посылку",
         "таможн",
-        "оплатите доставку"
+        "оплатите доставку",
+        "kuryer",
+        "manzilingizni tasdiqlang",
+        "manzilni tasdiqlang",
+        "yetkazib berish haqi",
+        "yetkazib berish to'lovi",
+        "курьер",
+        "манзилингизни тасдиқланг",
+        "подтвердите адрес",
+        "доставка не удалась"
       ]
     },
     {
@@ -834,7 +843,8 @@ M["data/scam-keywords.json"] = function (module) { module.exports = {
         "ташлаб беринг",
         "скиньте",
         "перекиньте",
-        "закиньте"
+        "закиньте",
+        "скинь"
       ]
     },
     {
@@ -850,6 +860,83 @@ M["data/scam-keywords.json"] = function (module) { module.exports = {
         "установите приложение",
         "скачайте приложение",
         "откройте файл"
+      ]
+    },
+    {
+      "id": "job",
+      "points": 25,
+      "p": [
+        "masofaviy ish",
+        "uydan ishlash",
+        "uydan turib ishla",
+        "uyda ishlab pul",
+        "layk bosib",
+        "laykga pul",
+        "layk uchun pul",
+        "obuna bo'lib pul",
+        "topshiriq bajarib",
+        "vazifa bajarib pul",
+        "kunlik to'lov",
+        "telegramda ish",
+        "масофавий иш",
+        "уйдан ишлаш",
+        "лайк босиб",
+        "топшириқ бажариб",
+        "кунлик тўлов",
+        "удаленная работа",
+        "удалённая работа",
+        "работа на дому",
+        "ежедневные выплаты",
+        "ежедневная оплата",
+        "ставить лайки",
+        "лайки за деньги",
+        "выполнять задания",
+        "за выполнение заданий"
+      ]
+    },
+    {
+      "id": "relative",
+      "points": 25,
+      "p": [
+        "yangi raqamim",
+        "telefonim buzildi",
+        "telefonim yo'qoldi",
+        "telefonim o'g'irlandi",
+        "eski raqamim ishlamayapti",
+        "boshqa raqamdan yozyapman",
+        "янги рақамим",
+        "телефоним бузилди",
+        "телефоним йўқолди",
+        "бошқа рақамдан ёзяпман",
+        "мой новый номер",
+        "это мой новый номер",
+        "новый номер мамы",
+        "телефон сломался",
+        "телефон потерял",
+        "пишу с чужого",
+        "пишу с другого номера"
+      ]
+    },
+    {
+      "id": "holiday",
+      "points": 15,
+      "p": [
+        "yangi yil aksiya",
+        "yangi yil sovg'a",
+        "yangi yilga sovg'a",
+        "yangi yil bonus",
+        "yangi yil yutuq",
+        "bayram aksiya",
+        "bayram sovg'a",
+        "bayram bonus",
+        "янги йил акция",
+        "янги йил совға",
+        "байрам акция",
+        "байрам совға",
+        "новогодн",
+        "праздничная акция",
+        "праздничный розыгрыш",
+        "к новому году подарок"
       ]
     }
   ],
@@ -868,7 +955,7 @@ M["data/scam-keywords.json"] = function (module) { module.exports = {
   ],
   "url_combo": {
     "_izoh": "Firibgar matn guruhi + ball olgan (rasmiy bo'lmagan) havola: masalan «yutdingiz» + https://yutuq-uz.click. Har biri alohida 30 ga yetmasa ham — birga shubhali.",
-    "groups": ["prize", "parcel", "vote", "transfer"],
+    "groups": ["prize", "parcel", "vote", "transfer", "job", "relative", "holiday"],
     "points": 20
   },
   "combos": [
@@ -906,6 +993,55 @@ M["data/scam-keywords.json"] = function (module) { module.exports = {
         "transfer"
       ],
       "points": 15
+    },
+    {
+      "need": [
+        "job",
+        "transfer"
+      ],
+      "points": 25
+    },
+    {
+      "need": [
+        "job",
+        "money"
+      ],
+      "points": 10
+    },
+    {
+      "need": [
+        "relative",
+        "transfer"
+      ],
+      "points": 25
+    },
+    {
+      "need": [
+        "relative",
+        "urgent"
+      ],
+      "points": 10
+    },
+    {
+      "need": [
+        "holiday",
+        "transfer"
+      ],
+      "points": 20
+    },
+    {
+      "need": [
+        "holiday",
+        "secret"
+      ],
+      "points": 20
+    },
+    {
+      "need": [
+        "holiday",
+        "prize"
+      ],
+      "points": 10
     }
   ]
 }; };
@@ -957,6 +1093,6 @@ M["data/trusted-domains.json"] = function (module) { module.exports = {
     { "domain": "daryo.uz", "brand": null, "name": "Daryo" }
   ]
 }; };
-M["locales"] = function (module) { module.exports = {"uz-latn":{"level_safe":"✅ Xavf topilmadi","level_suspicious":"🟡 SHUBHALI","level_danger":"🔴 XAVFLI","why":"Nima uchun:","what_to_do":"Nima qilish kerak:","url_trusted":"Bu — {name}ning rasmiy sayti","url_ip":"Havolada sayt nomi o'rniga raqamlar bor — rasmiy saytlar bunday qilmaydi","url_punycode":"Sayt nomida boshqa alifbo harflari yashirilgan — rasmiy saytga o'xshatish usuli","url_at":"Havola aldamchi tuzilgan: boshida bir sayt nomi, aslida boshqa saytga olib boradi","url_tld":"Sayt nomi {tld} bilan tugaydi — firibgarlar buni ko'p ishlatadi","url_brand":"Bu sayt {name}ga o'xshatilgan, lekin rasmiy emas. Rasmiysi: {real}","url_lookalike":"Sayt nomi {name}ga juda o'xshaydi, lekin harflari boshqa. Rasmiysi: {real}","url_words":"Havolada «{word}» so'zi bor — aldov havolalarida ko'p uchraydi","url_hyphens":"Sayt nomida juda ko'p chiziqcha bor — shubhali","url_shortener":"Bu qisqartirilgan havola, aslida {host} saytiga olib boradi","url_short_hidden":"Bu qisqartirilgan havola va u qayerga olib borishini bilib bo'lmadi","adv_safe":"👍 Xavf belgisi topilmadi.\nℹ️ Lekin 100% kafolat yo'q — SMS kodni hech kimga aytmang.","adv_no_open":"❌ Havolani ochmang","adv_no_code":"❌ Hech kimga SMS kod va karta ma'lumotini bermang","adv_no_money":"❌ Hech qanday pul o'tkazmang","adv_call_bank":"✅ Ma'lumot berib qo'ygan bo'lsangiz — darhol bankingizga qo'ng'iroq qiling","adv_wait":"⚠️ Havolani ochishga shoshilmang","adv_check_official":"✅ Rasmiy ilova yoki saytga o'zingiz kirib tekshiring","txt_secret":"Xabarda «{word}» so'raladi — bank hech qachon buni so'ramaydi","txt_prize":"Xabarda «{word}» degan so'z bor — «yutuq» firibgarlarning eng ko'p usuli","txt_bank":"Yozgan odam o'zini bank xodimi deb ko'rsatyapti («{word}»)","txt_urgent":"Sizni shoshiltiryapti yoki qo'rqityapti («{word}»)","txt_money":"Oson va kafolatlangan pul va'da qilinyapti («{word}») — bunday bo'lmaydi","txt_vote":"«Ovoz bering» havolasi — Telegram akkauntingizni o'g'irlash usuli","txt_parcel":"Posilka yoki bojxona haqida xabar («{word}») — ko'p tarqalgan aldov","txt_transfer":"Sizdan pul o'tkazish so'ralyapti («{word}»)","txt_apk":"Fayl yoki ilova o'rnatish so'ralyapti («{word}») — telefoningizga virus tushishi mumkin","txt_combo":"Bir xabarda bir nechta firibgarlik belgisi birga uchradi","file_apk":"Bu Android ilova fayli ({ext}). Notanish odamdan kelgan ilova — eng ko'p tarqalgan firibgarlik usuli: o'rnatsangiz, SMS va kartangizni o'g'irlaydi","file_apk_hidden":"Bu aslida Android ilova fayli, lekin nomi boshqacha ko'rsatilgan ({ext})","file_exe":"Bu kompyuterda ishga tushadigan dastur fayli ({ext}) — virus bo'lishi mumkin","file_macro":"Bu hujjat ichida dastur (makros) bo'lishi mumkin ({ext})","file_archive":"Bu arxiv ({ext}) — ichida xavfli fayl yashirilgan bo'lishi mumkin","file_double":"Fayl nomi aldamchi: {name} — rasm yoki hujjatga o'xshatilgan","file_spaces":"Fayl nomida ko'p bo'shliq bilan haqiqiy turi yashirilgan","file_big":"Fayl 20 MB dan katta — faqat nomi va turiga qarab baholandi","file_vt_bad":"{n} ta antivirus bu faylni virusli deb topgan","file_vt_some":"{n} ta antivirus bu faylga shubha bildirgan","adv_no_install":"❌ Faylni ochmang va o'rnatmang","adv_installed":"✅ O'rnatib qo'ygan bo'lsangiz — internetni o'chiring, ilovani o'chirib tashlang va darhol bankingizga qo'ng'iroq qiling","adv_file_wait":"⚠️ Faylni ochishdan oldin yuborgan odamdan boshqa yo'l bilan so'rab ko'ring","url_reports":"Bu sayt ustidan {n} ta foydalanuvchi shikoyat qilgan","url_shortener_wait":"Bu qisqartirilgan havola — qayerga olib borishi tekshirilmoqda"},"uz-cyrl":{"level_safe":"✅ Хавф топилмади","level_suspicious":"🟡 ШУБҲАЛИ","level_danger":"🔴 ХАВФЛИ","why":"Нима учун:","what_to_do":"Нима қилиш керак:","url_trusted":"Бу — {name}нинг расмий сайти","url_ip":"Ҳаволада сайт номи ўрнига рақамлар бор — расмий сайтлар бундай қилмайди","url_punycode":"Сайт номида бошқа алифбо ҳарфлари яширилган — расмий сайтга ўхшатиш усули","url_at":"Ҳавола алдамчи тузилган: бошида бир сайт номи, аслида бошқа сайтга олиб боради","url_tld":"Сайт номи {tld} билан тугайди — фирибгарлар буни кўп ишлатади","url_brand":"Бу сайт {name}га ўхшатилган, лекин расмий эмас. Расмийси: {real}","url_lookalike":"Сайт номи {name}га жуда ўхшайди, лекин ҳарфлари бошқа. Расмийси: {real}","url_words":"Ҳаволада «{word}» сўзи бор — алдов ҳаволаларида кўп учрайди","url_hyphens":"Сайт номида жуда кўп чизиқча бор — шубҳали","url_shortener":"Бу қисқартирилган ҳавола, аслида {host} сайтига олиб боради","url_short_hidden":"Бу қисқартирилган ҳавола ва у қаерга олиб боришини билиб бўлмади","adv_safe":"👍 Хавф белгиси топилмади.\nℹ️ Лекин 100% кафолат йўқ — SMS кодни ҳеч кимга айтманг.","adv_no_open":"❌ Ҳаволани очманг","adv_no_code":"❌ Ҳеч кимга SMS код ва карта маълумотини берманг","adv_no_money":"❌ Ҳеч қандай пул ўтказманг","adv_call_bank":"✅ Маълумот бериб қўйган бўлсангиз — дарҳол банкингизга қўнғироқ қилинг","adv_wait":"⚠️ Ҳаволани очишга шошилманг","adv_check_official":"✅ Расмий илова ёки сайтга ўзингиз кириб текширинг","txt_secret":"Хабарда «{word}» сўралади — банк ҳеч қачон буни сўрамайди","txt_prize":"Хабарда «{word}» деган сўз бор — «ютуқ» фирибгарларнинг энг кўп усули","txt_bank":"Ёзган одам ўзини банк ходими деб кўрсатяпти («{word}»)","txt_urgent":"Сизни шошилтиряпти ёки қўрқитяпти («{word}»)","txt_money":"Осон ва кафолатланган пул ваъда қилиняпти («{word}») — бундай бўлмайди","txt_vote":"«Овоз беринг» ҳаволаси — Telegram аккаунтингизни ўғирлаш усули","txt_parcel":"Посилка ёки божхона ҳақида хабар («{word}») — кўп тарқалган алдов","txt_transfer":"Сиздан пул ўтказиш сўраляпти («{word}»)","txt_apk":"Файл ёки илова ўрнатиш сўраляпти («{word}») — телефонингизга вирус тушиши мумкин","txt_combo":"Бир хабарда бир нечта фирибгарлик белгиси бирга учради","file_apk":"Бу Android илова файли ({ext}). Нотаниш одамдан келган илова — энг кўп тарқалган фирибгарлик усули: ўрнатсангиз, SMS ва картангизни ўғирлайди","file_apk_hidden":"Бу аслида Android илова файли, лекин номи бошқача кўрсатилган ({ext})","file_exe":"Бу компьютерда ишга тушадиган дастур файли ({ext}) — вирус бўлиши мумкин","file_macro":"Бу ҳужжат ичида дастур (макрос) бўлиши мумкин ({ext})","file_archive":"Бу архив ({ext}) — ичида хавфли файл яширилган бўлиши мумкин","file_double":"Файл номи алдамчи: {name} — расм ёки ҳужжатга ўхшатилган","file_spaces":"Файл номида кўп бўшлиқ билан ҳақиқий тури яширилган","file_big":"Файл 20 MB дан катта — фақат номи ва турига қараб баҳоланди","file_vt_bad":"{n} та антивирус бу файлни вирусли деб топган","file_vt_some":"{n} та антивирус бу файлга шубҳа билдирган","adv_no_install":"❌ Файлни очманг ва ўрнатманг","adv_installed":"✅ Ўрнатиб қўйган бўлсангиз — интернетни ўчиринг, иловани ўчириб ташланг ва дарҳол банкингизга қўнғироқ қилинг","adv_file_wait":"⚠️ Файлни очишдан олдин юборган одамдан бошқа йўл билан сўраб кўринг","url_reports":"Бу сайт устидан {n} та фойдаланувчи шикоят қилган","url_shortener_wait":"Бу қисқартирилган ҳавола — қаерга олиб бориши текширилмоқда"},"ru":{"level_safe":"✅ Угроз не найдено","level_suspicious":"🟡 ПОДОЗРИТЕЛЬНО","level_danger":"🔴 ОПАСНО","why":"Почему:","what_to_do":"Что делать:","url_trusted":"Это официальный сайт: {name}","url_ip":"В ссылке вместо названия сайта цифры — официальные сайты так не делают","url_punycode":"В названии сайта спрятаны буквы другого алфавита — так подделывают официальные сайты","url_at":"Ссылка обманчивая: в начале одно название, а ведёт на другой сайт","url_tld":"Адрес сайта заканчивается на {tld} — мошенники часто это используют","url_brand":"Сайт выдаёт себя за {name}, но он не официальный. Официальный: {real}","url_lookalike":"Название сайта очень похоже на {name}, но буквы другие. Официальный: {real}","url_words":"В ссылке есть слово «{word}» — часто встречается в мошеннических ссылках","url_hyphens":"В названии сайта слишком много дефисов — подозрительно","url_shortener":"Это сокращённая ссылка, на самом деле она ведёт на сайт {host}","url_short_hidden":"Это сокращённая ссылка, и не удалось узнать, куда она ведёт","adv_safe":"👍 Признаков угрозы не найдено.\nℹ️ Но 100% гарантии нет — никому не сообщайте SMS-код.","adv_no_open":"❌ Не открывайте ссылку","adv_no_code":"❌ Никому не сообщайте SMS-код и данные карты","adv_no_money":"❌ Не переводите никаких денег","adv_call_bank":"✅ Если вы уже сообщили данные — сразу позвоните в свой банк","adv_wait":"⚠️ Не спешите открывать ссылку","adv_check_official":"✅ Проверьте сами через официальное приложение или сайт","txt_secret":"В сообщении просят «{word}» — банк никогда этого не спрашивает","txt_prize":"В сообщении есть слово «{word}» — «выигрыш» самый частый обман","txt_bank":"Автор выдаёт себя за сотрудника банка («{word}»)","txt_urgent":"Вас торопят или пугают («{word}»)","txt_money":"Обещают лёгкие или гарантированные деньги («{word}») — так не бывает","txt_vote":"Ссылка «проголосуйте» — способ украсть ваш Telegram-аккаунт","txt_parcel":"Сообщение о посылке или таможне («{word}») — частый обман","txt_transfer":"Вас просят перевести деньги («{word}»)","txt_apk":"Просят установить файл или приложение («{word}») — на телефон может попасть вирус","txt_combo":"В одном сообщении сразу несколько признаков мошенничества","file_apk":"Это файл Android-приложения ({ext}). Приложение от незнакомца — самый частый способ мошенничества: после установки оно крадёт SMS и данные карты","file_apk_hidden":"На самом деле это Android-приложение, но имя файла замаскировано ({ext})","file_exe":"Это исполняемый файл для компьютера ({ext}) — может быть вирусом","file_macro":"В этом документе может быть программа (макрос) ({ext})","file_archive":"Это архив ({ext}) — внутри может быть спрятан опасный файл","file_double":"Обманчивое имя файла: {name} — замаскирован под фото или документ","file_spaces":"В имени файла пробелами спрятан его настоящий тип","file_big":"Файл больше 20 МБ — оценка только по имени и типу","file_vt_bad":"{n} антивирусов признали этот файл заражённым","file_vt_some":"{n} антивирусов отметили этот файл как подозрительный","adv_no_install":"❌ Не открывайте и не устанавливайте файл","adv_installed":"✅ Если уже установили — отключите интернет, удалите приложение и сразу позвоните в банк","adv_file_wait":"⚠️ Прежде чем открыть, уточните у отправителя другим способом","url_reports":"На этот сайт пожаловались пользователи: {n}","url_shortener_wait":"Это сокращённая ссылка — проверяем, куда она ведёт"}}; };
+M["locales"] = function (module) { module.exports = {"uz-latn":{"level_safe":"✅ Xavf topilmadi","level_suspicious":"🟡 SHUBHALI","level_danger":"🔴 XAVFLI","why":"Nima uchun:","what_to_do":"Nima qilish kerak:","url_trusted":"Bu — {name}ning rasmiy sayti","url_ip":"Havolada sayt nomi o'rniga raqamlar bor — rasmiy saytlar bunday qilmaydi","url_punycode":"Sayt nomida boshqa alifbo harflari yashirilgan — rasmiy saytga o'xshatish usuli","url_at":"Havola aldamchi tuzilgan: boshida bir sayt nomi, aslida boshqa saytga olib boradi","url_tld":"Sayt nomi {tld} bilan tugaydi — firibgarlar buni ko'p ishlatadi","url_brand":"Bu sayt {name}ga o'xshatilgan, lekin rasmiy emas. Rasmiysi: {real}","url_lookalike":"Sayt nomi {name}ga juda o'xshaydi, lekin harflari boshqa. Rasmiysi: {real}","url_words":"Havolada «{word}» so'zi bor — aldov havolalarida ko'p uchraydi","url_hyphens":"Sayt nomida juda ko'p chiziqcha bor — shubhali","url_shortener":"Bu qisqartirilgan havola, aslida {host} saytiga olib boradi","url_short_hidden":"Bu qisqartirilgan havola va u qayerga olib borishini bilib bo'lmadi","adv_safe":"👍 Xavf belgisi topilmadi.\nℹ️ Lekin 100% kafolat yo'q — SMS kodni hech kimga aytmang.","adv_no_open":"❌ Havolani ochmang","adv_no_code":"❌ Hech kimga SMS kod va karta ma'lumotini bermang","adv_no_money":"❌ Hech qanday pul o'tkazmang","adv_call_bank":"✅ Ma'lumot berib qo'ygan bo'lsangiz — darhol bankingizga qo'ng'iroq qiling","adv_wait":"⚠️ Havolani ochishga shoshilmang","adv_check_official":"✅ Rasmiy ilova yoki saytga o'zingiz kirib tekshiring","txt_secret":"Xabarda «{word}» so'raladi — bank hech qachon buni so'ramaydi","txt_prize":"Xabarda «{word}» degan so'z bor — «yutuq» firibgarlarning eng ko'p usuli","txt_bank":"Yozgan odam o'zini bank xodimi deb ko'rsatyapti («{word}»)","txt_urgent":"Sizni shoshiltiryapti yoki qo'rqityapti («{word}»)","txt_money":"Oson va kafolatlangan pul va'da qilinyapti («{word}») — bunday bo'lmaydi","txt_vote":"«Ovoz bering» havolasi — Telegram akkauntingizni o'g'irlash usuli","txt_parcel":"Posilka yoki bojxona haqida xabar («{word}») — ko'p tarqalgan aldov","txt_transfer":"Sizdan pul o'tkazish so'ralyapti («{word}»)","txt_apk":"Fayl yoki ilova o'rnatish so'ralyapti («{word}») — telefoningizga virus tushishi mumkin","txt_job":"Oson ish va tez pul va'da qilinyapti («{word}») — bunday «ish»larda oxiri sizdan pul so'rashadi","txt_relative":"«{word}» — yaqiningiz nomidan boshqa odam yozgan bo'lishi mumkin. Unga eski raqamiga qo'ng'iroq qilib tekshiring","txt_holiday":"Bayram aksiyasi («{word}») — bayram oldidan soxta aksiyalar ko'payadi, rasmiy saytdan tekshiring","txt_combo":"Bir xabarda bir nechta firibgarlik belgisi birga uchradi","file_apk":"Bu Android ilova fayli ({ext}). Notanish odamdan kelgan ilova — eng ko'p tarqalgan firibgarlik usuli: o'rnatsangiz, SMS va kartangizni o'g'irlaydi","file_apk_hidden":"Bu aslida Android ilova fayli, lekin nomi boshqacha ko'rsatilgan ({ext})","file_exe":"Bu kompyuterda ishga tushadigan dastur fayli ({ext}) — virus bo'lishi mumkin","file_macro":"Bu hujjat ichida dastur (makros) bo'lishi mumkin ({ext})","file_archive":"Bu arxiv ({ext}) — ichida xavfli fayl yashirilgan bo'lishi mumkin","file_double":"Fayl nomi aldamchi: {name} — rasm yoki hujjatga o'xshatilgan","file_spaces":"Fayl nomida ko'p bo'shliq bilan haqiqiy turi yashirilgan","file_big":"Fayl 20 MB dan katta — faqat nomi va turiga qarab baholandi","file_vt_bad":"{n} ta antivirus bu faylni virusli deb topgan","file_vt_some":"{n} ta antivirus bu faylga shubha bildirgan","adv_no_install":"❌ Faylni ochmang va o'rnatmang","adv_installed":"✅ O'rnatib qo'ygan bo'lsangiz — internetni o'chiring, ilovani o'chirib tashlang va darhol bankingizga qo'ng'iroq qiling","adv_file_wait":"⚠️ Faylni ochishdan oldin yuborgan odamdan boshqa yo'l bilan so'rab ko'ring","url_reports":"Bu sayt ustidan {n} ta foydalanuvchi shikoyat qilgan","url_shortener_wait":"Bu qisqartirilgan havola — qayerga olib borishi tekshirilmoqda"},"uz-cyrl":{"level_safe":"✅ Хавф топилмади","level_suspicious":"🟡 ШУБҲАЛИ","level_danger":"🔴 ХАВФЛИ","why":"Нима учун:","what_to_do":"Нима қилиш керак:","url_trusted":"Бу — {name}нинг расмий сайти","url_ip":"Ҳаволада сайт номи ўрнига рақамлар бор — расмий сайтлар бундай қилмайди","url_punycode":"Сайт номида бошқа алифбо ҳарфлари яширилган — расмий сайтга ўхшатиш усули","url_at":"Ҳавола алдамчи тузилган: бошида бир сайт номи, аслида бошқа сайтга олиб боради","url_tld":"Сайт номи {tld} билан тугайди — фирибгарлар буни кўп ишлатади","url_brand":"Бу сайт {name}га ўхшатилган, лекин расмий эмас. Расмийси: {real}","url_lookalike":"Сайт номи {name}га жуда ўхшайди, лекин ҳарфлари бошқа. Расмийси: {real}","url_words":"Ҳаволада «{word}» сўзи бор — алдов ҳаволаларида кўп учрайди","url_hyphens":"Сайт номида жуда кўп чизиқча бор — шубҳали","url_shortener":"Бу қисқартирилган ҳавола, аслида {host} сайтига олиб боради","url_short_hidden":"Бу қисқартирилган ҳавола ва у қаерга олиб боришини билиб бўлмади","adv_safe":"👍 Хавф белгиси топилмади.\nℹ️ Лекин 100% кафолат йўқ — SMS кодни ҳеч кимга айтманг.","adv_no_open":"❌ Ҳаволани очманг","adv_no_code":"❌ Ҳеч кимга SMS код ва карта маълумотини берманг","adv_no_money":"❌ Ҳеч қандай пул ўтказманг","adv_call_bank":"✅ Маълумот бериб қўйган бўлсангиз — дарҳол банкингизга қўнғироқ қилинг","adv_wait":"⚠️ Ҳаволани очишга шошилманг","adv_check_official":"✅ Расмий илова ёки сайтга ўзингиз кириб текширинг","txt_secret":"Хабарда «{word}» сўралади — банк ҳеч қачон буни сўрамайди","txt_prize":"Хабарда «{word}» деган сўз бор — «ютуқ» фирибгарларнинг энг кўп усули","txt_bank":"Ёзган одам ўзини банк ходими деб кўрсатяпти («{word}»)","txt_urgent":"Сизни шошилтиряпти ёки қўрқитяпти («{word}»)","txt_money":"Осон ва кафолатланган пул ваъда қилиняпти («{word}») — бундай бўлмайди","txt_vote":"«Овоз беринг» ҳаволаси — Telegram аккаунтингизни ўғирлаш усули","txt_parcel":"Посилка ёки божхона ҳақида хабар («{word}») — кўп тарқалган алдов","txt_transfer":"Сиздан пул ўтказиш сўраляпти («{word}»)","txt_apk":"Файл ёки илова ўрнатиш сўраляпти («{word}») — телефонингизга вирус тушиши мумкин","txt_job":"Осон иш ва тез пул ваъда қилиняпти («{word}») — бундай «иш»ларда охири сиздан пул сўрашади","txt_relative":"«{word}» — яқинингиз номидан бошқа одам ёзган бўлиши мумкин. Унга эски рақамига қўнғироқ қилиб текширинг","txt_holiday":"Байрам акцияси («{word}») — байрам олдидан сохта акциялар кўпаяди, расмий сайтдан текширинг","txt_combo":"Бир хабарда бир нечта фирибгарлик белгиси бирга учради","file_apk":"Бу Android илова файли ({ext}). Нотаниш одамдан келган илова — энг кўп тарқалган фирибгарлик усули: ўрнатсангиз, SMS ва картангизни ўғирлайди","file_apk_hidden":"Бу аслида Android илова файли, лекин номи бошқача кўрсатилган ({ext})","file_exe":"Бу компьютерда ишга тушадиган дастур файли ({ext}) — вирус бўлиши мумкин","file_macro":"Бу ҳужжат ичида дастур (макрос) бўлиши мумкин ({ext})","file_archive":"Бу архив ({ext}) — ичида хавфли файл яширилган бўлиши мумкин","file_double":"Файл номи алдамчи: {name} — расм ёки ҳужжатга ўхшатилган","file_spaces":"Файл номида кўп бўшлиқ билан ҳақиқий тури яширилган","file_big":"Файл 20 MB дан катта — фақат номи ва турига қараб баҳоланди","file_vt_bad":"{n} та антивирус бу файлни вирусли деб топган","file_vt_some":"{n} та антивирус бу файлга шубҳа билдирган","adv_no_install":"❌ Файлни очманг ва ўрнатманг","adv_installed":"✅ Ўрнатиб қўйган бўлсангиз — интернетни ўчиринг, иловани ўчириб ташланг ва дарҳол банкингизга қўнғироқ қилинг","adv_file_wait":"⚠️ Файлни очишдан олдин юборган одамдан бошқа йўл билан сўраб кўринг","url_reports":"Бу сайт устидан {n} та фойдаланувчи шикоят қилган","url_shortener_wait":"Бу қисқартирилган ҳавола — қаерга олиб бориши текширилмоқда"},"ru":{"level_safe":"✅ Угроз не найдено","level_suspicious":"🟡 ПОДОЗРИТЕЛЬНО","level_danger":"🔴 ОПАСНО","why":"Почему:","what_to_do":"Что делать:","url_trusted":"Это официальный сайт: {name}","url_ip":"В ссылке вместо названия сайта цифры — официальные сайты так не делают","url_punycode":"В названии сайта спрятаны буквы другого алфавита — так подделывают официальные сайты","url_at":"Ссылка обманчивая: в начале одно название, а ведёт на другой сайт","url_tld":"Адрес сайта заканчивается на {tld} — мошенники часто это используют","url_brand":"Сайт выдаёт себя за {name}, но он не официальный. Официальный: {real}","url_lookalike":"Название сайта очень похоже на {name}, но буквы другие. Официальный: {real}","url_words":"В ссылке есть слово «{word}» — часто встречается в мошеннических ссылках","url_hyphens":"В названии сайта слишком много дефисов — подозрительно","url_shortener":"Это сокращённая ссылка, на самом деле она ведёт на сайт {host}","url_short_hidden":"Это сокращённая ссылка, и не удалось узнать, куда она ведёт","adv_safe":"👍 Признаков угрозы не найдено.\nℹ️ Но 100% гарантии нет — никому не сообщайте SMS-код.","adv_no_open":"❌ Не открывайте ссылку","adv_no_code":"❌ Никому не сообщайте SMS-код и данные карты","adv_no_money":"❌ Не переводите никаких денег","adv_call_bank":"✅ Если вы уже сообщили данные — сразу позвоните в свой банк","adv_wait":"⚠️ Не спешите открывать ссылку","adv_check_official":"✅ Проверьте сами через официальное приложение или сайт","txt_secret":"В сообщении просят «{word}» — банк никогда этого не спрашивает","txt_prize":"В сообщении есть слово «{word}» — «выигрыш» самый частый обман","txt_bank":"Автор выдаёт себя за сотрудника банка («{word}»)","txt_urgent":"Вас торопят или пугают («{word}»)","txt_money":"Обещают лёгкие или гарантированные деньги («{word}») — так не бывает","txt_vote":"Ссылка «проголосуйте» — способ украсть ваш Telegram-аккаунт","txt_parcel":"Сообщение о посылке или таможне («{word}») — частый обман","txt_transfer":"Вас просят перевести деньги («{word}»)","txt_apk":"Просят установить файл или приложение («{word}») — на телефон может попасть вирус","txt_job":"Обещают лёгкую работу и быстрые деньги («{word}») — в таких «работах» в итоге просят перевести деньги","txt_relative":"«{word}» — возможно, пишет не ваш близкий, а мошенник. Позвоните ему на старый номер и проверьте","txt_holiday":"Праздничная акция («{word}») — перед праздниками фальшивых акций становится больше, проверьте на официальном сайте","txt_combo":"В одном сообщении сразу несколько признаков мошенничества","file_apk":"Это файл Android-приложения ({ext}). Приложение от незнакомца — самый частый способ мошенничества: после установки оно крадёт SMS и данные карты","file_apk_hidden":"На самом деле это Android-приложение, но имя файла замаскировано ({ext})","file_exe":"Это исполняемый файл для компьютера ({ext}) — может быть вирусом","file_macro":"В этом документе может быть программа (макрос) ({ext})","file_archive":"Это архив ({ext}) — внутри может быть спрятан опасный файл","file_double":"Обманчивое имя файла: {name} — замаскирован под фото или документ","file_spaces":"В имени файла пробелами спрятан его настоящий тип","file_big":"Файл больше 20 МБ — оценка только по имени и типу","file_vt_bad":"{n} антивирусов признали этот файл заражённым","file_vt_some":"{n} антивирусов отметили этот файл как подозрительный","adv_no_install":"❌ Не открывайте и не устанавливайте файл","adv_installed":"✅ Если уже установили — отключите интернет, удалите приложение и сразу позвоните в банк","adv_file_wait":"⚠️ Прежде чем открыть, уточните у отправителя другим способом","url_reports":"На этот сайт пожаловались пользователи: {n}","url_shortener_wait":"Это сокращённая ссылка — проверяем, куда она ведёт"}}; };
 g.TekshirEngine = require("api");
 })(typeof globalThis !== "undefined" ? globalThis : self);

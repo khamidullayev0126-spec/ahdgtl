@@ -172,7 +172,16 @@
         "посылка",
         "посылку",
         "таможн",
-        "оплатите доставку"
+        "оплатите доставку",
+        "kuryer",
+        "manzilingizni tasdiqlang",
+        "manzilni tasdiqlang",
+        "yetkazib berish haqi",
+        "yetkazib berish to'lovi",
+        "курьер",
+        "манзилингизни тасдиқланг",
+        "подтвердите адрес",
+        "доставка не удалась"
       ]
     },
     {
@@ -202,7 +211,8 @@
         "ташлаб беринг",
         "скиньте",
         "перекиньте",
-        "закиньте"
+        "закиньте",
+        "скинь"
       ]
     },
     {
@@ -218,6 +228,83 @@
         "установите приложение",
         "скачайте приложение",
         "откройте файл"
+      ]
+    },
+    {
+      "id": "job",
+      "points": 25,
+      "p": [
+        "masofaviy ish",
+        "uydan ishlash",
+        "uydan turib ishla",
+        "uyda ishlab pul",
+        "layk bosib",
+        "laykga pul",
+        "layk uchun pul",
+        "obuna bo'lib pul",
+        "topshiriq bajarib",
+        "vazifa bajarib pul",
+        "kunlik to'lov",
+        "telegramda ish",
+        "масофавий иш",
+        "уйдан ишлаш",
+        "лайк босиб",
+        "топшириқ бажариб",
+        "кунлик тўлов",
+        "удаленная работа",
+        "удалённая работа",
+        "работа на дому",
+        "ежедневные выплаты",
+        "ежедневная оплата",
+        "ставить лайки",
+        "лайки за деньги",
+        "выполнять задания",
+        "за выполнение заданий"
+      ]
+    },
+    {
+      "id": "relative",
+      "points": 25,
+      "p": [
+        "yangi raqamim",
+        "telefonim buzildi",
+        "telefonim yo'qoldi",
+        "telefonim o'g'irlandi",
+        "eski raqamim ishlamayapti",
+        "boshqa raqamdan yozyapman",
+        "янги рақамим",
+        "телефоним бузилди",
+        "телефоним йўқолди",
+        "бошқа рақамдан ёзяпман",
+        "мой новый номер",
+        "это мой новый номер",
+        "новый номер мамы",
+        "телефон сломался",
+        "телефон потерял",
+        "пишу с чужого",
+        "пишу с другого номера"
+      ]
+    },
+    {
+      "id": "holiday",
+      "points": 15,
+      "p": [
+        "yangi yil aksiya",
+        "yangi yil sovg'a",
+        "yangi yilga sovg'a",
+        "yangi yil bonus",
+        "yangi yil yutuq",
+        "bayram aksiya",
+        "bayram sovg'a",
+        "bayram bonus",
+        "янги йил акция",
+        "янги йил совға",
+        "байрам акция",
+        "байрам совға",
+        "новогодн",
+        "праздничная акция",
+        "праздничный розыгрыш",
+        "к новому году подарок"
       ]
     }
   ],
@@ -236,7 +323,7 @@
   ],
   "url_combo": {
     "_izoh": "Firibgar matn guruhi + ball olgan (rasmiy bo'lmagan) havola: masalan «yutdingiz» + https://yutuq-uz.click. Har biri alohida 30 ga yetmasa ham — birga shubhali.",
-    "groups": ["prize", "parcel", "vote", "transfer"],
+    "groups": ["prize", "parcel", "vote", "transfer", "job", "relative", "holiday"],
     "points": 20
   },
   "combos": [
@@ -274,6 +361,55 @@
         "transfer"
       ],
       "points": 15
+    },
+    {
+      "need": [
+        "job",
+        "transfer"
+      ],
+      "points": 25
+    },
+    {
+      "need": [
+        "job",
+        "money"
+      ],
+      "points": 10
+    },
+    {
+      "need": [
+        "relative",
+        "transfer"
+      ],
+      "points": 25
+    },
+    {
+      "need": [
+        "relative",
+        "urgent"
+      ],
+      "points": 10
+    },
+    {
+      "need": [
+        "holiday",
+        "transfer"
+      ],
+      "points": 20
+    },
+    {
+      "need": [
+        "holiday",
+        "secret"
+      ],
+      "points": 20
+    },
+    {
+      "need": [
+        "holiday",
+        "prize"
+      ],
+      "points": 10
     }
   ]
 }

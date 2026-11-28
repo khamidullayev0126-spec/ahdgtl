@@ -491,7 +491,7 @@ private fun adviceFor(r: Result, lv: String): List<String> {
         if (r.hasFile) out += "adv_no_install"
         if (r.hasUrl) out += "adv_no_open"
         out += "adv_no_code"
-        if (r.groups.any { it in setOf("transfer", "money", "prize", "parcel") }) out += "adv_no_money"
+        if (r.groups.any { it in setOf("transfer", "money", "prize", "parcel", "job", "relative", "holiday") }) out += "adv_no_money"
         out += if (r.hasFile) "adv_installed" else "adv_call_bank"
     } else {
         if (r.hasFile) out += "adv_file_wait"

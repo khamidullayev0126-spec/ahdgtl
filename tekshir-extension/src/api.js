@@ -54,7 +54,7 @@ function adviceKeys(r) {
     if (r.hasFile) out.push("adv_no_install");
     if (r.hasUrl) out.push("adv_no_open");
     out.push("adv_no_code");
-    if (g.some(x => ["transfer", "money", "prize", "parcel"].includes(x))) out.push("adv_no_money");
+    if (g.some(x => ["transfer", "money", "prize", "parcel", "job", "relative", "holiday"].includes(x))) out.push("adv_no_money");
     out.push(r.hasFile ? "adv_installed" : "adv_call_bank");
   } else {
     if (r.hasFile) out.push("adv_file_wait");

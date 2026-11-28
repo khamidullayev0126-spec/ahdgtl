@@ -15,7 +15,7 @@ function advice(lang, r) {
     if (r.hasFile) out.push(t(lang, "adv_no_install"));
     if (r.hasUrl) out.push(t(lang, "adv_no_open"));
     out.push(t(lang, "adv_no_code"));
-    if (g.some(x => ["transfer", "money", "prize", "parcel"].includes(x))) out.push(t(lang, "adv_no_money"));
+    if (g.some(x => ["transfer", "money", "prize", "parcel", "job", "relative", "holiday"].includes(x))) out.push(t(lang, "adv_no_money"));
     out.push(t(lang, r.hasFile ? "adv_installed" : "adv_call_bank"));
   } else {
     if (r.hasFile) out.push(t(lang, "adv_file_wait"));
@@ -69,4 +69,4 @@ function buildGroupReply(lang, result, botUsername, opts = {}) {
   return { text, reply_markup: kb };
 }
 
-module.exports = { buildReply, buildGroupReply, esc };
+module.exports = { buildReply, buildGroupReply, esc, advice };

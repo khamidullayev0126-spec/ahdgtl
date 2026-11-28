@@ -67,7 +67,18 @@ const CASES = [
   ["Posilkangiz keldi: https://mening-saytim.click"],
   ["Bonus yutdingiz! Batafsil: https://click.uz"],
   ["Mana mening saytim: https://mening-saytim.click"],
-  ["Sovg'a: https://bit.ly/abc123"]
+  ["Sovg'a: https://bit.ly/abc123"],
+  // 2026-noyabr: yangi turlar — ish taklifi, yaqin odam yangi raqamdan, bayram aksiyasi, kuryer
+  ["Uydan ishlash! Layk bosib kuniga 300 000 so'm. Boshlash uchun 50 000 so'm oldindan to'lov qiling"],
+  ["Удалённая работа: ставить лайки, ежедневные выплаты. Для начала переведите 100 000 сум"],
+  ["Telegramda ish! Topshiriq bajarib pul toping: https://ish-topish.click"],
+  ["Assalomu alaykum, bu mening yangi raqamim. Telefonim buzildi, tezda 500 ming kartaga tashlang"],
+  ["Мама, это мой новый номер. Скинь 300 000 на карту, срочно"],
+  ["Bu mening yangi raqamim, saqlab qo'ying"],
+  ["Yangi yil aksiyasi! Atigi 99 000 so'm to'lang va iPhone oling"],
+  ["Новогодняя акция! Заберите подарок: https://yangi-yil.click"],
+  ["Yangi yil bilan tabriklayman! Baxt tilayman"],
+  ["Kuryer sizni topa olmadi. Manzilingizni tasdiqlang va yetkazib berish haqini to'lang"],
 ];
 
 async function main() {
